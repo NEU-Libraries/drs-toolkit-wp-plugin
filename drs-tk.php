@@ -9,7 +9,6 @@
 // Rewrite rules are not being reset when the plugin is deactivated
 // consider changing so as not to use init but instead something else
 
-require_once( plugin_dir_path( __FILE__ ) . 'inc/NUSolrDoc.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/item.php' );
 
 $VERSION = '0.1.0';
