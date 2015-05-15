@@ -108,16 +108,6 @@ function drstk_content_template( $template ) {
 
         }
 
-    } elseif ( get_query_var('post_type') == 'solrdoc' && is_single() ) {
-        add_action('wp_enqueue_scripts', 'drstk_doc_script');
-        $new_template = locate_template( array( $SOLR_TEMPLATE['custom_template'] ) );
-
-        if ( '' != $new_template ) {
-            return $new_template;
-        } else {
-            return $SOLR_TEMPLATE['default_template'];
-        }
-
     } else {
         return $template;
     }
