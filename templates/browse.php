@@ -3,7 +3,14 @@
  * This is just a temporary placeholder template to demonstrate that it is working.
  * You will want to setup your own template for your theme to display the information.
  */
-?>
+
+get_header(); ?>
+
+	<div id="primary" class="content-area">
+		<main id="main" class="site-main" role="main">
+
+
+
 <div class="container-fluid">
   <div id="drs-browse-header-row" class="row">
     <div class="col-sm-8 col-md-9">
@@ -49,3 +56,8 @@
 
 
 </div>
+
+</main><!-- .site-main -->
+</div><!-- .content-area -->
+
+<?php get_footer(); ?>
