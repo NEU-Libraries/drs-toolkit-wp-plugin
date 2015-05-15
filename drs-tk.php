@@ -10,7 +10,7 @@
 // consider changing so as not to use init but instead something else
 
 require_once( plugin_dir_path( __FILE__ ) . 'inc/NUSolrDoc.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'inc/NUSolrVideo.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'inc/item.php' );
 
 $VERSION = '0.1.0';
 
@@ -21,26 +21,6 @@ $SOLR_TEMPLATE = array(
     'item_template' => dirname(__FILE__) . '/templates/item.php',
 );
 
-/**
- * Catch any views from the solrdoc post type and run our function
- * to either get or create the post based on the solr_doc_id
- */
-add_action('pre_get_posts', 'drstk_process_solrdoc');
-function drstk_process_solrdoc( $wp_query ) {
-    $solr_doc_id = get_query_var( 'solr_doc_id' );
-    if ( !is_admin() && $wp_query->is_main_query() && $solr_doc_id ) {
-        //$wp_query->set('drstk_template_type', 'doc');
-        echo "we are abotu to call get or create";
-        get_or_create_solr_doc( $wp_query, $solr_doc_id );
-    }
-}
-
-/**
- * This doesn't work yet but I think it should.  Once rewrite rules are created,
- * that seems to be it.  Need to go
- *
- * // https://codex.wordpress.org/Function_Reference/flush_rewrite_rules#Examples
- */
  function drstk_install() {
      // Clear the permalinks after the post type has been registered
      drstk_rewrite_rule();
@@ -51,7 +31,6 @@ function drstk_process_solrdoc( $wp_query ) {
      // Clear the permalinks to remove our post type's rules
      flush_rewrite_rules();
  }
-
  register_activation_hook( __FILE__, 'drstk_install' );
  register_deactivation_hook( __FILE__, 'drstk_deactivation' );
 
@@ -62,9 +41,9 @@ function drstk_process_solrdoc( $wp_query ) {
  function drstk_rewrite_rule() {
 
      add_rewrite_rule('^browse/?$',
-         'index.php?post_type=solrdoc&drstk_template_type=browse',
+         'index.php?post_type=drs&drstk_template_type=browse',
          'top');
-     add_rewrite_rule('^item/?$', 'index.php?post_type=solrdoc&drstk_template_type=item', 'top');
+     add_rewrite_rule('^item/?$', 'index.php?post_type=drs&drstk_template_type=item', 'top');
 
  }
 
@@ -104,8 +83,10 @@ function drstk_content_template( $template ) {
             add_action('wp_enqueue_scripts', 'drstk_item_script');
             echo "template is item";
             #return locate_template( array( 'view.php' ) );
+            $pid = get_query_var( 'pid' );
+            echo "we are abotu to call get or create";
+            get_or_create_solr_doc( $wp_query, $pid );
             return $SOLR_TEMPLATE['item_template'];
-
         }
 
     } else {
@@ -119,11 +100,8 @@ function drstk_content_template( $template ) {
  */
 function drstk_browse_script() {
     global $VERSION;
-
     wp_register_script('ajax_solr_browse', plugins_url('/assets/js/browse.js', __FILE__), array(), $VERSION, true );
-
     wp_enqueue_script('ajax_solr_browse');
-
     //wp_localize_script('ajax_solr_browse', 'ajax_solr_vars', array('proxy_url' => plugins_url('/inc/NUSolrProxy.php', __FILE__) ) );
 }
 
@@ -132,9 +110,6 @@ function drstk_browse_script() {
  */
 function drstk_item_script() {
     global $VERSION;
-
     //wp_register_script('ajax_solr_jwplayer',plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__), array(), $VERSION, false );
-
     //wp_enqueue_script('ajax_solr_jwplayer');
-
 }

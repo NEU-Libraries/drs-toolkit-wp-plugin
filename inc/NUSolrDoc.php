@@ -1,8 +1,5 @@
 <?php
 
-class NoResultsFound extends Exception { }
-class NoResponseFromServer extends Exception { }
-
 /**
  * NUSolrDoc is the parent class of a Northeastern Solr document.
  *
@@ -211,11 +208,11 @@ class NUSolrDoc {
             if ($json->response->numFound == 1) {
                 $this->_data = (array)$json->response->docs[0];
             } else {
-                throw new NoResultsFound('No results were found with the ID of: ' . $this->pid );
+                //throw new NoResultsFound('No results were found with the ID of: ' . $this->pid );
             }
 
         } else {
-            throw new NoResponseFromServer('There was a problem communicating with the solr database');
+            //throw new NoResponseFromServer('There was a problem communicating with the solr database');
         }
     }
 
