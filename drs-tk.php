@@ -1,8 +1,7 @@
 <?php
 /**
- * Plugin Name: NU Solr Plugin ADAPT
+ * Plugin Name: DRS Toolkit Plugin
  * Plugin URI:
- * Description: After you activate the plugin, go to your permalink settings and click "Save" to refresh the tables.
  * Version: 0.1
  * Author: Eli Zoller
  */
@@ -13,7 +12,7 @@
 require_once( plugin_dir_path( __FILE__ ) . 'inc/NUSolrDoc.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/NUSolrVideo.php' );
 
-$VERSION = '0.3.0';
+$VERSION = '0.1.0';
 
 // Set template names here so we don't have to go into the code.
 $SOLR_TEMPLATE = array(
@@ -26,11 +25,11 @@ $SOLR_TEMPLATE = array(
  * Catch any views from the solrdoc post type and run our function
  * to either get or create the post based on the solr_doc_id
  */
-add_action('pre_get_posts', 'nu_solr_process_solrdoc');
-function nu_solr_process_solrdoc( $wp_query ) {
+add_action('pre_get_posts', 'drstk_process_solrdoc');
+function drstk_process_solrdoc( $wp_query ) {
     $solr_doc_id = get_query_var( 'solr_doc_id' );
     if ( !is_admin() && $wp_query->is_main_query() && $solr_doc_id ) {
-        //$wp_query->set('nu_solr_template_type', 'doc');
+        //$wp_query->set('drstk_template_type', 'doc');
         echo "we are abotu to call get or create";
         get_or_create_solr_doc( $wp_query, $solr_doc_id );
     }
@@ -42,30 +41,30 @@ function nu_solr_process_solrdoc( $wp_query ) {
  *
  * // https://codex.wordpress.org/Function_Reference/flush_rewrite_rules#Examples
  */
- function nu_solr_install() {
+ function drstk_install() {
      // Clear the permalinks after the post type has been registered
-     nu_solr_rewrite_rule();
+     drstk_rewrite_rule();
      flush_rewrite_rules();
  }
 
- function nu_solr_deactivation() {
+ function drstk_deactivation() {
      // Clear the permalinks to remove our post type's rules
      flush_rewrite_rules();
  }
 
- register_activation_hook( __FILE__, 'nu_solr_install' );
- register_deactivation_hook( __FILE__, 'nu_solr_deactivation' );
+ register_activation_hook( __FILE__, 'drstk_install' );
+ register_deactivation_hook( __FILE__, 'drstk_deactivation' );
 
  /**
   * Rewrite rules for the plugin.
   */
- add_action('init', 'nu_solr_rewrite_rule');
- function nu_solr_rewrite_rule() {
+ add_action('init', 'drstk_rewrite_rule');
+ function drstk_rewrite_rule() {
 
      add_rewrite_rule('^browse/?$',
-         'index.php?post_type=solrdoc&nu_solr_template_type=browse',
+         'index.php?post_type=solrdoc&drstk_template_type=browse',
          'top');
-     add_rewrite_rule('^item/?$', 'index.php?post_type=solrdoc&nu_solr_template_type=item', 'top');
+     add_rewrite_rule('^item/?$', 'index.php?post_type=solrdoc&drstk_template_type=item', 'top');
 
  }
 
@@ -73,28 +72,28 @@ function nu_solr_process_solrdoc( $wp_query ) {
   * Register an additional query variable so we can differentiate between
   * the types of custom queries that are generated
   */
- add_filter('query_vars', 'nu_solr_add_query_var');
- function nu_solr_add_query_var($public_query_vars){
-     $public_query_vars[] = 'nu_solr_template_type';
+ add_filter('query_vars', 'drstk_add_query_var');
+ function drstk_add_query_var($public_query_vars){
+     $public_query_vars[] = 'drstk_template_type';
      return $public_query_vars;
  }
 
 /**
  * This is the hook that will filter our template calls; it searches for the
- * nu_solr_template_type variable (which we set above) and then makes a
+ * drstk_template_type variable (which we set above) and then makes a
  * decision accordingly.
  */
-add_filter('template_include', 'nu_solr_content_template', 1, 1);
-function nu_solr_content_template( $template ) {
+add_filter('template_include', 'drstk_content_template', 1, 1);
+function drstk_content_template( $template ) {
     global $wp_query;
     global $SOLR_TEMPLATE;
 
-    if ( isset($wp_query->query_vars['nu_solr_template_type']) ) {
+    if ( isset($wp_query->query_vars['drstk_template_type']) ) {
 
-        $template_type = $wp_query->query_vars['nu_solr_template_type'];
+        $template_type = $wp_query->query_vars['drstk_template_type'];
 
         if ($template_type == 'browse') {
-            add_action('wp_enqueue_scripts', 'nu_solr_browse_script');
+            add_action('wp_enqueue_scripts', 'drstk_browse_script');
             echo "template is browse";
             #return locate_template( array( 'view.php' ) );
             return $SOLR_TEMPLATE['browse_template'];
@@ -102,7 +101,7 @@ function nu_solr_content_template( $template ) {
         }
 
         if ($template_type == 'item') {
-            add_action('wp_enqueue_scripts', 'nu_solr_item_script');
+            add_action('wp_enqueue_scripts', 'drstk_item_script');
             echo "template is item";
             #return locate_template( array( 'view.php' ) );
             return $SOLR_TEMPLATE['item_template'];
@@ -110,7 +109,7 @@ function nu_solr_content_template( $template ) {
         }
 
     } elseif ( get_query_var('post_type') == 'solrdoc' && is_single() ) {
-        add_action('wp_enqueue_scripts', 'nu_solr_doc_script');
+        add_action('wp_enqueue_scripts', 'drstk_doc_script');
         $new_template = locate_template( array( $SOLR_TEMPLATE['custom_template'] ) );
 
         if ( '' != $new_template ) {
@@ -122,13 +121,13 @@ function nu_solr_content_template( $template ) {
     } else {
         return $template;
     }
-} // end nu_solr_content_template
+} // end drstk_content_template
 
 /**
  * Load scripts for the browse/search page
  *
  */
-function nu_solr_browse_script() {
+function drstk_browse_script() {
     global $VERSION;
 
     wp_register_script('ajax_solr_browse', plugins_url('/assets/js/browse.js', __FILE__), array(), $VERSION, true );
@@ -141,7 +140,7 @@ function nu_solr_browse_script() {
 /**
  * Load scripts for the doc/page views
  */
-function nu_solr_item_script() {
+function drstk_item_script() {
     global $VERSION;
 
     //wp_register_script('ajax_solr_jwplayer',plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__), array(), $VERSION, false );
