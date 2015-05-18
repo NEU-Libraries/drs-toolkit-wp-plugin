@@ -85,6 +85,7 @@ function drstk_content_template( $template ) {
             $pid = get_query_var( 'pid' );
             echo "we are abotu to call get or create";
             get_or_create_solr_doc( $wp_query, $pid );
+
             return $SOLR_TEMPLATE['item_template'];
         }
 
@@ -109,6 +110,6 @@ function drstk_browse_script() {
  */
 function drstk_item_script() {
     global $VERSION;
-    //wp_register_script('ajax_solr_jwplayer',plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__), array(), $VERSION, false );
-    //wp_enqueue_script('ajax_solr_jwplayer');
+    wp_register_script('ajax_solr_item',plugins_url('/assets/js/item.js', __FILE__), array(), $VERSION, false );
+    wp_enqueue_script('ajax_solr_item');
 }

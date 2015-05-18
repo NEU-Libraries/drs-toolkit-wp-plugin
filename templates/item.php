@@ -41,7 +41,11 @@ get_header(); ?>
       <ul id="drs-selection" class="list-inline"></ul>
 
       <div id="drs-docs" class="row">
-        <div id="drs-docs-even" class="col-sm-12 col-md-6"></div>
+        <div id="drs-docs-even" class="col-sm-12 col-md-6">
+				<?php echo $title;
+
+				 ?>
+				</div>
         <div id="drs-docs-odd" class="col-sm-12 col-md-6"></div>
       </div>
 

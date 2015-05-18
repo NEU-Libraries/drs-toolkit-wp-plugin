@@ -16,6 +16,10 @@ function get_or_create_solr_doc( $wp_query, $pid ){
     try {
         //create json object from api
         $piddoc = new NUSolrDoc( $pid );
+        return $piddoc;
+        //print_r($piddoc->_data);
+        //print_r($piddoc->data);
+
     } catch (Exception $e) {
         //error
         $wp_query->is_404 = true;
@@ -43,6 +47,8 @@ class NUSolrDoc {
         $url = str_replace('{%Q%}', $q, $this->_query_url);
 
         $this->load_json_data( $url);
+        //print_r($this->load_json_data( $url));
+        return $this;
     }
 
     /**
@@ -92,8 +98,15 @@ class NUSolrDoc {
             //throw new NoResponseFromServer('There was a problem communicating with the solr database');
         }
         //just ploping this in for example
-        $data = "{\"title='Title'\":[\"test_pic.jpeg\"],\"title='Date created'\":[\"May 15, 2015\"],\"title='Type of resource'\":[\"Still image\"],\"title='Format'\":[\"Image\"],\"title='Abstract/Description'\":[\"Lorem Ipsum Lorem Ipsum Lorem Ipsum\"],\"title='Subjects and keywords'\":[[\"a\"],[\"content\"]]}";
-        echo $data;
+        $this->_data = "{\"title='Title'\":[\"test_pic.jpeg\"],\"title='Date created'\":[\"May 15, 2015\"],\"title='Type of resource'\":[\"Still image\"],\"title='Format'\":[\"Image\"],\"title='Abstract/Description'\":[\"Lorem Ipsum Lorem Ipsum Lorem Ipsum\"],\"title='Subjects and keywords'\":[[\"a\"],[\"content\"]]}";
+        echo $this->_data;
+        $this->_data = json_decode($this->_data);
+        //print_r($this->_data);
+        global $title;
+        $title = $this->_data->title='Title';
+        echo "title is " . $title;
+        return $title;
+
     }
 
     /**
