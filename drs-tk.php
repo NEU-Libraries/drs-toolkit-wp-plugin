@@ -4,6 +4,7 @@
  * Plugin URI:
  * Version: 0.1
  * Author: Eli Zoller
+ * Description: This plugin provides the core functionality of the DRS Project Toolkit and brings the content of a project from the DRS into Wordpress using the DRS API.
  */
 
 // Rewrite rules are not being reset when the plugin is deactivated
@@ -24,6 +25,46 @@ $SOLR_TEMPLATE = array(
      // Clear the permalinks after the post type has been registered
      drstk_rewrite_rule();
      flush_rewrite_rules();
+ }
+
+ add_action('admin_menu', 'drs_admin_add_page');
+ function drs_admin_add_page() {
+ add_options_page('Settings for DRS Toolkit Plugin', 'DRS Toolkit Plugin Settings', 'manage_options', 'drstk_admin_menu', 'drstk_display_settings');
+ }
+
+
+ function drstk_display_settings() {
+
+     $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'neu:000';
+
+
+     $html = '</pre>
+ <div class="wrap">
+ <form action="options.php" method="post" name="options">
+ <h2>Select Your Settings</h2>
+ ' . wp_nonce_field('update-options') . '
+ <table class="form-table" width="100%" cellpadding="10">
+ <tbody>
+ <tr>
+ <td scope="row" align="left">
+  <label>Project Collection ID</label>
+ <input name="drstk_collection" type="text" value="'.$collection_pid.'"></input>
+ <br/>
+ <small>Ie. If the URL to your collection is <a href="https://repository.library.northeastern.edu/collections/neu:6012">https://repository.library.northeastern.edu/collections/neu:6012</a> then the ID is neu:6012</small>
+ </td>
+ </tr>
+ </tbody>
+ </table>
+  <input type="hidden" name="action" value="update" />
+
+  <input type="hidden" name="page_options" value="drstk_collection" />
+
+  <input type="submit" name="Submit" value="Update" /></form></div>
+ <pre>
+ ';
+
+     echo $html;
+
  }
 
  function drstk_deactivation() {
