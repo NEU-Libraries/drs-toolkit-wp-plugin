@@ -27,16 +27,63 @@ $SOLR_TEMPLATE = array(
      flush_rewrite_rules();
  }
 
+ function get_media_images($collection_pid) {
+   echo $collection_pid;
+   echo "HELLO";
+
+   //first we get the existing images
+   $query_images_args = array(
+      'post_type' => 'attachment', 'post_mime_type' =>'image', 'post_status' => 'inherit', 'posts_per_page' => -1,
+    );
+
+    $query_images = new WP_Query( $query_images_args );
+    $images = array();
+    foreach ( $query_images->posts as $image) {
+        $images[]= basename(wp_get_attachment_url( $image->ID ));
+    }
+    //print_r($images);
+
+    //here we would make the API call to get the list of all the thumbnails
+    $url = "http://www.skyhdwallpaper.com/wp-content/uploads/2014/10/pear-fruit.jpg";
+    $basename = basename($url);
+    //echo $basename;
+
+    //if the image doesn't already exist then we add it in
+    if (!in_array($basename, $images)) {
+        $file = media_sideload_image( $url, 0 );
+    }
+  }
+
+
+//This function creates the settings page for entering the pid
  add_action('admin_menu', 'drs_admin_add_page');
  function drs_admin_add_page() {
- add_options_page('Settings for DRS Toolkit Plugin', 'DRS Toolkit Plugin Settings', 'manage_options', 'drstk_admin_menu', 'drstk_display_settings');
+   $hook = add_options_page('Settings for DRS Toolkit Plugin', 'DRS Toolkit', 'manage_options', 'drstk_admin_menu', 'drstk_display_settings');
+   add_action('load-'.$hook,'drstk_plugin_settings_save');
  }
 
+  function drstk_plugin_settings_save()
+  {
+    if(isset($_GET['settings-updated']) && $_GET['settings-updated'])
+     {
+        //plugin settings have been saved.
+        echo "WE SAVED";
+        $collection_pid = get_option('drstk_collection');
+        $sync_images = get_option('drstk_sync_images');
+        echo $collection_pid;
+        echo $sync_images;
+        //if ($sync_images == true) {
+        //sync checkbox doesn't work so we're calling the get images function every time settings are saved
+        get_media_images($collection_pid);
+        //}
+     }
+  }
 
+//this creates the form for entering the pid on the settings page
  function drstk_display_settings() {
 
      $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'neu:000';
-
+     $sync_images = get_option('drstk_sync_images');
 
      $html = '</pre>
  <div class="wrap">
@@ -51,6 +98,14 @@ $SOLR_TEMPLATE = array(
  <input name="drstk_collection" type="text" value="'.$collection_pid.'"></input>
  <br/>
  <small>Ie. If the URL to your collection is <a href="https://repository.library.northeastern.edu/collections/neu:6012">https://repository.library.northeastern.edu/collections/neu:6012</a> then the ID is neu:6012</small>
+ </td>
+ </tr>
+ <tr>
+ <td scope="row" align="left">
+ <label>Sync Images</label>
+ <input type="checkbox" value="true" name="drstk_sync_images"></input>
+ <br/>
+ <small>If you would like to sync images from the DRS, check the box.</small>
  </td>
  </tr>
  </tbody>
