@@ -7,9 +7,6 @@
  * Description: This plugin provides the core functionality of the DRS Project Toolkit and brings the content of a project from the DRS into Wordpress using the DRS API.
  */
 
-// Rewrite rules are not being reset when the plugin is deactivated
-// consider changing so as not to use init but instead something else
-
 require_once( plugin_dir_path( __FILE__ ) . 'inc/item.php' );
 
 $VERSION = '0.1.0';
@@ -86,37 +83,37 @@ $SOLR_TEMPLATE = array(
      $sync_images = get_option('drstk_sync_images');
 
      $html = '</pre>
- <div class="wrap">
- <form action="options.php" method="post" name="options">
- <h2>Select Your Settings</h2>
- ' . wp_nonce_field('update-options') . '
- <table class="form-table" width="100%" cellpadding="10">
- <tbody>
- <tr>
- <td scope="row" align="left">
-  <label>Project Collection ID</label>
- <input name="drstk_collection" type="text" value="'.$collection_pid.'"></input>
- <br/>
- <small>Ie. If the URL to your collection is <a href="https://repository.library.northeastern.edu/collections/neu:6012">https://repository.library.northeastern.edu/collections/neu:6012</a> then the ID is neu:6012</small>
- </td>
- </tr>
- <tr>
- <td scope="row" align="left">
- <label>Sync Images</label>
- <input type="checkbox" value="true" name="drstk_sync_images"></input>
- <br/>
- <small>If you would like to sync images from the DRS, check the box.</small>
- </td>
- </tr>
- </tbody>
- </table>
-  <input type="hidden" name="action" value="update" />
+     <div class="wrap">
+     <form action="options.php" method="post" name="options">
+     <h2>Select Your Settings</h2>
+     ' . wp_nonce_field('update-options') . '
+     <table class="form-table" width="100%" cellpadding="10">
+     <tbody>
+     <tr>
+     <td scope="row" align="left">
+      <label>Project Collection ID</label>
+     <input name="drstk_collection" type="text" value="'.$collection_pid.'"></input>
+     <br/>
+     <small>Ie. If the URL to your collection is <a href="https://repository.library.northeastern.edu/collections/neu:6012">https://repository.library.northeastern.edu/collections/neu:6012</a> then the ID is neu:6012</small>
+     </td>
+     </tr>
+     <tr>
+     <td scope="row" align="left">
+     <label>Sync Images</label>
+     <input type="checkbox" value="true" name="drstk_sync_images"></input>
+     <br/>
+     <small>If you would like to sync images from the DRS, check the box.</small>
+     </td>
+     </tr>
+     </tbody>
+     </table>
+      <input type="hidden" name="action" value="update" />
 
-  <input type="hidden" name="page_options" value="drstk_collection" />
+      <input type="hidden" name="page_options" value="drstk_collection" />
 
-  <input type="submit" name="Submit" value="Update" /></form></div>
- <pre>
- ';
+      <input type="submit" name="Submit" value="Update" /></form></div>
+     <pre>
+     ';
 
      echo $html;
 
@@ -196,9 +193,8 @@ function drstk_content_template( $template ) {
  */
 function drstk_browse_script() {
     global $VERSION;
-    wp_register_script('ajax_solr_browse', plugins_url('/assets/js/browse.js', __FILE__), array(), $VERSION, true );
-    wp_enqueue_script('ajax_solr_browse');
-    //wp_localize_script('ajax_solr_browse', 'ajax_solr_vars', array('proxy_url' => plugins_url('/inc/NUSolrProxy.php', __FILE__) ) );
+    wp_register_script('drstk_browse', plugins_url('/assets/js/browse.js', __FILE__), array(), $VERSION, true );
+    wp_enqueue_script('drstk_browse');
 }
 
 /**
@@ -206,6 +202,6 @@ function drstk_browse_script() {
  */
 function drstk_item_script() {
     global $VERSION;
-    wp_register_script('ajax_solr_item',plugins_url('/assets/js/item.js', __FILE__), array(), $VERSION, false );
-    wp_enqueue_script('ajax_solr_item');
+    wp_register_script('drstk_item',plugins_url('/assets/js/item.js', __FILE__), array(), $VERSION, false );
+    wp_enqueue_script('drstk_item');
 }
