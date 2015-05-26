@@ -197,8 +197,8 @@ function drstk_content_template( $template ) {
 function drstk_browse_script() {
     global $VERSION;
     wp_register_script('drstk_browse', plugins_url('/assets/js/browse.js', __FILE__), array(), $VERSION, true );
-    wp_register_script('drstk_bootstrap', plugins_url('/assets/js/bootstrap.min.js', __FILE__), array(), $VERSION, true );
-    wp_register_style( 'drstk_bootstrap_css', plugins_url('/assets/css/bootstrap.min.css', __FILE__) );
+    wp_register_script('drstk_bootstrap', plugins_url('/assets/bootstrap/dist/js/bootstrap.min.js', __FILE__), array(), $VERSION, true );
+    wp_register_style( 'drstk_bootstrap_css', plugins_url('/assets/bootstrap/dist/css/bootstrap.min.css', __FILE__) );
     wp_enqueue_script('drstk_browse');
     wp_enqueue_script('drstk_bootstrap');
     wp_enqueue_style('drstk_bootstrap_css');
@@ -210,8 +210,8 @@ function drstk_browse_script() {
 function drstk_item_script() {
     global $VERSION;
     wp_register_script('drstk_item',plugins_url('/assets/js/item.js', __FILE__), array(), $VERSION, false );
-    wp_register_script('drstk_bootstrap', plugins_url('/assets/js/bootstrap.min.js', __FILE__), array(), $VERSION, true );
-    wp_register_style( 'drstk_bootstrap_css', plugins_url('/assets/css/bootstrap.min.css', __FILE__) );
+    wp_register_script('drstk_bootstrap', plugins_url('/assets/bootstrap/dist/js/bootstrap.min.js', __FILE__), array(), $VERSION, true );
+    wp_register_style( 'drstk_bootstrap_css', plugins_url('/assets/bootstrap/dist/css/bootstrap.min.css', __FILE__) );
     wp_enqueue_script('drstk_item');
     wp_enqueue_script('drstk_bootstrap');
     wp_enqueue_style('drstk_bootstrap_css');
