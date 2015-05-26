@@ -26,7 +26,6 @@ $SOLR_TEMPLATE = array(
 
  function get_media_images($collection_pid) {
    echo $collection_pid;
-   echo "HELLO";
 
    //first we get the existing images
    $query_images_args = array(
@@ -72,10 +71,10 @@ $SOLR_TEMPLATE = array(
         $sync_images = get_option('drstk_sync_images');
         echo $collection_pid;
         echo $sync_images;
-        //if ($sync_images == true) {
+        if ($sync_images == true) {
         //sync checkbox doesn't work so we're calling the get images function every time settings are saved
-        get_media_images($collection_pid);
-        //}
+          get_media_images($collection_pid);
+        }
      }
   }
 
@@ -103,7 +102,11 @@ $SOLR_TEMPLATE = array(
      <tr>
      <td scope="row" align="left">
      <label>Sync Images</label>
-     <input type="checkbox" value="true" name="drstk_sync_images"></input>
+     <input type="checkbox" value="true" name="drstk_sync_images" ';
+     if ($sync_images == true) {
+       $html .= 'checked="checked"';
+     }
+     $html .= ' ></input>
      <br/>
      <small>If you would like to sync images from the DRS, check the box.</small>
      </td>
@@ -112,7 +115,7 @@ $SOLR_TEMPLATE = array(
      </table>
       <input type="hidden" name="action" value="update" />
 
-      <input type="hidden" name="page_options" value="drstk_collection" />
+      <input type="hidden" name="page_options" value="drstk_collection, drstk_sync_images" />
 
       <input type="submit" name="Submit" value="Update" /></form></div>
      <pre>
