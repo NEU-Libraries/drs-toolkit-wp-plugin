@@ -38,16 +38,19 @@ $SOLR_TEMPLATE = array(
     foreach ( $query_images->posts as $image) {
         $images[]= basename(wp_get_attachment_url( $image->ID ));
     }
-    //print_r($images);
 
     //here we would make the API call to get the list of all the thumbnails
-    $url = "http://www.skyhdwallpaper.com/wp-content/uploads/2014/10/pear-fruit.jpg";
+    $url = "https://repository.library.northeastern.edu/downloads/neu:345593?datastream_id=content";
+    $url = str_replace("?datastream_id=content", ".jpg", $url);
     $basename = basename($url);
-    //echo $basename;
+    echo $basename;
 
     //if the image doesn't already exist then we add it in
     if (!in_array($basename, $images)) {
         $file = media_sideload_image( $url, 0 );
+        if ( is_wp_error( $file ) ) {
+        echo $file->get_error_message();
+     }
     }
   }
 
@@ -194,7 +197,11 @@ function drstk_content_template( $template ) {
 function drstk_browse_script() {
     global $VERSION;
     wp_register_script('drstk_browse', plugins_url('/assets/js/browse.js', __FILE__), array(), $VERSION, true );
+    wp_register_script('drstk_bootstrap', plugins_url('/assets/js/bootstrap.min.js', __FILE__), array(), $VERSION, true );
+    wp_register_style( 'drstk_bootstrap_css', plugins_url('/assets/css/bootstrap.min.css', __FILE__) );
     wp_enqueue_script('drstk_browse');
+    wp_enqueue_script('drstk_bootstrap');
+    wp_enqueue_style('drstk_bootstrap_css');
 }
 
 /**
@@ -203,5 +210,9 @@ function drstk_browse_script() {
 function drstk_item_script() {
     global $VERSION;
     wp_register_script('drstk_item',plugins_url('/assets/js/item.js', __FILE__), array(), $VERSION, false );
+    wp_register_script('drstk_bootstrap', plugins_url('/assets/js/bootstrap.min.js', __FILE__), array(), $VERSION, true );
+    wp_register_style( 'drstk_bootstrap_css', plugins_url('/assets/css/bootstrap.min.css', __FILE__) );
     wp_enqueue_script('drstk_item');
+    wp_enqueue_script('drstk_bootstrap');
+    wp_enqueue_style('drstk_bootstrap_css');
 }
