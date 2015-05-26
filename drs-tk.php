@@ -12,7 +12,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/item.php' );
 $VERSION = '0.1.0';
 
 // Set template names here so we don't have to go into the code.
-$SOLR_TEMPLATE = array(
+$TEMPLATE = array(
     //'custom_template' => 'nusolr-template.php', //this attaches the plugin to the separate theme template
     'browse_template' => dirname(__FILE__) . '/templates/browse.php',
     'item_template' => dirname(__FILE__) . '/templates/item.php',
@@ -66,13 +66,9 @@ $SOLR_TEMPLATE = array(
     if(isset($_GET['settings-updated']) && $_GET['settings-updated'])
      {
         //plugin settings have been saved.
-        echo "WE SAVED";
         $collection_pid = get_option('drstk_collection');
         $sync_images = get_option('drstk_sync_images');
-        echo $collection_pid;
-        echo $sync_images;
         if ($sync_images == true) {
-        //sync checkbox doesn't work so we're calling the get images function every time settings are saved
           get_media_images($collection_pid);
         }
      }
@@ -163,7 +159,7 @@ $SOLR_TEMPLATE = array(
 add_filter('template_include', 'drstk_content_template', 1, 1);
 function drstk_content_template( $template ) {
     global $wp_query;
-    global $SOLR_TEMPLATE;
+    global $TEMPLATE;
 
     if ( isset($wp_query->query_vars['drstk_template_type']) ) {
 
@@ -173,7 +169,7 @@ function drstk_content_template( $template ) {
             add_action('wp_enqueue_scripts', 'drstk_browse_script');
             echo "template is browse";
             #return locate_template( array( 'view.php' ) );
-            return $SOLR_TEMPLATE['browse_template'];
+            return $TEMPLATE['browse_template'];
 
         }
 
@@ -183,9 +179,9 @@ function drstk_content_template( $template ) {
             #return locate_template( array( 'view.php' ) );
             $pid = get_query_var( 'pid' );
             echo "we are abotu to call get or create";
-            get_or_create_solr_doc( $wp_query, $pid );
+            get_or_create_doc( $wp_query, $pid );
 
-            return $SOLR_TEMPLATE['item_template'];
+            return $TEMPLATE['item_template'];
         }
 
     } else {
@@ -200,8 +196,8 @@ function drstk_content_template( $template ) {
 function drstk_browse_script() {
     global $VERSION;
     wp_register_script('drstk_browse', plugins_url('/assets/js/browse.js', __FILE__), array(), $VERSION, true );
-    wp_register_script('drstk_bootstrap', plugins_url('/assets/bootstrap/dist/js/bootstrap.min.js', __FILE__), array(), $VERSION, true );
-    wp_register_style( 'drstk_bootstrap_css', plugins_url('/assets/bootstrap/dist/css/bootstrap.min.css', __FILE__) );
+    wp_register_script('drstk_bootstrap', plugins_url('/assets/js/bootstrap.min.js', __FILE__), array(), $VERSION, true );
+    wp_register_style( 'drstk_bootstrap_css', plugins_url('/assets/css/bootstrap.min.css', __FILE__) );
     wp_enqueue_script('drstk_browse');
     wp_enqueue_script('drstk_bootstrap');
     wp_enqueue_style('drstk_bootstrap_css');
@@ -213,8 +209,8 @@ function drstk_browse_script() {
 function drstk_item_script() {
     global $VERSION;
     wp_register_script('drstk_item',plugins_url('/assets/js/item.js', __FILE__), array(), $VERSION, false );
-    wp_register_script('drstk_bootstrap', plugins_url('/assets/bootstrap/dist/js/bootstrap.min.js', __FILE__), array(), $VERSION, true );
-    wp_register_style( 'drstk_bootstrap_css', plugins_url('/assets/bootstrap/dist/css/bootstrap.min.css', __FILE__) );
+    wp_register_script('drstk_bootstrap', plugins_url('/assets/js/bootstrap.min.js', __FILE__), array(), $VERSION, true );
+    wp_register_style( 'drstk_bootstrap_css', plugins_url('/assets/css/bootstrap.min.css', __FILE__) );
     wp_enqueue_script('drstk_item');
     wp_enqueue_script('drstk_bootstrap');
     wp_enqueue_style('drstk_bootstrap_css');

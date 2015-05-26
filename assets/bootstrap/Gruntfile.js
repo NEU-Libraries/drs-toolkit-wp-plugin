@@ -130,7 +130,7 @@ module.exports = function (grunt) {
       },
       core: {
         src: '<%= concat.bootstrap.dest %>',
-        dest: 'dist/js/<%= pkg.name %>.min.js'
+        dest: '../js/<%= pkg.name %>.min.js'
       },
       customize: {
         src: configBridge.paths.customizerJs,
@@ -231,7 +231,7 @@ module.exports = function (grunt) {
       },
       minifyCore: {
         src: 'dist/css/<%= pkg.name %>.css',
-        dest: 'dist/css/<%= pkg.name %>.min.css'
+        dest: '../css/<%= pkg.name %>.min.css'
       },
       minifyTheme: {
         src: 'dist/css/<%= pkg.name %>-theme.css',

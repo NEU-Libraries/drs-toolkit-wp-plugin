@@ -5,7 +5,7 @@
  * Also includes a helper function for getting a video document or returning
  * a 404 message
  */
-function get_or_create_solr_doc( $wp_query, $pid ){
+function get_or_create_doc( $wp_query, $pid ){
     echo "WE MADE IT TO GET OR CREATE";
     global $piddoc;    // $solrdoc will be available to our theme templates
 
@@ -98,12 +98,12 @@ class NUSolrDoc {
             //throw new NoResponseFromServer('There was a problem communicating with the solr database');
         }
         //just ploping this in for example
-        $this->_data = "{\"title='Title'\":[\"test_pic.jpeg\"],\"title='Date created'\":[\"May 15, 2015\"],\"title='Type of resource'\":[\"Still image\"],\"title='Format'\":[\"Image\"],\"title='Abstract/Description'\":[\"Lorem Ipsum Lorem Ipsum Lorem Ipsum\"],\"title='Subjects and keywords'\":[[\"a\"],[\"content\"]]}";
+        $this->_data = "{\"title='TitleTitleTitle'\":[\"test_pic.jpeg\"],\"title='Date created'\":[\"May 15, 2015\"],\"title='Type of resource'\":[\"Still image\"],\"title='Format'\":[\"Image\"],\"title='Abstract/Description'\":[\"Lorem Ipsum Lorem Ipsum Lorem Ipsum\"],\"title='Subjects and keywords'\":[[\"a\"],[\"content\"]]}";
         echo $this->_data;
         $this->_data = json_decode($this->_data);
         //print_r($this->_data);
         global $title;
-        $title = $this->_data->title='Title';
+        $title = $this->_data->title='TitleTitleTitle';
         echo "title is " . $title;
         return $title;
 
