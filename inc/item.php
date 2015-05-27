@@ -2,8 +2,6 @@
 /**
  * get single record from DRS
  *
- * Also includes a helper function for getting a video document or returning
- * a 404 message
  */
 function get_or_create_doc( $wp_query, $pid ){
     echo "WE MADE IT TO GET OR CREATE";
@@ -31,7 +29,6 @@ class NUSolrDoc {
 
     protected $pid = '';
     protected $_data = array();
-    private $_query_url = 'http://libtomcat.neu.edu:8080/solr/fedora/select/?q={%Q%}&version=2.2&start=0&rows=1&wt=json';
 
     public function __construct($pid, $query_base = '') {
 
