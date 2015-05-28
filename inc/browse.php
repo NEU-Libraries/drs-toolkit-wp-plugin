@@ -4,7 +4,9 @@ add_action( 'wp_ajax_nopriv_get_browse', 'my_ajax_handler' );
 function my_ajax_handler() {
     // Handle the ajax request
     check_ajax_referer( 'browse_drs' );
-    $url = "http://cerberus.library.northeastern.edu/api/v1/search?";
+    $collection = get_option('drstk_collection');
+    //put error check here if no collection entered
+    $url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection."?";
     if ($_POST['query'] ){
       $url .= "q=". $_POST['query'];
     }

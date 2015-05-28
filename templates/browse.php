@@ -48,7 +48,7 @@ get_header(); ?>
     </div>
 
     <div class="col-sm-4 col-md-3">
-      <div id="drs-tag-cloud" class="hidden panel panel-default"></div>
+      <div id="drs-facets" class="panel panel-default"></div>
     </div>
 
   </div><!-- .row -->

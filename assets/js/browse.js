@@ -15,8 +15,8 @@ jQuery(document).ready(function($) {
   }, function(data) {                    //callback
       console.log(data);              //insert server response
       var data = $.parseJSON(data);
-      pagination(data.pagination.table);
-
+      paginate(data.pagination.table);//send to paginate function
+      facetize(data.response.facet_counts);//send to facetize function
 
   }).fail(function() {
     console.log("there was an error");
@@ -24,7 +24,7 @@ jQuery(document).ready(function($) {
 
 
   //parses pagination data
-  function pagination(data){
+  function paginate(data){
     $("#drs-pagination-header").html("Displaying " + data.start + " to " + data.end + " of " + data.total_count);
     if (data.num_pages > 1) {
       var pagination = "<li><span class='pager-prev'><<</span></li>";
@@ -40,5 +40,32 @@ jQuery(document).ready(function($) {
       pagination += "<li><span class='pager-next'><<</span></li>";
       $("#drs-pagination").html(pagination);
     }
-  }
-});
+  }//end paginate
+
+  //parses facet data
+  function facetize(data){
+    console.log(data.facet_fields);
+    var facet_html = '';
+    $.each(data.facet_fields, function(facet, facet_vals){
+      var facet_name = facet; //need to prettize this
+      var facet_values = '';
+      if (facet_vals.length > 0) {
+        var this_facet, this_facet_name;
+        $.each(facet_vals, function(index, val_q) {
+          if (index % 2 != 0) { //odd index means it is a count for a specific facet value
+            var this_facet_count = val_q;
+          } else { //even or 0 index means it is a name of a facet value
+            this_facet_name = val_q;
+          }
+          if (this_facet_count != undefined) {
+            this_facet = "<a href='#' class='list-group-item'><span class='badge'>"+this_facet_count+"</span>"+this_facet_name+"</a>";
+            facet_values += this_facet;
+          }
+        });
+        facet_html += "<div class='panel-heading'>" + facet_name + "</div><div id='drs_"+facet_name+"' class='list_group'>"+facet_values+"</div>";
+      }
+    });
+    $("#drs-facets").html(facet_html);
+  }//end facetize
+
+});//end doc ready
