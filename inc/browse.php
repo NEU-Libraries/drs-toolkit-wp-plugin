@@ -8,10 +8,13 @@ function my_ajax_handler() {
     if ($_POST['query'] ){
       $url .= "q=". $_POST['query'];
     }
+    if ($_POST['per_page']) {
+      $url .= "&per_page=" . $_POST['per_page'];
+    }
     $data = get_response($url);
 
 
-    wp_send_json( "this is my first attempt at json" . $data );
+    wp_send_json($data);
 }
 
 
