@@ -13,6 +13,9 @@ function my_ajax_handler() {
     if ($_POST['per_page']) {
       $url .= "&per_page=" . $_POST['per_page'];
     }
+    if ($_POST['page']) {
+      $url .= "&page=" . $_POST['page'];
+    }
     $data = get_response($url);
 
 

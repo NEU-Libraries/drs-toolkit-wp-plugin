@@ -4,19 +4,25 @@ jQuery(document).ready(function($) {
   //where will we get all of the varaibles from? the URL params? or from clicks??
   var q = 'lorem';
   var per_page = 2;
-  var page = 1;
-  $.post(browse_obj.ajax_url, {         //POST request
-     _ajax_nonce: browse_obj.nonce,     //nonce
-      action: "get_browse",            //action
+  var page = 3;
+  $.post(browse_obj.ajax_url, {
+     _ajax_nonce: browse_obj.nonce,
+      action: "get_browse",
       query: q,
       per_page: per_page,
       page: page,
-                       //data
-  }, function(data) {                    //callback
-      console.log(data);              //insert server response
+
+  }, function(data) {
       var data = $.parseJSON(data);
-      paginate(data.pagination.table);//send to paginate function
-      facetize(data.response.facet_counts);//send to facetize function
+      //what happens when the API returns an error??
+      if (data.response.response.numFound > 0) {
+        paginate(data.pagination.table);//send to paginate function
+        facetize(data.response.facet_counts);//send to facetize function
+        resultize(data.response.response);//send to resultize function
+        //handle sorting
+      } else {
+        $("#drs-content").html("Your query produced no results. Please go back and try a different query. Thanks!");
+      }
 
   }).fail(function() {
     console.log("there was an error");
@@ -38,13 +44,13 @@ jQuery(document).ready(function($) {
         pagination += "</li>";
       }
       pagination += "<li><span class='pager-next'><<</span></li>";
+      //add handling disabling of prev and next based on if first or last page
       $("#drs-pagination").html(pagination);
     }
   }//end paginate
 
   //parses facet data
   function facetize(data){
-    console.log(data.facet_fields);
     var facet_html = '';
     $.each(data.facet_fields, function(facet, facet_vals){
       var facet_name = facet; //need to prettize this
@@ -67,5 +73,25 @@ jQuery(document).ready(function($) {
     });
     $("#drs-facets").html(facet_html);
   }//end facetize
+
+  //parses actual results
+  function resultize(data){
+    var docs_html = '';
+    $.each(data.docs, function(doc, doc_vals){
+      var title, abstract = '';
+      var thumbnail = [];
+      doc_vals.title_ssi? title = doc_vals.title_ssi : "";
+      doc_vals.abstract_tesim? abstract = doc_vals.abstract_tesim : "";
+      doc_vals.thumbnail_list_tesim? thumbnail = doc_vals.thumbnail_list_tesim : "";
+      //insert images in a responsive way based on thumbnails
+      var this_doc = "<div class='media'><h4>" + title + "</h4><p>" + abstract + "</p>";
+      if (thumbnail[0]) {
+        this_doc += "<img src='http://cerberus.library.northeastern.edu"+thumbnail[0]+"' />";
+      }
+      this_doc += "</div>";
+      docs_html += this_doc;
+    });
+    $("#drs-docs").html(docs_html);
+  }//end resultize
 
 });//end doc ready

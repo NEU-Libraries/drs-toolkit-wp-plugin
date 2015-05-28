@@ -11,7 +11,7 @@ get_header(); ?>
 
 
 
-<div class="container-fluid">
+<div class="container-fluid" id="drs-content">
   <div id="drs-browse-header-row" class="row">
     <div class="col-sm-8 col-md-9">
       <div class="row">
