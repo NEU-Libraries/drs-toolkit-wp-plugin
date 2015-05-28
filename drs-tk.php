@@ -8,6 +8,7 @@
  */
 
 require_once( plugin_dir_path( __FILE__ ) . 'inc/item.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'inc/browse.php' );
 
 $VERSION = '0.1.0';
 
@@ -169,6 +170,7 @@ function drstk_content_template( $template ) {
             add_action('wp_enqueue_scripts', 'drstk_browse_script');
             echo "template is browse";
             #return locate_template( array( 'view.php' ) );
+            //get_or_create_query($wp_query);
             return $TEMPLATE['browse_template'];
 
         }
@@ -195,12 +197,18 @@ function drstk_content_template( $template ) {
  */
 function drstk_browse_script() {
     global $VERSION;
-    wp_register_script('drstk_browse', plugins_url('/assets/js/browse.js', __FILE__), array(), $VERSION, true );
-    wp_register_script('drstk_bootstrap', plugins_url('/assets/js/bootstrap.min.js', __FILE__), array(), $VERSION, true );
-    wp_register_style( 'drstk_bootstrap_css', plugins_url('/assets/css/bootstrap.min.css', __FILE__) );
-    wp_enqueue_script('drstk_browse');
-    wp_enqueue_script('drstk_bootstrap');
-    wp_enqueue_style('drstk_bootstrap_css');
+    //this enqueues the JS file
+    wp_enqueue_script( 'drstk_browse',
+        plugins_url( '/assets/js/browse.js', __FILE__ ),
+        array( 'jquery' )
+    );
+    //this creates a unique nonce to pass back and forth from js/php to protect
+    $browse_nonce = wp_create_nonce( 'browse_drs' );
+    //this allows an ajax call from browse.js
+    wp_localize_script( 'drstk_browse', 'browse_obj', array(
+       'ajax_url' => admin_url( 'admin-ajax.php' ),
+       'nonce'    => $browse_nonce,
+    ) );
 }
 
 /**
@@ -208,10 +216,6 @@ function drstk_browse_script() {
  */
 function drstk_item_script() {
     global $VERSION;
-    wp_register_script('drstk_item',plugins_url('/assets/js/item.js', __FILE__), array(), $VERSION, false );
-    wp_register_script('drstk_bootstrap', plugins_url('/assets/js/bootstrap.min.js', __FILE__), array(), $VERSION, true );
-    wp_register_style( 'drstk_bootstrap_css', plugins_url('/assets/css/bootstrap.min.css', __FILE__) );
+    wp_register_script('drstk_item',plugins_url('/assets/js/item.js', __FILE__), array('jquery'), $VERSION, false );
     wp_enqueue_script('drstk_item');
-    wp_enqueue_script('drstk_bootstrap');
-    wp_enqueue_style('drstk_bootstrap_css');
 }
