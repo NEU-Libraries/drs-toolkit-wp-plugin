@@ -28,7 +28,7 @@ jQuery(document).ready(function($) {
           paginate(data.pagination.table);//send to paginate function
           facetize(data.response.facet_counts);//send to facetize function
           resultize(data.response.response);//send to resultize function
-          //handle sorting
+          //handle sorting //&sort=title_info_title_ssi%20desc
           clickable(data);
           $("#drs-selection").html(selection_html);
         } else {
@@ -128,6 +128,8 @@ jQuery(document).ready(function($) {
       get_data(params);
       selection_html += params.q;
     });
+    //handle facet on clicks
+    //http://cerberus.library.northeastern.edu/api/v1/search/neu:pn89dh14k?f[type_sim][]=Text
   }
 
 });//end doc ready

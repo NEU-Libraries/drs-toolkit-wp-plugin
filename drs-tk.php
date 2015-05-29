@@ -9,6 +9,7 @@
 
 require_once( plugin_dir_path( __FILE__ ) . 'inc/item.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/browse.php' );
+define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
 
 $VERSION = '0.1.0';
 
@@ -26,32 +27,75 @@ $TEMPLATE = array(
  }
 
  function get_media_images($collection_pid) {
-   echo $collection_pid;
+   //echo $collection_pid;
 
    //first we get the existing images
    $query_images_args = array(
       'post_type' => 'attachment', 'post_mime_type' =>'image', 'post_status' => 'inherit', 'posts_per_page' => -1,
     );
-
-    $query_images = new WP_Query( $query_images_args );
-    $images = array();
-    foreach ( $query_images->posts as $image) {
-        $images[]= basename(wp_get_attachment_url( $image->ID ));
+   $query_images = new WP_Query( $query_images_args );
+   $images = array();
+   foreach ( $query_images->posts as $image) {
+      $images[]= basename(wp_get_attachment_url( $image->ID ));
+   }
+    //print_r($images);
+    //get all the core_files from the drs
+    $drs_url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection_pid."?per_page=20";
+    //will there be some kind of helper with the api to get them all back at once? don't want to waste time writing a function that would loop through the pages of results
+    $json = get_response($drs_url);
+    //print_r($json);
+    $json = json_decode($json);
+    if ($json->response->response->numFound > 0) {
+        foreach($json->response->response->docs as $doc) {
+          if ($doc->active_fedora_model_ssi == "CoreFile") {
+            $title = $doc->title_ssi;
+            $url = "http://cerberus.library.northeastern.edu" . end($doc->fields_thumbnail_list_tesim);
+            //$url = str_replace("thumbnail_1","content", $url);
+            echo $url;
+            process_image($url, $images);
+          }
+        }
     }
+  }
 
-    //here we would make the API call to get the list of all the thumbnails
-    $url = "https://repository.library.northeastern.edu/downloads/neu:345593?datastream_id=content";
-    $url = str_replace("?datastream_id=content", ".jpg", $url);
-    $basename = basename($url);
-    echo $basename;
+  function process_image($url, $images){
+    //$url = "https://repository.library.northeastern.edu/downloads/neu:345593?datastream_id=content";
+    $pid = explode("/", $url);
+    $pid = explode("?", end($pid));
+    $pid = str_replace(":","",$pid[0]);
+    echo $pid;
+    if (!in_array($pid, $images)){
+      $tmp = download_url( $url );
+      $post_id = 0;
+      $desc = "The WordPress Logo";
+      $file_array = array();
 
-    //if the image doesn't already exist then we add it in
-    if (!in_array($basename, $images)) {
-        $file = media_sideload_image( $url, 0 );
-        echo $file;
-        if ( is_wp_error( $file ) ) {
-        echo $file->get_error_message();
-     }
+      // Set variables for storage
+      $file_array['name'] = $pid;
+      $file_array['type'] = 'image/jpeg';
+      $file_array['error'] = 0;
+      $file_array['tmp_name'] = $tmp;
+      $file_array['size'] = filesize($tmp);
+      //print_r($file_array);
+
+      // If error storing temporarily, unlink
+      if ( is_wp_error( $tmp ) ) {
+        @unlink($file_array['tmp_name']);
+        $file_array['tmp_name'] = '';
+      }
+
+      // do the validation and storage stuff
+      $id = media_handle_sideload( $file_array, 0);
+      echo $id . "<br/>";
+
+      // If error storing permanently, unlink
+      if ( is_wp_error($id) ) {
+        @unlink($file_array['tmp_name']);
+        return $id;
+      }
+
+      $src = wp_get_attachment_url( $id );
+      echo $src . "<br/>";
     }
   }
 
