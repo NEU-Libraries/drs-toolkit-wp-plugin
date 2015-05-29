@@ -36,7 +36,8 @@ jQuery(document).ready(function($) {
 
   //parses pagination data
   function paginate(data){
-    $("#drs-pagination-header").html("Displaying " + data.start + " to " + data.end + " of " + data.total_count);
+    $("#drs-pagination-header").html("Displaying " + data.start + " to " + data.end + " of " + data.total_count + " <br/>Show <select id='drs-per-page'><option val='2'>2</option><option val='5'>5</option><option val='10'>10</option></select> per page");
+    $("#drs-per-page").val(params.per_page);
     if (data.num_pages > 1) {
       var pagination = "<li><span class='pager-prev'><<</span></li>";
       for (var i = 1; i <= data.num_pages; i++) {
@@ -69,7 +70,7 @@ jQuery(document).ready(function($) {
             this_facet_name = val_q;
           }
           if (this_facet_count != undefined) {
-            this_facet = "<a href='#' class='list-group-item'><span class='badge'>"+this_facet_count+"</span>"+this_facet_name+"</a>";
+            this_facet = "<a href='#' class='list-group-item'>"+this_facet_name+"<span class='badge'>"+this_facet_count+"</span></a>";
             facet_values += this_facet;
           }
         });
@@ -105,7 +106,12 @@ jQuery(document).ready(function($) {
       params.page = $(this).html();
       get_data(params);
     });
-    
+    $("#drs-per-page").on("change", function(){
+      params.per_page = $(this).val();
+      params.page = 1;
+      get_data(params);
+    });
+
   }
 
 });//end doc ready
