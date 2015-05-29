@@ -48,6 +48,7 @@ $TEMPLATE = array(
     //if the image doesn't already exist then we add it in
     if (!in_array($basename, $images)) {
         $file = media_sideload_image( $url, 0 );
+        echo $file;
         if ( is_wp_error( $file ) ) {
         echo $file->get_error_message();
      }

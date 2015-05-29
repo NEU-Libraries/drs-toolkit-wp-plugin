@@ -1,32 +1,37 @@
 console.log("We're browsing")
 jQuery(document).ready(function($) {
   console.log("we're browsing and ready");
-  //where will we get all of the varaibles from? the URL params? or from clicks??
   var q = 'lorem';
   var per_page = 2;
   var page = 3;
-  $.post(browse_obj.ajax_url, {
-     _ajax_nonce: browse_obj.nonce,
-      action: "get_browse",
-      query: q,
-      per_page: per_page,
-      page: page,
+  var params = {q:q, per_page:per_page, page:page};
+  get_data(params);
+  //where will we get all of the varaibles from? the URL params? or from clicks??
+  function get_data(params){
+    $.post(browse_obj.ajax_url, {
+       _ajax_nonce: browse_obj.nonce,
+        action: "get_browse",
+        query: params.q,
+        per_page: params.per_page,
+        page: params.page,
 
-  }, function(data) {
-      var data = $.parseJSON(data);
-      //what happens when the API returns an error??
-      if (data.response.response.numFound > 0) {
-        paginate(data.pagination.table);//send to paginate function
-        facetize(data.response.facet_counts);//send to facetize function
-        resultize(data.response.response);//send to resultize function
-        //handle sorting
-      } else {
-        $("#drs-content").html("Your query produced no results. Please go back and try a different query. Thanks!");
-      }
+    }, function(data) {
+        var data = $.parseJSON(data);
+        //what happens when the API returns an error??
+        if (data.response.response.numFound > 0) {
+          paginate(data.pagination.table);//send to paginate function
+          facetize(data.response.facet_counts);//send to facetize function
+          resultize(data.response.response);//send to resultize function
+          //handle sorting
+          clickable(data);
+        } else {
+          $("#drs-content").html("Your query produced no results. Please go back and try a different query. Thanks!");
+        }
 
-  }).fail(function() {
-    console.log("there was an error");
-  });
+    }).fail(function() {
+      console.log("there was an error");
+    });
+  }
 
 
   //parses pagination data
@@ -93,5 +98,14 @@ jQuery(document).ready(function($) {
     });
     $("#drs-docs").html(docs_html);
   }//end resultize
+
+  function clickable(data){
+    $("#drs-pagination a").on("click", function(e){
+      e.preventDefault();
+      params.page = $(this).html();
+      get_data(params);
+    });
+    
+  }
 
 });//end doc ready
