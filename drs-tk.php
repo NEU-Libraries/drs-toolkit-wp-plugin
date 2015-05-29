@@ -139,6 +139,7 @@ $TEMPLATE = array(
      add_rewrite_rule('^browse/?$',
          'index.php?post_type=drs&drstk_template_type=browse',
          'top');
+     add_rewrite_rule('^search/?$', 'index.php?post_type=drs&drstk_template_type=search', 'top');
      add_rewrite_rule('^item/?$', 'index.php?post_type=drs&drstk_template_type=item', 'top');
 
  }
@@ -167,9 +168,9 @@ function drstk_content_template( $template ) {
 
         $template_type = $wp_query->query_vars['drstk_template_type'];
 
-        if ($template_type == 'browse') {
+        if ($template_type == 'browse' || $template_type == 'search') {
             add_action('wp_enqueue_scripts', 'drstk_browse_script');
-            echo "template is browse";
+            //echo $template_type;
             #return locate_template( array( 'view.php' ) );
             //get_or_create_query($wp_query);
             return $TEMPLATE['browse_template'];
@@ -178,10 +179,10 @@ function drstk_content_template( $template ) {
 
         if ($template_type == 'item') {
             add_action('wp_enqueue_scripts', 'drstk_item_script');
-            echo "template is item";
+            //echo "template is item";
             #return locate_template( array( 'view.php' ) );
             $pid = get_query_var( 'pid' );
-            echo "we are abotu to call get or create";
+            //echo "we are abotu to call get or create";
             get_or_create_doc( $wp_query, $pid );
 
             return $TEMPLATE['item_template'];
@@ -197,18 +198,21 @@ function drstk_content_template( $template ) {
  *
  */
 function drstk_browse_script() {
+    global $wp_query;
     global $VERSION;
     //this enqueues the JS file
     wp_enqueue_script( 'drstk_browse',
         plugins_url( '/assets/js/browse.js', __FILE__ ),
         array( 'jquery' )
     );
+    wp_enqueue_style( 'drstk_browse_style', plugins_url('/assets/css/browse.css', __FILE__));
     //this creates a unique nonce to pass back and forth from js/php to protect
     $browse_nonce = wp_create_nonce( 'browse_drs' );
     //this allows an ajax call from browse.js
     wp_localize_script( 'drstk_browse', 'browse_obj', array(
        'ajax_url' => admin_url( 'admin-ajax.php' ),
        'nonce'    => $browse_nonce,
+       'template' => $wp_query->query_vars['drstk_template_type'],
     ) );
 }
 

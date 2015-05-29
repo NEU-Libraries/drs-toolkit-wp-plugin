@@ -6,6 +6,11 @@ jQuery(document).ready(function($) {
   var page = 3;
   var params = {q:q, per_page:per_page, page:page};
   get_data(params);
+  var template = browse_obj.template;
+  console.log(template);
+  if (template == 'search') {
+    $("#drs-search").show();
+  }
   //where will we get all of the varaibles from? the URL params? or from clicks??
   function get_data(params){
     $.post(browse_obj.ajax_url, {
@@ -39,17 +44,22 @@ jQuery(document).ready(function($) {
     $("#drs-pagination-header").html("Displaying " + data.start + " to " + data.end + " of " + data.total_count + " <br/>Show <select id='drs-per-page'><option val='2'>2</option><option val='5'>5</option><option val='10'>10</option></select> per page");
     $("#drs-per-page").val(params.per_page);
     if (data.num_pages > 1) {
-      var pagination = "<li><span class='pager-prev'><<</span></li>";
+      var pagination = "<li><a href='#'><<</a></li>";
       for (var i = 1; i <= data.num_pages; i++) {
-        pagination += "<li>";
+        if (data.current_page == i){
+          var pagination_class = 'active';
+        } else {
+          var pagination_class = '';
+        }
+        pagination += "<li class='"+pagination_class+"'>";
         if (data.current_page == i) {
-          pagination += "<span class='pager-current'>" + i + "</span>";
+          pagination += "<span>" + i + "</span>";
         } else {
           pagination += "<a href='#'>" + i + "</a>";
         }
         pagination += "</li>";
       }
-      pagination += "<li><span class='pager-next'><<</span></li>";
+      pagination += "<li><a href='#'>>></a></li>";
       //add handling disabling of prev and next based on if first or last page
       $("#drs-pagination").html(pagination);
     }

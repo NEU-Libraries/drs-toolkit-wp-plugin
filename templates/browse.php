@@ -11,28 +11,14 @@ get_header(); ?>
 
 
 
-<div class="container-fluid" id="drs-content">
-  <div id="drs-browse-header-row" class="row">
-    <div class="col-sm-8 col-md-9">
-      <div class="row">
-        <div class="col-sm-12 col-md-5">
-          <h1 id="drs-pagination-header"></h1>
-        </div>
-        <div class="col-sm-12 col-md-7">
-          <div>
-            <ul id="drs-pagination"></ul>
-          </div>
-        </div>
-      </div>
+<div id="drs-content">
+  <div id="drs-browse-header-row">
+    <h2 id="drs-pagination-header"></h2>
+    <ul id="drs-pagination"></ul>
+    <div id="drs-search" class="hidden">
+      <label for="drs-input" class="sr-only">Search:</label>
+      <input id="drs-input" name="drs-input" autocomplete="off" type="text" placeholder="Enter search term">
     </div>
-
-    <div class="col-sm-4 col-md-3">
-      <div id="drs-search" class="form-group hidden">
-        <label for="drs-input" class="sr-only">Search:</label>
-        <input id="drs-input" name="drs-input" autocomplete="off" type="text" placeholder="Enter search term">
-      </div>
-    </div>
-
   </div><!-- .row -->
 
   <div class="row">
