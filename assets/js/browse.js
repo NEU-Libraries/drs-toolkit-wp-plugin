@@ -1,9 +1,9 @@
 console.log("We're browsing")
 jQuery(document).ready(function($) {
   console.log("we're browsing and ready");
-  var q = 'lorem';
+  var q = '';
   var per_page = 2;
-  var page = 3;
+  var page = 1;
   var params = {q:q, per_page:per_page, page:page};
   get_data(params);
   var template = browse_obj.template;
