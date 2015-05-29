@@ -18,6 +18,7 @@ get_header(); ?>
     <div id="drs-search" class="hidden">
       <label for="drs-input" class="sr-only">Search:</label>
       <input id="drs-input" name="drs-input" autocomplete="off" type="text" placeholder="Enter search term">
+			<input type="submit" value="Search" />
     </div>
   </div><!-- #drs-browse-header-row -->
   <ul id="drs-selection"></ul>

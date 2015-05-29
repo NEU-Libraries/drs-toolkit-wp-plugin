@@ -121,7 +121,10 @@ jQuery(document).ready(function($) {
       params.page = 1;
       get_data(params);
     });
-
+    $("#drs-search input[type='submit']").on("click", function() {
+      params.q = $("#drs-input").val();
+      get_data(params);
+    });
   }
 
 });//end doc ready
