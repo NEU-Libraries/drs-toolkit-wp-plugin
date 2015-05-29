@@ -11,7 +11,8 @@ jQuery(document).ready(function($) {
   if (template == 'search') {
     $("#drs-search").show();
   }
-  //where will we get all of the varaibles from? the URL params? or from clicks??
+  var selection_html = '';
+  //where will we get all of the variables from? the URL params? or from clicks??
   function get_data(params){
     $.post(browse_obj.ajax_url, {
        _ajax_nonce: browse_obj.nonce,
@@ -29,6 +30,7 @@ jQuery(document).ready(function($) {
           resultize(data.response.response);//send to resultize function
           //handle sorting
           clickable(data);
+          $("#drs-selection").html(selection_html);
         } else {
           $("#drs-content").html("Your query produced no results. Please go back and try a different query. Thanks!");
         }
@@ -124,6 +126,7 @@ jQuery(document).ready(function($) {
     $("#drs-search input[type='submit']").on("click", function() {
       params.q = $("#drs-input").val();
       get_data(params);
+      selection_html += params.q;
     });
   }
 
