@@ -1,12 +1,19 @@
 <?php
-add_action( 'wp_ajax_get_browse', 'my_ajax_handler' );
-add_action( 'wp_ajax_nopriv_get_browse', 'my_ajax_handler' );
+add_action( 'wp_ajax_get_browse', 'my_ajax_handler' ); //for auth users
+add_action( 'wp_ajax_nopriv_get_browse', 'my_ajax_handler' ); //for nonauth users
 function my_ajax_handler() {
-    // Handle the ajax request
-    check_ajax_referer( 'browse_drs' );
-    $collection = get_option('drstk_collection');
-    //if ($collection == '' || $collection == NULL)
-    //put error check here if no collection entered
+  // Handle the ajax request
+  check_ajax_referer( 'browse_drs' );
+  $collection = get_option('drstk_collection');
+  if ($collection == '' || $collection == NULL) {
+      $data = array('error'=>'Please enter a correct collection or community id in order to configure the search and browse functionality. Please proceed to /wp-admin to enter a Collection id');
+      $data = json_encode($data);
+      wp_send_json($data);
+  } elseif ($collection == "neu:1") {
+    $data = array('error'=>'Please enter a correct collection or community id in order to configure the search and browse functionality. Please proceed to /wp-admin to enter a Collection id');
+    $data = json_encode($data);
+    wp_send_json($data);
+  } else {
     $url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection."?";
     if ($_POST['query'] ){
       $url .= "q=". $_POST['query'];
@@ -23,17 +30,12 @@ function my_ajax_handler() {
       }
     }
     if ($_POST['sort']) {
-      //foreach($_POST['sort'] as $sort=>$sort_order){
-        //$url .= "&sort=" . $sort . " " . $sort_order;
-      //}
       $url .= "&sort=" . $_POST['sort'];
     }
     $data = get_response($url);
 
     wp_send_json($data);
-    //  $data = array('url'=>$url, 'f'=>$_POST['f']);
-    //  $data = json_encode($data);
-    //  wp_send_json($data);
+  }
 }
 
 

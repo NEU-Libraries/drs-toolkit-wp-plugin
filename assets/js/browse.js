@@ -24,7 +24,7 @@ jQuery(document).ready(function($) {
     }, function(data) {
         var data = $.parseJSON(data);
         if (data.error) {
-          $("#drs-content").html("Your query produced no results. Please go back and try a different query. Thanks!");
+          $("#drs-content").html("Your query produced no results. The error received was '"+data.error+"'. Thanks!");
         } else if (data.response.response.numFound > 0) {
           paginate(data.pagination.table);//send to paginate function
           facetize(data.response.facet_counts);//send to facetize function

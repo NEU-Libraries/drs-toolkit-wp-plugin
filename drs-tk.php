@@ -132,7 +132,7 @@ $TEMPLATE = array(
 //this creates the form for entering the pid on the settings page
  function drstk_display_settings() {
 
-     $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'neu:000';
+     $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'neu:1';
      $sync_images = get_option('drstk_sync_images');
 
      $html = '</pre>
