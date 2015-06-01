@@ -16,10 +16,17 @@ function my_ajax_handler() {
     if ($_POST['page']) {
       $url .= "&page=" . $_POST['page'];
     }
+    if ($_POST['f']) {
+      foreach($_POST['f'] as $facet=>$facet_val){
+        $url .= "&f[" . $facet . "][]=" . $facet_val;
+      }
+    }
     $data = get_response($url);
 
-
     wp_send_json($data);
+    //  $data = array('url'=>$url, 'f'=>$_POST['f']);
+    //  $data = json_encode($data);
+    //  wp_send_json($data);
 }
 
 

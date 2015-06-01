@@ -15,7 +15,7 @@ get_header(); ?>
   <div id="drs-browse-header-row">
     <h2 id="drs-pagination-header"></h2>
     <ul id="drs-pagination"></ul>
-    <div id="drs-search" class="hidden">
+    <div id="drs-search"><!-- class="hidden" this class will depend on theme-->
       <label for="drs-input" class="sr-only">Search:</label>
       <input id="drs-input" name="drs-input" autocomplete="off" type="text" placeholder="Enter search term">
 			<input type="submit" value="Search" />

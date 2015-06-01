@@ -1,28 +1,28 @@
-console.log("We're browsing")
 jQuery(document).ready(function($) {
-  console.log("we're browsing and ready");
   var q = '';
   var per_page = 2;
   var page = 1;
-  var params = {q:q, per_page:per_page, page:page};
+  var f = {};
+  var params = {q:q, per_page:per_page, page:page, f:f};
   get_data(params);
   var template = browse_obj.template;
-  console.log(template);
   if (template == 'search') {
     $("#drs-search").show();
   }
-  var selection_html = '';
   //where will we get all of the variables from? the URL params? or from clicks??
   function get_data(params){
+    console.log("get data called");
     $.post(browse_obj.ajax_url, {
        _ajax_nonce: browse_obj.nonce,
         action: "get_browse",
         query: params.q,
         per_page: params.per_page,
         page: params.page,
+        f: params.f,
 
     }, function(data) {
         var data = $.parseJSON(data);
+        //console.log(data);
         //what happens when the API returns an error??
         if (data.response.response.numFound > 0) {
           paginate(data.pagination.table);//send to paginate function
@@ -30,13 +30,13 @@ jQuery(document).ready(function($) {
           resultize(data.response.response);//send to resultize function
           //handle sorting //&sort=title_info_title_ssi%20desc
           clickable(data);
-          $("#drs-selection").html(selection_html);
+          console.log(params);
         } else {
           $("#drs-content").html("Your query produced no results. Please go back and try a different query. Thanks!");
         }
 
     }).fail(function() {
-      console.log("there was an error");
+      $("#drs-content").html("<div class='alert error'>There was an error connecting to the data. Please try a different query. Thanks!</div>");
     });
   }
 
@@ -64,6 +64,8 @@ jQuery(document).ready(function($) {
       pagination += "<li><a href='#'>>></a></li>";
       //add handling disabling of prev and next based on if first or last page
       $("#drs-pagination").html(pagination);
+    } else {
+      $("#drs-pagination").html("");
     }
   }//end paginate
 
@@ -82,7 +84,7 @@ jQuery(document).ready(function($) {
             this_facet_name = val_q;
           }
           if (this_facet_count != undefined) {
-            this_facet = "<a href='#' class='list-group-item'>"+this_facet_name+"<span class='badge'>"+this_facet_count+"</span></a>";
+            this_facet = "<a href='#' class='list-group-item'><div class='facet_val'>"+this_facet_name+"</div><span class='badge'>"+this_facet_count+"</span></a>";
             facet_values += this_facet;
           }
         });
@@ -125,11 +127,31 @@ jQuery(document).ready(function($) {
     });
     $("#drs-search input[type='submit']").on("click", function() {
       params.q = $("#drs-input").val();
+      $("#drs-selection a[data-type='q']").remove();
+      $("#drs-selection").append("<a class='btn' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+" X</a>");
       get_data(params);
-      selection_html += params.q;
     });
-    //handle facet on clicks
-    //http://cerberus.library.northeastern.edu/api/v1/search/neu:pn89dh14k?f[type_sim][]=Text
+    $("#drs-facets a").on("click", function(e){
+      e.preventDefault();
+      var facet = $(this).parent().attr("id");
+      facet = facet.substr(4);
+      var facet_val = $(this).children(".facet_val").html();
+      params.f[facet] = facet_val;
+      $("#drs-selection").append("<a class='btn' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+facet+" > "+facet_val+" X </a>");
+      get_data(params);
+    });
+    $("#drs-selection a").on("click", function(e){
+      e.preventDefault();
+      var type = $(this).data("type");
+      if (type == 'f') {
+        var facet = $(this).data("facet");
+        delete params.f[facet];
+      } else {
+        params[type] = '';
+      }
+      $(this).remove();
+      get_data(params);
+    });
   }
 
 });//end doc ready

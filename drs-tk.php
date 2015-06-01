@@ -46,15 +46,15 @@ $TEMPLATE = array(
     //print_r($json);
     $json = json_decode($json);
     if ($json->response->response->numFound > 0) {
-        foreach($json->response->response->docs as $doc) {
-          if ($doc->active_fedora_model_ssi == "CoreFile") {
-            $title = $doc->title_ssi;
-            $url = "http://cerberus.library.northeastern.edu" . end($doc->fields_thumbnail_list_tesim);
-            //$url = str_replace("thumbnail_1","content", $url);
-            echo $url;
-            process_image($url, $images);
-          }
+      foreach($json->response->response->docs as $doc) {
+        if ($doc->active_fedora_model_ssi == "CoreFile") {
+          $title = $doc->title_ssi;
+          $url = "http://cerberus.library.northeastern.edu" . end($doc->fields_thumbnail_list_tesim);
+          //$url = str_replace("thumbnail_1","content", $url);
+          echo $url;
+          process_image($url, $images);
         }
+      }
     }
   }
 
@@ -95,8 +95,17 @@ $TEMPLATE = array(
       }
 
       $src = wp_get_attachment_url( $id );
+      $image_id = get_image_id($src);
       echo $src . "<br/>";
+      echo $image_id . "<br/>";
+      //permalink redirect from image url to item level page?
     }
+  }
+
+  function get_image_id($image_url) {
+  	global $wpdb;
+  	$attachment = $wpdb->get_col($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE guid='%s';", $image_url ));
+          return $attachment[0];
   }
 
 
