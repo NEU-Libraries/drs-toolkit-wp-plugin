@@ -3,7 +3,8 @@ jQuery(document).ready(function($) {
   var per_page = 2;
   var page = 1;
   var f = {};
-  var params = {q:q, per_page:per_page, page:page, f:f};
+  var sort = "score+desc%2C+system_create_dtsi+desc";
+  var params = {q:q, per_page:per_page, page:page, f:f, sort:sort};
   get_data(params);
   var template = browse_obj.template;
   if (template == 'search') {
@@ -11,7 +12,6 @@ jQuery(document).ready(function($) {
   }
   //where will we get all of the variables from? the URL params? or from clicks??
   function get_data(params){
-    console.log("get data called");
     $.post(browse_obj.ajax_url, {
        _ajax_nonce: browse_obj.nonce,
         action: "get_browse",
@@ -19,6 +19,7 @@ jQuery(document).ready(function($) {
         per_page: params.per_page,
         page: params.page,
         f: params.f,
+        sort: params.sort,
 
     }, function(data) {
         var data = $.parseJSON(data);
@@ -27,9 +28,7 @@ jQuery(document).ready(function($) {
           paginate(data.pagination.table);//send to paginate function
           facetize(data.response.facet_counts);//send to facetize function
           resultize(data.response.response);//send to resultize function
-          //handle sorting //&sort=title_info_title_ssi%20desc
           clickable(data);
-          console.log(params);
         } else {
           $("#drs-content").html("Your query produced no results. Please go back and try a different query. Thanks!");
         }
@@ -145,6 +144,7 @@ jQuery(document).ready(function($) {
       $(this).remove();
       get_data(params);
     });
+
   }
 
   $("#drs-search input[type='submit']").on("click", function() {
@@ -152,6 +152,15 @@ jQuery(document).ready(function($) {
     $("#drs-selection a[data-type='q']").remove();
     $("#drs-selection").append("<a class='btn' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+" X</a>");
     get_data(params);
+  });
+
+  $("#drs-sort").html("<select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance Desc</option><option value='title_info_title_ssi%20desc'>Title Desc</option><option value='title_info_title_ssi%20asc'>Title Asc</option><option value='creator_ssi%20desc'>Creator Desc</option><option value='creator_ssi%20asc'>Creator Asc</option><option value='system_create_dtsi%20desc'>Date Uploaded Desc</option><option value='system_create_dtsi%20asc'>Date Uploaded Asc</option><option value='system_modified_dtsi%20desc'>Date Created Desc</option><option value='system_modified_dtsi%20asc'>Date Created Asc</option></select>");
+
+  $("#drs-sort-option").on("change", function() {
+    params.sort = $(this).val();
+    console.log(params.sort);
+    get_data(params);
+    $(this).val(params.sort);
   });
 
 });//end doc ready

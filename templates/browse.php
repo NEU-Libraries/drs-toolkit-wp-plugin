@@ -21,6 +21,7 @@ get_header(); ?>
 			<input type="submit" value="Search" />
     </div>
   </div><!-- #drs-browse-header-row -->
+	<div id="drs-sort"></div>
   <ul id="drs-selection"></ul>
   <div id="drs-docs">
     <div id="drs-docs-even" class="col-sm-12 col-md-6"></div>

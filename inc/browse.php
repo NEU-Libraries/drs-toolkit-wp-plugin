@@ -21,6 +21,12 @@ function my_ajax_handler() {
         $url .= "&f[" . $facet . "][]=" . $facet_val;
       }
     }
+    if ($_POST['sort']) {
+      //foreach($_POST['sort'] as $sort=>$sort_order){
+        //$url .= "&sort=" . $sort . " " . $sort_order;
+      //}
+      $url .= "&sort=" . $_POST['sort'];
+    }
     $data = get_response($url);
 
     wp_send_json($data);
