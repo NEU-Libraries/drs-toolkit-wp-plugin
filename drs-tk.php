@@ -59,7 +59,6 @@ $TEMPLATE = array(
   }
 
   function drstk_process_image($url, $images){
-    //$url = "https://repository.library.northeastern.edu/downloads/neu:345593?datastream_id=content";
     $pid = explode("/", $url);
     $pid = explode("?", end($pid));
     $pid = str_replace(":","",$pid[0]);
@@ -67,7 +66,6 @@ $TEMPLATE = array(
     if (!in_array($pid, $images)){
       $tmp = download_url( $url );
       $post_id = 0;
-      $desc = "The WordPress Logo";
       $file_array = array();
 
       // Set variables for storage
@@ -233,9 +231,7 @@ function drstk_content_template( $template ) {
 
         if ($template_type == 'browse' || $template_type == 'search') {
             add_action('wp_enqueue_scripts', 'drstk_browse_script');
-            //echo $template_type;
             #return locate_template( array( 'view.php' ) );
-            //get_or_create_query($wp_query);
             return $TEMPLATE['browse_template'];
 
         }
@@ -287,12 +283,6 @@ function drstk_item_script() {
     wp_register_script('drstk_item',plugins_url('/assets/js/item.js', __FILE__), array('jquery'), $VERSION, false );
     wp_enqueue_script('drstk_item');
 }
-
-function drstk_no_javascript_alternative(){
-  //this is where an alternative function for not using javascript would go
-  //it would basically create a form to populate the page and require manually clicking a submit button to reload the page with selected options
-}
-
 
 /* Add custom field to attachment for DRS Metadata */
 function drstk_image_attachment_add_custom_fields($form_fields, $post) {

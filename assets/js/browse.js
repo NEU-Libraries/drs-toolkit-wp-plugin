@@ -10,7 +10,6 @@ jQuery(document).ready(function($) {
   if (template == 'search') {
     $("#drs-search").show();
   }
-  //where will we get all of the variables from? the URL params? or from clicks??
   function get_data(params){
     $.post(browse_obj.ajax_url, {
        _ajax_nonce: browse_obj.nonce,
@@ -33,12 +32,10 @@ jQuery(document).ready(function($) {
         } else {
           $("#drs-content").html("Your query produced no results. Please go back and try a different query. Thanks!");
         }
-
     }).fail(function() {
       $("#drs-content").html("<div class='alert error'>There was an error connecting to the data. Please try a different query. Thanks!</div>");
     });
   }
-
 
   //parses pagination data
   function paginate(data){
@@ -159,7 +156,6 @@ jQuery(document).ready(function($) {
 
   $("#drs-sort-option").on("change", function() {
     params.sort = $(this).val();
-    console.log(params.sort);
     get_data(params);
     $(this).val(params.sort);
   });
