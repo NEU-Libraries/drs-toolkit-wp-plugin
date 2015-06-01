@@ -277,3 +277,8 @@ function drstk_item_script() {
     wp_register_script('drstk_item',plugins_url('/assets/js/item.js', __FILE__), array('jquery'), $VERSION, false );
     wp_enqueue_script('drstk_item');
 }
+
+function no_javascript_alternative(){
+  //this is where an alternative function for not using javascript would go
+  //it would basically create a form to populate the page and require manually clicking a submit button to reload the page with selected options
+}
