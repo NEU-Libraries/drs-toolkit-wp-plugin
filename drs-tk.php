@@ -26,7 +26,7 @@ $TEMPLATE = array(
      flush_rewrite_rules();
  }
 
- function get_media_images($collection_pid) {
+ function drstk_get_media_images($collection_pid) {
    //echo $collection_pid;
 
    //first we get the existing images
@@ -52,13 +52,13 @@ $TEMPLATE = array(
           $url = "http://cerberus.library.northeastern.edu" . end($doc->fields_thumbnail_list_tesim);
           //$url = str_replace("thumbnail_1","content", $url);
           echo $url;
-          process_image($url, $images);
+          drstk_process_image($url, $images);
         }
       }
     }
   }
 
-  function process_image($url, $images){
+  function drstk_process_image($url, $images){
     //$url = "https://repository.library.northeastern.edu/downloads/neu:345593?datastream_id=content";
     $pid = explode("/", $url);
     $pid = explode("?", end($pid));
@@ -95,14 +95,24 @@ $TEMPLATE = array(
       }
 
       $src = wp_get_attachment_url( $id );
-      $image_id = get_image_id($src);
+      $image_id = drstk_get_image_id($src);
+      //permalink redirect from image url to item level page?
       echo $src . "<br/>";
       echo $image_id . "<br/>";
-      //permalink redirect from image url to item level page?
+      $image_title = "This is a fake image title to test function";//need to pull this from API
+      $image_description = "This is a fake image description to test functionality.";//need to pull this from API
+      $image_metadata = "some awesome metadata here";//need to pull an array of metadata from the API
+      $image_post = array(
+        'ID' => $image_id,
+        'post_title' => $image_title,
+        'post_excerpt' => $image_description,
+      );
+      wp_update_post($image_post);
+      update_post_meta($image_id, 'drstk-drs-metadata', $image_metadata);
     }
   }
 
-  function get_image_id($image_url) {
+  function drstk_get_image_id($image_url) {
   	global $wpdb;
   	$attachment = $wpdb->get_col($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE guid='%s';", $image_url ));
           return $attachment[0];
@@ -124,7 +134,7 @@ $TEMPLATE = array(
         $collection_pid = get_option('drstk_collection');
         $sync_images = get_option('drstk_sync_images');
         if ($sync_images == true) {
-          get_media_images($collection_pid);
+          drstk_get_media_images($collection_pid);
         }
      }
   }
@@ -278,7 +288,31 @@ function drstk_item_script() {
     wp_enqueue_script('drstk_item');
 }
 
-function no_javascript_alternative(){
+function drstk_no_javascript_alternative(){
   //this is where an alternative function for not using javascript would go
   //it would basically create a form to populate the page and require manually clicking a submit button to reload the page with selected options
 }
+
+
+/* Add custom field to attachment for DRS Metadata */
+function drstk_image_attachment_add_custom_fields($form_fields, $post) {
+  $form_fields["drstk-drs-metadata"] = array();
+  $form_fields["drstk-drs-metadata"]["label"] = __("DRS Metadata");
+  $form_fields["drstk-drs-metadata"]["input"] = "html";
+  $form_fields["drstk-drs-metadata"]["value"] = get_post_meta($post->ID, "drstk-drs-metadata", true);
+  $form_fields["drstk-drs-metadata"]["helps"] = "Metadata imported from the DRS. Note this data is read only. Any changes must be made directly in the DRS.";
+  $form_fields["drstk-drs-metadata"]["html"] = "<tr><td>Field Name</td><td>Field Value</td></tr><tr><td>Example Field</td><td>Example Value".get_post_meta($post->ID, "drstk-drs-metadata", true)."</td></tr>";//loop through values here to make it into a table
+  return $form_fields;
+}
+add_filter("attachment_fields_to_edit", "drstk_image_attachment_add_custom_fields", null, 2);
+
+/* Save custom field value for DRS Metadata */
+function drstk_image_attachment_save_custom_fields($post, $attachment) {
+  if(isset($attachment['drstk-drs-metadata'])) {
+    update_post_meta($post['ID'], 'drstk-drs-metadata', $attachment['drstk-drs-metadata']);
+  } else {
+    delete_post_meta($post['ID'], 'drstk-drs-metadata');
+  }
+  return $post;
+}
+add_filter("attachment_fields_to_save", "drstk_image_attachment_save_custom_fields", null , 2);
