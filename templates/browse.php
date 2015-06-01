@@ -5,6 +5,11 @@
  */
 
 get_header(); ?>
+<noscript>
+
+<div class="noscript_warning">PLEASE NOTE: JAVASCRIPT IS DISABLED ON YOUR BROWSER. For the best user experience, please enable javascript on your browser now.</div>
+
+</noscript>
 
 	<div id="primary" class="content-area">
 		<main id="main" class="site-main" role="main">

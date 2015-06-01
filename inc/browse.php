@@ -5,6 +5,7 @@ function my_ajax_handler() {
     // Handle the ajax request
     check_ajax_referer( 'browse_drs' );
     $collection = get_option('drstk_collection');
+    //if ($collection == '' || $collection == NULL)
     //put error check here if no collection entered
     $url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection."?";
     if ($_POST['query'] ){
