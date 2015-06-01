@@ -22,7 +22,6 @@ jQuery(document).ready(function($) {
 
     }, function(data) {
         var data = $.parseJSON(data);
-        //console.log(data);
         //what happens when the API returns an error??
         if (data.response.response.numFound > 0) {
           paginate(data.pagination.table);//send to paginate function
@@ -125,12 +124,6 @@ jQuery(document).ready(function($) {
       params.page = 1;
       get_data(params);
     });
-    $("#drs-search input[type='submit']").on("click", function() {
-      params.q = $("#drs-input").val();
-      $("#drs-selection a[data-type='q']").remove();
-      $("#drs-selection").append("<a class='btn' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+" X</a>");
-      get_data(params);
-    });
     $("#drs-facets a").on("click", function(e){
       e.preventDefault();
       var facet = $(this).parent().attr("id");
@@ -153,5 +146,12 @@ jQuery(document).ready(function($) {
       get_data(params);
     });
   }
+
+  $("#drs-search input[type='submit']").on("click", function() {
+    params.q = $("#drs-input").val();
+    $("#drs-selection a[data-type='q']").remove();
+    $("#drs-selection").append("<a class='btn' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+" X</a>");
+    get_data(params);
+  });
 
 });//end doc ready
