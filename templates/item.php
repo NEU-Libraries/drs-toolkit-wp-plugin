@@ -5,61 +5,25 @@
  */
 
 get_header(); ?>
+<noscript>
+<div class="noscript_warning">PLEASE NOTE: JAVASCRIPT IS DISABLED ON YOUR BROWSER. For the best user experience, please enable javascript on your browser now.</div>
+</noscript>
 
-	<div id="primary" class="content-area drstk">
+	<div id="primary" class="content-area">
 		<main id="main" class="site-main" role="main">
 
 
 
-<div class="container-fluid">
-  <div id="drs-browse-header-row" class="row">
-    <div class="col-sm-8 col-md-9">
-      <div class="row">
-        <div class="col-sm-12 col-md-5">
-          <h1 id="drs-pagination-header"></h1>
-        </div>
-        <div class="col-sm-12 col-md-7">
-          <div>
-            <ul id="drs-pagination"></ul>
-          </div>
-        </div>
-      </div>
-    </div>
+<div id="drs-content">
+	<h1 id="drs-item-title"></h1>
+  <div id="drs-item-left" class="grid-50">
+		<img id="drs-item-img"/>
+	</div>
+  <div id="drs-item-right" class="grid-50">
+		<div id="drs-item-details"></div>
+	</div>
+</div><!-- #drs-content -->
 
-    <div class="col-sm-4 col-md-3">
-      <div id="drs-search" class="form-group hidden">
-        <label for="drs-input" class="sr-only">Search:</label>
-        <input id="drs-input" name="drs-input" autocomplete="off" type="text" placeholder="Enter search term">
-      </div>
-    </div>
-
-  </div><!-- .row -->
-
-  <div class="row">
-    <div class="col-sm-8 col-md-9">
-
-      <ul id="drs-selection" class="list-inline"></ul>
-
-      <div id="drs-docs" class="row">
-        <div id="drs-docs-even" class="col-sm-12 col-md-6">
-				<?php echo $title;
-
-				 ?>
-				</div>
-        <div id="drs-docs-odd" class="col-sm-12 col-md-6"></div>
-      </div>
-
-    </div>
-
-    <div class="col-sm-4 col-md-3">
-      <div id="drs-tag-cloud" class="hidden panel panel-default"></div>
-    </div>
-
-  </div><!-- .row -->
-
-
-
-</div>
 
 </main><!-- .site-main -->
 </div><!-- .content-area -->
