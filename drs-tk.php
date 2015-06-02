@@ -20,9 +20,30 @@ $TEMPLATE = array(
     'item_template' => dirname(__FILE__) . '/templates/item.php',
 );
 
+ register_activation_hook( __FILE__, 'drstk_install' );
+ register_deactivation_hook( __FILE__, 'drstk_deactivation' );
+
+ /**
+  * Rewrite rules for the plugin.
+  */
+ add_action('init', 'drstk_rewrite_rule');
+ function drstk_rewrite_rule() {
+
+     add_rewrite_rule('^browse/?$',
+         'index.php?post_type=drs&drstk_template_type=browse',
+         'top');
+     add_rewrite_rule('^search/?$', 'index.php?post_type=drs&drstk_template_type=search', 'top');
+     add_rewrite_rule('^item/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=item&pid=$matches[1]', 'top');
+ }
+
  function drstk_install() {
      // Clear the permalinks after the post type has been registered
      drstk_rewrite_rule();
+     flush_rewrite_rules();
+ }
+
+ function drstk_deactivation() {
+     // Clear the permalinks to remove our post type's rules
      flush_rewrite_rules();
  }
 
@@ -49,16 +70,22 @@ $TEMPLATE = array(
       foreach($json->response->response->docs as $doc) {
         if ($doc->active_fedora_model_ssi == "CoreFile") {
           $title = $doc->title_ssi;
+          //if its an image just send the master image
+          //if its not an image send a thumbnail
+          //assign $title, $creator, $date, $description
+          $creator = "Jim Bob";
+          $date = " ";
+          $description = "best description eveer";
           $url = "http://cerberus.library.northeastern.edu" . end($doc->fields_thumbnail_list_tesim);
           //$url = str_replace("thumbnail_1","content", $url);
           echo $url;
-          drstk_process_image($url, $images);
+          drstk_process_image($url, $images, $title, $creator, $date, $description);
         }
       }
     }
   }
 
-  function drstk_process_image($url, $images){
+  function drstk_process_image($url, $images, $title, $creator, $date, $description){
     $pid = explode("/", $url);
     $pid = explode("?", end($pid));
     $pid = str_replace(":","",$pid[0]);
@@ -184,27 +211,6 @@ $TEMPLATE = array(
 
  }
 
- function drstk_deactivation() {
-     // Clear the permalinks to remove our post type's rules
-     flush_rewrite_rules();
- }
- register_activation_hook( __FILE__, 'drstk_install' );
- register_deactivation_hook( __FILE__, 'drstk_deactivation' );
-
- /**
-  * Rewrite rules for the plugin.
-  */
- add_action('init', 'drstk_rewrite_rule');
- function drstk_rewrite_rule() {
-
-     add_rewrite_rule('^browse/?$',
-         'index.php?post_type=drs&drstk_template_type=browse',
-         'top');
-     add_rewrite_rule('^search/?$', 'index.php?post_type=drs&drstk_template_type=search', 'top');
-     add_rewrite_rule('^item/?$', 'index.php?post_type=drs&drstk_template_type=item', 'top');
-
- }
-
  /**
   * Register an additional query variable so we can differentiate between
   * the types of custom queries that are generated
@@ -212,6 +218,7 @@ $TEMPLATE = array(
  add_filter('query_vars', 'drstk_add_query_var');
  function drstk_add_query_var($public_query_vars){
      $public_query_vars[] = 'drstk_template_type';
+     $public_query_vars[] = 'pid';
      return $public_query_vars;
  }
 
@@ -231,19 +238,13 @@ function drstk_content_template( $template ) {
 
         if ($template_type == 'browse' || $template_type == 'search') {
             add_action('wp_enqueue_scripts', 'drstk_browse_script');
-            #return locate_template( array( 'view.php' ) );
             return $TEMPLATE['browse_template'];
-
         }
 
         if ($template_type == 'item') {
+            global $item_pid;
+            $item_pid = get_query_var( 'pid' );
             add_action('wp_enqueue_scripts', 'drstk_item_script');
-            //echo "template is item";
-            #return locate_template( array( 'view.php' ) );
-            $pid = get_query_var( 'pid' );
-            //echo "we are abotu to call get or create";
-            get_or_create_doc( $wp_query, $pid );
-
             return $TEMPLATE['item_template'];
         }
 
@@ -264,7 +265,7 @@ function drstk_browse_script() {
         plugins_url( '/assets/js/browse.js', __FILE__ ),
         array( 'jquery' )
     );
-    wp_enqueue_style( 'drstk_browse_style', plugins_url('/assets/css/browse.css', __FILE__));
+    //wp_enqueue_style( 'drstk_browse_style', plugins_url('/assets/css/browse.css', __FILE__));
     //this creates a unique nonce to pass back and forth from js/php to protect
     $browse_nonce = wp_create_nonce( 'browse_drs' );
     //this allows an ajax call from browse.js
@@ -280,8 +281,24 @@ function drstk_browse_script() {
  */
 function drstk_item_script() {
     global $VERSION;
-    wp_register_script('drstk_item',plugins_url('/assets/js/item.js', __FILE__), array('jquery'), $VERSION, false );
-    wp_enqueue_script('drstk_item');
+    global $wp_query;
+    global $item_pid;
+    //this enqueues the JS file
+    wp_enqueue_script( 'drstk_item',
+        plugins_url( '/assets/js/item.js', __FILE__ ),
+        array( 'jquery' )
+    );
+    //wp_enqueue_style( 'drstk_item_style', plugins_url('/assets/css/item.css', __FILE__));
+    //this creates a unique nonce to pass back and forth from js/php to protect
+    $item_nonce = wp_create_nonce( 'item_drs' );
+    //this allows an ajax call from item.js
+    wp_localize_script( 'drstk_item', 'item_obj', array(
+       'ajax_url' => admin_url( 'admin-ajax.php' ),
+       'nonce'    => $item_nonce,
+       'template' => $wp_query->query_vars['drstk_template_type'],
+       'pid' => $item_pid,
+    ) );
+
 }
 
 /* Add custom field to attachment for DRS Metadata */
