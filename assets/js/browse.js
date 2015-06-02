@@ -22,7 +22,9 @@ jQuery(document).ready(function($) {
 
     }, function(data) {
         var data = $.parseJSON(data);
-        if (data.error) {
+        if (data == '') {
+          $("#drs-content").html("Your query produced no results. The error received was '"+data.error+"'. Thanks!");
+        } else if (data.error) {
           $("#drs-content").html("Your query produced no results. The error received was '"+data.error+"'. Thanks!");
         } else if (data.response.response.numFound > 0) {
           paginate(data.pagination.table);//send to paginate function
@@ -39,7 +41,7 @@ jQuery(document).ready(function($) {
 
   //parses pagination data
   function paginate(data){
-    $("#drs-pagination-header").html("Displaying " + data.start + " to " + data.end + " of " + data.total_count + " <br/>Show <select id='drs-per-page'><option val='2'>2</option><option val='5'>5</option><option val='10'>10</option></select> per page");
+    $("#drs-pagination-header").html("<div class='grid-50'>Displaying " + data.start + " to " + data.end + " of " + data.total_count + "</div><div class='grid-50'>Show <select id='drs-per-page'><option val='2'>2</option><option val='5'>5</option><option val='10'>10</option></select> per page</div>");
     $("#drs-per-page").val(params.per_page);
     if (data.num_pages > 1) {
       var pagination = "<li><a href='#'><<</a></li>";
