@@ -20,11 +20,15 @@ jQuery(document).ready(function($) {
   });
 
   function parse_item(data){
-    if (data.Title) {
-      $("#drs-item-title").html(data.Title);
+    if (data.mods.Title) {
+      $("#drs-item-title").html(data.mods.Title);
+    }
+    if (data.thumbnails) {
+      $("#drs-item-img").attr("src",data.thumbnails[data.thumbnails.length - 1]);
+      //append responsive sized images here
     }
     var data_html = '';
-    $.each(data, function(key,value){
+    $.each(data.mods, function(key,value){
       data_html += "<div><b>"+key+"</b></div><div>"+value+"</div>";
     });
     $("#drs-item-details").html(data_html);

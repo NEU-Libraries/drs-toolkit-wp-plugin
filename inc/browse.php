@@ -15,23 +15,24 @@ function browse_ajax_handler() {
     wp_send_json($data);
   } else {
     $url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection."?";
-    if ($_POST['query'] ){
-      $url .= "q=". $_POST['query'];
+    if ($_POST['params']['q'] ){
+      $url .= "q=". urlencode($_POST['params']['q']);
     }
-    if ($_POST['per_page']) {
-      $url .= "&per_page=" . $_POST['per_page'];
+    if ($_POST['params']['per_page']) {
+      $url .= "&per_page=" . $_POST['params']['per_page'];
     }
-    if ($_POST['page']) {
-      $url .= "&page=" . $_POST['page'];
+    if ($_POST['params']['page']) {
+      $url .= "&page=" . $_POST['params']['page'];
     }
-    if ($_POST['f']) {
-      foreach($_POST['f'] as $facet=>$facet_val){
-        $url .= "&f[" . $facet . "][]=" . $facet_val;
+    if ($_POST['params']['f']) {
+      foreach($_POST['params']['f'] as $facet=>$facet_val){
+        $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
       }
     }
-    if ($_POST['sort']) {
-      $url .= "&sort=" . $_POST['sort'];
+    if ($_POST['params']['sort']) {
+      $url .= "&sort=" . $_POST['params']['sort'];
     }
+    mail("zoller.eli@gmail.com", $url, $url);
     $data = get_response($url);
     wp_send_json($data);
   }

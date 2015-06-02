@@ -14,11 +14,7 @@ jQuery(document).ready(function($) {
     $.post(browse_obj.ajax_url, {
        _ajax_nonce: browse_obj.nonce,
         action: "get_browse",
-        query: params.q,
-        per_page: params.per_page,
-        page: params.page,
-        f: params.f,
-        sort: params.sort,
+        params: params,
 
     }, function(data) {
         var data = $.parseJSON(data);
