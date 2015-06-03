@@ -7,8 +7,9 @@ jQuery(document).ready(function($) {
 
   }, function(data) {
       var data = $.parseJSON(data);
-      if (data == '') {
-        $("#drs-content").html("Your request produced no results. The error received was '"+data.error+"'. Thanks!");
+      console.log(data);
+      if (data == null) {
+        $("#drs-content").html("Your request produced no results. Please try something else. Thanks!");
       } else if (data.error) {
         $("#drs-content").html("Your request produced no results. The error received was '"+data.error+"'. Thanks!");
       } else if (jQuery.type(data) == 'object') {

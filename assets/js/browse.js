@@ -19,8 +19,8 @@ jQuery(document).ready(function($) {
 
     }, function(data) {
         var data = $.parseJSON(data);
-        if (data == '') {
-          $("#drs-content").html("Your query produced no results. The error received was '"+data.error+"'. Thanks!");
+        if (data == null) {
+          $("#drs-content").html("Your request produced no results. Please try something else. Thanks!");
         } else if (data.error) {
           $("#drs-content").html("Your query produced no results. The error received was '"+data.error+"'. Thanks!");
         } else if (data.response.response.numFound > 0) {
