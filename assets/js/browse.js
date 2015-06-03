@@ -102,6 +102,7 @@ jQuery(document).ready(function($) {
 
   //parses actual results
   function resultize(data){
+    //do grid or list depending on if template is search or browse
     var docs_html = '';
     $.each(data.docs, function(doc, doc_vals){
       var title, abstract = '';

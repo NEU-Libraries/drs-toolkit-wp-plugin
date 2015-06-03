@@ -223,6 +223,19 @@ function drstk_image_attachment_add_custom_fields($form_fields, $post) {
   $form_fields["drstk-drs-metadata"]["value"] = get_post_meta($post->ID, "drstk-drs-metadata", true);
   $form_fields["drstk-drs-metadata"]["helps"] = "Metadata imported from the DRS. Note this data is read only. Any changes must be made directly in the DRS.";
   $form_fields["drstk-drs-metadata"]["html"] = "<tr><td>Field Name</td><td>Field Value</td></tr><tr><td>Example Field</td><td>Example Value".get_post_meta($post->ID, "drstk-drs-metadata", true)."</td></tr>";//loop through values here to make it into a table
+
+  $form_fields["drstk-creator"] = array();
+  $form_fields["drstk-creator"]["label"] = __("Creator");
+  $form_fields["drstk-creator"]["input"] = "text";
+  $form_fields["drstk-creator"]["value"] = get_post_meta($post->ID, "drstk-creator", true);
+  $form_fields["drstk-creator"]["helps"] = "This field is imported from the DRS. Any changes here will not be changed in the DRS.";
+
+  $form_fields["drstk-date-created"] = array();
+  $form_fields["drstk-date-created"]["label"] = __("Date Created");
+  $form_fields["drstk-date-created"]["input"] = "text";
+  $form_fields["drstk-date-created"]["value"] = get_post_meta($post->ID, "drstk-date-created", true);
+  $form_fields["drstk-date-created"]["helps"] = "This field is imported from the DRS. Any changes here will not be changed in the DRS.";
+
   return $form_fields;
 }
 add_filter("attachment_fields_to_edit", "drstk_image_attachment_add_custom_fields", null, 2);
@@ -233,6 +246,16 @@ function drstk_image_attachment_save_custom_fields($post, $attachment) {
     update_post_meta($post['ID'], 'drstk-drs-metadata', $attachment['drstk-drs-metadata']);
   } else {
     delete_post_meta($post['ID'], 'drstk-drs-metadata');
+  }
+  if(isset($attachment['drstk-creator'])) {
+    update_post_meta($post['ID'], 'drstk-creator', $attachment['drstk-creator']);
+  } else {
+    delete_post_meta($post['ID'], 'drstk-creator');
+  }
+  if(isset($attachment['drstk-date-created'])) {
+    update_post_meta($post['ID'], 'drstk-date-created', $attachment['drstk-date-created']);
+  } else {
+    delete_post_meta($post['ID'], 'drstk-date-created');
   }
   return $post;
 }
