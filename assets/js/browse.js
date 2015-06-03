@@ -41,7 +41,13 @@ jQuery(document).ready(function($) {
     $("#drs-pagination-header").html("<div class='grid-50'>Displaying " + data.start + " to " + data.end + " of " + data.total_count + "</div><div class='grid-50'>Show <select id='drs-per-page'><option val='2'>2</option><option val='5'>5</option><option val='10'>10</option></select> per page</div>");
     $("#drs-per-page").val(params.per_page);
     if (data.num_pages > 1) {
-      var pagination = "<li><a href='#'><<</a></li>";
+      var pagination = "<li class='";
+      if (data.current_page > 1){
+        pagination += "active'><a href='#'><<</a>";
+      } else {
+        pagination += "disabled'><span><<</span>";
+      }
+      pagination += "</li>";
       for (var i = 1; i <= data.num_pages; i++) {
         if (data.current_page == i){
           var pagination_class = 'active';
@@ -56,8 +62,13 @@ jQuery(document).ready(function($) {
         }
         pagination += "</li>";
       }
-      pagination += "<li><a href='#'>>></a></li>";
-      //add handling disabling of prev and next based on if first or last page
+      pagination += "<li class='";
+      if (data.current_page == data.num_pages){
+        pagination += "disabled'><span>>></span>";
+      } else {
+        pagination += "active'><a href='#'>>></a>";
+      }
+      pagination += "</li>";
       $("#drs-pagination").html(pagination);
     } else {
       $("#drs-pagination").html("");
@@ -99,11 +110,11 @@ jQuery(document).ready(function($) {
       doc_vals.abstract_tesim? abstract = doc_vals.abstract_tesim : "";
       doc_vals.thumbnail_list_tesim? thumbnail = doc_vals.thumbnail_list_tesim : "";
       //insert images in a responsive way based on thumbnails
-      var this_doc = "<div class='media'><h4>" + title + "</h4><p>" + abstract + "</p>";
+      var this_doc = '<div class="drs-item">';
       if (thumbnail[0]) {
-        this_doc += "<img src='http://cerberus.library.northeastern.edu"+thumbnail[0]+"' />";
+        this_doc += "<div class='grid-25'><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'><img src='http://cerberus.library.northeastern.edu"+thumbnail[0]+"' /></a></div>";
       }
-      this_doc += "</div>";
+      this_doc += "<div class='grid-75'><h3><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>" + title + "</a></h3><p>" + abstract + "</p></div></div>";
       docs_html += this_doc;
     });
     $("#drs-docs").html(docs_html);
