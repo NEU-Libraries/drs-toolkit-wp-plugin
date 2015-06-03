@@ -14,6 +14,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/browse.php' );
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
 
 $VERSION = '0.1.0';
+$SITE_URL = site_url();
 
 // Set template names here so we don't have to go into the code.
 $TEMPLATE = array(
@@ -170,6 +171,7 @@ function drstk_content_template( $template ) {
 function drstk_browse_script() {
     global $wp_query;
     global $VERSION;
+    global $SITE_URL;
     //this enqueues the JS file
     wp_enqueue_script( 'drstk_browse',
         plugins_url( '/assets/js/browse.js', __FILE__ ),
@@ -183,6 +185,7 @@ function drstk_browse_script() {
        'ajax_url' => admin_url( 'admin-ajax.php' ),
        'nonce'    => $browse_nonce,
        'template' => $wp_query->query_vars['drstk_template_type'],
+       'site_url' => $SITE_URL,
     ) );
 }
 
@@ -207,6 +210,7 @@ function drstk_item_script() {
        'nonce'    => $item_nonce,
        'template' => $wp_query->query_vars['drstk_template_type'],
        'pid' => $item_pid,
+       'site_url' => $SITE_URL,
     ) );
 
 }
