@@ -43,7 +43,7 @@ jQuery(document).ready(function($) {
     if (data.num_pages > 1) {
       var pagination = "<li class='";
       if (data.current_page > 1){
-        pagination += "active'><a href='#'><<</a>";
+        pagination += "active'><a href='#' class='prev'><<</a>";
       } else {
         pagination += "disabled'><span><<</span>";
       }
@@ -66,7 +66,7 @@ jQuery(document).ready(function($) {
       if (data.current_page == data.num_pages){
         pagination += "disabled'><span>>></span>";
       } else {
-        pagination += "active'><a href='#'>>></a>";
+        pagination += "active'><a href='#' class='next'>>></a>";
       }
       pagination += "</li>";
       $("#drs-pagination").html(pagination);
@@ -123,7 +123,13 @@ jQuery(document).ready(function($) {
   function clickable(data){
     $("#drs-pagination a").on("click", function(e){
       e.preventDefault();
-      params.page = $(this).html();
+      if ($(this).hasClass('next')){
+        params.page = params.page +1;
+      }else if ($(this).hasClass('prev')){
+        params.page = params.page -1;
+      } else {
+        params.page = $(this).html();
+      }
       get_data(params);
     });
     $("#drs-per-page").on("change", function(){
