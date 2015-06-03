@@ -1,4 +1,5 @@
 jQuery(document).ready(function($) {
+  $("#drs-item-title").html("<h2>Loading...<br/><span class='fa fa-spinner fa-pulse'></span></h2>");
   $.post(item_obj.ajax_url, {
      _ajax_nonce: item_obj.nonce,
       action: "get_item",

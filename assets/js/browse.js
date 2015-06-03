@@ -11,6 +11,7 @@ jQuery(document).ready(function($) {
     $("#drs-search").show();
   }
   function get_data(params){
+    $("#drs-pagination-header").html("<h2>Loading...<br/><span class='fa fa-spinner fa-pulse'></span></h2>");
     $.post(browse_obj.ajax_url, {
        _ajax_nonce: browse_obj.nonce,
         action: "get_browse",
