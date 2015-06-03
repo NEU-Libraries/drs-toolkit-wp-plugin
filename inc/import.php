@@ -37,24 +37,29 @@ function import_ajax_handler() {
     $json = json_decode($json);
     if ($json->response->response->numFound > 0) {
       foreach($json->response->response->docs as $doc) {
-        if ($doc->active_fedora_model_ssi == "CoreFile") {
-          $title = $doc->title_ssi;
-          //if its an image just send the master image
+        $title = $doc->mods->title;
+        //if its an image just send the master image
+        if ($doc->Format == 'Image'){
+          $url = $doc->canonical_object;
+        } else {
           //if its not an image send a thumbnail
-          //assign $title, $creator, $date, $description
-          $creator = "Jim Bob";
-          $date = " ";
-          $description = "best description eveer";
-          $url = "http://cerberus.library.northeastern.edu" . end($doc->fields_thumbnail_list_tesim);
-          //$url = str_replace("thumbnail_1","content", $url);
-          echo $url;
-          drstk_process_image($url, $images, $title, $creator, $date, $description);
+          $url = $doc->thumbnails[4];
         }
+        //assign $title, $creator, $date, $description
+        if ($doc->mods->creator){
+          $creator = $doc->mods->creator;
+        }
+        $date = $doc->mods['Copyright date'];
+        $description = $doc->mods['Abstract/Description'];
+        $metadata = $doc->mods;
+        $core_pid = $doc->pid
+        echo $url;
+        drstk_process_image($url, $images, $title, $creator, $date, $description, $metadata, $core_pid);
       }
     }
   }
 
-  function drstk_process_image($url, $images, $title, $creator, $date, $description){
+  function drstk_process_image($url, $images, $title, $creator, $date, $description, $metadata, $core_pid){
     $pid = explode("/", $url);
     $pid = explode("?", end($pid));
     $pid = str_replace(":","",$pid[0]);
@@ -90,19 +95,21 @@ function import_ajax_handler() {
 
       $src = wp_get_attachment_url( $id );
       $image_id = drstk_get_image_id($src);
-      //permalink redirect from image url to item level page?
       echo $src . "<br/>";
       echo $image_id . "<br/>";
-      $image_title = "This is a fake image title to test function";//need to pull this from API
-      $image_description = "This is a fake image description to test functionality.";//need to pull this from API
-      $image_metadata = "some awesome metadata here";//need to pull an array of metadata from the API
       $image_post = array(
         'ID' => $image_id,
-        'post_title' => $image_title,
-        'post_excerpt' => $image_description,
+        'post_title' => $title,
+        'post_excerpt' => $description,
       );
       wp_update_post($image_post);
-      update_post_meta($image_id, 'drstk-drs-metadata', $image_metadata);
+      update_post_meta($image_id, 'drstk-drs-metadata', $metadata);
+      update_post_meta($image_id, 'drstk-creator', $creator);
+      update_post_meta($image_id, 'drstk-date-created', $date);
+      update_post_meta($image_id, 'drstk-pid', $core_pid);
+      //set core file pid so we can redirect the link
+      //permalink redirect from image url to item level page?
+
     }
   }
 

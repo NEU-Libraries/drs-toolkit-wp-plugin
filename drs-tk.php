@@ -210,7 +210,6 @@ function drstk_item_script() {
        'nonce'    => $item_nonce,
        'template' => $wp_query->query_vars['drstk_template_type'],
        'pid' => $item_pid,
-       'site_url' => $SITE_URL,
     ) );
 
 }
@@ -236,6 +235,12 @@ function drstk_image_attachment_add_custom_fields($form_fields, $post) {
   $form_fields["drstk-date-created"]["value"] = get_post_meta($post->ID, "drstk-date-created", true);
   $form_fields["drstk-date-created"]["helps"] = "This field is imported from the DRS. Any changes here will not be changed in the DRS.";
 
+  $form_fields["drstk-pid"] = array();
+  $form_fields["drstk-pid"]["label"] = __("CoreFile Pid");
+  $form_fields["drstk-pid"]["input"] = "text";//can change to just displaying the pid later since it shouldn't be editable
+  $form_fields["drstk-pid"]["value"] = get_post_meta($post->ID, "drstk-pid", true);
+  $form_fields["drstk-pid"]["helps"] = "This field is imported from the DRS. Any changes here will not be changed in the DRS.";
+
   return $form_fields;
 }
 add_filter("attachment_fields_to_edit", "drstk_image_attachment_add_custom_fields", null, 2);
@@ -257,6 +262,21 @@ function drstk_image_attachment_save_custom_fields($post, $attachment) {
   } else {
     delete_post_meta($post['ID'], 'drstk-date-created');
   }
+  //can remove this later because it won't be editable
+  if(isset($attachment['drstk-pid'])) {
+    update_post_meta($post['ID'], 'drstk-pid', $attachment['drstk-pid']);
+  } else {
+    delete_post_meta($post['ID'], 'drstk-pid');
+  }
+  //end remove
   return $post;
 }
 add_filter("attachment_fields_to_save", "drstk_image_attachment_save_custom_fields", null , 2);
+
+
+/*permalinks for attachments -> item page*/
+function drstk_attachment_link( $link, $post_id ){
+    $post = get_post( $post_id );
+    return home_url( '/item/' . get_post_meta($post->ID, "drstk-pid", true) );
+}
+add_filter( 'attachment_link', 'drstk_attachment_link', 20, 2 );
