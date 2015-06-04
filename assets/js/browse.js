@@ -8,7 +8,7 @@ jQuery(document).ready(function($) {
   get_data(params);
   var template = browse_obj.template;
   if (template == 'search') {
-    $("#drs-search").show();
+    $("#drs-search").show().css("visibility","visible");
   }
   function get_data(params){
     $("#drs-pagination-header").html("<h2>Loading...<br/><span class='fa fa-spinner fa-pulse'></span></h2>");
@@ -28,6 +28,7 @@ jQuery(document).ready(function($) {
           facetize(data.response.facet_counts);//send to facetize function
           resultize(data.response.response);//send to resultize function
           clickable(data);
+          $("#drs-sort").show().css("visibility","visible");
         } else {
           $("#drs-content").html("Your query produced no results. Please go back and try a different query. Thanks!");
         }
@@ -80,6 +81,9 @@ jQuery(document).ready(function($) {
     var facet_html = '';
     $.each(data.facet_fields, function(facet, facet_vals){
       var facet_name = facet; //need to prettize this
+      facet_name = facet_name.replace("_tesim","").replace("_sim","");
+      facet_name = facet_name.replace("_", " ");
+      facet_name = toTitleCase(facet_name);
       var facet_values = '';
       if (facet_vals.length > 0) {
         var this_facet, this_facet_name;
@@ -90,11 +94,11 @@ jQuery(document).ready(function($) {
             this_facet_name = val_q;
           }
           if (this_facet_count != undefined) {
-            this_facet = "<a href='#' class='list-group-item'><div class='facet_val'>"+this_facet_name+"</div><span class='badge'>"+this_facet_count+"</span></a>";
+            this_facet = "<a href='#' class='drs-facet-val' ><div class='three_fourth'>"+this_facet_name+"</div><div class='one_fourth'>"+this_facet_count+"</div></a>";
             facet_values += this_facet;
           }
         });
-        facet_html += "<div class='panel-heading'>" + facet_name + "</div><div id='drs_"+facet_name+"' class='list_group'>"+facet_values+"</div>";
+        facet_html += "<div id='drs_"+facet+"' class='drs-facet'><b class='drs-facet-name'>" + facet_name + "</b>"+facet_values+"</div>";
       }
     });
     $("#drs-facets").html(facet_html);
@@ -113,7 +117,7 @@ jQuery(document).ready(function($) {
       //insert images in a responsive way based on thumbnails
       var this_doc = '<div class="drs-item">';
       if (thumbnail[0]) {
-        this_doc += "<div class='one_fourth'><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'><img src='http://cerberus.library.northeastern.edu"+thumbnail[0]+"' /></a></div>";
+        this_doc += "<div class='one_fourth'><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'><img src='http://cerberus.library.northeastern.edu"+thumbnail[1]+"' /></a></div>";
       }
       this_doc += "<div class='three_fourth'><h3><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>" + title + "</a></h3><p>" + abstract + "</p></div></div>";
       docs_html += this_doc;
@@ -176,5 +180,8 @@ jQuery(document).ready(function($) {
     get_data(params);
     $(this).val(params.sort);
   });
+  function toTitleCase(str){
+      return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+  }
 
 });//end doc ready

@@ -9,7 +9,7 @@ get_header(); ?>
 </noscript>
 
 <div id="drs-content">
-	<div id="drs-search"><!-- class="hidden" this class will depend on theme-->
+	<div id="drs-search" class="hidden">
 		<label for="drs-input" class="sr-only">Search:</label>
 		<input id="drs-input" name="drs-input" autocomplete="off" type="text" placeholder="Enter search term">
 		<input type="submit" value="Search" />
@@ -17,15 +17,13 @@ get_header(); ?>
   <div id="drs-browse-header-row" class="pagination">
     <h4>
 			<div id="drs-pagination-header"></div>
-			<div id="drs-sort"></div>
+			<div id="drs-sort" class="hidden"></div>
     	<ul id="drs-pagination"></ul>
 		</h4>
   </div><!-- #drs-browse-header-row -->
   <ul id="drs-selection"></ul>
 	<div id="drs-facets" class="one_fourth"></div>
   <div id="drs-docs" class="three_fourth">
-    <!-- <div id="drs-docs-even" class="col-sm-12 col-md-6"></div>
-    <div id="drs-docs-odd" class="col-sm-12 col-md-6"></div> -->
   </div>
 </div><!-- #drs-content -->
 
