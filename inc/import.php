@@ -1,91 +1,126 @@
 <?php
+require_once(ABSPATH . 'wp-admin/includes/media.php');
+require_once(ABSPATH . 'wp-admin/includes/file.php');
+require_once(ABSPATH . 'wp-admin/includes/image.php');
+
 add_action( 'wp_ajax_get_import', 'import_ajax_handler' ); //for auth users
 add_action( 'wp_ajax_nopriv_get_import', 'import_ajax_handler' ); //for nonauth users
 function import_ajax_handler() {
+  global $data;
+  $data = array();
+  $data['count'] = 0;
+  $data['existing_count'] = 0;
+  // global $email;
   // Handle the ajax request
   check_ajax_referer( 'import_drs' );
-    $url = "http://cerberus.library.northeastern.edu/api/v1/search/";
-    if ($_POST['pid'] ){
-      $url .= $_POST['pid'];
+  $collection_pid = $_POST['pid'];
+  $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$collection_pid."?per_page=2&page=1";
+  $drs_data = get_response($url);
+  $json = json_decode($drs_data);
+  // $email = '';
+  if ($json->pagination->table->total_count > 0){
+    $email .= $json->pagination->table->total_count;
+    for ($x = 1; $x <= $json->pagination->table->num_pages; $x++) {
+      $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$collection_pid."?per_page=2&page=".$x;
+      $drs_data = get_response($url);
+      $json = json_decode($drs_data);
+      drstk_get_image_data($json);
     }
-    $data = get_response($url);
-    //this should process the images - old functions are below - needs major refactor - waiting on export functionality from API
+  }
+  wp_send_json(json_encode($data));
+}
 
-    wp_send_json($data);
+function drstk_get_image_data($json){
+  global $data;
+  foreach($json->items as $doc) {
+    $title = $doc->mods->Title[0];
+    $core_pid = $doc->pid;
+    $data[$core_pid]['title'] = $title;
+    //if its an image just send the master image
+    if ($doc->canonical_object[0][1] == 'Master Image'){
+      $image_url = $doc->canonical_object[0][0];
+      $data[$core_pid]['canonical_object'] = $image_url;
+      $image_url_backup = $doc->thumbnails[4];
+    } else {
+      //if its not an image send a thumbnail
+      $image_url = $doc->thumbnails[4];
+      $data[$core_pid]['thumbnail'] = $image_url;
+      $image_url_backup = NULL;
+    }
+    if ($doc->mods->Creator){
+      $creator = $doc->mods->Creator[0];
+      $data[$core_pid]['creator'] = $creator;
+    } else {
+      $creator = NULL;
+    }
+    if ($doc->mods->{'Date created'}[0]){
+      $date = $doc->mods->{'Date created'}[0];
+      $data[$core_pid]['date_created'] = $date;
+    } else if ($doc->mods->{'Copyright date'}[0]){
+      $date = $doc->mods->{'Copyright date'}[0];
+      $data[$core_pid]['date_created'] = $date;
+    } else {
+      $date = NULL;
+    }
+    if ($doc->mods->{'Abstract/Description'}[0]){
+      $description = $doc->mods->{'Abstract/Description'}[0];
+      $data[$core_pid]['description'] = $description;
+    } else {
+      $description = NULL;
+    }
+    $metadata = $doc->mods;
+    drstk_process_image($image_url, $title, $creator, $date, $description, $metadata, $core_pid, $image_url_backup);
+  }
 }
 
 
-
- function drstk_get_media_images($collection_pid) {
-   //echo $collection_pid;
-
-   //first we get the existing images
-   $query_images_args = array(
-      'post_type' => 'attachment', 'post_mime_type' =>'image', 'post_status' => 'inherit', 'posts_per_page' => -1,
-    );
-   $query_images = new WP_Query( $query_images_args );
-   $images = array();
-   foreach ( $query_images->posts as $image) {
-      $images[]= basename(wp_get_attachment_url( $image->ID ));
-   }
-    //print_r($images);
-    //get all the core_files from the drs
-    $drs_url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection_pid."?per_page=20";
-    //will there be some kind of helper with the api to get them all back at once? don't want to waste time writing a function that would loop through the pages of results
-    $json = get_response($drs_url);
-    //print_r($json);
-    $json = json_decode($json);
-    if ($json->response->response->numFound > 0) {
-      foreach($json->response->response->docs as $doc) {
-        $title = $doc->mods->title;
-        //if its an image just send the master image
-        if ($doc->Format == 'Image'){
-          $url = $doc->canonical_object;
-        } else {
-          //if its not an image send a thumbnail
-          $url = $doc->thumbnails[4];
-        }
-        //assign $title, $creator, $date, $description
-        if ($doc->mods->creator){
-          $creator = $doc->mods->creator;
-        }
-        $date = $doc->mods['Copyright date'];
-        $description = $doc->mods['Abstract/Description'];
-        $metadata = $doc->mods;
-        $core_pid = $doc->pid
-        echo $url;
-        drstk_process_image($url, $images, $title, $creator, $date, $description, $metadata, $core_pid);
-      }
+  function drstk_process_image($image_url, $title, $creator = NULL, $date = NULL, $description = NULL, $metadata, $core_pid, $image_url_backup = NULL){
+    global $data;
+    //global $email;
+    $query_images_args = array(
+       'post_type' => 'attachment', 'post_mime_type' =>'image', 'post_status' => 'inherit', 'posts_per_page' => -1,
+     );
+    $query_images = new WP_Query( $query_images_args );
+    $images = array();
+    foreach ( $query_images->posts as $image) {
+       $images[]= basename(wp_get_attachment_url( $image->ID ));
     }
-  }
+    $data['images'] = $images;
 
-  function drstk_process_image($url, $images, $title, $creator, $date, $description, $metadata, $core_pid){
-    $pid = explode("/", $url);
+    $pid = explode("/", $image_url);
     $pid = explode("?", end($pid));
     $pid = str_replace(":","",$pid[0]);
-    echo $pid;
     if (!in_array($pid, $images)){
-      $tmp = download_url( $url );
+      $data['count'] = $data['count']+1;
+      $data[$core_pid]['image_status'] = "is not in images";
+      $tmp = download_url( $image_url );
       $post_id = 0;
       $file_array = array();
-
       // Set variables for storage
       $file_array['name'] = $pid;
-      $file_array['type'] = 'image/jpeg';
+      $file_array['type'] = mime_content_type($tmp);
       $file_array['error'] = 0;
       $file_array['tmp_name'] = $tmp;
       $file_array['size'] = filesize($tmp);
-      //print_r($file_array);
+      $data[$core_pid]['file_info'] = $file_array;
 
       // If error storing temporarily, unlink
       if ( is_wp_error( $tmp ) ) {
         @unlink($file_array['tmp_name']);
         $file_array['tmp_name'] = '';
+        return $tmp;
+      }
+      //need to check for files that aren't jpgs becuase wp doesn't like them
+       if ($file_array['type']!='image/jpeg'){
+        $tmp = download_url($image_url_backup);
+        $file_array['tmp_name'] = $tmp;
+        $file_array['type'] = mime_content_type($tmp);
+        $file_array['size'] = filesize($tmp);
       }
 
       // do the validation and storage stuff
-      $id = media_handle_sideload( $file_array, 0);
-      echo $id . "<br/>";
+      $post_data = array('post_title'=>$title,'post_name'=>$title, 'post_excerpt'=>$description);
+      $id = media_handle_sideload( $file_array, 0, $description, $post_data);
 
       // If error storing permanently, unlink
       if ( is_wp_error($id) ) {
@@ -95,21 +130,19 @@ function import_ajax_handler() {
 
       $src = wp_get_attachment_url( $id );
       $image_id = drstk_get_image_id($src);
-      echo $src . "<br/>";
-      echo $image_id . "<br/>";
-      $image_post = array(
-        'ID' => $image_id,
-        'post_title' => $title,
-        'post_excerpt' => $description,
-      );
-      wp_update_post($image_post);
-      update_post_meta($image_id, 'drstk-drs-metadata', $metadata);
-      update_post_meta($image_id, 'drstk-creator', $creator);
-      update_post_meta($image_id, 'drstk-date-created', $date);
-      update_post_meta($image_id, 'drstk-pid', $core_pid);
-      //set core file pid so we can redirect the link
-      //permalink redirect from image url to item level page?
 
+      $data[$core_pid]['image_id'] = $image_id;
+      update_post_meta($image_id, 'drstk-drs-metadata', $metadata);
+      if ($creator != NULL){
+        update_post_meta($image_id, 'drstk-creator', $creator);
+      }
+      if ($date != NULL){
+        update_post_meta($image_id, 'drstk-date-created', $date);
+      }
+      update_post_meta($image_id, 'drstk-pid', $core_pid);
+    } else {
+      $data[$core_pid]['image_status'] = "is already in images";
+      $data['existing_count'] = $data['existing_count']+1;
     }
   }
 
