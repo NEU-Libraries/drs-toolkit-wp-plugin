@@ -9,7 +9,7 @@ jQuery(document).ready(function($) {
       var data = $.parseJSON(data);
       console.log(data);
       if (data == null) {
-        $("#drs-content").html("Your request produced no results. Please try something else. Thanks!");
+        $("#drs-content").html("There seems to be an issue connecting with the place where the data is stored. Try again later. Thanks!");
       } else if (data.error) {
         $("#drs-content").html("Your request produced no results. The error received was '"+data.error+"'. Thanks!");
       } else if (jQuery.type(data) == 'object') {
