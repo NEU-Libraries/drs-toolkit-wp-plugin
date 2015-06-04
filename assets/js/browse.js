@@ -20,7 +20,7 @@ jQuery(document).ready(function($) {
     }, function(data) {
         var data = $.parseJSON(data);
         if (data == null) {
-          $("#drs-content").html("Your request produced no results. Please try something else. Thanks!");
+          $("#drs-content").html("There seems to be an issue connecting with the place where the data is stored. Try again later. Thanks!");
         } else if (data.error) {
           $("#drs-content").html("Your query produced no results. The error received was '"+data.error+"'. Thanks!");
         } else if (data.response.response.numFound > 0) {
@@ -38,12 +38,12 @@ jQuery(document).ready(function($) {
 
   //parses pagination data
   function paginate(data){
-    $("#drs-pagination-header").html("<div class='grid-50'>Displaying " + data.start + " to " + data.end + " of " + data.total_count + "</div><div class='grid-50'>Show <select id='drs-per-page'><option val='2'>2</option><option val='5'>5</option><option val='10'>10</option></select> per page</div>");
+    $("#drs-pagination-header").html("<div class='one_fourth'>Displaying " + data.start + " to " + data.end + " of " + data.total_count + "</div><div class='one_fourth'>Show <select id='drs-per-page'><option val='2'>2</option><option val='5'>5</option><option val='10'>10</option></select> per page</div>");
     $("#drs-per-page").val(params.per_page);
     if (data.num_pages > 1) {
       var pagination = "<li class='";
       if (data.current_page > 1){
-        pagination += "active'><a href='#' class='prev'><<</a>";
+        pagination += "'><a href='#' class='prev'><<</a>";
       } else {
         pagination += "disabled'><span><<</span>";
       }
@@ -66,7 +66,7 @@ jQuery(document).ready(function($) {
       if (data.current_page == data.num_pages){
         pagination += "disabled'><span>>></span>";
       } else {
-        pagination += "active'><a href='#' class='next'>>></a>";
+        pagination += "'><a href='#' class='next'>>></a>";
       }
       pagination += "</li>";
       $("#drs-pagination").html(pagination);
@@ -113,9 +113,9 @@ jQuery(document).ready(function($) {
       //insert images in a responsive way based on thumbnails
       var this_doc = '<div class="drs-item">';
       if (thumbnail[0]) {
-        this_doc += "<div class='grid-25'><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'><img src='http://cerberus.library.northeastern.edu"+thumbnail[0]+"' /></a></div>";
+        this_doc += "<div class='one_fourth'><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'><img src='http://cerberus.library.northeastern.edu"+thumbnail[0]+"' /></a></div>";
       }
-      this_doc += "<div class='grid-75'><h3><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>" + title + "</a></h3><p>" + abstract + "</p></div></div>";
+      this_doc += "<div class='three_fourth'><h3><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>" + title + "</a></h3><p>" + abstract + "</p></div></div>";
       docs_html += this_doc;
     });
     $("#drs-docs").html(docs_html);
@@ -169,7 +169,7 @@ jQuery(document).ready(function($) {
     get_data(params);
   });
 
-  $("#drs-sort").html("<select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance Desc</option><option value='title_info_title_ssi%20desc'>Title Desc</option><option value='title_info_title_ssi%20asc'>Title Asc</option><option value='creator_ssi%20desc'>Creator Desc</option><option value='creator_ssi%20asc'>Creator Asc</option><option value='system_create_dtsi%20desc'>Date Uploaded Desc</option><option value='system_create_dtsi%20asc'>Date Uploaded Asc</option><option value='system_modified_dtsi%20desc'>Date Created Desc</option><option value='system_modified_dtsi%20asc'>Date Created Asc</option></select>");
+  $("#drs-sort").html("<div class='one_fourth'>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance Desc</option><option value='title_info_title_ssi%20desc'>Title Desc</option><option value='title_info_title_ssi%20asc'>Title Asc</option><option value='creator_ssi%20desc'>Creator Desc</option><option value='creator_ssi%20asc'>Creator Asc</option><option value='system_create_dtsi%20desc'>Date Uploaded Desc</option><option value='system_create_dtsi%20asc'>Date Uploaded Asc</option><option value='system_modified_dtsi%20desc'>Date Created Desc</option><option value='system_modified_dtsi%20asc'>Date Created Asc</option></select></div>");
 
   $("#drs-sort-option").on("change", function() {
     params.sort = $(this).val();
