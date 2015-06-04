@@ -39,7 +39,7 @@ jQuery(document).ready(function($) {
 
   //parses pagination data
   function paginate(data){
-    $("#drs-pagination-header").html("<div class='one_fourth'>Displaying " + data.start + " to " + data.end + " of " + data.total_count + "</div><div class='one_fourth'>Show <select id='drs-per-page'><option val='2'>2</option><option val='5'>5</option><option val='10'>10</option></select> per page</div>");
+    $("#drs-pagination-header").html("<div class='one_third'>Displaying " + data.start + " to " + data.end + " of " + data.total_count + "</div><div class='one_fourth'>Show <select id='drs-per-page'><option val='2'>2</option><option val='5'>5</option><option val='10'>10</option></select> per page</div>");
     $("#drs-per-page").val(params.per_page);
     if (data.num_pages > 1) {
       var pagination = "<li class='";
@@ -80,10 +80,7 @@ jQuery(document).ready(function($) {
   function facetize(data){
     var facet_html = '';
     $.each(data.facet_fields, function(facet, facet_vals){
-      var facet_name = facet; //need to prettize this
-      facet_name = facet_name.replace("_tesim","").replace("_sim","");
-      facet_name = facet_name.replace("_", " ");
-      facet_name = toTitleCase(facet_name);
+      var facet_name = titleize(facet); //need to prettize this
       var facet_values = '';
       if (facet_vals.length > 0) {
         var this_facet, this_facet_name;
@@ -113,13 +110,16 @@ jQuery(document).ready(function($) {
       var thumbnail = [];
       doc_vals.title_ssi? title = doc_vals.title_ssi : "";
       doc_vals.abstract_tesim? abstract = doc_vals.abstract_tesim : "";
+      if (String(abstract).length > 2){
+        abstract = String(abstract).substring(0, 125) + "...";
+      }
       doc_vals.thumbnail_list_tesim? thumbnail = doc_vals.thumbnail_list_tesim : "";
       //insert images in a responsive way based on thumbnails
       var this_doc = '<div class="drs-item">';
       if (thumbnail[0]) {
         this_doc += "<div class='one_fourth'><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'><img src='http://cerberus.library.northeastern.edu"+thumbnail[1]+"' /></a></div>";
       }
-      this_doc += "<div class='three_fourth'><h3><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>" + title + "</a></h3><p>" + abstract + "</p></div></div>";
+      this_doc += "<div class='three_fourth'><h4><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>" + title + "</a></h4><p>" + abstract + "</p></div></div>";
       docs_html += this_doc;
     });
     $("#drs-docs").html(docs_html);
@@ -146,9 +146,9 @@ jQuery(document).ready(function($) {
       e.preventDefault();
       var facet = $(this).parent().attr("id");
       facet = facet.substr(4);
-      var facet_val = $(this).children(".facet_val").html();
+      var facet_val = $(this).children(".drs-facet-val div:first-of-type").html();
       params.f[facet] = facet_val;
-      $("#drs-selection").append("<a class='btn' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+facet+" > "+facet_val+" X </a>");
+      $("#drs-selection").append("<a class='btn' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+" X </a>");
       get_data(params);
     });
     $("#drs-selection a").on("click", function(e){
@@ -180,8 +180,12 @@ jQuery(document).ready(function($) {
     get_data(params);
     $(this).val(params.sort);
   });
-  function toTitleCase(str){
-      return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+
+  function titleize(str){
+    str = str.replace("_tesim","").replace("_sim","");
+    str = str.replace("_", " ");
+    str = str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    return str;
   }
 
 });//end doc ready
