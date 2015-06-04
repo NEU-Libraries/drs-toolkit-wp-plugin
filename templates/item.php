@@ -16,10 +16,10 @@ get_header(); ?>
 
 <div id="drs-content">
 	<h1 id="drs-item-title"></h1>
-  <div id="drs-item-left" class="grid-50">
+  <div id="drs-item-left" class="one_half">
 		<img id="drs-item-img"/>
 	</div>
-  <div id="drs-item-right" class="grid-50">
+  <div id="drs-item-right" class="one_half">
 		<div id="drs-item-details"></div>
 	</div>
 </div><!-- #drs-content -->
