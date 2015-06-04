@@ -85,9 +85,6 @@ $TEMPLATE = array(
      <small>Ie. If the URL to your collection is <a href="https://repository.library.northeastern.edu/collections/neu:6012">https://repository.library.northeastern.edu/collections/neu:6012</a> then the ID is neu:6012</small>
      </td>
      </tr>
-     <tr>
-     <td><a class="button" id="drstk-import" href="#">Import Items from the DRS</a></td>
-     </tr>
      </tbody>
      </table>
       <input type="hidden" name="action" value="update" />
@@ -95,6 +92,12 @@ $TEMPLATE = array(
       <input type="hidden" name="page_options" value="drstk_collection, drstk_sync_images" />
 
       <input type="submit" name="Submit" value="Update" /></form></div>
+      <br/>
+      <table>
+      <tr>
+      <td><a class="button" id="drstk-import" href="#">Import Items from the DRS</a></td>
+      </tr>
+      </table>
      <pre>
      ';
 
@@ -164,6 +167,7 @@ function drstk_content_template( $template ) {
     }
 } // end drstk_content_template
 
+
 /**
  * Load scripts for the browse/search page
  *
@@ -220,26 +224,44 @@ function drstk_image_attachment_add_custom_fields($form_fields, $post) {
   $form_fields["drstk-drs-metadata"]["label"] = __("DRS Metadata");
   $form_fields["drstk-drs-metadata"]["input"] = "html";
   $form_fields["drstk-drs-metadata"]["value"] = get_post_meta($post->ID, "drstk-drs-metadata", true);
-  $form_fields["drstk-drs-metadata"]["helps"] = "Metadata imported from the DRS. Note this data is read only. Any changes must be made directly in the DRS.";
-  $form_fields["drstk-drs-metadata"]["html"] = "<tr><td>Field Name</td><td>Field Value</td></tr><tr><td>Example Field</td><td>Example Value".get_post_meta($post->ID, "drstk-drs-metadata", true)."</td></tr>";//loop through values here to make it into a table
+  $metadata_html = '';
+  foreach (get_post_meta($post->ID, "drstk-drs-metadata", true) as $key => $value){
+    $metadata_html .= "<tr><td><i>" . $key . "</i></td><td>";
+    if (count($value) > 1) {
+      for($x=0; $x<=count($value)-1; $x++){
+        $metadata_html .= $value[$x];
+        if ($x != count($value)-1){
+          $metadata_html .=", ";
+        }
+      }
+      $metadata_html .= "</td></tr>";
+    } else {
+      $metadata_html .= $value[0] . "</td></tr>";
+    }
+  }
+  $form_fields["drstk-drs-metadata"]["html"] = "<p>Metadata imported from the DRS. Note this data is read only. Any changes must be made directly in the DRS.</p>".$metadata_html;
 
-  $form_fields["drstk-creator"] = array();
-  $form_fields["drstk-creator"]["label"] = __("Creator");
-  $form_fields["drstk-creator"]["input"] = "text";
-  $form_fields["drstk-creator"]["value"] = get_post_meta($post->ID, "drstk-creator", true);
-  $form_fields["drstk-creator"]["helps"] = "This field is imported from the DRS. Any changes here will not be changed in the DRS.";
+  if (get_post_meta($post->ID, "drstk-creator")){
+    $form_fields["drstk-creator"] = array();
+    $form_fields["drstk-creator"]["label"] = __("Creator");
+    $form_fields["drstk-creator"]["input"] = "html";
+    $form_fields["drstk-creator"]["value"] = get_post_meta($post->ID, "drstk-creator", true);
+    $form_fields["drstk-creator"]["html"] = "<p>This field is imported from the DRS. Any changes must be made directly in the DRS.</p><tr><td>".get_post_meta($post->ID, "drstk-creator", true)."</td></tr>";
+  }
 
-  $form_fields["drstk-date-created"] = array();
-  $form_fields["drstk-date-created"]["label"] = __("Date Created");
-  $form_fields["drstk-date-created"]["input"] = "text";
-  $form_fields["drstk-date-created"]["value"] = get_post_meta($post->ID, "drstk-date-created", true);
-  $form_fields["drstk-date-created"]["helps"] = "This field is imported from the DRS. Any changes here will not be changed in the DRS.";
+  if (get_post_meta($post->ID, "drstk-date-created")){
+    $form_fields["drstk-date-created"] = array();
+    $form_fields["drstk-date-created"]["label"] = __("Date Created");
+    $form_fields["drstk-date-created"]["input"] = "html";
+    $form_fields["drstk-date-created"]["value"] = get_post_meta($post->ID, "drstk-date-created", true);
+    $form_fields["drstk-date-created"]["html"] = "<p>This field is imported from the DRS. Any changes must be made directly in the DRS.</p><tr><td>".get_post_meta($post->ID, "drstk-date-created", true)."</td></tr>";
+  }
 
   $form_fields["drstk-pid"] = array();
   $form_fields["drstk-pid"]["label"] = __("CoreFile Pid");
-  $form_fields["drstk-pid"]["input"] = "text";//can change to just displaying the pid later since it shouldn't be editable
+  $form_fields["drstk-pid"]["input"] = "html";//can change to just displaying the pid later since it shouldn't be editable
   $form_fields["drstk-pid"]["value"] = get_post_meta($post->ID, "drstk-pid", true);
-  $form_fields["drstk-pid"]["helps"] = "This field is imported from the DRS. Any changes here will not be changed in the DRS.";
+  $form_fields["drstk-pid"]["html"] = "<p>This is a read-only field</p><tr><td>".get_post_meta($post->ID, "drstk-pid", true)."</td></tr>";
 
   return $form_fields;
 }
