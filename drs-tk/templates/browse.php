@@ -9,11 +9,12 @@ get_header(); ?>
 </noscript>
 
 <div id="drs-content">
-	<ul id="drs-selection"></ul>
+	<div id="drs-loading"></div>
+	<div id="drs-selection" class="hide">You've selected: </div>
   <div id="drs-browse-header-row">
 		<div id="drs-item-count" class="one_fourth"></div>
 		<div id="drs-per-page-div" class="one_fourth"></div>
-		<div id="drs-sort" class="hidden one_fourth"></div>
+		<div id="drs-sort" class="hide one_fourth"></div>
   	<div id="drs-pagination" class="one_fourth last"><ul class="pag"></ul></div>
   </div><!-- #drs-browse-header-row -->
 	<div id="drs-facets" class="one_fourth"></div>
