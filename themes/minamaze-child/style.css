@@ -26,6 +26,9 @@ Tags: black, dark, red, one-column, two-columns, three-columns, right-sidebar, l
   width:28.06% !important;
 }
 
+
+/* modifications to make the grid and list views for search and browse*/
+
 #drs-facets{
   clear:both;
   border-bottom: 1px solid #EEE;
@@ -77,4 +80,38 @@ Tags: black, dark, red, one-column, two-columns, three-columns, right-sidebar, l
 }
 .themebutton{
   padding:5px;
+}
+
+
+/*thanks bootstrap*/
+.sr-only{
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+
+/*overrides because moved the search from the pre-header to under the main header*/
+#pre-header-search{
+  width:100% !important;
+  clear:both;
+  display:block !important;
+}
+#drs-search .search {
+  max-width: none;
+  background: #EEE;
+  border: 1px solid #CCC;
+  color: #3A3A3A;
+}
+#drs-search input, #drs-search .searchsubmit{
+  display:inline-block;
+  color: #FFF;
+}
+.home #pre-header-search{
+  overflow: auto;
+  padding-bottom: 15px;
 }
