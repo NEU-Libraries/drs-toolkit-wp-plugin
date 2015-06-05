@@ -29,6 +29,9 @@ Tags: black, dark, red, one-column, two-columns, three-columns, right-sidebar, l
   display:block;
   width:100%;
 }
+.drs-facet-val div{
+  margin-bottom:7px;
+}
 .drs-facet-val div:nth-of-type(2){
   text-align:right;
 }
@@ -85,6 +88,9 @@ h5.drs-item-title, .drs-item-abstract{
   text-overflow: ellipsis;
   white-space: nowrap;
   margin-bottom:0;
+}
+h5.drs-item-title{
+  line-height: 25px;
 }
 #drs-selection{
   clear:both;

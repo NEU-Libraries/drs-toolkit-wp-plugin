@@ -114,7 +114,6 @@ jQuery(document).ready(function($) {
       doc_vals.title_ssi? title = doc_vals.title_ssi : "";
       doc_vals.abstract_tesim? abstract = doc_vals.abstract_tesim : "";
       doc_vals.thumbnail_list_tesim? thumbnail = doc_vals.thumbnail_list_tesim : "";
-      //insert images in a responsive way based on thumbnails
       var this_doc = '';
       if (template == 'search'){
         //search = grid
