@@ -141,7 +141,7 @@ h5.drs-item-title{
 
 /*overrides because moved the search from the pre-header to under the main header*/
 #pre-header-search{
-  width:100% !important;
+  width:96% !important;
   clear:both;
   display:block !important;
 }
