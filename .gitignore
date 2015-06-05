@@ -6,6 +6,7 @@ node_modules
 !plugins/drs-tk/
 
 /themes/*
+/themes/minamaze
 !themes/minamaze-child/
 
 uploads/
