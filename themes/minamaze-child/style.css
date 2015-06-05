@@ -11,22 +11,6 @@ License URI: /licenses/license.txt
 Tags: black, dark, red, one-column, two-columns, three-columns, right-sidebar, left-sidebar, fixed-layout, responsive-layout, fluid-layout, custom-header, custom-menu, full-width-template, theme-options, threaded-comments, editor-style, featured-images, featured-image-header, post-formats, sticky-post, translation-ready, flexible-header, gray, light, white, custom-background
 */
 
-
-/*need to fix this so that the parent styles/responsive and styles/shortcode are inserted before child style.css*/
-.one_half{
-  width:46.7% !important;
-}
-.three_fourth{
-  width:70.35% !important;
-}
-.one_fourth{
-  width:22.05% !important;
-}
-.one_third{
-  width:28.06% !important;
-}
-
-
 /* modifications to make the grid and list views for search and browse*/
 
 #drs-facets{
@@ -45,20 +29,15 @@ Tags: black, dark, red, one-column, two-columns, three-columns, right-sidebar, l
   display:block;
   width:100%;
 }
-.drs-facet-val{
-  clear: both;
-  width: 100%;
-  display: block;
-}
-.drs-facet-val div {
-  margin-bottom:5px;
-}
 .drs-facet-val div:nth-of-type(2){
   text-align:right;
 }
 #drs-docs{
   padding:10px;
   border:1px solid #EEE;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
 }
 .drs-item{
   overflow: auto;
