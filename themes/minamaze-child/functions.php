@@ -8,22 +8,6 @@ function drs_enqueue_styles() {
 //     );
 }
 
-
-add_theme_support( 'html5', array( 'search-form' ) );
-
-//this doesn't work yet
-function my_search_form( $form ) {
-	$form = '<form method="post" class="searchform" action="'. esc_url( home_url( "/search" ) ).'" role="search">
-    <input type="text" class="search" name="params[q]" value="'.esc_attr( get_search_query() ).'" placeholder="'._e( "Search", "lan-thinkupthemes" ).'" />
-    <input type="submit" class="searchsubmit" name="submit" value="Search" />
-  </form>';
-
-	return $form;
-}
-
-add_filter( 'get_search_form', 'my_search_form' );
-
-
 /*COPIED FROM minamaze/admin/main/options/01.general-settings.php*/
 /* Add custom intro section [Extend for more options in future update] */
 function drs_custom_intro() {
