@@ -53,6 +53,7 @@ Tags: black, dark, red, one-column, two-columns, three-columns, right-sidebar, l
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
+  min-height:230px;
 }
 .drs-item.one_third:nth-of-type(3n+3){
   clear: right;
@@ -65,9 +66,17 @@ Tags: black, dark, red, one-column, two-columns, three-columns, right-sidebar, l
   display:block;
 }
 .drs-item .dashicons{
-  font-size:40px;
-  width:50px;
-  height:50px;
+  font-size:100px;
+  width: 130px;
+  height: 175px;
+}
+.drs-item-title h5{
+  display: inline-block;
+  line-height: 25px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 #drs-selection{
   clear:both;
