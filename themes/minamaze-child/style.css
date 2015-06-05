@@ -50,6 +50,13 @@ Tags: black, dark, red, one-column, two-columns, three-columns, right-sidebar, l
   border:1px solid #EEE;
   padding:5px;
   text-align:center;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+.drs-item.one_third:nth-of-type(3n+3){
+  clear: right;
+  margin-right: 0px !important;
 }
 .drs-item h4{
   margin-top:20px;
