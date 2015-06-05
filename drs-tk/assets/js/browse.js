@@ -42,7 +42,7 @@ jQuery(document).ready(function($) {
 
   //parses pagination data
   function paginate(data){
-    $("#drs-pagination-header").html("<div class='one_third'>Displaying " + data.start + " to " + data.end + " of " + data.total_count + "</div><div class='one_fourth'>Show <select id='drs-per-page'><option val='2'>2</option><option val='5'>5</option><option val='10'>10</option></select> per page</div>");
+    $("#drs-pagination-header").html("<div class='one_fourth'>Displaying " + data.start + " to " + data.end + " of " + data.total_count + "</div><div class='one_fourth'>Show <select id='drs-per-page'><option val='2'>2</option><option val='5'>5</option><option val='10'>10</option></select> per page</div>");
     $("#drs-per-page").val(params.per_page);
     if (data.num_pages > 1) {
       var pagination = "<li class='";
@@ -94,7 +94,7 @@ jQuery(document).ready(function($) {
             this_facet_name = val_q;
           }
           if (this_facet_count != undefined) {
-            this_facet = "<a href='#' class='drs-facet-val' ><div class='three_fourth'>"+this_facet_name+"</div><div class='one_fourth'>"+this_facet_count+"</div></a>";
+            this_facet = "<a href='#' class='drs-facet-val' ><div class='three_fourth'>"+this_facet_name+"</div><div class='one_fourth last'>"+this_facet_count+"</div></a>";
             facet_values += this_facet;
           }
         });
@@ -124,7 +124,7 @@ jQuery(document).ready(function($) {
         if (thumbnail[0]) {
           this_doc += "<div class='one_fourth'><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'><img src='http://cerberus.library.northeastern.edu"+thumbnail[1]+"' /></a></div>";
         }
-        this_doc += "<div class='three_fourth'><h4><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>" + title + "</a></h4><p>" + abstract + "</p></div></div>";
+        this_doc += "<div class='three_fourth last'><h4><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>" + title + "</a></h4><p>" + abstract + "</p></div></div>";
       } else {
         this_doc += '<div class="drs-item one_third">';
         if (thumbnail[0]) {
