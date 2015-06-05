@@ -9,11 +9,6 @@ get_header(); ?>
 </noscript>
 
 <div id="drs-content">
-	<div id="drs-search" class="hidden">
-		<label for="drs-input" class="sr-only">Search:</label>
-		<input id="drs-input" name="drs-input" autocomplete="off" type="text" placeholder="Enter search term">
-		<input type="submit" value="Search" />
-	</div>
 	<ul id="drs-selection"></ul>
   <div id="drs-browse-header-row" class="">
     <h4>
