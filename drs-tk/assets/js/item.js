@@ -27,7 +27,6 @@ jQuery(document).ready(function($) {
     }
     if (data.thumbnails) {
       $("#drs-item-img").attr("src",data.thumbnails[data.thumbnails.length - 1]);
-      //append responsive sized images here
     }
     var data_html = '';
     $.each(data.mods, function(key,value){
