@@ -18,7 +18,7 @@ get_header(); ?>
 		</h4>
   </div><!-- #drs-browse-header-row -->
 	<div id="drs-facets" class="one_fourth"></div>
-  <div id="drs-docs" class="three_fourth">
+  <div id="drs-docs" class="three_fourth last">
   </div>
 </div><!-- #drs-content -->
 
