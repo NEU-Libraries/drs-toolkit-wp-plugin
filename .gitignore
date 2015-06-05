@@ -1,3 +1,11 @@
 node_modules
 .git/*
 .git
+
+/plugins/*
+!plugins/drs-tk/
+
+/themes/*
+!themes/minamaze-child/
+
+uploads/

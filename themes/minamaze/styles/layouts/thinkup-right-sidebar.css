@@ -1,0 +1,20 @@
+/*----------------------------------------------------
+	Right Sidebar
+---------------------------------------------------- */
+#main {
+	float: left;
+	width: 75%;
+	display: block;
+}
+#intro,
+#main-core {
+	margin-right: 20px;
+}
+#sidebar {
+	display: block;
+	float: left;
+	width: 25%;
+}
+#sidebar-core {
+	margin-left: 20px;
+}
