@@ -94,3 +94,8 @@ Tags: black, dark, red, one-column, two-columns, three-columns, right-sidebar, l
   overflow: auto;
   padding-bottom: 15px;
 }
+
+/*for disabled pagination*/
+.pag li.disabled span {
+	background: #EEE;
+}
