@@ -10,12 +10,11 @@ get_header(); ?>
 
 <div id="drs-content">
 	<ul id="drs-selection"></ul>
-  <div id="drs-browse-header-row" class="">
-    <h4>
-			<div id="drs-pagination-header"></div>
-			<div id="drs-sort" class="hidden"></div>
-    	<ul id="drs-pagination" class="pag"></ul>
-		</h4>
+  <div id="drs-browse-header-row">
+		<div id="drs-item-count" class="one_fourth"></div>
+		<div id="drs-per-page" class="one_fourth"></div>
+		<div id="drs-sort" class="hidden one_fourth"></div>
+  	<div id="drs-pagination" class="one_fourth last"><ul class="pag"></ul></div>
   </div><!-- #drs-browse-header-row -->
 	<div id="drs-facets" class="one_fourth"></div>
   <div id="drs-docs" class="three_fourth last">
