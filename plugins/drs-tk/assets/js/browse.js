@@ -43,7 +43,7 @@ jQuery(document).ready(function($) {
   //parses pagination data
   function paginate(data){
     $("#drs-item-count").html("<div>Displaying " + data.start + " to " + data.end + " of " + data.total_count + "</div>");
-    $("#drs-per-page").html("<div>Show <select id='drs-per-page'><option val='2'>2</option><option val='5'>5</option><option val='10'>10</option></select> per page</div>");
+    $("#drs-per-page-div").html("<div>Show <select id='drs-per-page'><option val='2'>2</option><option val='5'>5</option><option val='10'>10</option></select> per page</div>");
     $("#drs-per-page").val(params.per_page);
     if (data.num_pages > 1) {
       var pagination = "<li class='";

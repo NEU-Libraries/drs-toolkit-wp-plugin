@@ -12,7 +12,7 @@ get_header(); ?>
 	<ul id="drs-selection"></ul>
   <div id="drs-browse-header-row">
 		<div id="drs-item-count" class="one_fourth"></div>
-		<div id="drs-per-page" class="one_fourth"></div>
+		<div id="drs-per-page-div" class="one_fourth"></div>
 		<div id="drs-sort" class="hidden one_fourth"></div>
   	<div id="drs-pagination" class="one_fourth last"><ul class="pag"></ul></div>
   </div><!-- #drs-browse-header-row -->
