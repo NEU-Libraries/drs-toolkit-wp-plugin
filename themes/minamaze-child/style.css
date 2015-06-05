@@ -50,7 +50,7 @@ Tags: black, dark, red, one-column, two-columns, three-columns, right-sidebar, l
 .drs-item:last-of-type{
   border-bottom:none;
 }
-.drs-item div.one_fourth{
+.drs-item div.one_fourth, #drs-browse-header-row .one_fourth{
   margin-bottom:0px;
 }
 .drs-item.one_third{
@@ -94,9 +94,25 @@ h5.drs-item-title{
 }
 #drs-selection{
   clear:both;
+  background: #EEE;
+  display: block;
+  border: 1px solid #CCC;
 }
 .themebutton{
   padding:5px;
+}
+#drs-browse-header-row{
+  display: block;
+  border: 1px solid #EEE;
+  overflow: auto;
+  margin-bottom:20px;
+}
+#drs-browse-header-row .one_fourth div, #drs-browse-header-row .one_fourth ul{
+  padding:10px;
+  font-size:13px;
+}
+#drs-pagination {
+  font-size:16px;
 }
 
 
