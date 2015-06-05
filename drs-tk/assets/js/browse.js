@@ -1,15 +1,18 @@
 jQuery(document).ready(function($) {
   var q = '';
+  q = GetURLParameter('q');
   var per_page = 2;
   var page = 1;
   var f = {};
   var sort = "score+desc%2C+system_create_dtsi+desc";
   var params = {q:q, per_page:per_page, page:page, f:f, sort:sort};
-  get_data(params);
   var template = browse_obj.template;
-  if (template == 'search') {
-    $("#drs-search").show().css("visibility","visible");
+  if ((q) && (q != '')){
+    $("#drs-selection a[data-type='q']").remove();
+    $("#drs-selection").append("<a class='themebutton' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+" X</a>");
   }
+  get_data(params);
+
   function get_data(params){
     $("#drs-pagination-header").html("<h2>Loading...<br/><span class='fa fa-spinner fa-pulse'></span></h2>");
     $.post(browse_obj.ajax_url, {
@@ -175,13 +178,6 @@ jQuery(document).ready(function($) {
 
   }
 
-  $("#drs-search input[type='submit']").on("click", function() {
-    params.q = $("#drs-input").val();
-    $("#drs-selection a[data-type='q']").remove();
-    $("#drs-selection").append("<a class='themebutton' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+" X</a>");
-    get_data(params);
-  });
-
   $("#drs-sort").html("<div class='one_fourth'>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance Desc</option><option value='title_info_title_ssi%20desc'>Title Desc</option><option value='title_info_title_ssi%20asc'>Title Asc</option><option value='creator_ssi%20desc'>Creator Desc</option><option value='creator_ssi%20asc'>Creator Asc</option><option value='system_create_dtsi%20desc'>Date Uploaded Desc</option><option value='system_create_dtsi%20asc'>Date Uploaded Asc</option><option value='system_modified_dtsi%20desc'>Date Created Desc</option><option value='system_modified_dtsi%20asc'>Date Created Asc</option></select></div>");
 
   $("#drs-sort-option").on("change", function() {
@@ -195,6 +191,17 @@ jQuery(document).ready(function($) {
     str = str.replace("_", " ");
     str = str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     return str;
+  }
+
+  function GetURLParameter(sParam){
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++){
+      var sParameterName = sURLVariables[i].split('=');
+      if (sParameterName[0] == sParam){
+        return sParameterName[1];
+      }
+    }
   }
 
 });//end doc ready
