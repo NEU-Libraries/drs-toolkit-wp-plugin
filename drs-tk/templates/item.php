@@ -19,7 +19,7 @@ get_header(); ?>
   <div id="drs-item-left" class="one_half">
 		<img id="drs-item-img"/>
 	</div>
-  <div id="drs-item-right" class="one_half">
+  <div id="drs-item-right" class="one_half last">
 		<div id="drs-item-details"></div>
 	</div>
 </div><!-- #drs-content -->
