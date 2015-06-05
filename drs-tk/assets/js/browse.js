@@ -113,19 +113,22 @@ jQuery(document).ready(function($) {
       var thumbnail = [];
       doc_vals.title_ssi? title = doc_vals.title_ssi : "";
       doc_vals.abstract_tesim? abstract = doc_vals.abstract_tesim : "";
-      if (String(abstract).length > 2){
-        abstract = String(abstract).substring(0, 125) + "...";
-      }
       doc_vals.thumbnail_list_tesim? thumbnail = doc_vals.thumbnail_list_tesim : "";
       //insert images in a responsive way based on thumbnails
       var this_doc = '';
       if (template == 'search'){
         //search = grid
-        this_doc += '<div class="drs-item">';
+        this_doc += "<div class='drs-item'><div class='one_fourth'><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>";
         if (thumbnail[1]) {
-          this_doc += "<div class='one_fourth'><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'><img src='http://cerberus.library.northeastern.edu"+thumbnail[1]+"' /></a></div>";
+          this_doc += "<img src='http://cerberus.library.northeastern.edu"+thumbnail[1]+"' />";
+        } else {
+          this_doc += "<div class='dashicons dashicons-portfolio'></div>";
         }
-        this_doc += "<div class='three_fourth last'><h4><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>" + title + "</a></h4><p>" + abstract + "</p></div></div>";
+        this_doc += "</a></div><div class='three_fourth last'><h4 class='drs-item-title'><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>" + title + "</a></h4>";
+        if (abstract){
+          this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
+        }
+        this_doc += "</div><div class=''><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"' class='themebutton'>View More</a></div></div>";
       } else {
         //browse = tile
         this_doc += "<div class='drs-item one_third'><div class=''><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>";
@@ -134,7 +137,7 @@ jQuery(document).ready(function($) {
         } else {
           this_doc += "<div class='dashicons dashicons-portfolio'></div>";
         }
-        this_doc += "</a></div><div class='drs-item-title'><h5><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>" + title + "</a></h5></div></div>";
+        this_doc += "</a></div><div class=''><h5 class='drs-item-title'><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>" + title + "</a></h5></div></div>";
       }
       docs_html += this_doc;
     });
