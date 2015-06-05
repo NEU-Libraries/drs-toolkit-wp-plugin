@@ -54,7 +54,7 @@ jQuery(document).ready(function($) {
       pagination += "</li>";
       for (var i = 1; i <= data.num_pages; i++) {
         if (data.current_page == i){
-          var pagination_class = 'active';
+          var pagination_class = 'current';
         } else {
           var pagination_class = '';
         }
