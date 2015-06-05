@@ -42,9 +42,13 @@ Tags: black, dark, red, one-column, two-columns, three-columns, right-sidebar, l
 .drs-item{
   overflow: auto;
   border-bottom:1px solid #EEE;
+  min-height:100px;
 }
 .drs-item:last-of-type{
   border-bottom:none;
+}
+.drs-item div.one_fourth{
+  margin-bottom:0px;
 }
 .drs-item.one_third{
   border:1px solid #EEE;
@@ -70,13 +74,17 @@ Tags: black, dark, red, one-column, two-columns, three-columns, right-sidebar, l
   width: 130px;
   height: 175px;
 }
-.drs-item-title h5{
+.drs-item .one_fourth .dashicons{
+  height:165px;
+}
+h5.drs-item-title, .drs-item-abstract{
   display: inline-block;
-  line-height: 25px;
+  line-height: 15px;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin-bottom:0;
 }
 #drs-selection{
   clear:both;
