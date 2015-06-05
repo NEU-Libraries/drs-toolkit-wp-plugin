@@ -134,7 +134,7 @@ jQuery(document).ready(function($) {
         } else {
           this_doc += "<div class='dashicons dashicons-portfolio'></div>";
         }
-        this_doc += "</a></div><div class=''><h5><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>" + title + "</a></h5></div></div>";
+        this_doc += "</a></div><div class='drs-item-title'><h5><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>" + title + "</a></h5></div></div>";
       }
       docs_html += this_doc;
     });
