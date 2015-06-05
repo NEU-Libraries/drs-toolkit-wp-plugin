@@ -8,19 +8,21 @@ jQuery(document).ready(function($) {
   var params = {q:q, per_page:per_page, page:page, f:f, sort:sort};
   var template = browse_obj.template;
   if ((q) && (q != '')){
+    $("#drs-selection").show();
     $("#drs-selection a[data-type='q']").remove();
-    $("#drs-selection").append("<a class='themebutton' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+" X</a>");
+    $("#drs-selection").append("<a class='themebutton' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+"</a>");
   }
   get_data(params);
 
   function get_data(params){
-    $("#drs-item-count").html("<h2>Loading...<br/><span class='fa fa-spinner fa-pulse'></span></h2>");
+    $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-pulse'></span></h2>").show();
     $.post(browse_obj.ajax_url, {
        _ajax_nonce: browse_obj.nonce,
         action: "get_browse",
         params: params,
 
     }, function(data) {
+      $("#drs-loading").hide();
         var data = $.parseJSON(data);
         if (data == null) {
           $("#drs-content").html("There seems to be an issue connecting with the place where the data is stored. Try again later. Thanks!");
@@ -31,7 +33,10 @@ jQuery(document).ready(function($) {
           facetize(data.response.facet_counts);//send to facetize function
           resultize(data.response.response);//send to resultize function
           clickable(data);
-          $("#drs-sort").show().css("visibility","visible");
+          $("#drs-sort").show();
+          if ($("#drs-selection").find("a").length < 1){
+            $("#drs-selection").hide();
+          }
         } else {
           $("#drs-content").html("Your query produced no results. Please go back and try a different query. Thanks!");
         }
@@ -167,7 +172,8 @@ jQuery(document).ready(function($) {
       facet = facet.substr(4);
       var facet_val = $(this).children(".drs-facet-val div:first-of-type").html();
       params.f[facet] = facet_val;
-      $("#drs-selection").append("<a class='themebutton' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+" X </a>");
+      $("#drs-selection").show();
+      $("#drs-selection").append("<a class='themebutton' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+"</a>");
       get_data(params);
     });
     $("#drs-selection a").on("click", function(e){

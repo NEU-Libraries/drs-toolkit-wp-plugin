@@ -95,8 +95,19 @@ h5.drs-item-title{
 #drs-selection{
   clear:both;
   background: #EEE;
-  display: block;
   border: 1px solid #CCC;
+  overflow: auto;
+  padding: 20px;
+  margin-bottom:20px;
+}
+#drs-selection a{
+  margin-left: 5px;
+  margin-right: 5px;
+}
+#drs-selection a:after {
+  font-family: FontAwesome;
+  content: '\f00d';
+  padding-left:5px;
 }
 .themebutton{
   padding:5px;
