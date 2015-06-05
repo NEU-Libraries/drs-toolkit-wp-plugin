@@ -16,7 +16,10 @@ function browse_ajax_handler() {
   } else {
     $url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection."?";
     if ($_POST['params']['q'] ){
-      $url .= "q=". urlencode($_POST['params']['q']);
+      $url .= "q=". urlencode(sanitize_text_field($_POST['params']['q']));
+    }
+    if ($_GET['q'] ){
+      $url .= "q=". urlencode(sanitize_text_field($_GET['q']));
     }
     if ($_POST['params']['per_page']) {
       $url .= "&per_page=" . $_POST['params']['per_page'];
