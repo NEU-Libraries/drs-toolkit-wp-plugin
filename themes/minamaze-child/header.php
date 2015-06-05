@@ -40,8 +40,6 @@
 			<?php wp_nav_menu( array( 'container_class' => 'header-links', 'container_id' => 'pre-header-links-inner', 'theme_location' => 'pre_header_menu' ) ); ?>
 			<?php endif; ?>
 
-			<?php /* Header Search */ thinkup_input_headersearch(); ?>
-
 			<?php /* Social Media Icons */ thinkup_input_socialmedia(); ?>
 
 		</div>
@@ -64,6 +62,8 @@
 			<!-- #header-links .main-navigation -->
 
 			<?php /* Add responsive header menu */ thinkup_input_responsivehtml(); ?>
+
+			<?php /* Header Search */ thinkup_input_headersearch(); ?><!-- relocated from #pre-header-core -->
 
 		</div>
 		</div>
