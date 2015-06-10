@@ -11,9 +11,10 @@ get_header(); ?>
 
 	<div id="primary" class="content-area">
 		<main id="main" class="site-main" role="main">
-			
+
 <div id="drs-breadcrumbs"><?php get_item_breadcrumbs(); ?></div>
 <div id="drs-content">
+	<h1 id="drs-item-title"><?php get_item_title(); ?></h1>
   <div id="drs-item-left" class="one_half">
 		<img id="drs-item-img" src='<?php get_item_image(); ?>'/>
 	</div>

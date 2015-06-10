@@ -21,6 +21,10 @@ function get_item_details(){
   }
 }
 
+function get_item_title(){
+  global $item_pid, $data;
+  echo $data->mods->Title[0];
+}
 
 function get_item_breadcrumbs(){
   global $item_pid, $data, $breadcrumb_html, $collection;
