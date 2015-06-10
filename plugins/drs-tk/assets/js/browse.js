@@ -17,6 +17,9 @@ jQuery(document).ready(function($) {
     $("#drs-facets").hide();
     $("#drs-docs").css("width", "100%");
   }
+  if (template == 'collection'){
+    params.f['fields_parent_id_tesim'] = browse_obj.sub_collection_pid;
+  }
   get_data(params);
 
   function get_data(params){
@@ -125,29 +128,34 @@ jQuery(document).ready(function($) {
       doc_vals.title_ssi? title = doc_vals.title_ssi : "";
       doc_vals.abstract_tesim? abstract = doc_vals.abstract_tesim : "";
       doc_vals.thumbnail_list_tesim? thumbnail = doc_vals.thumbnail_list_tesim : "";
+      if (doc_vals.active_fedora_model_ssi == 'Collection') {
+        this_doc_url = '/collection/' + doc_vals.id;
+      } else if (doc_vals.active_fedora_model_ssi == 'CoreFile') {
+        this_doc_url = '/item/' + doc_vals.id;
+      }
       var this_doc = '';
       if (template == 'search'){
         //search = grid
-        this_doc += "<div class='drs-item'><div class='one_fourth'><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>";
+        this_doc += "<div class='drs-item'><div class='one_fourth'><a href='"+browse_obj.site_url+this_doc_url+"'>";
         if (thumbnail[1]) {
           this_doc += "<img src='http://cerberus.library.northeastern.edu"+thumbnail[1]+"' />";
         } else {
           this_doc += "<div class='dashicons dashicons-portfolio'></div>";
         }
-        this_doc += "</a></div><div class='three_fourth last'><h4 class='drs-item-title'><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>" + title + "</a></h4>";
+        this_doc += "</a></div><div class='three_fourth last'><h4 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>" + title + "</a></h4>";
         if (abstract){
           this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
         }
-        this_doc += "</div><div class=''><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"' class='themebutton'>View More</a></div></div>";
+        this_doc += "</div><div class=''><a href='"+browse_obj.site_url+this_doc_url+"' class='themebutton'>View More</a></div></div>";
       } else {
         //browse = tile
-        this_doc += "<div class='drs-item one_third'><div class=''><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>";
+        this_doc += "<div class='drs-item one_third'><div class=''><a href='"+browse_obj.site_url+this_doc_url+"'>";
         if (thumbnail[1]) {
           this_doc += "<img src='http://cerberus.library.northeastern.edu"+thumbnail[1]+"' />";
         } else {
           this_doc += "<div class='dashicons dashicons-portfolio'></div>";
         }
-        this_doc += "</a></div><div class=''><h5 class='drs-item-title'><a href='"+browse_obj.site_url+"/item/"+doc_vals.id+"'>" + title + "</a></h5></div></div>";
+        this_doc += "</a></div><div class=''><h5 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>" + title + "</a></h5></div></div>";
       }
       docs_html += this_doc;
     });

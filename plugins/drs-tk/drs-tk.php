@@ -38,7 +38,7 @@ $TEMPLATE = array(
      add_rewrite_rule('^search/?$', 'index.php?post_type=drs&drstk_template_type=search', 'top');
      add_rewrite_rule('^item/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=item&pid=$matches[1]', 'top');
      add_rewrite_rule('^collections/?$', 'index.php?post_type=drs&drstk_template_type=collections', 'top');
-
+     add_rewrite_rule('^collection/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=collection&pid=$matches[1]', 'top');
  }
 
  function drstk_install() {
@@ -152,7 +152,9 @@ function drstk_content_template( $template ) {
 
         $template_type = $wp_query->query_vars['drstk_template_type'];
 
-        if ($template_type == 'browse' || $template_type == 'search' || $template_type == 'collections') {
+        if ($template_type == 'browse' || $template_type == 'search' || $template_type == 'collections' || $template_type == 'collection') {
+            global $sub_collection_pid;
+            $sub_collection_pid = get_query_var( 'pid' );
             add_action('wp_enqueue_scripts', 'drstk_browse_script');
             return $TEMPLATE['browse_template'];
         }
@@ -178,6 +180,7 @@ function drstk_browse_script() {
     global $wp_query;
     global $VERSION;
     global $SITE_URL;
+    global $sub_collection_pid;
     //this enqueues the JS file
     wp_enqueue_script( 'drstk_browse',
         plugins_url( '/assets/js/browse.js', __FILE__ ),
@@ -192,6 +195,7 @@ function drstk_browse_script() {
        'nonce'    => $browse_nonce,
        'template' => $wp_query->query_vars['drstk_template_type'],
        'site_url' => $SITE_URL,
+       'sub_collection_pid' => $sub_collection_pid,
     ) );
 }
 
