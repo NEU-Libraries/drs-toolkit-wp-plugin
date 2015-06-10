@@ -164,3 +164,7 @@ h5.drs-item-title{
 .pag li.disabled span {
 	background: #EEE;
 }
+
+#drs-breadcrumbs{
+  padding-bottom: 20px;
+}
