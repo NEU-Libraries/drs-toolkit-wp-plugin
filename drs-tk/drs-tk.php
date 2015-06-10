@@ -37,6 +37,8 @@ $TEMPLATE = array(
          'top');
      add_rewrite_rule('^search/?$', 'index.php?post_type=drs&drstk_template_type=search', 'top');
      add_rewrite_rule('^item/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=item&pid=$matches[1]', 'top');
+     add_rewrite_rule('^collections/?$', 'index.php?post_type=drs&drstk_template_type=collections', 'top');
+
  }
 
  function drstk_install() {
@@ -150,7 +152,7 @@ function drstk_content_template( $template ) {
 
         $template_type = $wp_query->query_vars['drstk_template_type'];
 
-        if ($template_type == 'browse' || $template_type == 'search') {
+        if ($template_type == 'browse' || $template_type == 'search' || $template_type == 'collections') {
             add_action('wp_enqueue_scripts', 'drstk_browse_script');
             return $TEMPLATE['browse_template'];
         }
@@ -254,14 +256,14 @@ function drstk_image_attachment_add_custom_fields($form_fields, $post) {
     $form_fields["drstk-date-created"]["label"] = __("Date Created");
     $form_fields["drstk-date-created"]["input"] = "html";
     $form_fields["drstk-date-created"]["value"] = get_post_meta($post->ID, "drstk-date-created", true);
-    $form_fields["drstk-date-created"]["html"] = "<p>This field is imported from the DRS. Any changes must be made directly in the DRS.</p><tr><td>".get_post_meta($post->ID, "drstk-date-created", true)."</td></tr>";
+    $form_fields["drstk-date-created"]["html"] = "<p>This field is imported from the DRS. Any changes must be made directly in the DRS.</p><tr><td></td><td>".get_post_meta($post->ID, "drstk-date-created", true)."</td></tr>";
   }
 
   $form_fields["drstk-pid"] = array();
   $form_fields["drstk-pid"]["label"] = __("CoreFile Pid");
   $form_fields["drstk-pid"]["input"] = "html";//can change to just displaying the pid later since it shouldn't be editable
   $form_fields["drstk-pid"]["value"] = get_post_meta($post->ID, "drstk-pid", true);
-  $form_fields["drstk-pid"]["html"] = "<p>This is a read-only field</p><tr><td>".get_post_meta($post->ID, "drstk-pid", true)."</td></tr>";
+  $form_fields["drstk-pid"]["html"] = "<p>This is a read-only field</p><tr><td></td><td>".get_post_meta($post->ID, "drstk-pid", true)."</td></tr>";
 
   return $form_fields;
 }

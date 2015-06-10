@@ -12,6 +12,11 @@ jQuery(document).ready(function($) {
     $("#drs-selection a[data-type='q']").remove();
     $("#drs-selection").append("<a class='themebutton' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+"</a>");
   }
+  if (template == 'collections'){
+    params.f['type_sim'] = 'Collection';
+    $("#drs-facets").hide();
+    $("#drs-docs").css("width", "100%");
+  }
   get_data(params);
 
   function get_data(params){
