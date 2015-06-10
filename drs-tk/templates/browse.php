@@ -8,6 +8,7 @@ get_header(); ?>
 <div class="noscript_warning">PLEASE NOTE: JAVASCRIPT IS DISABLED ON YOUR BROWSER. For the best user experience, please enable javascript on your browser now.</div>
 </noscript>
 
+<div id="drs-breadcrumbs"></div>
 <div id="drs-content">
 	<div id="drs-loading"></div>
 	<div id="drs-selection" class="hide">You've selected: </div>
