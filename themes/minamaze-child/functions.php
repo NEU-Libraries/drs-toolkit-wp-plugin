@@ -34,6 +34,8 @@ function drs_title_select() {
     printf( __('Search', 'lan-thinkupthemes'));
   } elseif ($template_type == 'browse'){
     printf( __('Browse', 'lan-thinkupthemes'));
+  } elseif ($template_type == 'collections'){
+    printf( __('Collections', 'lan-thinkupthemes'));
   } elseif ($template_type == 'item'){
     return;
   } elseif ( is_page() ) {
