@@ -7,7 +7,6 @@ jQuery(document).ready(function($) {
 
   }, function(data) {
       var data = $.parseJSON(data);
-      console.log(data);
       if (data == null) {
         $("#drs-content").html("There seems to be an issue connecting with the place where the data is stored. Try again later. Thanks!");
       } else if (data.error) {
@@ -23,7 +22,7 @@ jQuery(document).ready(function($) {
 
   function parse_item(data){
     if (data.mods.Title) {
-      $("#drs-item-title").html(data.mods.Title);
+      $(".page-title").html(data.mods.Title);
     }
     if (data.thumbnails) {
       $("#drs-item-img").attr("src",data.thumbnails[data.thumbnails.length - 1]);
