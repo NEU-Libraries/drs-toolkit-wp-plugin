@@ -10,6 +10,7 @@
 require_once( plugin_dir_path( __FILE__ ) . 'inc/item.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/import.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/browse.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'inc/breadcrumb.php' );
 
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
 
@@ -156,6 +157,9 @@ function drstk_content_template( $template ) {
             global $sub_collection_pid;
             $sub_collection_pid = get_query_var( 'pid' );
             add_action('wp_enqueue_scripts', 'drstk_browse_script');
+            if ($template_type == 'collection') {
+              add_action('wp_enqueue_scripts', 'drstk_breadcrumb_script');
+            }
             return $TEMPLATE['browse_template'];
         }
 
@@ -163,6 +167,7 @@ function drstk_content_template( $template ) {
             global $item_pid;
             $item_pid = get_query_var( 'pid' );
             add_action('wp_enqueue_scripts', 'drstk_item_script');
+            add_action('wp_enqueue_scripts', 'drstk_breadcrumb_script');
             return $TEMPLATE['item_template'];
         }
 
@@ -221,6 +226,30 @@ function drstk_item_script() {
        'template' => $wp_query->query_vars['drstk_template_type'],
        'pid' => $item_pid,
     ) );
+}
+
+function drstk_breadcrumb_script(){
+  global $wp_query;
+  global $VERSION;
+  global $SITE_URL;
+  global $sub_collection_pid;
+  global $item_pid;
+
+  wp_enqueue_script( 'drstk_breadcrumb',
+      plugins_url( '/assets/js/breadcrumb.js', __FILE__ ),
+      array( 'jquery' )
+  );
+  $breadcrumb_nonce = wp_create_nonce( 'breadcrumb_drs' );
+
+  wp_localize_script( 'drstk_breadcrumb', 'breadcrumb_obj', array(
+     'ajax_url' => admin_url( 'admin-ajax.php' ),
+     'nonce'    => $breadcrumb_nonce,
+     'template' => $wp_query->query_vars['drstk_template_type'],
+     'item_pid' => $item_pid,
+     'sub_collection_pid' => $sub_collection_pid,
+     'collection_pid' => get_option('drstk_collection'),
+  ) );
+
 
 }
 
