@@ -2,7 +2,7 @@
 /**
  * Plugin Name: DRS Toolkit Plugin
  * Plugin URI:
- * Version: 0.1
+ * Version: 0.5
  * Author: Eli Zoller
  * Description: This plugin provides the core functionality of the DRS Project Toolkit and brings the content of a project from the DRS into Wordpress using the DRS API.
  */
@@ -14,7 +14,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/breadcrumb.php' );
 
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
 
-$VERSION = '0.1.0';
+$VERSION = '0.5.0';
 $SITE_URL = site_url();
 
 // Set template names here so we don't have to go into the code.
@@ -22,6 +22,7 @@ $TEMPLATE = array(
     //'custom_template' => 'nusolr-template.php', //this attaches the plugin to the separate theme template
     'browse_template' => dirname(__FILE__) . '/templates/browse.php',
     'item_template' => dirname(__FILE__) . '/templates/item.php',
+    'item_nojs_template' => dirname(__FILE__) . '/templates/item_nojs.php',
 );
 
  register_activation_hook( __FILE__, 'drstk_install' );
@@ -37,7 +38,7 @@ $TEMPLATE = array(
          'index.php?post_type=drs&drstk_template_type=browse',
          'top');
      add_rewrite_rule('^search/?$', 'index.php?post_type=drs&drstk_template_type=search', 'top');
-     add_rewrite_rule('^item/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=item&pid=$matches[1]', 'top');
+     add_rewrite_rule('^item/([^/]*)/?([^/]*)*', 'index.php?post_type=drs&drstk_template_type=item&pid=$matches[1]&js=$matches[2]', 'top');
      add_rewrite_rule('^collections/?$', 'index.php?post_type=drs&drstk_template_type=collections', 'top');
      add_rewrite_rule('^collection/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=collection&pid=$matches[1]', 'top');
  }
@@ -136,6 +137,7 @@ add_action('admin_enqueue_scripts', 'drstk_admin_enqueue');
  function drstk_add_query_var($public_query_vars){
      $public_query_vars[] = 'drstk_template_type';
      $public_query_vars[] = 'pid';
+     $public_query_vars[] = 'js';
      return $public_query_vars;
  }
 
@@ -166,9 +168,14 @@ function drstk_content_template( $template ) {
         if ($template_type == 'item') {
             global $item_pid;
             $item_pid = get_query_var( 'pid' );
+          if (isset ($wp_query->query_vars['js']) && $wp_query->query_vars['js'] == 'false'){
+            include( plugin_dir_path( __FILE__ ) . 'inc/item_nojs.php' );
+            return $TEMPLATE['item_nojs_template'];
+          } else {
             add_action('wp_enqueue_scripts', 'drstk_item_script');
             add_action('wp_enqueue_scripts', 'drstk_breadcrumb_script');
             return $TEMPLATE['item_template'];
+          }
         }
 
     } else {
