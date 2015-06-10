@@ -13,9 +13,8 @@ get_header(); ?>
 		<main id="main" class="site-main" role="main">
 
 
-
+<div id="drs-breadcrumbs"></div>
 <div id="drs-content">
-	<h1 id="drs-item-title"></h1>
   <div id="drs-item-left" class="one_half">
 		<img id="drs-item-img"/>
 	</div>
