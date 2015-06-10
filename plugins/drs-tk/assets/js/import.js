@@ -10,7 +10,6 @@ jQuery(document).ready(function($) {
     }, function(data) {
         var data = $.parseJSON(data);
         $(".spinner").removeClass('is-active');
-        console.log(data);
         $("#drstk-import").after("<div class='updated notice'><p>Import completed of "+data.count+" objects. "+data.existing_count+" were already present in the Media library.</p></div>");
     }).fail(function() {
       $(".spinner").removeClass('is-active');
