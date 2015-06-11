@@ -10,6 +10,7 @@ function import_ajax_handler() {
   $data = array();
   $data['count'] = 0;
   $data['existing_count'] = 0;
+  $data['objects'] = array();
   // global $email;
   // Handle the ajax request
   check_ajax_referer( 'import_drs' );
@@ -35,36 +36,36 @@ function drstk_get_image_data($json){
   foreach($json->items as $doc) {
     $title = $doc->mods->Title[0];
     $core_pid = $doc->pid;
-    $data[$core_pid]['title'] = $title;
+    //$data['objects'][$core_pid]['title'] = $title;
     //if its an image just send the master image
     if ($doc->canonical_object[0][1] == 'Master Image'){
       $image_url = $doc->canonical_object[0][0];
-      $data[$core_pid]['canonical_object'] = $image_url;
+      //$data['objects'][$core_pid]['canonical_object'] = $image_url;
       $image_url_backup = $doc->thumbnails[4];
     } else {
       //if its not an image send a thumbnail
       $image_url = $doc->thumbnails[4];
-      $data[$core_pid]['thumbnail'] = $image_url;
+      //$data['objects'][$core_pid]['thumbnail'] = $image_url;
       $image_url_backup = NULL;
     }
     if ($doc->mods->Creator){
       $creator = $doc->mods->Creator[0];
-      $data[$core_pid]['creator'] = $creator;
+      //$data['objects'][$core_pid]['creator'] = $creator;
     } else {
       $creator = NULL;
     }
     if ($doc->mods->{'Date created'}[0]){
       $date = $doc->mods->{'Date created'}[0];
-      $data[$core_pid]['date_created'] = $date;
+      //$data['objects'][$core_pid]['date_created'] = $date;
     } else if ($doc->mods->{'Copyright date'}[0]){
       $date = $doc->mods->{'Copyright date'}[0];
-      $data[$core_pid]['date_created'] = $date;
+      //$data['objects'][$core_pid]['date_created'] = $date;
     } else {
       $date = NULL;
     }
     if ($doc->mods->{'Abstract/Description'}[0]){
       $description = $doc->mods->{'Abstract/Description'}[0];
-      $data[$core_pid]['description'] = $description;
+      //$data['objects'][$core_pid]['description'] = $description;
     } else {
       $description = NULL;
     }
@@ -92,7 +93,7 @@ function drstk_get_image_data($json){
     $pid = str_replace(":","",$pid[0]);
     if (!in_array($pid, $images)){
       $data['count'] = $data['count']+1;
-      $data[$core_pid]['image_status'] = "is not in images";
+      //$data['objects'][$core_pid]['image_status'] = "is not in images";
       $tmp = download_url( $image_url );
       $post_id = 0;
       $file_array = array();
@@ -102,7 +103,7 @@ function drstk_get_image_data($json){
       $file_array['error'] = 0;
       $file_array['tmp_name'] = $tmp;
       $file_array['size'] = filesize($tmp);
-      $data[$core_pid]['file_info'] = $file_array;
+      //$data['objects'][$core_pid]['file_info'] = $file_array;
 
       // If error storing temporarily, unlink
       if ( is_wp_error( $tmp ) ) {
@@ -131,7 +132,7 @@ function drstk_get_image_data($json){
       $src = wp_get_attachment_url( $id );
       $image_id = drstk_get_image_id($src);
 
-      $data[$core_pid]['image_id'] = $image_id;
+      //$data['objects'][$core_pid]['image_id'] = $image_id;
       update_post_meta($image_id, 'drstk-drs-metadata', $metadata);
       if ($creator != NULL){
         update_post_meta($image_id, 'drstk-creator', $creator);
@@ -141,8 +142,32 @@ function drstk_get_image_data($json){
       }
       update_post_meta($image_id, 'drstk-pid', $core_pid);
     } else {
-      $data[$core_pid]['image_status'] = "is already in images";
+      //have $pid -> need $image_id
+      $image_id = drstk_get_image_by_pid($core_pid);
+      //$data['objects'][$core_pid]['image_id'] = $image_id;
+      //$data['objects'][$core_pid]['image_status'] = "is already in images";
       $data['existing_count'] = $data['existing_count']+1;
+      if ($creator != get_post_meta($image_id, 'drstk-creator', true)) {
+        $data['objects'][$core_pid]['creator'] = array();
+        $data['objects'][$core_pid]['creator']['wp]'] = get_post_meta($image_id, 'drstk-creator', true);
+        $data['objects'][$core_pid]['creator']['drs'] = $creator;
+      }
+      if ($title != get_the_title($image_id)) {
+        $data['objects'][$core_pid]['title'] = array();
+        $data['objects'][$core_pid]['title']['wp'] = get_the_title($image_id);
+        $data['objects'][$core_pid]['title']['drs'] = $title;
+      }
+      if ($date != get_post_meta($image_id, 'drstk-date-created', true)){
+        $data['objects'][$core_pid]['date_created'] = array();
+        $data['objects'][$core_pid]['date_created']['wp'] = get_post_meta($image_id, 'drstk-date-created', true);
+        $data['objects'][$core_pid]['date_created']['drs'] = $date;
+      }
+      if ($description != get_the_excerpt($image_id)){
+        $data['objects'][$core_pid]['caption'] = array();
+        $data['objects'][$core_pid]['caption']['wp'] = get_the_excerpt($image_id);
+        $data['objects'][$core_pid]['caption']['drs'] = $description;
+      }
+      update_post_meta($image_id, 'drstk-drs-metadata', $metadata);
     }
   }
 
@@ -150,4 +175,11 @@ function drstk_get_image_data($json){
   	global $wpdb;
   	$attachment = $wpdb->get_col($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE guid='%s';", $image_url ));
           return $attachment[0];
+  }
+
+  function drstk_get_image_by_pid($core_pid){
+    global $wpdb;
+		$querystr = "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'drstk-pid' AND meta_value = '".$core_pid."';";
+		$postid = $wpdb->get_col($wpdb->prepare($querystr, $core_pid));
+    return $postid[0];
   }
