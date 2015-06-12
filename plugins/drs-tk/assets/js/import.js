@@ -19,7 +19,9 @@ jQuery(document).ready(function($) {
         //   });
         // });
         $("#drstk-import").after("<div class='updated notice'><p>Import completed of "+data.count+" objects. "+data.existing_count+" were already present in the Media library.</p></div>");
-        show_updates(data);
+        if (data.objects.length != 0){
+          show_updates(data);
+        }
     }).fail(function() {
       $(".spinner").removeClass('is-active');
       $("#drstk-import").after("<div class='error notice'><p>There was an error connecting to the external service. Please try again later. Thanks!</p></div>");
