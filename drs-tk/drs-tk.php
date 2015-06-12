@@ -125,7 +125,6 @@ $TEMPLATE = array(
          'import_nonce'    => $import_nonce,
          'import_data_nonce' => $import_data_nonce,
          'pid' => get_option('drstk_collection'),
-         'field' => 'field'
       ) );
 
     }
@@ -314,31 +313,30 @@ add_filter("attachment_fields_to_edit", "drstk_image_attachment_add_custom_field
 
 /* Save custom field value for DRS Metadata */
 function drstk_image_attachment_save_custom_fields($post, $attachment) {
-  if(isset($attachment['drstk-drs-metadata'])) {
-    update_post_meta($post['ID'], 'drstk-drs-metadata', $attachment['drstk-drs-metadata']);
-  } else {
-    delete_post_meta($post['ID'], 'drstk-drs-metadata');
-  }
-  if(isset($attachment['drstk-creator'])) {
-    update_post_meta($post['ID'], 'drstk-creator', $attachment['drstk-creator']);
-  } else {
-    delete_post_meta($post['ID'], 'drstk-creator');
-  }
-  if(isset($attachment['drstk-date-created'])) {
-    update_post_meta($post['ID'], 'drstk-date-created', $attachment['drstk-date-created']);
-  } else {
-    delete_post_meta($post['ID'], 'drstk-date-created');
-  }
-  //can remove this later because it won't be editable
-  if(isset($attachment['drstk-pid'])) {
-    update_post_meta($post['ID'], 'drstk-pid', $attachment['drstk-pid']);
-  } else {
-    delete_post_meta($post['ID'], 'drstk-pid');
-  }
-  //end remove
+  $new_creator_value = ( isset( $_POST['drstk-creator'] ) ? sanitize_html_class( $_POST['drstk-creator'] ) : '' );
+  $creator_value = get_post_meta( $post, 'drstk-creator', true );
+  /* If a new meta value was added and there was no previous value, add it. */
+  if ( $new_creator_value && '' == $creator_value )
+    add_post_meta( $post, 'drstk-creator', $new_creator_value, true );
+  /* If the new meta value does not match the old value, update it. */
+  elseif ( $new_creator_value && $new_creator_value != $creator_value )
+    update_post_meta( $post, 'drstk-creator', $new_creator_value );
+  /* If there is no new meta value but an old value exists, delete it. */
+  elseif ( '' == $new_creator_value && $creator_value )
+    delete_post_meta( $post, 'drstk-creator', $creator_value );
+
+  $new_date_created_value = ( isset( $_POST['drstk-date-created'] ) ? sanitize_html_class( $_POST['drstk-date-created'] ) : '' );
+  $date_created_value = get_post_meta( $post, 'drstk-date-created', true );
+  if ( $new_date_created_value && '' == $date_created_value )
+    add_post_meta( $post, 'drstk-date-created', $new_date_created_value, true );
+  elseif ( $new_date_created_value && $new_date_created_value != $date_created_value )
+    update_post_meta( $post, 'drstk-date-created', $new_date_created_value );
+  elseif ( '' == $new_date_created_value && $date_created_value )
+    delete_post_meta( $post, 'drstk-date-created', $date_created_value );
+
   return $post;
 }
-add_filter("attachment_fields_to_save", "drstk_image_attachment_save_custom_fields", null , 2);
+add_filter("attachment_fields_to_save", "drstk_image_attachment_save_custom_fields", 10 , 2);
 
 
 /*permalinks for attachments -> item page*/
