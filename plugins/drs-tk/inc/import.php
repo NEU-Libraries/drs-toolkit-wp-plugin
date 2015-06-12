@@ -120,15 +120,19 @@ function drstk_get_image_data($json){
 
       // do the validation and storage stuff
       $post_data = array('post_title'=>$title,'post_name'=>$title, 'post_excerpt'=>$description);
+      //$data['objects'][$core_pid]['post_data'] = $post_data;
       $id = media_handle_sideload( $file_array, 0, $description, $post_data);
+      //$data['objects'][$core_pid]['id'] = $id;
 
       // If error storing permanently, unlink
       if ( is_wp_error($id) ) {
         @unlink($file_array['tmp_name']);
+        $data['objects'][$core_pid]['error'] = $id;
         return $id;
       }
 
       $src = wp_get_attachment_url( $id );
+      //$data['objects'][$core_pid]['src'] = $src;
       $image_id = drstk_get_image_id($src);
 
       //$data['objects'][$core_pid]['image_id'] = $image_id;
@@ -143,12 +147,13 @@ function drstk_get_image_data($json){
     } else {
       //have $pid -> need $image_id
       $image_id = drstk_get_image_by_pid($core_pid);
+      $attachment = wp_get_attachment($image_id);
       //$data['objects'][$core_pid]['image_id'] = $image_id;
       //$data['objects'][$core_pid]['image_status'] = "is already in images";
       $data['existing_count'] = $data['existing_count']+1;
       if ($creator != get_post_meta($image_id, 'drstk-creator', true)) {
         $data['objects'][$core_pid]['creator'] = array();
-        $data['objects'][$core_pid]['creator']['wp]'] = get_post_meta($image_id, 'drstk-creator', true);
+        $data['objects'][$core_pid]['creator']['wp'] = get_post_meta($image_id, 'drstk-creator', true);
         $data['objects'][$core_pid]['creator']['drs'] = $creator;
       }
       if ($title != get_the_title($image_id)) {
@@ -161,10 +166,15 @@ function drstk_get_image_data($json){
         $data['objects'][$core_pid]['date_created']['wp'] = get_post_meta($image_id, 'drstk-date-created', true);
         $data['objects'][$core_pid]['date_created']['drs'] = $date;
       }
-      if ($description != get_the_excerpt($image_id)){
+      if ($description != $attachment['caption']){
         $data['objects'][$core_pid]['caption'] = array();
-        $data['objects'][$core_pid]['caption']['wp'] = get_the_excerpt($image_id);
+        $data['objects'][$core_pid]['caption']['wp'] = $attachment['caption'];
         $data['objects'][$core_pid]['caption']['drs'] = $description;
+      }
+      if ($description != $attachment['description']){
+        $data['objects'][$core_pid]['description'] = array();
+        $data['objects'][$core_pid]['description']['wp'] = $attachment['description'];
+        $data['objects'][$core_pid]['description']['drs'] = $description;
       }
       update_post_meta($image_id, 'drstk-drs-metadata', $metadata);
     }
@@ -187,11 +197,59 @@ function drstk_get_image_data($json){
   add_action( 'wp_ajax_get_import_data', 'import_data_ajax_handler' ); //for auth users
 
   function import_data_ajax_handler(){
-    check_ajax_referer( 'import_drs' );
-
+    check_ajax_referer( 'import_data_drs' );
     $collection_pid = get_option('drstk_collection');
-    $url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection_pid."?f['id'][]=".$_POST['pid'];
-    $drs_data = get_response($url);
-    $json = json_decode($drs_data);
+    //$url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection_pid."?f['id'][]=".$_POST['pid'];
+    //$drs_data = get_response($url);
+    //$json = json_decode($drs_data);
+    $field = $_POST['field'];
+    $pid = $_POST['pid'];
+    $image_id = drstk_get_image_by_pid($_POST['pid']);
+    $value = $_POST['value'];
+    $data = array();
+    $data['pid'] = $pid;
+    $data['field'] = $field;
+    $data['value'] = $value;
+    if ($field == 'creator'){
+      update_post_meta($image_id, 'drstk-creator', $value);
+    }
+    if ($field == 'date_created'){
+      update_post_meta($image_id, 'drstk-date-created', $value);
+    }
+    if ($field == 'title'){
+      $this_post = array(
+        'ID' => $image_id,
+        'post_title' => $value,
+      );
+      wp_update_post( $this_post );
+    }
+    if ($field == 'caption'){
+      $this_post = array(
+        'ID' => $image_id,
+        'post_excerpt' => $value,
+      );
+      wp_update_post( $this_post );
+    }
+    if ($field == 'description'){
+      $this_post = array(
+        'ID' => $image_id,
+        'post_content' => $value,
+      );
+      wp_update_post( $this_post );
+    }
+
     wp_send_json(json_encode($data));
+  }
+
+  function wp_get_attachment( $attachment_id ) {
+
+  	$attachment = get_post( $attachment_id );
+  	return array(
+  		'alt' => get_post_meta( $attachment->ID, '_wp_attachment_image_alt', true ),
+  		'caption' => $attachment->post_excerpt,
+  		'description' => $attachment->post_content,
+  		'href' => get_permalink( $attachment->ID ),
+  		'src' => $attachment->guid,
+  		'title' => $attachment->post_title
+  	);
   }
