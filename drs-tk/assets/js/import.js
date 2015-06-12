@@ -11,6 +11,13 @@ jQuery(document).ready(function($) {
         var data = $.parseJSON(data);
         console.log(data);
         $(".spinner").removeClass('is-active');
+        // $.each(data.objects, function(pid, values){
+        //   $.each(values, function(key, val){
+        //     if (key == 'error'){
+        //       $("#drstk-import").after(key + val);
+        //     }
+        //   });
+        // });
         $("#drstk-import").after("<div class='updated notice'><p>Import completed of "+data.count+" objects. "+data.existing_count+" were already present in the Media library.</p></div>");
         show_updates(data);
     }).fail(function() {
@@ -25,9 +32,10 @@ jQuery(document).ready(function($) {
       $.each(values, function(key, val){
         data_table += "<tr><td><a href='http://localhost/wordpress/item/"+pid+"' target='_blank'>"+pid+"</a></td><td>"+key.charAt(0).toUpperCase()+ key.slice(1)+"</td>";
         $.each(val, function(meta, value){
+          console.log(meta + value);
           data_table += "<td>"+value+"</td>";
         });
-        data_table +="<td><a class='button meta-override' href='#' data-pid='"+pid+"' data-field='"+key+"'>Override Wordpress Value</a></td></tr>";
+        data_table +="<td><a class='button meta-override' href='#' data-pid='"+pid+"' data-field='"+key+"' data-value='"+val.drs+"'>Override Wordpress Value</a></td></tr>";
       });
     });
     $(".updated").after(data_table);
@@ -36,17 +44,20 @@ jQuery(document).ready(function($) {
       e.preventDefault();
       var pid = $(this).data('pid');
       var field = $(this).data('field');
+      var value = $(this).data('value');
+      var this_row = $(this).parent('td').parent('tr');
       console.log("pid is " + pid +" and field is " + field);
       $.post(import_obj.ajax_url, {
          _ajax_nonce: import_obj.import_data_nonce,
           action: "get_import_data",
           pid: pid,
           field: field,
+          value: value,
       }, function(data) {
           var data = $.parseJSON(data);
-          console.log(data);
+          this_row.remove();
       }).fail(function() {
-        
+
       });
     });
   }
