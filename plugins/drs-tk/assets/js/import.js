@@ -11,15 +11,22 @@ jQuery(document).ready(function($) {
         var data = $.parseJSON(data);
         console.log(data);
         $(".spinner").removeClass('is-active');
-        // $.each(data.objects, function(pid, values){
-        //   $.each(values, function(key, val){
-        //     if (key == 'error'){
-        //       $("#drstk-import").after(key + val);
-        //     }
-        //   });
-        // });
-        $("#drstk-import").after("<div class='updated notice'><p>Import completed of "+data.count+" objects. "+data.existing_count+" were already present in the Media library.</p></div>");
-        if (data.objects.length != 0){
+        var error_html = '';
+        var error_count = 0;
+        $.each(data.objects, function(pid, values){
+          $.each(values, function(key, val){
+            if (key == 'error'){
+              error_html = val.errors.upload_error;
+              error_count++;
+            }
+          });
+        });
+        if (error_count == 0){
+          $("#drstk-import").after("<div class='updated notice'><p>Import completed of "+data.count+" objects. "+data.existing_count+" were already present in the Media library.</p></div>");
+        } else {
+          $("#drstk-import").after("<div class='error notice'><p>Import completed of "+(data.count - error_count)+" objects. "+data.existing_count+" were already present in the Media library.</p><p>"+error_count+" objects were not imported for the following reason:<br/>"+error_html+"</p></div>");
+        }
+        if (Object.prototype.toString.call( data.objects ) === '[object Object]'){
           show_updates(data);
         }
     }).fail(function() {
@@ -32,15 +39,17 @@ jQuery(document).ready(function($) {
     var data_table = "<div><br/><table class='wp-list-table widefat fixed striped media'><tr><thead><th class='manage-column'>PID</th><th class='manage-column'>Field</th><th class='manage-column'>Wordpress Value</th><th class='manage-column'>DRS Value</th><th></th></thead></tr>";
     $.each(data.objects, function(pid,values){
       $.each(values, function(key, val){
-        data_table += "<tr><td><a href='http://localhost/wordpress/item/"+pid+"' target='_blank'>"+pid+"</a></td><td>"+key.charAt(0).toUpperCase()+ key.slice(1)+"</td>";
-        $.each(val, function(meta, value){
-          console.log(meta + value);
-          data_table += "<td>"+value+"</td>";
-        });
-        data_table +="<td><a class='button meta-override' href='#' data-pid='"+pid+"' data-field='"+key+"' data-value='"+val.drs+"'>Override Wordpress Value</a></td></tr>";
+        if (key != 'error'){
+          data_table += "<tr><td><a href='http://localhost/wordpress/item/"+pid+"' target='_blank'>"+pid+"</a></td><td>"+key.charAt(0).toUpperCase()+ key.slice(1)+"</td>";
+          $.each(val, function(meta, value){
+            console.log(meta + value);
+            data_table += "<td>"+value+"</td>";
+          });
+          data_table +="<td><a class='button meta-override' href='#' data-pid='"+pid+"' data-field='"+key+"' data-value='"+val.drs+"'>Override Wordpress Value</a></td></tr>";
+        }
       });
     });
-    $(".updated").after(data_table);
+    $(".notice").after(data_table);
 
     $(".meta-override").on("click", function(e){
       e.preventDefault();
