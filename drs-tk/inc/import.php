@@ -119,7 +119,7 @@ function drstk_get_image_data($json){
       }
 
       // do the validation and storage stuff
-      $post_data = array('post_title'=>$title,'post_name'=>$title, 'post_excerpt'=>$description);
+      $post_data = array('post_title'=>$title,'post_name'=>$title, 'post_excerpt'=>$description, 'post_content'=>$description);
       //$data['objects'][$core_pid]['post_data'] = $post_data;
       $id = media_handle_sideload( $file_array, 0, $description, $post_data);
       //$data['objects'][$core_pid]['id'] = $id;
