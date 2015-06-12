@@ -118,11 +118,14 @@ $TEMPLATE = array(
       );
       //this creates a unique nonce to pass back and forth from js/php to protect
       $import_nonce = wp_create_nonce( 'import_drs' );
+      $import_data_nonce = wp_create_nonce( 'import_data_drs' );
       //this allows an ajax call from import.js
       wp_localize_script( 'drstk_import', 'import_obj', array(
          'ajax_url' => admin_url( 'admin-ajax.php' ),
-         'nonce'    => $import_nonce,
+         'import_nonce'    => $import_nonce,
+         'import_data_nonce' => $import_data_nonce,
          'pid' => get_option('drstk_collection'),
+         'field' => 'field'
       ) );
 
     }

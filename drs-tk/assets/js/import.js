@@ -4,7 +4,7 @@ jQuery(document).ready(function($) {
     $(this).after("<div class='spinner is-active'></div>");
     $(".spinner").css("float","none");
     $.post(import_obj.ajax_url, {
-       _ajax_nonce: import_obj.nonce,
+       _ajax_nonce: import_obj.import_nonce,
         action: "get_import",
         pid: import_obj.pid,
     }, function(data) {
@@ -27,9 +27,29 @@ jQuery(document).ready(function($) {
         $.each(val, function(meta, value){
           data_table += "<td>"+value+"</td>";
         });
-        data_table +="<td><button href='#'>Override Wordpress Value</button></td></tr>";
+        data_table +="<td><a class='button meta-override' href='#' data-pid='"+pid+"' data-field='"+key+"'>Override Wordpress Value</a></td></tr>";
       });
     });
     $(".updated").after(data_table);
+
+    $(".meta-override").on("click", function(e){
+      e.preventDefault();
+      var pid = $(this).data('pid');
+      var field = $(this).data('field');
+      console.log("pid is " + pid +" and field is " + field);
+      $.post(import_obj.ajax_url, {
+         _ajax_nonce: import_obj.import_data_nonce,
+          action: "get_import_data",
+          pid: pid,
+          field: field,
+      }, function(data) {
+          var data = $.parseJSON(data);
+          console.log(data);
+      }).fail(function() {
+        
+      });
+    });
   }
+
+
 });

@@ -4,7 +4,6 @@ require_once(ABSPATH . 'wp-admin/includes/file.php');
 require_once(ABSPATH . 'wp-admin/includes/image.php');
 
 add_action( 'wp_ajax_get_import', 'import_ajax_handler' ); //for auth users
-add_action( 'wp_ajax_nopriv_get_import', 'import_ajax_handler' ); //for nonauth users
 function import_ajax_handler() {
   global $data;
   $data = array();
@@ -182,4 +181,17 @@ function drstk_get_image_data($json){
 		$querystr = "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'drstk-pid' AND meta_value = '".$core_pid."';";
 		$postid = $wpdb->get_col($wpdb->prepare($querystr, $core_pid));
     return $postid[0];
+  }
+
+
+  add_action( 'wp_ajax_get_import_data', 'import_data_ajax_handler' ); //for auth users
+
+  function import_data_ajax_handler(){
+    check_ajax_referer( 'import_drs' );
+
+    $collection_pid = get_option('drstk_collection');
+    $url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection_pid."?f['id'][]=".$_POST['pid'];
+    $drs_data = get_response($url);
+    $json = json_decode($drs_data);
+    wp_send_json(json_encode($data));
   }
