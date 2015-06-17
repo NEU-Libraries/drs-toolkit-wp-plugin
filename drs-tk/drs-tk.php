@@ -264,26 +264,28 @@ function drstk_breadcrumb_script(){
 
 /* Add custom field to attachment for DRS Metadata */
 function drstk_image_attachment_add_custom_fields($form_fields, $post) {
-  $form_fields["drstk-drs-metadata"] = array();
-  $form_fields["drstk-drs-metadata"]["label"] = __("DRS Metadata");
-  $form_fields["drstk-drs-metadata"]["input"] = "html";
-  $form_fields["drstk-drs-metadata"]["value"] = get_post_meta($post->ID, "drstk-drs-metadata", true);
-  $metadata_html = '';
-  foreach (get_post_meta($post->ID, "drstk-drs-metadata", true) as $key => $value){
-    $metadata_html .= "<tr><td><i>" . $key . "</i></td><td>";
-    if (count($value) > 1) {
-      for($x=0; $x<=count($value)-1; $x++){
-        $metadata_html .= $value[$x];
-        if ($x != count($value)-1){
-          $metadata_html .=", ";
+  if (get_post_meta($post->ID, "drstk-drs-metadata")){
+    $form_fields["drstk-drs-metadata"] = array();
+    $form_fields["drstk-drs-metadata"]["label"] = __("DRS Metadata");
+    $form_fields["drstk-drs-metadata"]["input"] = "html";
+    $form_fields["drstk-drs-metadata"]["value"] = get_post_meta($post->ID, "drstk-drs-metadata", true);
+    $metadata_html = '';
+    foreach (get_post_meta($post->ID, "drstk-drs-metadata", true) as $key => $value){
+      $metadata_html .= "<tr><td><i>" . $key . "</i></td><td>";
+      if (count($value) > 1) {
+        for($x=0; $x<=count($value)-1; $x++){
+          $metadata_html .= $value[$x];
+          if ($x != count($value)-1){
+            $metadata_html .=", ";
+          }
         }
+        $metadata_html .= "</td></tr>";
+      } else {
+        $metadata_html .= $value[0] . "</td></tr>";
       }
-      $metadata_html .= "</td></tr>";
-    } else {
-      $metadata_html .= $value[0] . "</td></tr>";
     }
+    $form_fields["drstk-drs-metadata"]["html"] = "<p>Metadata imported from the DRS. Note this data is read only. Any changes must be made directly in the DRS.</p>".$metadata_html;
   }
-  $form_fields["drstk-drs-metadata"]["html"] = "<p>Metadata imported from the DRS. Note this data is read only. Any changes must be made directly in the DRS.</p>".$metadata_html;
 
   if (get_post_meta($post->ID, "drstk-creator")){
     $form_fields["drstk-creator"] = array();
@@ -300,12 +302,13 @@ function drstk_image_attachment_add_custom_fields($form_fields, $post) {
     $form_fields["drstk-date-created"]["value"] = get_post_meta($post->ID, "drstk-date-created", true);
     $form_fields["drstk-date-created"]["html"] = "<p>This field is imported from the DRS. Any changes must be made directly in the DRS.</p><tr><td></td><td>".get_post_meta($post->ID, "drstk-date-created", true)."</td></tr>";
   }
-
-  $form_fields["drstk-pid"] = array();
-  $form_fields["drstk-pid"]["label"] = __("CoreFile Pid");
-  $form_fields["drstk-pid"]["input"] = "html";//can change to just displaying the pid later since it shouldn't be editable
-  $form_fields["drstk-pid"]["value"] = get_post_meta($post->ID, "drstk-pid", true);
-  $form_fields["drstk-pid"]["html"] = "<p>This is a read-only field</p><tr><td></td><td>".get_post_meta($post->ID, "drstk-pid", true)."</td></tr>";
+  if (get_post_meta($post->ID, "drstk-pid")){
+    $form_fields["drstk-pid"] = array();
+    $form_fields["drstk-pid"]["label"] = __("CoreFile Pid");
+    $form_fields["drstk-pid"]["input"] = "html";//can change to just displaying the pid later since it shouldn't be editable
+    $form_fields["drstk-pid"]["value"] = get_post_meta($post->ID, "drstk-pid", true);
+    $form_fields["drstk-pid"]["html"] = "<p>This is a read-only field</p><tr><td></td><td>".get_post_meta($post->ID, "drstk-pid", true)."</td></tr>";
+  }
 
   return $form_fields;
 }
