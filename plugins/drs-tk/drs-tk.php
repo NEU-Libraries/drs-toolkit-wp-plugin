@@ -225,6 +225,11 @@ function drstk_item_script() {
         plugins_url( '/assets/js/item.js', __FILE__ ),
         array( 'jquery' )
     );
+    wp_register_script('drstk_jwplayer',
+        plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
+        array(), $VERSION, false );
+
+    wp_enqueue_script('drstk_jwplayer');
     //wp_enqueue_style( 'drstk_item_style', plugins_url('/assets/css/item.css', __FILE__));
     //this creates a unique nonce to pass back and forth from js/php to protect
     $item_nonce = wp_create_nonce( 'item_drs' );
