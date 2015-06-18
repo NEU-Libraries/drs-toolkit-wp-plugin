@@ -9,7 +9,7 @@ jQuery(document).ready(function($) {
         pid: import_obj.pid,
     }, function(data) {
         var data = $.parseJSON(data);
-        console.log(data);
+        //console.log(data);
         $(".spinner").removeClass('is-active');
         var error_html = '';
         var error_count = 0;
@@ -42,7 +42,7 @@ jQuery(document).ready(function($) {
         if (key != 'error'){
           data_table += "<tr class='data-row'><td width='5'><input type='checkbox' data-pid='"+pid+"' data-field='"+key+"' data-value='"+val.drs+"'/></td><td><a href='http://localhost/wordpress/item/"+pid+"' target='_blank'>"+pid+"</a></td><td>"+key.charAt(0).toUpperCase()+ key.slice(1)+"</td>";
           $.each(val, function(meta, value){
-            console.log(meta + value);
+            //console.log(meta + value);
             data_table += "<td>"+value+"</td>";
           });
           data_table += "</tr>";
@@ -62,6 +62,7 @@ jQuery(document).ready(function($) {
     $(".bulk-meta-override").on("click", function(e){
       e.preventDefault();
       var fields = {};
+      var field_count = 0;
       $(".data-row input[type='checkbox']:checked").each(function() {
         var pid = $(this).data('pid');
         var field = $(this).data('field');
@@ -70,17 +71,20 @@ jQuery(document).ready(function($) {
         fields[pid]['pid'] = pid;
         fields[pid]['field'] = field;
         fields[pid]['value'] = value;
+        field_count++;
       });
-      $.post(import_obj.ajax_url, {
-         _ajax_nonce: import_obj.import_data_nonce,
-          action: "get_import_data",
-          fields: fields,
-      }, function(data) {
-          var data = $.parseJSON(data);
-          $(".data-row input[type='checkbox']:checked").remove();
-      }).fail(function() {
-          console.log("we failed");
-      });
+      if (field_count != 0){
+        $.post(import_obj.ajax_url, {
+           _ajax_nonce: import_obj.import_data_nonce,
+            action: "get_import_data",
+            fields: fields,
+        }, function(data) {
+            var data = $.parseJSON(data);
+            $(".data-row input[type='checkbox']:checked").parent('td').parent('tr').remove();
+        }).fail(function() {
+            console.log("we failed");
+        });
+      }
     });
   }
 
