@@ -47,7 +47,7 @@ jQuery(document).ready(function($) {
         params.pid = parent;
         get_data(params);
       } else {
-        $("#drs-breadcrumbs").prepend("<a href='http://localhost/wordpress/browse'>Browse</a>");
+        $("#drs-breadcrumbs").prepend("<a href='"+site_url+"/browse'>Browse</a>");
       }
     }
     if ((template == 'collection') && (doc_vals.id == sub_collection_pid)){
