@@ -28,6 +28,13 @@ jQuery(document).ready(function($) {
     if (data.thumbnails) {
       $("#drs-item-img").attr("src",data.thumbnails[data.thumbnails.length - 1]);
     }
+    console.log(data.canonical_object[0][1]);
+    console.log(data.canonical_object[0][0]);
+    if (data.canonical_object[0][1] == 'Master Image'){
+      var canonical_image = data.canonical_object[0][0];
+      $("#drs-item-img").data('zoom-image', canonical_image);
+      $("#drs-item-img").elevateZoom();
+    }
     if (data.canonical_object[0][1] == 'Video File' || data.canonical_object[0][1] == 'Audio File'){
       $("#drs-item-img").after("<div id='drs-item-video'></div>").hide();
         jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A=="
