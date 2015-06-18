@@ -195,47 +195,49 @@ function drstk_get_image_data($json){
 
 
   add_action( 'wp_ajax_get_import_data', 'import_data_ajax_handler' ); //for auth users
-
   function import_data_ajax_handler(){
     check_ajax_referer( 'import_data_drs' );
     $collection_pid = get_option('drstk_collection');
-    //$url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection_pid."?f['id'][]=".$_POST['pid'];
-    //$drs_data = get_response($url);
-    //$json = json_decode($drs_data);
-    $field = $_POST['field'];
-    $pid = $_POST['pid'];
-    $image_id = drstk_get_image_by_pid($_POST['pid']);
-    $value = $_POST['value'];
+    $fields = $_POST['fields'];
     $data = array();
-    $data['pid'] = $pid;
-    $data['field'] = $field;
-    $data['value'] = $value;
-    if ($field == 'creator'){
-      update_post_meta($image_id, 'drstk-creator', $value);
-    }
-    if ($field == 'date_created'){
-      update_post_meta($image_id, 'drstk-date-created', $value);
-    }
-    if ($field == 'title'){
-      $this_post = array(
-        'ID' => $image_id,
-        'post_title' => $value,
-      );
-      wp_update_post( $this_post );
-    }
-    if ($field == 'caption'){
-      $this_post = array(
-        'ID' => $image_id,
-        'post_excerpt' => $value,
-      );
-      wp_update_post( $this_post );
-    }
-    if ($field == 'description'){
-      $this_post = array(
-        'ID' => $image_id,
-        'post_content' => $value,
-      );
-      wp_update_post( $this_post );
+    foreach($fields as $field){
+      $data[$field[pid]] = array();
+      $data[$field[pid]]['pid'] = $field[pid];
+      $data[$field[pid]]['field'] = $field[field];
+      $data[$field[pid]]['value'] = $field[value];
+
+      $this_field = $field[field];
+      $pid = $field[pid];
+      $value = $field[value];
+      $image_id = drstk_get_image_by_pid($pid);
+
+      if ($this_field == 'creator'){
+        update_post_meta($image_id, 'drstk-creator', $value);
+      }
+      if ($this_field == 'date_created'){
+        update_post_meta($image_id, 'drstk-date-created', $value);
+      }
+      if ($this_field == 'title'){
+        $this_post = array(
+          'ID' => $image_id,
+          'post_title' => $value,
+        );
+        wp_update_post( $this_post );
+      }
+      if ($this_field == 'caption'){
+        $this_post = array(
+          'ID' => $image_id,
+          'post_excerpt' => $value,
+        );
+        wp_update_post( $this_post );
+      }
+      if ($this_field == 'description'){
+        $this_post = array(
+          'ID' => $image_id,
+          'post_content' => $value,
+        );
+        wp_update_post( $this_post );
+      }
     }
 
     wp_send_json(json_encode($data));
