@@ -10,5 +10,7 @@ function breadcrumb_ajax_handler() {
       $url .= 'f["id"][]='.$_POST['pid'];
     }
     $data = get_response($url);
-    wp_send_json($data);
+    $data = json_decode($data, true);
+    $data['site_url'] = site_url();
+    wp_send_json(json_encode($data));
 }

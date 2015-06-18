@@ -4,6 +4,7 @@ jQuery(document).ready(function($) {
   var collection_pid = breadcrumb_obj.collection_pid;
   var params = {};
   var template = breadcrumb_obj.template;
+  var site_url = '';
   if (template == 'item') {
     params = {pid:item_pid};
   } else if (template == 'collection'){
@@ -19,6 +20,7 @@ jQuery(document).ready(function($) {
 
     }, function(data) {
         var data = $.parseJSON(data);
+        site_url = data.site_url;
         if (jQuery.type(data) == 'object') {
           parse_breadcrumb(data.response.response);
         }
@@ -32,12 +34,12 @@ jQuery(document).ready(function($) {
     var parent = '';
     var object_type = doc_vals.active_fedora_model_ssi;
     if (object_type == 'CoreFile'){
-      var object_url = 'item/'+doc_vals.id;
+      var object_url = '/item/'+doc_vals.id;
     }
     if (object_type == 'Collection'){
-      var object_url = 'collection/'+doc_vals.id;
+      var object_url = '/collection/'+doc_vals.id;
     }
-    $("#drs-breadcrumbs").prepend(" > " + "<a href='http://localhost/wordpress/"+object_url+"'>" + title + "</a>");
+    $("#drs-breadcrumbs").prepend(" > " + "<a href='"+site_url+object_url+"'>" + title + "</a>");
 
     if (doc_vals.fields_parent_id_tesim) {
       parent = doc_vals.fields_parent_id_tesim[0];
