@@ -36,39 +36,50 @@ jQuery(document).ready(function($) {
   });
 
   function show_updates(data){
-    var data_table = "<div><br/><table class='wp-list-table widefat fixed striped media'><tr><thead><th class='manage-column'>PID</th><th class='manage-column'>Field</th><th class='manage-column'>Wordpress Value</th><th class='manage-column'>DRS Value</th><th></th></thead></tr>";
+    var data_table = "<div><br/><a class='button bulk-meta-override' href='#'>Override Selected Wordpress Values</a><table class='wp-list-table widefat fixed striped media'><tr><thead><th width='10'><input type='checkbox' id='check-all' style='vertical-align:text-bottom;margin:0' /></th><th class='manage-column'>PID</th><th class='manage-column'>Field</th><th class='manage-column'>Wordpress Value</th><th class='manage-column'>DRS Value</th></thead></tr>";
     $.each(data.objects, function(pid,values){
       $.each(values, function(key, val){
         if (key != 'error'){
-          data_table += "<tr><td><a href='http://localhost/wordpress/item/"+pid+"' target='_blank'>"+pid+"</a></td><td>"+key.charAt(0).toUpperCase()+ key.slice(1)+"</td>";
+          data_table += "<tr class='data-row'><td width='5'><input type='checkbox' data-pid='"+pid+"' data-field='"+key+"' data-value='"+val.drs+"'/></td><td><a href='http://localhost/wordpress/item/"+pid+"' target='_blank'>"+pid+"</a></td><td>"+key.charAt(0).toUpperCase()+ key.slice(1)+"</td>";
           $.each(val, function(meta, value){
             console.log(meta + value);
             data_table += "<td>"+value+"</td>";
           });
-          data_table +="<td><a class='button meta-override' href='#' data-pid='"+pid+"' data-field='"+key+"' data-value='"+val.drs+"'>Override Wordpress Value</a></td></tr>";
+          data_table += "</tr>";
         }
       });
     });
     $(".notice").after(data_table);
 
-    $(".meta-override").on("click", function(e){
+    $("#check-all").on("click", function(){
+      if ($("#check-all").is(':checked')){
+        $(".data-row input[type='checkbox']").prop('checked', true);
+      } else {
+        $(".data-row input[type='checkbox']").prop('checked', false);
+      }
+    });
+
+    $(".bulk-meta-override").on("click", function(e){
       e.preventDefault();
-      var pid = $(this).data('pid');
-      var field = $(this).data('field');
-      var value = $(this).data('value');
-      var this_row = $(this).parent('td').parent('tr');
-      console.log("pid is " + pid +" and field is " + field);
+      var fields = {};
+      $(".data-row input[type='checkbox']:checked").each(function() {
+        var pid = $(this).data('pid');
+        var field = $(this).data('field');
+        var value = $(this).data('value');
+        fields[pid] = {};
+        fields[pid]['pid'] = pid;
+        fields[pid]['field'] = field;
+        fields[pid]['value'] = value;
+      });
       $.post(import_obj.ajax_url, {
          _ajax_nonce: import_obj.import_data_nonce,
           action: "get_import_data",
-          pid: pid,
-          field: field,
-          value: value,
+          fields: fields,
       }, function(data) {
           var data = $.parseJSON(data);
-          this_row.remove();
+          $(".data-row input[type='checkbox']:checked").remove();
       }).fail(function() {
-
+          console.log("we failed");
       });
     });
   }
