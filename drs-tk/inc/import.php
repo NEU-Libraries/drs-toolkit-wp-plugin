@@ -9,6 +9,7 @@ function import_ajax_handler() {
   $data = array();
   $data['count'] = 0;
   $data['existing_count'] = 0;
+  $data['site_url'] = site_url();
   $data['objects'] = array();
   // global $email;
   // Handle the ajax request
