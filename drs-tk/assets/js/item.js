@@ -1,11 +1,12 @@
 jQuery(document).ready(function($) {
-  $("#drs-item-title").html("<h2>Loading...<br/><span class='fa fa-spinner fa-pulse'></span></h2>");
+  $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-pulse'></span></h2>");
   $.post(item_obj.ajax_url, {
      _ajax_nonce: item_obj.nonce,
       action: "get_item",
       pid: item_obj.pid,
 
   }, function(data) {
+      $("#drs-loading").hide();
       var data = $.parseJSON(data);
       if (data == null) {
         $("#drs-content").html("There seems to be an issue connecting with the place where the data is stored. Try again later. Thanks!");

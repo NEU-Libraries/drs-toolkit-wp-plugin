@@ -24,6 +24,7 @@ $url = site_url() . "/" . $request[2] . "/" . $request[3] . "?js=false";
 
 <div id="drs-breadcrumbs"></div>
 <div id="drs-content">
+  <div id="drs-loading"></div>
   <div id="drs-item-left" class="one_half">
 		<img id="drs-item-img"/>
 	</div>
