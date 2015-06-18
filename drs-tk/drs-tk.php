@@ -350,6 +350,10 @@ add_filter("attachment_fields_to_save", "drstk_image_attachment_save_custom_fiel
 /*permalinks for attachments -> item page*/
 function drstk_attachment_link( $link, $post_id ){
     $post = get_post( $post_id );
-    return home_url( '/item/' . get_post_meta($post->ID, "drstk-pid", true) );
+    if (get_post_meta($post->ID, "drstk-pid", true)){
+      return home_url( '/item/' . get_post_meta($post->ID, "drstk-pid", true) );
+    } else {
+      return home_url( '/?attachment_id=' . $post->ID );
+    }
 }
 add_filter( 'attachment_link', 'drstk_attachment_link', 20, 2 );
