@@ -48,18 +48,18 @@ function parse_this_breadcrumb($doc){
   $title = $doc->title_ssi;
   $object_type = $doc->active_fedora_model_ssi;
   if ($object_type == 'CoreFile'){
-    $object_url = 'item/'.$doc->id;
+    $object_url = '/item/'.$doc->id;
   } else if ($object_type == 'Collection') {
-    $object_url = 'collection/'.$doc->id;
+    $object_url = '/collection/'.$doc->id;
   }
-  $breadcrumb_html = " > <a href='http://localhost/wordpress/".$object_url."'>".$title."</a>" . $breadcrumb_html;
+  $breadcrumb_html = " > <a href='".site_url().$object_url."'>".$title."</a>" . $breadcrumb_html;
   if ($doc->fields_parent_id_tesim){
     $parent = $doc->fields_parent_id_tesim[0];
     if ($parent != $collection){
       $breadcrumb_url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection."?"."f['id'][]=".$parent;
       get_this_breadcrumb($breadcrumb_url);
     } else {
-      $breadcrumb_html = "<a href='http://localhost/wordpress/browse'>Browse</a>" . $breadcrumb_html;
+      $breadcrumb_html = "<a href='".site_url()."/browse'>Browse</a>" . $breadcrumb_html;
     }
   }
 }
