@@ -76,7 +76,19 @@ jQuery(document).ready(function($) {
     }
     var data_html = '';
     $.each(data.mods, function(key,value){
-      data_html += "<div><b>"+key+"</b></div><div>"+value+"</div>";
+      data_html += "<div><b>"+key+"</b></div><div>";
+      if (value.length > 1){
+        var i = 0;
+        for (i; i<value.length; i++){
+          data_html += value[i];
+          if (i != value.length-1){
+            data_html += ", ";
+          }
+        }
+      } else {
+        data_html += value;
+      }
+      data_html += "</div>";
     });
     $("#drs-item-details").html(data_html);
   }
