@@ -56,3 +56,30 @@ function browse_ajax_handler() {
     curl_close($ch);
     return $output;
 }
+
+
+add_action('wp_ajax_wp_search', 'ajax_wp_search');
+add_action('wp_ajax_nopriv_wp_search', 'ajax_wp_search');
+function ajax_wp_search(){
+  global $wp_query;
+  global $paged;
+  $query_string = $_GET['query'];
+  $paged = $_GET['page'];
+  if (isset($_GET['query']) && $query_string != ''){
+    $query_args = array( 's' => $query_string, 'post_type'=>array('post', 'page'), 'posts_per_page'=>3 , 'paged'=>$paged);
+    $wp_query = new WP_Query( $query_args );
+    if ( $wp_query->have_posts() ) {
+      	while ( $wp_query->have_posts() ) {
+      		$wp_query->the_post();
+          get_template_part( 'content', 'search' );
+      	}
+        thinkup_input_pagination();
+      } else {
+        echo "No related content was found";
+      }
+  } else {
+    echo "Please enter a search term to retreive related content";
+  }
+  wp_reset_postdata();
+  die();
+}
