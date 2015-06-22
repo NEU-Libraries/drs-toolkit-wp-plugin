@@ -1,6 +1,6 @@
 jQuery(document).ready(function($) {
   var q = '';
-  q = GetURLParameter('q');
+  q = GetURLParameter(window.location.search.substring(1), 'q');
   var per_page = 2;
   var page = 1;
   var f = {};
@@ -21,6 +21,9 @@ jQuery(document).ready(function($) {
     params.f['fields_parent_id_tesim'] = browse_obj.sub_collection_pid;
   }
   get_data(params);
+  if (template == 'search'){
+    get_wp_data(params.q);
+  }
 
   function get_data(params){
     $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-pulse'></span></h2>").show();
@@ -200,6 +203,7 @@ jQuery(document).ready(function($) {
       }
       $(this).remove();
       get_data(params);
+      get_wp_data(params.q);
     });
 
   }
@@ -219,8 +223,8 @@ jQuery(document).ready(function($) {
     return str;
   }
 
-  function GetURLParameter(sParam){
-    var sPageURL = window.location.search.substring(1);
+  function GetURLParameter(url, sParam){
+    var sPageURL = url;
     var sURLVariables = sPageURL.split('&');
     for (var i = 0; i < sURLVariables.length; i++){
       var sParameterName = sURLVariables[i].split('=');
@@ -228,6 +232,44 @@ jQuery(document).ready(function($) {
         return sParameterName[1];
       }
     }
+  }
+
+  function get_wp_data(query, page){
+    if (!page){
+      page = 1;
+    }
+    $.ajax({
+			type: 'GET',
+			url: browse_obj.ajax_url,
+			data: {
+				action: 'wp_search',
+				query: query,
+        page: page,
+			},
+			beforeSend: function ()
+			{
+        $("#sidebar-core").html("Looking for related content...");
+			},
+			success: function(data)
+			{
+        $("#sidebar-core").html("<h3 class='widget-title'>Related Content</h3>"+data);
+        $("#sidebar").addClass('drs-sidebar');
+        $("#main").addClass('drs-main');
+        fix_wp_pagination();
+			},
+			error: function()
+			{
+				$("#sidebar-core").hide();
+			}
+		});
+  }
+
+  function fix_wp_pagination() {
+    $('#sidebar-core .pag li a').on("click", function(e) {
+      e.preventDefault();
+      var wp_page = GetURLParameter($(this).attr('href'), 'paged');
+      get_wp_data(params.q, wp_page);
+    });
   }
 
 });//end doc ready
