@@ -29,6 +29,10 @@ $TEMPLATE = array(
  register_activation_hook( __FILE__, 'drstk_install' );
  register_deactivation_hook( __FILE__, 'drstk_deactivation' );
 
+ wp_register_script('drstk_jwplayer',
+     plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
+     array(), $VERSION, false );
+
  /**
   * Rewrite rules for the plugin.
   */
@@ -226,13 +230,13 @@ function drstk_item_script() {
         plugins_url( '/assets/js/item.js', __FILE__ ),
         array( 'jquery' )
     );
+    wp_enqueue_script('drstk_jwplayer');
 
     wp_register_script('drstk_elevatezoom',
         plugins_url('/assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__),
         array());
-
     wp_enqueue_script('drstk_elevatezoom');
-    //wp_enqueue_style( 'drstk_item_style', plugins_url('/assets/css/item.css', __FILE__));
+
     //this creates a unique nonce to pass back and forth from js/php to protect
     $item_nonce = wp_create_nonce( 'item_drs' );
     //this allows an ajax call from item.js
@@ -358,9 +362,3 @@ function drstk_attachment_link( $link, $post_id ){
     }
 }
 add_filter( 'attachment_link', 'drstk_attachment_link', 20, 2 );
-
-wp_register_script('drstk_jwplayer',
-    plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
-    array(), $VERSION, false );
-
-wp_enqueue_script('drstk_jwplayer');
