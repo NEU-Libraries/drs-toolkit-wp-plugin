@@ -11,6 +11,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/item.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/import.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/browse.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/breadcrumb.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'inc/video_shortcode.php' );
 
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
 
@@ -225,11 +226,6 @@ function drstk_item_script() {
         plugins_url( '/assets/js/item.js', __FILE__ ),
         array( 'jquery' )
     );
-    wp_register_script('drstk_jwplayer',
-        plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
-        array(), $VERSION, false );
-
-    wp_enqueue_script('drstk_jwplayer');
 
     wp_register_script('drstk_elevatezoom',
         plugins_url('/assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__),
@@ -362,3 +358,9 @@ function drstk_attachment_link( $link, $post_id ){
     }
 }
 add_filter( 'attachment_link', 'drstk_attachment_link', 20, 2 );
+
+wp_register_script('drstk_jwplayer',
+    plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
+    array(), $VERSION, false );
+
+wp_enqueue_script('drstk_jwplayer');
