@@ -35,6 +35,17 @@ jQuery(document).ready(function($) {
       $("#drs-item-img").data('zoom-image', canonical_image);
       $("#drs-item-img").elevateZoom();
     }
+    if (data.canonical_object[0][1] == 'PDF'){
+      if (data.mods.Location && data.mods.Location[0].indexOf("issuu") > -1){
+        var location_link = String(data.mods.Location[0]);
+        var location_href = $(location_link).attr("href");
+        var issuu_id = location_href.split('?')[1].split('=')[1];
+        $("#drs-item-img").after('<div data-configid="'+issuu_id+'" style="width:100%; height:500px;" class="issuuembed"></div><script type="text/javascript" src="//e.issuu.com/embed.js" async="true"></script>');
+        $("#drs-item-img").hide();
+      } else {
+        //no issuu link - do nothing
+      }
+    }
     if (data.canonical_object[0][1] == 'Video File' || data.canonical_object[0][1] == 'Audio File'){
       $("#drs-item-img").after("<div id='drs-item-video'></div>").hide();
         jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A=="
