@@ -93,7 +93,9 @@ jQuery(document).ready(function($) {
     $("#drs-item-details").html(data_html);
     var download_links = '';
     $.each(data.content_objects, function(num,content_object) {
-      download_links += make_object_url(content_object);
+      if (content_object[1] != 'Thumbnail Image') {
+        download_links += make_object_url(content_object);
+      }
     });
     $("#drs-item-details").append("<br/><h4>Downloads</h4>"+download_links);
     function make_object_url(object_array){
