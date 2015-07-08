@@ -27,6 +27,8 @@ function import_ajax_handler() {
       $json = json_decode($drs_data);
       drstk_get_image_data($json);
     }
+  } else {
+    $data = json_decode($drs_data);
   }
   wp_send_json(json_encode($data));
 }

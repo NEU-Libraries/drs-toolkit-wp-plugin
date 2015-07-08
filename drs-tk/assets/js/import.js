@@ -11,25 +11,29 @@ jQuery(document).ready(function($) {
     }, function(data) {
         var data = $.parseJSON(data);
         site_url = data.site_url;
-        //console.log(data);
+        console.log(data);
         $(".spinner").removeClass('is-active');
-        var error_html = '';
-        var error_count = 0;
-        $.each(data.objects, function(pid, values){
-          $.each(values, function(key, val){
-            if (key == 'error'){
-              error_html = val.errors.upload_error;
-              error_count++;
-            }
-          });
-        });
-        if (error_count == 0){
-          $("#drstk-import").after("<div class='updated notice'><p>Import completed of "+data.count+" objects. "+data.existing_count+" were already present in the Media library.</p></div>");
+        if (data.error){
+          $("#drstk-import").after("<div class='error notice'><p>There was an error with the import for the following reason: "+data.error+"</p></div>");
         } else {
-          $("#drstk-import").after("<div class='error notice'><p>Import completed of "+(data.count - error_count)+" objects. "+data.existing_count+" were already present in the Media library.</p><p>"+error_count+" objects were not imported for the following reason:<br/>"+error_html+"</p></div>");
-        }
-        if (Object.prototype.toString.call( data.objects ) === '[object Object]'){
-          show_updates(data);
+          var error_html = '';
+          var error_count = 0;
+          $.each(data.objects, function(pid, values){
+            $.each(values, function(key, val){
+              if (key == 'error'){
+                error_html = val.errors.upload_error;
+                error_count++;
+              }
+            });
+          });
+          if (error_count == 0){
+            $("#drstk-import").after("<div class='updated notice'><p>Import completed of "+data.count+" objects. "+data.existing_count+" were already present in the Media library.</p></div>");
+          } else {
+            $("#drstk-import").after("<div class='error notice'><p>Import completed of "+(data.count - error_count)+" objects. "+data.existing_count+" were already present in the Media library.</p><p>"+error_count+" objects were not imported for the following reason:<br/>"+error_html+"</p></div>");
+          }
+          if (Object.prototype.toString.call( data.objects ) === '[object Object]'){
+            show_updates(data);
+          }
         }
     }).fail(function() {
       $(".spinner").removeClass('is-active');
