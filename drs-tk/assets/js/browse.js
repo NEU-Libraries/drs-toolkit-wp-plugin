@@ -1,7 +1,7 @@
 jQuery(document).ready(function($) {
   var q = '';
   q = GetURLParameter(window.location.search.substring(1), 'q');
-  var per_page = 2;
+  var per_page = 10;
   var page = 1;
   var f = {};
   var sort = "score+desc%2C+system_create_dtsi+desc";
@@ -59,7 +59,7 @@ jQuery(document).ready(function($) {
   //parses pagination data
   function paginate(data){
     $("#drs-item-count").html("<div>Displaying " + data.start + " to " + data.end + " of " + data.total_count + "</div>");
-    $("#drs-per-page-div").html("<div>Show <select id='drs-per-page'><option val='2'>2</option><option val='5'>5</option><option val='10'>10</option></select> per page</div>");
+    $("#drs-per-page-div").html("<div>Show <select id='drs-per-page'><option val='10'>10</option><option val='20'>20</option><option val='50'>50</option></select> per page</div>");
     $("#drs-per-page").val(params.per_page);
     if (data.num_pages > 1) {
       var pagination = "<li class='";
