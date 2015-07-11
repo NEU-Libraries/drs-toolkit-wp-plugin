@@ -126,10 +126,11 @@ jQuery(document).ready(function($) {
     //do grid or list depending on if template is search or browse
     var docs_html = '';
     $.each(data.docs, function(doc, doc_vals){
-      var title, abstract = '';
+      var title, abstract, creator = '';
       var thumbnail = [];
       doc_vals.title_ssi? title = doc_vals.title_ssi : "";
       doc_vals.abstract_tesim? abstract = doc_vals.abstract_tesim : "";
+      doc_vals.creator_ssi? creator = doc_vals.creator_ssi : "";
       doc_vals.thumbnail_list_tesim? thumbnail = doc_vals.thumbnail_list_tesim : "";
       if (doc_vals.active_fedora_model_ssi == 'Collection') {
         this_doc_url = '/collection/' + doc_vals.id;
@@ -146,6 +147,9 @@ jQuery(document).ready(function($) {
           this_doc += "<div class='dashicons dashicons-portfolio'></div>";
         }
         this_doc += "</a></div><div class='three_fourth last'><h4 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>" + title + "</a></h4>";
+        if (creator){
+          this_doc += "<h5>"+ creator + "</h5>";
+        }
         if (abstract){
           this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
         }
