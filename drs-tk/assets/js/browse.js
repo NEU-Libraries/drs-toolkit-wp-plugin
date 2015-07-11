@@ -212,7 +212,7 @@ jQuery(document).ready(function($) {
 
   }
 
-  $("#drs-sort").html("<div>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance Desc</option><option value='title_info_title_ssi%20desc'>Title Desc</option><option value='title_info_title_ssi%20asc'>Title Asc</option><option value='creator_ssi%20desc'>Creator Desc</option><option value='creator_ssi%20asc'>Creator Asc</option><option value='system_create_dtsi%20desc'>Date Uploaded Desc</option><option value='system_create_dtsi%20asc'>Date Uploaded Asc</option><option value='system_modified_dtsi%20desc'>Date Created Desc</option><option value='system_modified_dtsi%20asc'>Date Created Asc</option></select></div>");
+  $("#drs-sort").html("<div>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance</option><option value='title_info_title_ssi%20asc'>Title A-Z</option><option value='title_info_title_ssi%20desc'>Title Z-A</option><option value='creator_ssi%20asc'>Creator A-Z</option><option value='creator_ssi%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></div>");
 
   $("#drs-sort-option").on("change", function() {
     params.sort = $(this).val();
