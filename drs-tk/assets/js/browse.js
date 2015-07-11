@@ -148,7 +148,7 @@ jQuery(document).ready(function($) {
         }
         this_doc += "</a></div><div class='three_fourth last'><h4 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>" + title + "</a></h4>";
         if (creator){
-          this_doc += "<h5>"+ creator + "</h5>";
+          this_doc += "<h6>"+ creator + "</h6>";
         }
         if (abstract){
           this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
