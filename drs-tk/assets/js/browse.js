@@ -195,6 +195,7 @@ jQuery(document).ready(function($) {
       $("#drs-selection").show();
       $("#drs-selection").append("<a class='themebutton' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+"</a>");
       get_data(params);
+      get_wp_data(params.q + " and " + facet_val);
     });
     $("#drs-selection a").on("click", function(e){
       e.preventDefault();
@@ -221,7 +222,7 @@ jQuery(document).ready(function($) {
   });
 
   function titleize(str){
-    str = str.replace("_tesim","").replace("_sim","");
+    str = str.replace("_tesim","").replace("_sim","").replace("_ssim","");
     str = str.replace("_", " ");
     str = str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     return str;
@@ -239,6 +240,7 @@ jQuery(document).ready(function($) {
   }
 
   function get_wp_data(query, page){
+    console.log(query);
     if (!page){
       page = 1;
     }
