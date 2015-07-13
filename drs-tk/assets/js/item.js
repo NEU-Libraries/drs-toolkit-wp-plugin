@@ -28,8 +28,8 @@ jQuery(document).ready(function($) {
     if (data.thumbnails) {
       $("#drs-item-img").attr("src",data.thumbnails[data.thumbnails.length - 1]);
     }
-    // console.log(data.canonical_object[0][1]);
-    // console.log(data.canonical_object[0][0]);
+    // //console.log(data.canonical_object[0][1]);
+    // //console.log(data.canonical_object[0][0]);
     if (data.canonical_object[0][1] == 'Master Image'){
       var canonical_image = data.canonical_object[0][0];
       $("#drs-item-img").data('zoom-image', canonical_image);

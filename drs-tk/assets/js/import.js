@@ -11,7 +11,7 @@ jQuery(document).ready(function($) {
     }, function(data) {
         var data = $.parseJSON(data);
         site_url = data.site_url;
-        console.log(data);
+        //console.log(data);
         $(".spinner").removeClass('is-active');
         if (data.error){
           $("#drstk-import").after("<div class='error notice'><p>There was an error with the import for the following reason: "+data.error+"</p></div>");
@@ -48,7 +48,7 @@ jQuery(document).ready(function($) {
         if (key != 'error'){
           data_table += "<tr class='data-row'><td width='5'><input type='checkbox' data-pid='"+pid+"' data-field='"+key+"' data-value='"+val.drs+"'/></td><td><a href='"+site_url+"/item/"+pid+"' target='_blank'>"+pid+"</a></td><td>"+key.charAt(0).toUpperCase()+ key.slice(1)+"</td>";
           $.each(val, function(meta, value){
-            //console.log(meta + value);
+            ////console.log(meta + value);
             data_table += "<td>"+value+"</td>";
           });
           data_table += "</tr>";
@@ -88,7 +88,7 @@ jQuery(document).ready(function($) {
             var data = $.parseJSON(data);
             $(".data-row input[type='checkbox']:checked").parent('td').parent('tr').remove();
         }).fail(function() {
-            console.log("we failed");
+            //console.log("we failed");
         });
       }
     });
