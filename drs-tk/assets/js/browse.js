@@ -104,6 +104,7 @@ jQuery(document).ready(function($) {
       var facet_values = '';
       if (facet_vals.length > 0) {
         var this_facet, this_facet_name;
+        var facet_modal = facet_modal_vals = '';
         $.each(facet_vals, function(index, val_q) {
           if (index % 2 != 0) { //odd index means it is a count for a specific facet value
             var this_facet_count = val_q;
@@ -112,10 +113,19 @@ jQuery(document).ready(function($) {
           }
           if (this_facet_count != undefined) {
             this_facet = "<a href='#' class='drs-facet-val' ><div class='three_fourth'>"+this_facet_name+"</div><div class='one_fourth last'>"+this_facet_count+"</div></a>";
-            facet_values += this_facet;
+            if (index < 10){
+              facet_values += this_facet;
+            } else {
+              facet_modal_vals += this_facet;
+            }
           }
         });
-        facet_html += "<div id='drs_"+facet+"' class='drs-facet'><b class='drs-facet-name'>" + facet_name + "</b>"+facet_values+"</div>";
+        if (facet_vals.length > 10){
+          console.log(facet_modal_vals);
+          console.log("more than 5 facet values for " + facet_name);
+          facet_modal = '<button type="button" class="themebutton" data-toggle="modal" data-target="#drs_modal_'+facet+'">More '+facet_name+'s</button><div class="modal fade" id="drs_modal_'+facet+'"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">'+facet_name+'</h4></div><div class="modal-body">'+facet_modal_vals+'</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div><!-- /.modal-content --></div><!-- /.modal-dialog --></div><!-- /.modal -->';
+        }
+        facet_html += "<div id='drs_"+facet+"' class='drs-facet'><b class='drs-facet-name'>" + facet_name + "</b>"+facet_values+facet_modal+"</div>";
       }
     });
     $("#drs-facets").html(facet_html);
@@ -189,7 +199,12 @@ jQuery(document).ready(function($) {
     $("#drs-facets a").on("click", function(e){
       e.preventDefault();
       var facet = $(this).parent().attr("id");
-      facet = facet.substr(4);
+      if ($(this).parent().hasClass('modal-body')){
+        facet = $(this).parents('.modal').attr('id').substr(10);
+        $(this).parents('.modal').modal('hide');
+      } else {
+        facet = facet.substr(4);
+      }
       var facet_val = $(this).children(".drs-facet-val div:first-of-type").html();
       params.f[facet] = facet_val;
       $("#drs-selection").show();
