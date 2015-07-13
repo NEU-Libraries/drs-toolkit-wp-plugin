@@ -18,7 +18,7 @@ get_header(); ?>
 		<div id="drs-sort" class="hide one_fourth"></div>
   	<div id="drs-pagination" class="one_fourth last"><ul class="pag"></ul></div>
   </div><!-- #drs-browse-header-row -->
-	<div id="drs-facets" class="one_fourth"></div>
+	<div id="drs-facets" class="one_fourth hidden-phone"></div>
   <div id="drs-docs" class="three_fourth last">
   </div>
 </div><!-- #drs-content -->

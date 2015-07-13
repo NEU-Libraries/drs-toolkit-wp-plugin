@@ -127,6 +127,7 @@ jQuery(document).ready(function($) {
       }
     });
     $("#drs-facets").html(facet_html);
+    $("#drs-facets").before("<button class='themebutton visible-phone hidden-tablet hidden-desktop drs-facet-toggle'>Show Facets</button>");
   }//end facetize
 
   //parses actual results
@@ -232,6 +233,11 @@ jQuery(document).ready(function($) {
     params.sort = $(this).val();
     get_data(params);
     $(this).val(params.sort);
+  });
+
+  $("#drs-content").on("click", ".drs-facet-toggle",  function() {
+    $("#drs-facets").toggleClass("hidden-phone visible-phone");
+    $(".drs-facet-toggle").html($('.drs-facet-toggle').text() == 'Hide Facets' ? 'Show Facets' : 'Hide Facets');
   });
 
   function titleize(str){
