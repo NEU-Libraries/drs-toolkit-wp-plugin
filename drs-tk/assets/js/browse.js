@@ -21,9 +21,7 @@ jQuery(document).ready(function($) {
     params.f['fields_parent_id_tesim'] = browse_obj.sub_collection_pid;
   }
   get_data(params);
-  if (template == 'search'){
-    get_wp_data(params.q);
-  }
+  get_wp_data(params.q);
 
   function get_data(params){
     $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-pulse'></span></h2>").show();
@@ -256,33 +254,37 @@ jQuery(document).ready(function($) {
 
   function get_wp_data(query, page){
     console.log(query);
-    if (!page){
-      page = 1;
+    if (template == 'search'){
+      if (!page){
+        page = 1;
+      }
+      $.ajax({
+  			type: 'GET',
+  			url: browse_obj.ajax_url,
+  			data: {
+  				action: 'wp_search',
+  				query: query,
+          page: page,
+  			},
+  			beforeSend: function ()
+  			{
+          $("#sidebar-core").html("Looking for related content...");
+  			},
+  			success: function(data)
+  			{
+          $("#sidebar-core").html("<h3 class='widget-title'>Related Content</h3>"+data);
+          $("#sidebar").addClass('drs-sidebar');
+          $("#main").addClass('drs-main');
+          fix_wp_pagination();
+  			},
+  			error: function()
+  			{
+  				$("#sidebar-core").hide();
+  			}
+  		});
+    } else {
+      console.log("we're in browse silly");
     }
-    $.ajax({
-			type: 'GET',
-			url: browse_obj.ajax_url,
-			data: {
-				action: 'wp_search',
-				query: query,
-        page: page,
-			},
-			beforeSend: function ()
-			{
-        $("#sidebar-core").html("Looking for related content...");
-			},
-			success: function(data)
-			{
-        $("#sidebar-core").html("<h3 class='widget-title'>Related Content</h3>"+data);
-        $("#sidebar").addClass('drs-sidebar');
-        $("#main").addClass('drs-main');
-        fix_wp_pagination();
-			},
-			error: function()
-			{
-				$("#sidebar-core").hide();
-			}
-		});
   }
 
   function fix_wp_pagination() {
