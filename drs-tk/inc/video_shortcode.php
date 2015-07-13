@@ -32,7 +32,7 @@ function drstk_add_video_playlist( $post ) {
     $collection = get_collection_from_post( $post_id );
     wp_nonce_field( 'drstk_add_video_playlist', 'drstk_add_video_playlist_nonce' );
     $collection = array();
-    $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=2&page=1";
+    $url = "http://repository.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=2&page=1";
     $drs_data = get_response($url);
     $json = json_decode($drs_data);
     if ($json->error) {
@@ -41,7 +41,7 @@ function drstk_add_video_playlist( $post ) {
     }
     if ($json->pagination->table->total_count > 0){
       for ($x = 1; $x <= $json->pagination->table->num_pages; $x++) {
-        $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=10&page=".$x;
+        $url = "http://repository.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=10&page=".$x;
         $drs_data = get_response($url);
         $json = json_decode($drs_data);
         foreach ($json->items as $item){
@@ -50,8 +50,8 @@ function drstk_add_video_playlist( $post ) {
             $dir = substr(md5("info:fedora/".$item->pid."/content/content.0"), 0, 2);
             $video = array(
               'include' => true,
-              'rtmp' => 'rtmp://libwowza.neu.edu:1935/vod/_definst_/MP4:datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/info%3Afedora%2F'.$encoded.'%2Fcontent%2Fcontent.0',
-              'playlist' => 'http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/MP4:'. urlencode("info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0") .'/playlist.m3u8',
+              'rtmp' => 'rtmp://libwowza.neu.edu:1935/vod/_definst_/MP4:datastreamStore/repositoryData/newfedoradata/datastreamStore/'.$dir.'/info%3Afedora%2F'.$encoded.'%2Fcontent%2Fcontent.0',
+              'playlist' => 'http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/repositoryData/newfedoradata/datastreamStore/'.$dir.'/MP4:'. urlencode("info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0") .'/playlist.m3u8',
               'download' => 'download',
               'poster' => end($item->thumbnails),
               'title' => $item->mods->Title[0],

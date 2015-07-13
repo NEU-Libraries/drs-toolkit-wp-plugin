@@ -15,14 +15,14 @@ function import_ajax_handler() {
   // Handle the ajax request
   check_ajax_referer( 'import_drs' );
   $collection_pid = $_POST['pid'];
-  $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$collection_pid."?per_page=2&page=1";
+  $url = "http://repository.library.northeastern.edu/api/v1/export/".$collection_pid."?per_page=2&page=1";
   $drs_data = get_response($url);
   $json = json_decode($drs_data);
   // $email = '';
   if ($json->pagination->table->total_count > 0){
     $email .= $json->pagination->table->total_count;
     for ($x = 1; $x <= $json->pagination->table->num_pages; $x++) {
-      $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$collection_pid."?per_page=2&page=".$x;
+      $url = "http://repository.library.northeastern.edu/api/v1/export/".$collection_pid."?per_page=2&page=".$x;
       $drs_data = get_response($url);
       $json = json_decode($drs_data);
       drstk_get_image_data($json);

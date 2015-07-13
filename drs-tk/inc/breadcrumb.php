@@ -5,7 +5,7 @@ function breadcrumb_ajax_handler() {
   // Handle the ajax request
   $collection = get_option('drstk_collection');
   check_ajax_referer( 'breadcrumb_drs' );
-    $url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection."?";
+    $url = "http://repository.library.northeastern.edu/api/v1/search/".$collection."?";
     if ($_POST['pid'] ){
       $url .= 'f["id"][]='.$_POST['pid'];
     }

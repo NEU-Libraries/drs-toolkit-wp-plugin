@@ -14,7 +14,7 @@ function browse_ajax_handler() {
     $data = json_encode($data);
     wp_send_json($data);
   } else {
-    $url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection."?";
+    $url = "http://repository.library.northeastern.edu/api/v1/search/".$collection."?";
     if ($_POST['params']['q'] ){
       $url .= "q=". urlencode(sanitize_text_field($_POST['params']['q']));
     }
