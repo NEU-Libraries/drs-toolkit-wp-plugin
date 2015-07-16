@@ -226,16 +226,15 @@ function drstk_item_script() {
     global $wp_query;
     global $item_pid;
     //this enqueues the JS file
+    wp_register_script('drstk_elevatezoom',
+        plugins_url('/assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__),
+        array());
+    wp_enqueue_script('drstk_elevatezoom');
     wp_enqueue_script( 'drstk_item',
         plugins_url( '/assets/js/item.js', __FILE__ ),
         array( 'jquery' )
     );
     wp_enqueue_script('drstk_jwplayer');
-
-    wp_register_script('drstk_elevatezoom',
-        plugins_url('/assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__),
-        array());
-    wp_enqueue_script('drstk_elevatezoom');
 
     //this creates a unique nonce to pass back and forth from js/php to protect
     $item_nonce = wp_create_nonce( 'item_drs' );
