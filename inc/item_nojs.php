@@ -1,7 +1,7 @@
 <?php
-global $item_pid, $data, $collection_pid;
+global $item_pid, $data, $collection;
 $item_pid = get_query_var( 'pid' );
-$collection_pid = get_option('drstk_collection');
+$collection = drstk_get_pid();
 $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item_pid;
 $data = get_response($url);
 $data = json_decode($data);
@@ -29,7 +29,6 @@ function get_item_title(){
 function get_item_breadcrumbs(){
   global $item_pid, $data, $breadcrumb_html, $collection;
   $breadcrumb_html = '';
-  $collection = get_option('drstk_collection');
   $breadcrumb_url = "https://repository.library.northeastern.edu/api/v1/search/".$collection."?"."f['id'][]=".$item_pid;
   get_this_breadcrumb($breadcrumb_url);
   echo $breadcrumb_html;

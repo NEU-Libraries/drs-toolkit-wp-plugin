@@ -4,12 +4,12 @@ add_action( 'wp_ajax_nopriv_get_browse', 'browse_ajax_handler' ); //for nonauth 
 function browse_ajax_handler() {
   // Handle the ajax request
   check_ajax_referer( 'browse_drs' );
-  $collection = get_option('drstk_collection');
+  $collection = drstk_get_pid();
   if ($collection == '' || $collection == NULL) {
       $data = array('error'=>'Please enter a correct collection or community id in order to configure the search and browse functionality. Please proceed to /wp-admin to enter a Collection id');
       $data = json_encode($data);
       wp_send_json($data);
-  } elseif ($collection == "neu:1") {
+  } elseif ($collection == "https://repository.library.northeastern.edu/collections/neu:1") {
     $data = array('error'=>'Please enter a correct collection or community id in order to configure the search and browse functionality. Please proceed to /wp-admin to enter a Collection id');
     $data = json_encode($data);
     wp_send_json($data);

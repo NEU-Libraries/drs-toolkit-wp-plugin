@@ -71,27 +71,34 @@ $TEMPLATE = array(
     if(isset($_GET['settings-updated']) && $_GET['settings-updated'])
      {
         //plugin settings have been saved.
-        $collection_pid = get_option('drstk_collection');
+        $collection_pid = drstk_get_pid();
      }
+  }
+
+  function drstk_get_pid(){
+    $collection_pid = get_option('drstk_collection');
+    $collection_pid = explode("/", $collection_pid);
+    $collection_pid = end($collection_pid);
+    return $collection_pid;
   }
 
 //this creates the form for entering the pid on the settings page
  function drstk_display_settings() {
 
-     $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'neu:1';
+     $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'https://repository.library.northeastern.edu/collections/neu:1';
      $html = '</pre>
      <div class="wrap">
      <form action="options.php" method="post" name="options">
-     <h2>Select Your Settings</h2>
+     <h2>Select Your Settings</h2>'.drstk_get_pid().'
      ' . wp_nonce_field('update-options') . '
      <table class="form-table" width="100%" cellpadding="10">
      <tbody>
      <tr>
      <td scope="row" align="left">
-      <label>Project Collection ID</label>
-     <input name="drstk_collection" type="text" value="'.$collection_pid.'"></input>
+      <label>Project Collection URL</label>
+     <input name="drstk_collection" type="text" value="'.$collection_pid.'" style="width:100%;"></input>
      <br/>
-     <small>Ie. If the URL to your collection is <a href="https://repository.library.northeastern.edu/collections/neu:6012">https://repository.library.northeastern.edu/collections/neu:6012</a> then the ID is neu:6012</small>
+     <small>Ie. <a href="https://repository.library.northeastern.edu/collections/neu:6012">https://repository.library.northeastern.edu/collections/neu:6012</a></small>
      </td>
      </tr>
      </tbody>

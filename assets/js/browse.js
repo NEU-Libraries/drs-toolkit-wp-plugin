@@ -33,6 +33,7 @@ jQuery(document).ready(function($) {
     }, function(data) {
       $("#drs-loading").hide();
         var data = $.parseJSON(data);
+        console.log(data);
         if (data == null) {
           $("#drs-content").html("There seems to be an issue connecting with the place where the data is stored. Try again later. Thanks!");
         } else if (data.error) {

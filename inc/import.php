@@ -15,6 +15,8 @@ function import_ajax_handler() {
   // Handle the ajax request
   check_ajax_referer( 'import_drs' );
   $collection_pid = $_POST['pid'];
+  $collection_pid = explode("/", $collection_pid);
+  $collection_pid = end($collection_pid);
   $url = "https://repository.library.northeastern.edu/api/v1/export/".$collection_pid."?per_page=2&page=1";
   $drs_data = get_response($url);
   $json = json_decode($drs_data);
