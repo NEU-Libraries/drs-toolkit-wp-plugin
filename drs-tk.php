@@ -11,7 +11,9 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/item.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/import.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/browse.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/breadcrumb.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'inc/shortcodes.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/video_shortcode.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'inc/item_shortcode.php' );
 
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
 
@@ -253,6 +255,21 @@ function drstk_item_script() {
        'pid' => $item_pid,
     ) );
 }
+
+function drstk_item_shortcode_scripts() {
+	global $post;
+	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_item') ) {
+    wp_register_script('drstk_elevatezoom',
+        plugins_url('/assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__),
+        array( 'jquery' ));
+    wp_enqueue_script('drstk_elevatezoom');
+    wp_enqueue_script( 'drstk_zoom',
+        plugins_url( '/assets/js/zoom.js', __FILE__ ),
+        array( 'jquery' )
+    );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'drstk_item_shortcode_scripts');
 
 function drstk_breadcrumb_script(){
   global $wp_query;
