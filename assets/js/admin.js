@@ -45,4 +45,19 @@
     $content.val( '[drstk_collection_playlist]\n' + $content.val());
   });
 
+  $('#drstk_item_insert_shortcode').click(function(e) {
+    e.preventDefault();
+    var pid = $("#drstk_item_url").val();
+    var zoom = $("#drstk_item_zoom").val();
+    console.log(zoom);
+    pid = pid.split("/");
+    pid = pid[pid.length-1];
+    var shortcode = '[drstk_item id="'+pid+'"';
+    if (zoom == 'on'){
+      shortcode += ' zoom="on"';
+    }
+    shortcode += ']\n';
+    $content.val(shortcode + $content.val());
+  });
+
 });
