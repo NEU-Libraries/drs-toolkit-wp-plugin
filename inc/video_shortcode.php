@@ -7,28 +7,16 @@ function drstk_enqueue_page_scripts( $hook ) {
     }
 
     wp_register_script('drstk_sort_collections',
-        plugins_url('../assets/js/admin-collection-sorting.js', __FILE__),
+        plugins_url('../assets/js/admin.js', __FILE__),
         array());
     wp_enqueue_script( 'drstk_sort_collections' );
     wp_enqueue_script('jquery-ui-sortable');
 }
 
-/* adds the side box */
-add_action( 'add_meta_boxes', 'drstk_add_page_submenu' );
-function drstk_add_page_submenu() {
-    add_meta_box(
-        'drstk_sectionid',
-        __( 'Add Video Playlist from DRS', 'drstk_textdomain' ),
-        'drstk_add_video_playlist',
-        'page',
-        'side'
-    );
-}
-
 /* side box content for video playlist shortcode */
 function drstk_add_video_playlist( $post ) {
     $post_id = $post->ID;
-    $col_pid = get_option('drstk_collection');
+    $col_pid = drstk_get_pid();
     $collection = get_collection_from_post( $post_id );
     wp_nonce_field( 'drstk_add_video_playlist', 'drstk_add_video_playlist_nonce' );
     $collection = array();
