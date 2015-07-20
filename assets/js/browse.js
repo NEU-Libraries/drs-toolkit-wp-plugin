@@ -209,7 +209,6 @@ jQuery(document).ready(function($) {
       $("#drs-selection").show();
       $("#drs-selection").append("<a class='themebutton' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+"</a>");
       get_data(params);
-      get_wp_data(params.q + " and " + facet_val);
     });
     $("#drs-selection a").on("click", function(e){
       e.preventDefault();
