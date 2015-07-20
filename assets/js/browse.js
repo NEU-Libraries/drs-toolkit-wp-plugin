@@ -114,17 +114,18 @@ jQuery(document).ready(function($) {
             this_facet = "<a href='#' class='drs-facet-val' ><div class='three_fourth'>"+this_facet_name+"</div><div class='one_fourth last'>"+this_facet_count+"</div></a>";
             if (index < 10){
               facet_values += this_facet;
+              facet_modal_vals += this_facet;
             } else {
               facet_modal_vals += this_facet;
             }
           }
         });
+        facet_modal = '<button type="button" class="themebutton" data-toggle="modal" data-target="#drs_modal_'+facet+'">More '+facet_name+'s</button><div class="modal fade hide" id="drs_modal_'+facet+'"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">'+facet_name+'</h4></div><div class="modal-body">'+facet_modal_vals+'</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div><!-- /.modal-content --></div><!-- /.modal-dialog --></div><!-- /.modal -->';
+        facet_html += "<div id='drs_"+facet+"' class='drs-facet'><b class='drs-facet-name'>" + facet_name + "</b>"+facet_values;
         if (facet_vals.length > 10){
-          //console.log(facet_modal_vals);
-          //console.log("more than 5 facet values for " + facet_name);
-          facet_modal = '<button type="button" class="themebutton" data-toggle="modal" data-target="#drs_modal_'+facet+'">More '+facet_name+'s</button><div class="modal fade hide" id="drs_modal_'+facet+'"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">'+facet_name+'</h4></div><div class="modal-body">'+facet_modal_vals+'</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div><!-- /.modal-content --></div><!-- /.modal-dialog --></div><!-- /.modal -->';
+          facet_html += facet_modal;
         }
-        facet_html += "<div id='drs_"+facet+"' class='drs-facet'><b class='drs-facet-name'>" + facet_name + "</b>"+facet_values+facet_modal+"</div>";
+        facet_html += "</div>";
       }
     });
     $("#drs-facets").html(facet_html);
