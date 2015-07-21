@@ -55,7 +55,7 @@ function drstk_tiles( $atts ){
     $thumbnail = end($data->thumbnails);
     $title = $data->mods->Title[0];
     $creator = $data->mods->Creator[0];
-    $img_html .= "<div class='brick'><a href='http://localhost/wordpress/item/".$pid."'><img src='".$thumbnail."'></a><div class='info'><h5><a href='http://localhost/wordpress/item/".$pid."'>".$title."</a></h5>".$creator."</div></div>";
+    $img_html .= "<div class='brick'><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'></a><div class='info'><h5><a href='".site_url()."/item/".$pid."'>".$title."</a></h5>".$creator."</div></div>";
   }
   $shortcode = "<div class='freewall' id='freewall'>".$img_html."</div>";
   return $shortcode;
