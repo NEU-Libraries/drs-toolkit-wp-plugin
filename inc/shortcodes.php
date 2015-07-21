@@ -17,3 +17,25 @@ function drstk_add_page_submenu() {
         'side'
     );
 }
+
+/*enques extra js*/
+add_action('admin_enqueue_scripts', 'drstk_enqueue_page_scripts');
+function drstk_enqueue_page_scripts( $hook ) {
+    if ($hook != 'post.php') {
+        return;
+    }
+
+    wp_register_script('drstk_admin_js',
+        plugins_url('../assets/js/admin.js', __FILE__),
+        array());
+    wp_enqueue_script( 'drstk_admin_js' );
+    wp_enqueue_script('jquery-ui-sortable');
+   //this creates a unique nonce to pass back and forth from js/php to protect
+   $item_admin_nonce = wp_create_nonce( 'item_admin_nonce' );
+   //this allows an ajax call from admin.js
+   wp_localize_script( 'drstk_admin_js', 'item_admin_obj', array(
+      'ajax_url' => admin_url( 'admin-ajax.php' ),
+      'item_admin_nonce'    => $item_admin_nonce,
+      'pid' => '',
+   ) );
+}

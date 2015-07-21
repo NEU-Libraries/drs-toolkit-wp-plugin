@@ -1,18 +1,4 @@
 <?php
-/*enques extra js*/
-add_action('admin_enqueue_scripts', 'drstk_enqueue_page_scripts');
-function drstk_enqueue_page_scripts( $hook ) {
-    if ($hook != 'post.php') {
-        return;
-    }
-
-    wp_register_script('drstk_sort_collections',
-        plugins_url('../assets/js/admin.js', __FILE__),
-        array());
-    wp_enqueue_script( 'drstk_sort_collections' );
-    wp_enqueue_script('jquery-ui-sortable');
-}
-
 /* side box content for video playlist shortcode */
 function drstk_add_video_playlist( $post ) {
     $post_id = $post->ID;
