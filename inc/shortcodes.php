@@ -10,6 +10,13 @@ function drstk_add_page_submenu() {
         'side'
     );
     add_meta_box(
+        'drstk_tileid',
+        __( 'Add Tile Gallery from DRS', 'drstk_textdomain' ),
+        'drstk_add_tile_gallery',
+        'page',
+        'side'
+    );
+    add_meta_box(
         'drstk_itemid',
         __( 'Add Item from DRS', 'drstk_textdomain' ),
         'drstk_add_item',
