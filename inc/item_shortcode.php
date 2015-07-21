@@ -1,15 +1,13 @@
 <?php
 /* side box content for video playlist shortcode */
 function drstk_add_item( $post ) {
-    $post_id = $post->ID;
     wp_nonce_field( 'drstk_add_item', 'drstk_add_item_nonce' );
     echo '<label for="drstk_item_url">Item URL: </label><input type="text" id="drstk_item_url" name="drstk_item_url" /><br/>';
-    echo '<label for="drstk_item_zoom">Enable Zoom</label><input type="checkbox" id="drstk_item_zoom" name="drstk_item_zoom" />';
- ?>   <a href="#" id="drstk_item_insert_shortcode" class="button" title="Insert shortcode">Insert shortcode</a> <?php
-
+    echo '<label for="drstk_item_zoom">Enable Zoom</label><input type="checkbox" id="drstk_item_zoom" name="drstk_item_zoom" /><br/>';
+    echo '<a href="#" id="drstk_get_item_meta" class="button" title="Get Metadata">Get Metadata</a><br/>';
+    echo '<div class="item-metadata"></div>';
+    echo '<a href="#" id="drstk_item_insert_shortcode" class="button" title="Insert shortcode">Insert shortcode</a>';
 }
-
-
 
 /* adds shortcode */
 add_shortcode( 'drstk_item', 'drstk_item' );
@@ -26,9 +24,27 @@ function drstk_item( $atts ){
     if ($data->canonical_object[0][1] == 'Master Image'){
       $master = $data->canonical_object[0][0];
     }
-    $img_html .= " data-zoom-image='".$master."' data-zoom='on'/>";
-  } else {
-    $img_html .= "/>";
+    $img_html .= " data-zoom-image='".$master."' data-zoom='on'";
   }
+  $img_metadata = "";
+  // $img_metadata = "<pre>".print_r($atts)."</pre>";
+  foreach($atts as $attr => $val){
+    if ($attr != 'zoom' && $attr != 'id'){
+      $img_metadata .= $val . "<br/>";
+    }
+  }
+  $img_html .= "/>";
+  $img_html .= "<div class='wp-caption-text drstk-caption'>".$img_metadata."</div>";
   return $img_html;
+}
+
+add_action( 'wp_ajax_get_item_admin', 'item_admin_ajax_handler' ); //for auth users
+function item_admin_ajax_handler() {
+  $data = array();
+  // Handle the ajax request
+  check_ajax_referer( 'item_admin_nonce' );
+  $url = "http://cerberus.library.northeastern.edu/api/v1/files/" . $_POST['pid'];
+  $data = get_response($url);
+  $data = json_decode($data);
+  wp_send_json(json_encode($data));
 }
