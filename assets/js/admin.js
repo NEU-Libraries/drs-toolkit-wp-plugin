@@ -45,6 +45,7 @@
     $content.val( '[drstk_collection_playlist]\n' + $content.val());
   });
 
+  //get metadata button
   $("#drstk_get_item_meta").click(function(e){
     e.preventDefault();
     var pid = $("#drstk_item_url").val();
@@ -73,6 +74,7 @@
     });
   })
 
+  //insert item shortcode button
   $('#drstk_item_insert_shortcode').click(function(e) {
     e.preventDefault();
     var pid = $("#drstk_item_url").val();
@@ -94,6 +96,22 @@
       }
     }
     shortcode += ']\n';
+    $content.val(shortcode + $content.val());
+  });
+
+  //sortable tile list
+  $("#sortable-tile-list").sortable();
+  //insert tile gallery button
+  $("#drstk_insert_tile_gallery").click(function(e){
+    e.preventDefault();
+    var tiles = [];
+    $(".drstk-include-tile:checked").each(function(){
+      console.log($(this).val());
+      tiles.push($(this).val());
+    });
+    console.log(tiles);
+    tiles = tiles.join(", ");
+    var shortcode = '[drstk_tiles id="'+tiles+'"]\n';
     $content.val(shortcode + $content.val());
   });
 
