@@ -12,8 +12,8 @@ function drstk_add_item( $post ) {
 /* adds shortcode */
 add_shortcode( 'drstk_item', 'drstk_item' );
 function drstk_item( $atts ){
-  // echo "http://cerberus.library.northeastern.edu/api/v1/files/neu:5m60qs151";
-  $url = "http://cerberus.library.northeastern.edu/api/v1/files/" . $atts['id'];
+  // echo "https://repository.library.northeastern.edu/api/v1/files/neu:5m60qs151";
+  $url = "https://repository.library.northeastern.edu/api/v1/files/" . $atts['id'];
   // echo $url;
   $data = get_response($url);
   $data = json_decode($data);
@@ -43,7 +43,7 @@ function item_admin_ajax_handler() {
   $data = array();
   // Handle the ajax request
   check_ajax_referer( 'item_admin_nonce' );
-  $url = "http://cerberus.library.northeastern.edu/api/v1/files/" . $_POST['pid'];
+  $url = "https://repository.library.northeastern.edu/api/v1/files/" . $_POST['pid'];
   $data = get_response($url);
   $data = json_decode($data);
   wp_send_json(json_encode($data));
