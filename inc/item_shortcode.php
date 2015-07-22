@@ -1,6 +1,6 @@
 <?php
 /* side box content for video playlist shortcode */
-function drstk_add_item( $post ) {
+function drstk_add_item() {
     wp_nonce_field( 'drstk_add_item', 'drstk_add_item_nonce' );
     echo '<label for="drstk_item_url">Item URL: </label><input type="text" id="drstk_item_url" name="drstk_item_url" /><br/>';
     echo '<label for="drstk_item_zoom">Enable Zoom</label><input type="checkbox" id="drstk_item_zoom" name="drstk_item_zoom" /><br/>';

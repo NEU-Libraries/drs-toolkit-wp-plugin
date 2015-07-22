@@ -1,7 +1,6 @@
 <?php
 /* side box content for tile gallery shortcode */
-function drstk_add_tile_gallery( $post ) {
-    $post_id = $post->ID;
+function drstk_add_tile_gallery() {
     $col_pid = drstk_get_pid();
     wp_nonce_field( 'drstk_add_tile_gallery', 'drstk_add_tile_gallery_nonce' );
     $collection = array();
@@ -27,19 +26,18 @@ function drstk_add_tile_gallery( $post ) {
         }
       }
     }
- ?>   <a href="#" id="drstk_insert_tile_gallery" class="button" title="Insert shortcode">Insert shortcode</a> <?php
+ echo '<a href="#" id="drstk_insert_tile_gallery" class="button" title="Insert shortcode">Insert shortcode</a>';
 
     echo '<ol id="sortable-tile-list">';
     foreach ($collection as $key => $doc) {
-        echo '<li id="drstile-', $key, '">';
-        echo '<img src="', $doc['thumbnail'], '" width="150" /><br/>';
-        echo '<input type="checkbox" class="drstk-include-tile" value="'.$doc['pid'].'" />';
-        echo $doc['title'];
+        echo '<li style="display:inline-block;padding:10px;">';
+        echo '<label for="drstile-', $key, '"><img src="', $doc['thumbnail'], '" width="150" /><br/>';
+        echo '<input id="drstile-', $key, '" type="checkbox" class="drstk-include-tile" value="'.$doc['pid'].'" />';
+        echo '<span style="width:100px;display:inline-block">'.$doc['title'].'</span></label>';
         echo '</li>';
     }
     echo '</ol>';
         echo '<p>Drag and drop the thumbnails in the order you want them to appear in the playlist. You can un-check the images you wish to exclude entirely.';
-
 }
 
 /* adds shortcode */

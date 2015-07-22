@@ -57,6 +57,7 @@
         pid: pid,
     }, function(data) {
         var data = $.parseJSON(data);
+        console.log(data);
         if (data.error){
           $(".item-metadata").html("There was an error: "+data.error);
         } else {
@@ -114,5 +115,7 @@
     var shortcode = '[drstk_tiles id="'+tiles+'"]\n';
     $content.val(shortcode + $content.val());
   });
+
+   $("#tabs").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
 
 });

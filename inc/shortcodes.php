@@ -1,4 +1,7 @@
 <?php
+//allows modals in admin
+add_thickbox();
+
 /* adds the side box */
 add_action( 'add_meta_boxes', 'drstk_add_page_submenu' );
 function drstk_add_page_submenu() {
@@ -6,13 +9,6 @@ function drstk_add_page_submenu() {
         'drstk_sectionid',
         __( 'Add Video Playlist from DRS', 'drstk_textdomain' ),
         'drstk_add_video_playlist',
-        'page',
-        'side'
-    );
-    add_meta_box(
-        'drstk_tileid',
-        __( 'Add Tile Gallery from DRS', 'drstk_textdomain' ),
-        'drstk_add_tile_gallery',
         'page',
         'side'
     );
@@ -25,6 +21,20 @@ function drstk_add_page_submenu() {
     );
 }
 
+add_action('media_buttons', 'add_drs_button', 15);
+function add_drs_button() {
+    echo '<a href="#TB_inline?width=750&height=650&inlineId=drs-tile-modal" id="insert-drs" class="button thickbox" title="Add DRS Item(s)">Add DRS Item(s)</a>';
+    echo '<div id="drs-tile-modal" style="display:none;padding:10px;">';
+    echo '<div id="tabs"><ul><li><a href="#tabs-1">Tile Gallery</a></li><li><a href="#tabs-2">Gallery Slider</a></li><li><a href="#tabs-3">Single Item</a></li></ul><div id="tabs-1">';
+    echo drstk_add_tile_gallery();
+    echo '</div><div id="tabs-2">';
+    echo '';//placeholder for when the gallery is complete
+    echo '</div><div id="tabs-3">';
+    echo drstk_add_item();
+    echo '</div></div>';
+    echo '</div>';
+}
+
 /*enques extra js*/
 add_action('admin_enqueue_scripts', 'drstk_enqueue_page_scripts');
 function drstk_enqueue_page_scripts( $hook ) {
@@ -34,7 +44,7 @@ function drstk_enqueue_page_scripts( $hook ) {
 
     wp_register_script('drstk_admin_js',
         plugins_url('../assets/js/admin.js', __FILE__),
-        array());
+        array('jquery', 'jquery-ui-tabs'));
     wp_enqueue_script( 'drstk_admin_js' );
     wp_enqueue_script('jquery-ui-sortable');
    //this creates a unique nonce to pass back and forth from js/php to protect
@@ -46,3 +56,54 @@ function drstk_enqueue_page_scripts( $hook ) {
       'pid' => '',
    ) );
 }
+
+function thickbox_styles() {
+   echo '<style type="text/css">
+           #TB_window{height:700px !important;}
+           #TB_ajaxContent{width:750px !important;}
+            .ui-tabs.ui-tabs-vertical {
+                padding: 0;
+                width: 53em;
+                // height:650px;
+            }
+            .ui-tabs.ui-tabs-vertical .ui-widget-header {
+                border: none;
+            }
+            .ui-tabs.ui-tabs-vertical .ui-tabs-nav {
+                float: left;
+                width: 10em;
+                background: #CCC;
+                border-right: 1px solid gray;
+            }
+            .ui-tabs.ui-tabs-vertical .ui-tabs-nav li {
+                margin: 0.2em 0;
+                border: 1px solid gray;
+                border-radius: 4px 0 0 4px;
+                position: relative;
+                right: -2px;
+            }
+            .ui-tabs.ui-tabs-vertical .ui-tabs-nav li a {
+                display: block;
+                padding: 0.6em 1em;
+            }
+            .ui-tabs.ui-tabs-vertical .ui-tabs-nav li a:hover {
+                cursor: pointer;
+            }
+            .ui-tabs.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active {
+                border-right: 1px solid white;
+            }
+            .ui-tabs.ui-tabs-vertical .ui-tabs-panel {
+                float: left;
+                width: 39em;
+                background:#FFF;
+                padding:26px;
+                max-height:597px;
+            }
+            #sortable-tile-list{
+              height: 493px;
+              overflow: scroll;
+            }
+         </style>';
+}
+
+add_action('admin_head', 'thickbox_styles');
