@@ -30,7 +30,7 @@ function add_drs_button() {
     echo '</div><div id="tabs-2">';
     echo '';//placeholder for when the gallery is complete
     echo '</div><div id="tabs-3">';
-    echo drstk_add_item();
+    //echo drstk_add_item();
     echo '</div></div>';
     echo '</div>';
 }
