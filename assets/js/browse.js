@@ -153,7 +153,7 @@ jQuery(document).ready(function($) {
         //search = grid
         this_doc += "<div class='drs-item'><div class='one_fourth'><a href='"+browse_obj.site_url+this_doc_url+"'>";
         if (thumbnail[1]) {
-          this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
+          this_doc += "<img src='http://cerberus.library.northeastern.edu"+thumbnail[1]+"' />";
         } else {
           this_doc += "<div class='dashicons dashicons-portfolio'></div>";
         }
@@ -169,7 +169,7 @@ jQuery(document).ready(function($) {
         //browse = tile
         this_doc += "<div class='drs-item one_third'><div class=''><a href='"+browse_obj.site_url+this_doc_url+"'>";
         if (thumbnail[1]) {
-          this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
+          this_doc += "<img src='http://cerberus.library.northeastern.edu"+thumbnail[1]+"' />";
         } else {
           this_doc += "<div class='dashicons dashicons-portfolio'></div>";
         }
