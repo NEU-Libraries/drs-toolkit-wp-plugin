@@ -45,58 +45,57 @@
     $content.val( '[drstk_collection_playlist]\n' + $content.val());
   });
 
-  //get metadata button
-  $("#drstk_get_item_meta").click(function(e){
-    e.preventDefault();
-    var pid = $("#drstk_item_url").val();
-    pid = pid.split("/");
-    pid = pid[pid.length-1];
-    $.post(item_admin_obj.ajax_url, {
-       _ajax_nonce: item_admin_obj.item_admin_nonce,
-        action: "get_item_admin",
-        pid: pid,
-    }, function(data) {
-        var data = $.parseJSON(data);
-        console.log(data);
-        if (data.error){
-          $(".item-metadata").html("There was an error: "+data.error);
-        } else {
-          console.log(data);
-          var data_html = '';
-          $.each(data.mods, function(key,value){
-            data_html += "<div><input type='checkbox' name='"+key+"' value='"+value+"'/><b>"+key+"</b></div><div>";
-              data_html += value;
-            data_html += "</div>";
-          });
-          $(".item-metadata").html(data_html);
-        }
-    }).fail(function() {
-      $(".item-metadata").html("There was an error getting metadata on this item. Please try a different url.");
-    });
-  })
+  $(".drstk-include-item").on("click", function(e){
+    // console.log($(this).val());
+    var pid = $(this).val();
+    if($(this).is(":checked")){
+      $(this).parents("li").siblings("li").hide();
+      $.post(item_admin_obj.ajax_url, {
+         _ajax_nonce: item_admin_obj.item_admin_nonce,
+          action: "get_item_admin",
+          pid: pid,
+      }, function(data) {
+          var data = $.parseJSON(data);
+          // console.log(data);
+          if (data.error){
+            $(".item-metadata").html("There was an error: "+data.error);
+          } else {
+            // console.log(data);
+            var data_html = '';
+            $.each(data.mods, function(key,value){
+              data_html += "<div><input type='checkbox' name='"+key+"' value='"+value+"'/><b>"+key+"</b></div><div>";
+                data_html += value;
+              data_html += "</div>";
+            });
+            $(".item-metadata").html(data_html);
+          }
+      }).fail(function() {
+        $(".item-metadata").html("There was an error getting metadata on this item. Please try a different url.");
+      });
+    } else {
+      $(this).parents("li").siblings("li").show();
+    }
+
+  });
 
   //insert item shortcode button
-  $('#drstk_item_insert_shortcode').click(function(e) {
+  $('#drstk_insert_item').click(function(e) {
     e.preventDefault();
-    var pid = $("#drstk_item_url").val();
-    var zoom = $("#drstk_item_zoom").is(":checked");
-    var metadata = {};
-    $(".item-metadata input[type='checkbox']:checked").each(function(){
-      metadata[$(this).attr('name')] = $(this).val();
-    });
-    pid = pid.split("/");
-    pid = pid[pid.length-1];
-    var shortcode = '[drstk_item id="'+pid+'"';
-    if (zoom == true){
-      shortcode += ' zoom="on"';
-    }
-    if (Object.keys(metadata).length > 0){
-      for (var key in metadata){
-        var pretty_key = key.toLowerCase().replace(/\W/g, '_');
-        shortcode += ' '+pretty_key+'="'+metadata[key]+'"';
+    var pid = '';
+    $(".drstk-include-item").each(function(){
+      if ($(this).is(":visible")){
+        pid = $(this).val();
       }
-    }
-    shortcode += ']\n';
+    });
+    var metadata = [];
+    $(".item-metadata input[type='checkbox']:checked").each(function(){
+      metadata.push($(this).attr('name'));
+    });
+    var shortcode = '[drstk_item id="'+pid+'"';
+    //add zoom back in
+    shortcode += ' metadata="'+metadata;
+    // shortcode += metadata.join(", ");
+    shortcode +='"]\n';
     $content.val(shortcode + $content.val());
   });
 
@@ -117,5 +116,12 @@
   });
 
    $("#tabs").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
+
+   //insert gallery button
+  $("#drstk_insert_gallery").click(function(e){
+     e.preventDefault();
+    var shortcode = '[drstk_gallery]\n';
+     $content.val(shortcode + $content.val());
+   });
 
 });
