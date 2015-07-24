@@ -1,12 +1,14 @@
 <?php
 /* side box content for video playlist shortcode */
-function drstk_add_video_playlist( $post ) {
+// function drstk_add_video_playlist( $post ) {
+function drstk_add_video_playlist() {
+    global $post;
     $post_id = $post->ID;
     $col_pid = drstk_get_pid();
     $collection = get_collection_from_post( $post_id );
     wp_nonce_field( 'drstk_add_video_playlist', 'drstk_add_video_playlist_nonce' );
     $collection = array();
-    $url = "https://repository.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=2&page=1";
+    $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=2&page=1";
     $drs_data = get_response($url);
     $json = json_decode($drs_data);
     if ($json->error) {
@@ -15,7 +17,7 @@ function drstk_add_video_playlist( $post ) {
     }
     if ($json->pagination->table->total_count > 0){
       for ($x = 1; $x <= $json->pagination->table->num_pages; $x++) {
-        $url = "https://repository.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=10&page=".$x;
+        $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=10&page=".$x;
         $drs_data = get_response($url);
         $json = json_decode($drs_data);
         foreach ($json->items as $item){
