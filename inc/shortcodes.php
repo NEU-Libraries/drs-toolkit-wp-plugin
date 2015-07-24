@@ -21,10 +21,7 @@ function add_drs_button() {
 /*enques extra js*/
 add_action('admin_enqueue_scripts', 'drstk_enqueue_page_scripts');
 function drstk_enqueue_page_scripts( $hook ) {
-    if ($hook != 'post.php') {
-        return;
-    }
-// || $hook != 'post-new.php'
+    if ($hook == 'post.php' || $hook == 'post-new.php') {
     wp_register_script('drstk_admin_js',
         plugins_url('../assets/js/admin.js', __FILE__),
         array('jquery', 'jquery-ui-tabs'));
@@ -38,6 +35,9 @@ function drstk_enqueue_page_scripts( $hook ) {
       'item_admin_nonce'    => $item_admin_nonce,
       'pid' => '',
    ) );
+ } else {
+   return;
+ }
 }
 
 function thickbox_styles() {
