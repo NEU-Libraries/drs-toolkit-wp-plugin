@@ -2,19 +2,47 @@
 /* side box content for video playlist shortcode */
 function drstk_add_item() {
     wp_nonce_field( 'drstk_add_item', 'drstk_add_item_nonce' );
-    echo '<label for="drstk_item_url">Item URL: </label><input type="text" id="drstk_item_url" name="drstk_item_url" /><br/>';
-    echo '<label for="drstk_item_zoom">Enable Zoom</label><input type="checkbox" id="drstk_item_zoom" name="drstk_item_zoom" /><br/>';
-    echo '<a href="#" id="drstk_get_item_meta" class="button" title="Get Metadata">Get Metadata</a><br/>';
-    echo '<div class="item-metadata"></div>';
-    echo '<a href="#" id="drstk_item_insert_shortcode" class="button" title="Insert shortcode">Insert shortcode</a>';
+    $col_pid = drstk_get_pid();
+    $collection = array();
+    $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=2&page=1";
+    $drs_data = get_response($url);
+    $json = json_decode($drs_data);
+    if ($json->error) {
+      echo "There was an error: " . $json->error;
+      return;
+    }
+    if ($json->pagination->table->total_count > 0){
+      for ($x = 1; $x <= $json->pagination->table->num_pages; $x++) {
+        $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=10&page=".$x;
+        $drs_data = get_response($url);
+        $json = json_decode($drs_data);
+        foreach ($json->items as $item){
+            $img = array(
+              'pid' => $item->pid,
+              'thumbnail' => $item->thumbnails[0],
+              'title' => $item->mods->Title[0],
+            );
+            $collection[] = $img;
+        }
+      }
+    }
+ echo '<a href="#" id="drstk_insert_item" class="button" title="Insert shortcode">Insert shortcode</a>';
+ echo '<div class="item-metadata"></div>';
+    echo '<ol id="sortable-item-list">';
+    foreach ($collection as $key => $doc) {
+        echo '<li style="display:inline-block;padding:10px;">';
+        echo '<label for="drsitem-', $key, '"><img src="', $doc['thumbnail'], '" width="150" /><br/>';
+        echo '<input id="drsitem-', $key, '" type="checkbox" class="drstk-include-item" value="'.$doc['pid'].'" />';
+        echo '<span style="width:100px;display:inline-block">'.$doc['title'].'</span></label>';
+        echo '</li>';
+    }
+    echo '</ol>';
 }
 
 /* adds shortcode */
 add_shortcode( 'drstk_item', 'drstk_item' );
 function drstk_item( $atts ){
-  // echo "https://repository.library.northeastern.edu/api/v1/files/neu:5m60qs151";
-  $url = "https://repository.library.northeastern.edu/api/v1/files/" . $atts['id'];
-  // echo $url;
+  $url = "http://cerberus.library.northeastern.edu/api/v1/files/" . $atts['id'];
   $data = get_response($url);
   $data = json_decode($data);
   // return print_r($data);
@@ -27,10 +55,11 @@ function drstk_item( $atts ){
     $img_html .= " data-zoom-image='".$master."' data-zoom='on'";
   }
   $img_metadata = "";
-  // $img_metadata = "<pre>".print_r($atts)."</pre>";
-  foreach($atts as $attr => $val){
-    if ($attr != 'zoom' && $attr != 'id'){
-      $img_metadata .= $val . "<br/>";
+  if (isset($atts['metadata'])){
+    $metadata = explode(",",$atts['metadata']);
+    foreach($metadata as $field){
+      $this_field = $data->mods->$field;
+      $img_metadata .= $this_field[0] . "<br/>";
     }
   }
   $img_html .= "/>";
@@ -43,7 +72,7 @@ function item_admin_ajax_handler() {
   $data = array();
   // Handle the ajax request
   check_ajax_referer( 'item_admin_nonce' );
-  $url = "https://repository.library.northeastern.edu/api/v1/files/" . $_POST['pid'];
+  $url = "http://cerberus.library.northeastern.edu/api/v1/files/" . $_POST['pid'];
   $data = get_response($url);
   $data = json_decode($data);
   wp_send_json(json_encode($data));
