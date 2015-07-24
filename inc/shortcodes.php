@@ -2,35 +2,18 @@
 //allows modals in admin
 add_thickbox();
 
-/* adds the side box */
-add_action( 'add_meta_boxes', 'drstk_add_page_submenu' );
-function drstk_add_page_submenu() {
-    add_meta_box(
-        'drstk_sectionid',
-        __( 'Add Video Playlist from DRS', 'drstk_textdomain' ),
-        'drstk_add_video_playlist',
-        'page',
-        'side'
-    );
-    add_meta_box(
-        'drstk_itemid',
-        __( 'Add Item from DRS', 'drstk_textdomain' ),
-        'drstk_add_item',
-        'page',
-        'side'
-    );
-}
-
 add_action('media_buttons', 'add_drs_button', 15);
 function add_drs_button() {
     echo '<a href="#TB_inline?width=750&height=650&inlineId=drs-tile-modal" id="insert-drs" class="button thickbox" title="Add DRS Item(s)">Add DRS Item(s)</a>';
     echo '<div id="drs-tile-modal" style="display:none;padding:10px;">';
-    echo '<div id="tabs"><ul><li><a href="#tabs-1">Tile Gallery</a></li><li><a href="#tabs-2">Gallery Slider</a></li><li><a href="#tabs-3">Single Item</a></li></ul><div id="tabs-1">';
+    echo '<div id="tabs"><ul><li><a href="#tabs-1">Tile Gallery</a></li><li><a href="#tabs-2">Gallery Slider</a></li><li><a href="#tabs-3">Single Item</a></li><li><a href="#tabs-4">Video Playlist</a></li></ul><div id="tabs-1">';
     echo drstk_add_tile_gallery();
     echo '</div><div id="tabs-2">';
-    echo '';//placeholder for when the gallery is complete
+    // echo drstk_add_gallery();
     echo '</div><div id="tabs-3">';
-    //echo drstk_add_item();
+    echo drstk_add_item();
+    echo '</div><div id="tabs-4">';
+    echo drstk_add_video_playlist();
     echo '</div></div>';
     echo '</div>';
 }
@@ -41,7 +24,7 @@ function drstk_enqueue_page_scripts( $hook ) {
     if ($hook != 'post.php') {
         return;
     }
-
+// || $hook != 'post-new.php'
     wp_register_script('drstk_admin_js',
         plugins_url('../assets/js/admin.js', __FILE__),
         array('jquery', 'jquery-ui-tabs'));
@@ -64,7 +47,6 @@ function thickbox_styles() {
             .ui-tabs.ui-tabs-vertical {
                 padding: 0;
                 width: 53em;
-                // height:650px;
             }
             .ui-tabs.ui-tabs-vertical .ui-widget-header {
                 border: none;
@@ -99,9 +81,12 @@ function thickbox_styles() {
                 padding:26px;
                 max-height:597px;
             }
-            #sortable-tile-list{
+            #sortable-tile-list, #sortable-item-list{
               height: 493px;
               overflow: scroll;
+            }
+            [id="9_section_group_li"], .redux-action_bar .promotion-button{
+              display:none;
             }
          </style>';
 }
