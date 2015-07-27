@@ -32,6 +32,7 @@ function drstk_add_item() {
       }
     }
  $data .= '<h4>Item</h4><a href="#" id="drstk_insert_item" class="button" title="Insert shortcode">Insert shortcode</a>';
+ $data .= '<label for="drsitem-zoom"><input id="drsitem-zoom" name="drsitem-zoom" value="yes" type="checkbox" />Enable zoom</label>';
  $data .= '<div class="item-metadata"></div>';
     $data .= '<ol id="sortable-item-list">';
     foreach ($collection as $key => $doc) {
@@ -89,11 +90,11 @@ function drstk_item_shortcode_scripts() {
 	global $post;
 	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_item') ) {
     wp_register_script('drstk_elevatezoom',
-        plugins_url('/assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__),
+        plugins_url('../assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__),
         array( 'jquery' ));
     wp_enqueue_script('drstk_elevatezoom');
     wp_enqueue_script( 'drstk_zoom',
-        plugins_url( '/assets/js/zoom.js', __FILE__ ),
+        plugins_url( '../assets/js/zoom.js', __FILE__ ),
         array( 'jquery' )
     );
 	}
