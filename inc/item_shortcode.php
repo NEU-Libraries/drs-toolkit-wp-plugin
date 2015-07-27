@@ -1,14 +1,19 @@
 <?php
 /* side box content for video playlist shortcode */
+
+add_action( 'wp_ajax_get_item_code', 'drstk_add_item' ); //for auth users
 function drstk_add_item() {
-    wp_nonce_field( 'drstk_add_item', 'drstk_add_item_nonce' );
+    // wp_nonce_field( 'drstk_add_item', 'drstk_add_item_nonce' );
+    check_ajax_referer( 'item_ajax_nonce' );
     $col_pid = drstk_get_pid();
     $collection = array();
     $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=2&page=1";
     $drs_data = get_response($url);
     $json = json_decode($drs_data);
+    $data = '';
     if ($json->error) {
-      echo "There was an error: " . $json->error;
+      $data = "There was an error: " . $json->error;
+      wp_send_json($data);
       return;
     }
     if ($json->pagination->table->total_count > 0){
@@ -26,17 +31,19 @@ function drstk_add_item() {
         }
       }
     }
- echo '<a href="#" id="drstk_insert_item" class="button" title="Insert shortcode">Insert shortcode</a>';
- echo '<div class="item-metadata"></div>';
-    echo '<ol id="sortable-item-list">';
+ $data .= '<h4>Item</h4><a href="#" id="drstk_insert_item" class="button" title="Insert shortcode">Insert shortcode</a>';
+ $data .= '<div class="item-metadata"></div>';
+    $data .= '<ol id="sortable-item-list">';
     foreach ($collection as $key => $doc) {
-        echo '<li style="display:inline-block;padding:10px;">';
-        echo '<label for="drsitem-', $key, '"><img src="', $doc['thumbnail'], '" width="150" /><br/>';
-        echo '<input id="drsitem-', $key, '" type="checkbox" class="drstk-include-item" value="'.$doc['pid'].'" />';
-        echo '<span style="width:100px;display:inline-block">'.$doc['title'].'</span></label>';
-        echo '</li>';
+        $data .= '<li style="display:inline-block;padding:10px;">';
+        $data .= '<label for="drsitem-'. $key. '"><img src="'. $doc['thumbnail']. '" width="150" /><br/>';
+        $data .= '<input id="drsitem-'. $key. '" type="checkbox" class="drstk-include-item" value="'.$doc['pid'].'" />';
+        $data .= '<span style="width:100px;display:inline-block">'.$doc['title'].'</span></label>';
+        $data .= '</li>';
     }
-    echo '</ol>';
+    $data .= '</ol>';
+    wp_send_json($data);
+    return;
 }
 
 /* adds shortcode */
