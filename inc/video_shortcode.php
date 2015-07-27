@@ -1,18 +1,22 @@
 <?php
 /* side box content for video playlist shortcode */
+add_action( 'wp_ajax_get_video_code', 'drstk_add_video_playlist' ); //for auth users
 // function drstk_add_video_playlist( $post ) {
 function drstk_add_video_playlist() {
+    check_ajax_referer( 'video_ajax_nonce' );
     global $post;
     $post_id = $post->ID;
     $col_pid = drstk_get_pid();
     $collection = get_collection_from_post( $post_id );
-    wp_nonce_field( 'drstk_add_video_playlist', 'drstk_add_video_playlist_nonce' );
+    // wp_nonce_field( 'drstk_add_video_playlist', 'drstk_add_video_playlist_nonce' );
     $collection = array();
     $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=2&page=1";
     $drs_data = get_response($url);
     $json = json_decode($drs_data);
+    $return = '';
     if ($json->error) {
-      echo "There was an error: " . $json->error;
+      $return = "There was an error: " . $json->error;
+      wp_send_json($return);
       return;
     }
     if ($json->pagination->table->total_count > 0){
@@ -38,20 +42,20 @@ function drstk_add_video_playlist() {
       }
     }
     update_post_meta( $post_id, 'drstk_collection_json', encode_to_safe_json($collection) );
- ?>   <a href="#" id="drstk_insert_shortcode" class="button" title="Insert shortcode">Insert shortcode</a> <?php
-
-    echo '<input type="hidden" id="drstk_collection_json" name="drstk_collection_json" value="' . encode_to_safe_json($collection) . '" />';
-    echo '<ol id="sortable-source-list">';
+    $return .= '<h4>Video Playlist</h4><a href="#" id="drstk_insert_shortcode" class="button" title="Insert shortcode">Insert shortcode</a>';
+    $return .= '<input type="hidden" id="drstk_collection_json" name="drstk_collection_json" value="' . encode_to_safe_json($collection) . '" />';
+    $return .= '<ol id="sortable-source-list">';
     foreach ($collection as $key => $doc) {
-        echo '<li id="drsvideokey-', $key, '">';
-        echo '<img src="', $doc['poster'], '" width="150" /><br/>';
-        echo '<input type="checkbox" class="drstk-include-video" ', ( $doc['include'] ? 'checked' : '' ), ' />';
-        echo $doc['title'];
-        echo '</li>';
+        $return .= '<li id="drsvideokey-'. $key/ '">';
+        $return .= '<img src="'. $doc['poster']. '" width="150" /><br/>';
+        $return .= '<input type="checkbox" class="drstk-include-video" '. ( $doc['include'] ? 'checked' : '' ). ' />';
+        $return .= $doc['title'];
+        $return .= '</li>';
     }
-    echo '</ol>';
-        echo '<p>Drag and drop the videos in the order you want them to appear in the playlist. You can un-check the videos you wish to exclude entirely.';
-
+    $return .= '</ol>';
+    $return .= '<p>Drag and drop the videos in the order you want them to appear in the playlist. You can un-check the videos you wish to exclude entirely.';
+    wp_send_json($return);
+    return;
 }
 
 
