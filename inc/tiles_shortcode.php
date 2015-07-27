@@ -26,7 +26,7 @@ function drstk_add_tile_gallery() {
         }
       }
     }
- echo '<a href="#" id="drstk_insert_tile_gallery" class="button" title="Insert shortcode">Insert shortcode</a>';
+ echo '<h4>Tile Gallery</h4><a href="#" id="drstk_insert_tile_gallery" class="button" title="Insert shortcode">Insert shortcode</a>';
 
     echo '<ol id="sortable-tile-list">';
     foreach ($collection as $key => $doc) {
