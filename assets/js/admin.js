@@ -147,9 +147,17 @@
    });
 
    //insert gallery button
-  $("#drstk_insert_gallery").click(function(e){
+  $("body").on("click", "#drstk_insert_gallery", function(e){
      e.preventDefault();
-    var shortcode = '[drstk_gallery]\n';
+     console.log("we are inserting a gallery");
+     var slides = [];
+     $(".drstk-include-gallery:checked").each(function(){
+       console.log($(this).val());
+       slides.push($(this).val());
+     });
+     console.log(slides);
+     slides = slides.join(", ");
+     var shortcode = '[drstk_gallery id="'+slides+'"]\n';
      $content.val(shortcode + $content.val());
    });
 
