@@ -15,6 +15,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/shortcodes.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/video_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/item_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/tiles_shortcode.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'inc/slider_shortcode.php' );
 
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
 
