@@ -53,13 +53,13 @@ function drstk_item( $atts ){
   $url = "http://cerberus.library.northeastern.edu/api/v1/files/" . $atts['id'];
   $data = get_response($url);
   $data = json_decode($data);
-  // return print_r($data);
-  $thumbnail = end($data->thumbnails);
+  $thumbnail = $data->thumbnails[3];
+  $master = end($data->thumbnails);
   $img_html = "<img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
   if (isset($atts['zoom']) && $atts['zoom'] == 'on'){
-    if ($data->canonical_object[0][1] == 'Master Image'){
-      $master = $data->canonical_object[0][0];
-    }
+    // if ($data->canonical_object[0][1] == 'Master Image'){
+      // $master = $data->canonical_object[0][0];
+    // }
     $img_html .= " data-zoom-image='".$master."' data-zoom='on'";
   }
   $img_metadata = "";
@@ -89,9 +89,7 @@ function item_admin_ajax_handler() {
 function drstk_item_shortcode_scripts() {
 	global $post;
 	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_item') ) {
-    wp_register_script('drstk_elevatezoom',
-        plugins_url('../assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__),
-        array( 'jquery' ));
+    wp_register_script('drstk_elevatezoom', plugins_url('../assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__), array( 'jquery' ));
     wp_enqueue_script('drstk_elevatezoom');
     wp_enqueue_script( 'drstk_zoom',
         plugins_url( '../assets/js/zoom.js', __FILE__ ),
