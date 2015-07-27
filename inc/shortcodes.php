@@ -4,16 +4,13 @@ add_thickbox();
 
 add_action('media_buttons', 'add_drs_button', 15);
 function add_drs_button() {
-    echo '<a href="#TB_inline?width=750&height=650&inlineId=drs-tile-modal" id="insert-drs" class="button thickbox" title="Add DRS Item(s)">Add DRS Item(s)</a>';
+    echo '<a href="#TB_inline?width=750&height=675&inlineId=drs-tile-modal" id="insert-drs" class="button thickbox" title="Add DRS Item(s)">Add DRS Item(s)</a>';
     echo '<div id="drs-tile-modal" style="display:none;padding:10px;">';
     echo '<div id="tabs"><ul><li><a href="#tabs-1">Tile Gallery</a></li><li><a href="#tabs-2">Gallery Slider</a></li><li><a href="#tabs-3">Single Item</a></li><li><a href="#tabs-4">Video Playlist</a></li></ul><div id="tabs-1">';
     echo drstk_add_tile_gallery();
     echo '</div><div id="tabs-2">';
-    // echo drstk_add_gallery();
     echo '</div><div id="tabs-3">';
-    echo drstk_add_item();
     echo '</div><div id="tabs-4">';
-    echo drstk_add_video_playlist();
     echo '</div></div>';
     echo '</div>';
 }
@@ -35,6 +32,23 @@ function drstk_enqueue_page_scripts( $hook ) {
       'item_admin_nonce'    => $item_admin_nonce,
       'pid' => '',
    ) );
+
+   $video_ajax_nonce = wp_create_nonce( 'video_ajax_nonce' );
+   wp_localize_script('drstk_admin_js', 'video_ajax_obj', array(
+     'ajax_url' => admin_url( 'admin-ajax.php' ),
+     'video_ajax_nonce'    => $video_ajax_nonce,
+   ));
+   $item_ajax_nonce = wp_create_nonce( 'item_ajax_nonce');
+   wp_localize_script( 'drstk_admin_js', 'item_ajax_obj', array(
+     'ajax_url' => admin_url('admin-ajax.php'),
+     'item_ajax_nonce' => $item_ajax_nonce,
+   ));
+   $gallery_ajax_nonce = wp_create_nonce( 'gallery_ajax_nonce');
+   wp_localize_script( 'drstk_admin_js', 'gallery_ajax_obj', array(
+     'ajax_url' => admin_url('admin-ajax.php'),
+     'gallery_ajax_nonce' => $gallery_ajax_nonce,
+   ));
+
  } else {
    return;
  }
@@ -81,7 +95,11 @@ function thickbox_styles() {
                 padding:26px;
                 max-height:597px;
             }
-            #sortable-tile-list, #sortable-item-list{
+            .ui-tabs.ui-tabs-vertical .ui-tabs-panel h4{
+              margin-top:0;
+              margin-bottom:5px;
+            }
+            #sortable-tile-list, #sortable-item-list, #sortable-gallery-list{
               height: 493px;
               overflow: scroll;
             }
