@@ -93,6 +93,9 @@
     });
     var shortcode = '[drstk_item id="'+pid+'"';
     //add zoom back in
+    if ($("#drsitem-zoom").is(":checked")){
+      shortcode += ' zoom="on"';
+    }
     shortcode += ' metadata="'+metadata;
     shortcode +='"]\n';
     $content.val(shortcode + $content.val());
