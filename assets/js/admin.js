@@ -45,8 +45,8 @@
     $content.val( '[drstk_collection_playlist]\n' + $content.val());
   });
 
-  $(".drstk-include-item").on("click", function(e){
-    // console.log($(this).val());
+  $("body").on("click", ".drstk-include-item", function(e){
+    console.log($(this).val());
     var pid = $(this).val();
     if($(this).is(":checked")){
       $(this).parents("li").siblings("li").hide();
@@ -79,7 +79,7 @@
   });
 
   //insert item shortcode button
-  $('#drstk_insert_item').click(function(e) {
+  $('body').on("click", "#drstk_insert_item", function(e) {
     e.preventDefault();
     var pid = '';
     $(".drstk-include-item").each(function(){
@@ -94,13 +94,13 @@
     var shortcode = '[drstk_item id="'+pid+'"';
     //add zoom back in
     shortcode += ' metadata="'+metadata;
-    // shortcode += metadata.join(", ");
     shortcode +='"]\n';
     $content.val(shortcode + $content.val());
   });
 
   //sortable tile list
   $("#sortable-tile-list").sortable();
+  $("#sortable-gallery-list").sortable();
   //insert tile gallery button
   $("#drstk_insert_tile_gallery").click(function(e){
     e.preventDefault();
@@ -116,6 +116,35 @@
   });
 
    $("#tabs").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
+   $("[id^=ui-id-]").on("click", function(e){
+     var id = $(this).attr('id');
+     id = id.substr(id.length - 1);
+     if (id == 4){
+       $.post(video_ajax_obj.ajax_url, {
+          _ajax_nonce: video_ajax_obj.video_ajax_nonce,
+           action: "get_video_code",
+       }, function(data) {
+          $("#TB_ajaxContent #tabs-4").html(data);
+        });
+     }
+     if (id == 3){
+       $.post(item_ajax_obj.ajax_url, {
+          _ajax_nonce: item_ajax_obj.item_ajax_nonce,
+           action: "get_item_code",
+       }, function(data) {
+          $("#TB_ajaxContent #tabs-3").html(data);
+        });
+     }
+     if (id == 2){
+       $.post(gallery_ajax_obj.ajax_url, {
+          _ajax_nonce: gallery_ajax_obj.gallery_ajax_nonce,
+           action: "get_gallery_code",
+       }, function(data) {
+          $("#TB_ajaxContent #tabs-2").html(data);
+        });
+     }
+
+   });
 
    //insert gallery button
   $("#drstk_insert_gallery").click(function(e){
