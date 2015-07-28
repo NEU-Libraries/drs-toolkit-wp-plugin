@@ -31,8 +31,19 @@ function drstk_add_gallery(){
 $data .= '<h4>Gallery Slider</h4><a href="#" id="drstk_insert_gallery" class="button" title="Insert shortcode">Insert shortcode</a>';
 $data .= '<button class="gallery-options button"><span class="dashicons dashicons-admin-generic"></span></button>';
 $data .= '<div class="hidden gallery-options">
-<label for="drstk-slider-caption"><input type="checkbox" name="drstk-slider-caption" id="drstk-slider-caption" />Enable captions</label>
-
+<label for="drstk-slider-auto"><input type="checkbox" name="drstk-slider-auto" id="drstk-slider-auto" value="yes" checked="checked" />Auto rotate</label><br/>
+<label for="drstk-slider-nav"><input type="checkbox" name="drstk-slider-nav" id="drstk-slider-nav" value="yes" checked="checked" />Next/Prev Buttons</label><br/>
+<label for="drstk-slider-pager"><input type="checkbox" name="drstk-slider-pager" id="drstk-slider-pager" value="yes" checked="checked" />Dot Pager</label><br/>
+<label for="drstk-slider-speed">Rotation Speed<input type="text" name="drstk-slider-speed" id="drstk-slider-speed" /></label><br/>
+<label for="drstk-slider-timeout">Time between Slides<input type="text" name="drstk-slider-timeout" id="drstk-slider-timeout" /></label><br/>
+<label for="drstk-slider-caption"><input type="checkbox" name="drstk-slider-caption" id="drstk-slider-caption" value="yes" checked="checked"/>Enable captions</label><br/>
+<div class="drstk-slider-metadata">
+  <h5>Metadata for Captions</h5>
+  <label><input type="checkbox" name="Title"/>Title</label><br/>
+  <label><input type="checkbox" name="Contributor"/>Creator</label><br/>
+  <label><input type="checkbox" name="Date created"/>Date Created</label><br/>
+  <label><input type="checkbox" name="Abstract/Description"/>Abstract/Description</label>
+</div>
 </div>';
 $data .= '<ol id="sortable-gallery-list">';
   foreach ($collection as $key => $doc) {
@@ -74,12 +85,41 @@ function drstk_gallery( $atts ){
          }
          $title = $data->mods->Title[0];
          $creator = $data->mods->Creator[0];
-         $img_html .= "<li><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'  alt='".$title."'></a><p class='caption'>".$title."<br/>".$creator."</p></li>";
+         $img_html .= "<li><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'  alt='".$title."'></a>";
+         if ($atts['caption'] && $atts['caption'] == "on"){
+           $img_metadata = "";
+           if (isset($atts['metadata'])){
+             $metadata = explode(",",$atts['metadata']);
+             foreach($metadata as $field){
+               $this_field = $data->mods->$field;
+               $img_metadata .= $this_field[0] . "<br/>";
+             }
+           }
+           $img_html .= "<p class='caption'>".$img_metadata."</p>";
+         }
+         $img_html .= "</li>";
        } else {
          $img_html .= "There was an error";
        }
    }
-   echo '<div class="rslides-drstk" data-height="'.$height.'" data-width="'.$width.'" ><div id="slider-core"><div class="rslides-container"><div class="rslides-inner"><ul class="slides">'.$img_html.'</ul></div></div></div></div><div class="clearboth"></div>';
+   $slide_data = '';
+   if ($atts['auto'] && $atts['auto'] == 'on'){
+     $slide_data .= " data-auto='true'";
+   }
+   if ($atts['nav'] && $atts['nav'] == 'on'){
+     $slide_data .= " data-nav='true'";
+   }
+   if ($atts['pager'] && $atts['pager'] == 'on'){
+     $slide_data .= " data-pager='true'";
+   }
+   if ($atts['speed'] && $atts['speed']){
+     $slide_data .= " data-speed='".$atts['speed']."'";
+   }
+   if ($atts['timeout'] && $atts['timeout']){
+     $slide_data .= " data-timeout='".$atts['timeout']."'";
+   }
+   echo '<div class="rslides-drstk" data-height="'.$height.'" data-width="'.$width.'" ><div class="rslidesd-container"><div class="rslidesd-inner"><ul class="slides" '.$slide_data.'>'.$img_html.'</ul></div></div></div><div class="clearboth"></div>';
+
   }
 }
 

@@ -169,7 +169,28 @@
      });
      console.log(slides);
      slides = slides.join(", ");
-     var shortcode = '[drstk_gallery id="'+slides+'"]\n';
+     var shortcode = '[drstk_gallery id="'+slides+'"';
+     if ($("#drstk-slider-caption").is(":checked")){
+       shortcode += ' caption="on"';
+     }
+     if ($("#drstk-slider-auto").is(":checked")){
+       shortcode += ' auto="on"';
+     }
+     if ($("#drstk-slider-nav").is(":checked")){
+       shortcode += ' nav="on"';
+     }
+     if ($("#drstk-slider-speed").val()){
+       shortcode += ' speed="'+$("#drstk-slider-speed").val()+'"';
+     }
+     if ($("#drstk-slider-timeout").val()){
+       shortcode += ' timeout="'+$("#drstk-slider-timeout").val()+'"';
+     }
+     var metadata = [];
+     $(".drstk-slider-metadata input[type='checkbox']:checked").each(function(){
+       metadata.push($(this).attr('name'));
+     });
+     if (metadata.length > 0) {shortcode += ' metadata="'+metadata+'"';}
+     shortcode += ']\n';
      $content.val(shortcode + $content.val());
      tb_remove();
    });
