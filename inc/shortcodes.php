@@ -94,24 +94,27 @@ function thickbox_styles() {
                 background:#FFF;
                 padding:26px;
                 max-height:597px;
+                overflow:auto;
             }
             .ui-tabs.ui-tabs-vertical .ui-tabs-panel h4{
               margin-top:0;
               margin-bottom:5px;
             }
-            #sortable-tile-list, #sortable-item-list, #sortable-gallery-list{
-              height: 493px;
-              overflow: scroll;
-            }
             [id="9_section_group_li"], .redux-action_bar .promotion-button{
               display:none;
             }
-            .wp-core-ui button.zoom-options.button{
+            .wp-core-ui button.zoom-options.button, button.gallery-options.button, button.tile-options.button{
               padding: 2px 5px 0px 5px;
               margin-left:10px;
             }
             .item-metadata{
               float:left;
+            }
+            .drstk-slider-metadata{
+              padding:5px;
+            }
+            .drstk-slider-metadata h5{
+              margin:5px;
             }
          </style>';
 }
