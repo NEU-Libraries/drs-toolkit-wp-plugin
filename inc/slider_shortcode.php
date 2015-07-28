@@ -67,7 +67,8 @@ function drstk_gallery( $atts ){
          if ($this_height > $height){
            $height = $this_height;
          }
-         $this_width = getimagesize($thumbnail)[0];
+         $this_width = getimagesize($thumbnail);
+         $this_width = $this_width[0];
          if ($this_width > $width){
            $width = $this_width;
          }
