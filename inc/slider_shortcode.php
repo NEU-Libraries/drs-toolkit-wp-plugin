@@ -62,7 +62,8 @@ function drstk_gallery( $atts ){
        if (!$data->error){
          $pid = $data->pid;
          $thumbnail = end($data->thumbnails);
-         $this_height = getimagesize($thumbnail)[1];
+         $this_height = getimagesize($thumbnail);
+         $this_height = $this_height[1];
          if ($this_height > $height){
            $height = $this_height;
          }
