@@ -177,6 +177,10 @@
    $("body").on("click", "button.zoom-options", function(e){
      e.preventDefault();
      $("div.zoom-options").toggleClass('hidden');
-   })
+   });
+   $("body").on("click", "button.gallery-options", function(e){
+     e.preventDefault();
+     $("div.gallery-options").toggleClass('hidden');
+   });
 
 });

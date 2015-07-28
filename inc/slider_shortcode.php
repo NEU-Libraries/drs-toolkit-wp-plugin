@@ -29,6 +29,11 @@ function drstk_add_gallery(){
     }
   }
 $data .= '<h4>Gallery Slider</h4><a href="#" id="drstk_insert_gallery" class="button" title="Insert shortcode">Insert shortcode</a>';
+$data .= '<button class="gallery-options button"><span class="dashicons dashicons-admin-generic"></span></button>';
+$data .= '<div class="hidden gallery-options">
+<label for="drstk-slider-caption"><input type="checkbox" name="drstk-slider-caption" id="drstk-slider-caption" />Enable captions</label>
+
+</div>';
 $data .= '<ol id="sortable-gallery-list">';
   foreach ($collection as $key => $doc) {
       $data .= '<li style="display:inline-block;padding:10px;">';
@@ -68,14 +73,10 @@ function drstk_gallery( $atts ){
          $title = $data->mods->Title[0];
          $creator = $data->mods->Creator[0];
          $img_html .= "<li><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'  alt='".$title."'></a><p class='caption'>".$title."<br/>".$creator."</p></li>";
-         //style='background: url(".$thumbnail.") no-repeat center; background-size: cover;'
        } else {
          $img_html .= "There was an error";
        }
    }
-  //  $ratio = ($height * $(".page").width())/$width;
-  //data-newheight="'.$ratio.'"
-  //id="slider"
    echo '<div class="rslides-drstk" data-height="'.$height.'" data-width="'.$width.'" ><div id="slider-core"><div class="rslides-container"><div class="rslides-inner"><ul class="slides">'.$img_html.'</ul></div></div></div></div><div class="clearboth"></div>';
   }
 }
