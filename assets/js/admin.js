@@ -43,6 +43,7 @@
   $('#drstk_insert_shortcode').click(function(e) {
     e.preventDefault();
     $content.val( '[drstk_collection_playlist]\n' + $content.val());
+    tb_remove();
   });
 
   $("body").on("click", ".drstk-include-item", function(e){
@@ -105,6 +106,7 @@
     if (metadata.length > 0) {shortcode += ' metadata="'+metadata+'"';}
     shortcode +=']\n';
     $content.val(shortcode + $content.val());
+    tb_remove();
   });
 
   //sortable tile list
@@ -122,6 +124,7 @@
     tiles = tiles.join(", ");
     var shortcode = '[drstk_tiles id="'+tiles+'"]\n';
     $content.val(shortcode + $content.val());
+    tb_remove();
   });
 
    $("#tabs").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
@@ -168,6 +171,7 @@
      slides = slides.join(", ");
      var shortcode = '[drstk_gallery id="'+slides+'"]\n';
      $content.val(shortcode + $content.val());
+     tb_remove();
    });
 
    $("body").on("click", "button.zoom-options", function(e){
