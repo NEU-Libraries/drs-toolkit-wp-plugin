@@ -32,8 +32,11 @@ function drstk_add_item() {
       }
     }
  $data .= '<h4>Item</h4><a href="#" id="drstk_insert_item" class="button" title="Insert shortcode">Insert shortcode</a>';
- $data .= '<label for="drsitem-zoom"><input id="drsitem-zoom" name="drsitem-zoom" value="yes" type="checkbox" />Enable zoom</label>';
- $data .= '<div class="item-metadata"></div>';
+ $data .= '<button class="zoom-options button"><span class="dashicons dashicons-admin-generic"></span></button>';
+ $data .= '<div class="hidden zoom-options">';
+ $data .= '<label for="drsitem-zoom"><input id="drsitem-zoom" name="drsitem-zoom" value="yes" type="checkbox" />Enable zoom</label><br/><label for="drsitem-zoom-inner"><input id="drsitem-zoom-inner" name="drsitem-zoom-inner" value="yes" type="checkbox" />Zoom inside image</label><br/>';
+ $data .= '<label for="drsitem-zoom-window">Zoom position (outside image)<select name="drsitem-zoom-window" id="drsitem-zoom-window"><option value="0">Select Position</option><option value="1">Top Right</option><option value="2">Middle Right</option><option value="3">Bottom Right</option><option value="4">Bottom Corner Right</option><option value="5">Under Right</option><option value="6">Under Middle</option><option value="7">Under Left</option><option value="8">Bottom Corner Left </option><option value="9">Bottom Left</option><option value="10">Middle Left</option><option value="11">Top Left</option><option value="12">Top Corner Left</option><option value="12">Above Left</option><option value="14">Above Middle</option><option value="15">Above Right</option><option value="16">Top Right Corner</option></select><br><i>Recommended and Default position:Top Right</i></div>';
+ $data .= '<hr/><div class="item-metadata"></div>';
     $data .= '<ol id="sortable-item-list">';
     foreach ($collection as $key => $doc) {
         $data .= '<li style="display:inline-block;padding:10px;">';
@@ -61,6 +64,9 @@ function drstk_item( $atts ){
       // $master = $data->canonical_object[0][0];
     // }
     $img_html .= " data-zoom-image='".$master."' data-zoom='on'";
+    if (isset($atts['zoom_position'])){
+      $img_html .= " data-zoom-position='".$atts['zoom_position']."'";
+    }
   }
   $img_metadata = "";
   if (isset($atts['metadata'])){

@@ -96,8 +96,14 @@
     if ($("#drsitem-zoom").is(":checked")){
       shortcode += ' zoom="on"';
     }
-    shortcode += ' metadata="'+metadata;
-    shortcode +='"]\n';
+    if ($("#drsitem-zoom-inner").is(":checked") && $("#drsitem-zoom-window").val() == 0){
+      shortcode += ' zoom_position="inner"';
+    }
+    if ($("#drsitem-zoom-window").val() > 0){
+      shortcode += ' zoom_position="'+$("#drsitem-zoom-window").val()+'"';
+    }
+    if (metadata.length > 0) {shortcode += ' metadata="'+metadata+'"';}
+    shortcode +=']\n';
     $content.val(shortcode + $content.val());
   });
 
@@ -163,5 +169,10 @@
      var shortcode = '[drstk_gallery id="'+slides+'"]\n';
      $content.val(shortcode + $content.val());
    });
+
+   $("body").on("click", "button.zoom-options", function(e){
+     e.preventDefault();
+     $("div.zoom-options").toggleClass('hidden');
+   })
 
 });

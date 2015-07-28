@@ -106,6 +106,13 @@ function thickbox_styles() {
             [id="9_section_group_li"], .redux-action_bar .promotion-button{
               display:none;
             }
+            .wp-core-ui button.zoom-options.button{
+              padding: 2px 5px 0px 5px;
+              margin-left:10px;
+            }
+            .item-metadata{
+              float:left;
+            }
          </style>';
 }
 
