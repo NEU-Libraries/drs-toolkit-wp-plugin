@@ -28,6 +28,20 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
     git clone https://github.com/NEU-Libraries/drs-toolkit-wp-theme.git minamaze-child
   ```
 
+6. Register your site on google analytics and add your code to a git-ignored file called analytics.php
+
+  ```
+    cd /wp-content/themes/minamaze-child
+    vi analytics.php
+  ```
+
+  Example file contents:
+
+  ```
+    <?php
+      echo "<script type='text/javascript'>[YOUR GOOGLE ANALYTICS CODE]</script>";
+  ```
+
 6. Delete extra themes to avoid user confusion
 
   ```
