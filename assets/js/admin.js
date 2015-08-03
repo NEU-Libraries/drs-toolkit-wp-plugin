@@ -46,7 +46,7 @@
     tb_remove();
   });
 
-  $("body").on("click", ".drstk-include-item", function(e){
+  $("body").on("change", ".drstk-include-item", function(e){
     console.log($(this).val());
     var pid = $(this).val();
     if($(this).is(":checked")){
@@ -76,7 +76,6 @@
     } else {
       $(this).parents("li").siblings("li").show();
     }
-
   });
 
   //insert item shortcode button
