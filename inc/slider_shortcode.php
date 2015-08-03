@@ -118,7 +118,7 @@ function drstk_gallery( $atts ){
    if ($atts['timeout'] && $atts['timeout']){
      $slide_data .= " data-timeout='".$atts['timeout']."'";
    }
-   echo '<div class="rslides-drstk" data-height="'.$height.'" data-width="'.$width.'" ><div class="rslidesd-container"><div class="rslidesd-inner"><ul class="slides" '.$slide_data.'>'.$img_html.'</ul></div></div></div><div class="clearboth"></div>';
+   return '<div class="rslides-drstk" data-height="'.$height.'" data-width="'.$width.'" ><div class="rslidesd-container"><div class="rslidesd-inner"><ul class="slides" '.$slide_data.'>'.$img_html.'</ul></div></div></div><div class="clearboth"></div>';
 
   }
 }
