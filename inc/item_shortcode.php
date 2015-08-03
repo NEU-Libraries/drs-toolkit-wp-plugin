@@ -6,7 +6,7 @@ function drstk_add_item() {
     check_ajax_referer( 'item_ajax_nonce' );
     $col_pid = drstk_get_pid();
     $collection = array();
-    $url = "https://repository.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=2&page=1";
+    $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=2&page=1";
     $drs_data = get_response($url);
     $json = json_decode($drs_data);
     $data = '';
@@ -17,7 +17,7 @@ function drstk_add_item() {
     }
     if ($json->pagination->table->total_count > 0){
       for ($x = 1; $x <= $json->pagination->table->num_pages; $x++) {
-        $url = "https://repository.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=10&page=".$x;
+        $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=10&page=".$x;
         $drs_data = get_response($url);
         $json = json_decode($drs_data);
         foreach ($json->items as $item){
@@ -52,7 +52,7 @@ function drstk_add_item() {
 /* adds shortcode */
 add_shortcode( 'drstk_item', 'drstk_item' );
 function drstk_item( $atts ){
-  $url = "https://repository.library.northeastern.edu/api/v1/files/" . $atts['id'];
+  $url = "http://cerberus.library.northeastern.edu/api/v1/files/" . $atts['id'];
   $data = get_response($url);
   $data = json_decode($data);
   $thumbnail = $data->thumbnails[3];
@@ -103,7 +103,7 @@ function item_admin_ajax_handler() {
   $data = array();
   // Handle the ajax request
   check_ajax_referer( 'item_admin_nonce' );
-  $url = "https://repository.library.northeastern.edu/api/v1/files/" . $_POST['pid'];
+  $url = "http://cerberus.library.northeastern.edu/api/v1/files/" . $_POST['pid'];
   $data = get_response($url);
   $data = json_decode($data);
   wp_send_json(json_encode($data));

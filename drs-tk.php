@@ -98,7 +98,7 @@ $TEMPLATE = array(
 //this creates the form for entering the pid on the settings page
  function drstk_display_settings() {
 
-     $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'https://repository.library.northeastern.edu/collections/neu:1';
+     $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'http://cerberus.library.northeastern.edu/collections/neu:1';
      $html = '</pre>
      <div class="wrap">
      <form action="options.php" method="post" name="options">
@@ -110,7 +110,7 @@ $TEMPLATE = array(
       <label>Project Collection URL</label>
      <input name="drstk_collection" type="text" value="'.$collection_pid.'" style="width:100%;"></input>
      <br/>
-     <small>Ie. <a href="https://repository.library.northeastern.edu/collections/neu:6012">https://repository.library.northeastern.edu/collections/neu:6012</a></small>
+     <small>Ie. <a href="http://cerberus.library.northeastern.edu/collections/neu:6012">http://cerberus.library.northeastern.edu/collections/neu:6012</a></small>
      </td>
      </tr>
      </tbody>

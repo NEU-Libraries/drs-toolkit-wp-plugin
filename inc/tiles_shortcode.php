@@ -4,7 +4,7 @@ function drstk_add_tile_gallery() {
     $col_pid = drstk_get_pid();
     wp_nonce_field( 'drstk_add_tile_gallery', 'drstk_add_tile_gallery_nonce' );
     $collection = array();
-    $url = "https://repository.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=2&page=1";
+    $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=2&page=1";
     $drs_data = get_response($url);
     $json = json_decode($drs_data);
     if ($json->error) {
@@ -13,7 +13,7 @@ function drstk_add_tile_gallery() {
     }
     if ($json->pagination->table->total_count > 0){
       for ($x = 1; $x <= $json->pagination->table->num_pages; $x++) {
-        $url = "https://repository.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=10&page=".$x;
+        $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=10&page=".$x;
         $drs_data = get_response($url);
         $json = json_decode($drs_data);
         foreach ($json->items as $item){
@@ -46,7 +46,7 @@ function drstk_tiles( $atts ){
   $imgs = explode(", ",$atts['id']);
   $img_html = "";
   foreach($imgs as $img){
-    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $img;
+    $url = "http://cerberus.library.northeastern.edu/api/v1/files/" . $img;
     $data = get_response($url);
     $data = json_decode($data);
     if (!$data->error){

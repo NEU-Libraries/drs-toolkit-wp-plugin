@@ -4,7 +4,7 @@ function drstk_add_gallery(){
   check_ajax_referer( 'gallery_ajax_nonce' );
   $col_pid = drstk_get_pid();
   $collection = array();
-  $url = "https://repository.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=2&page=1";
+  $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=2&page=1";
   $drs_data = get_response($url);
   $json = json_decode($drs_data);
   $data = '';
@@ -15,7 +15,7 @@ function drstk_add_gallery(){
   }
   if ($json->pagination->table->total_count > 0){
     for ($x = 1; $x <= $json->pagination->table->num_pages; $x++) {
-      $url = "https://repository.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=10&page=".$x;
+      $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=10&page=".$x;
       $drs_data = get_response($url);
       $json = json_decode($drs_data);
       foreach ($json->items as $item){
@@ -67,7 +67,7 @@ function drstk_gallery( $atts ){
     $img_html = '';
     $height = $width = 0;
    foreach($images as $id){
-       $url = "https://repository.library.northeastern.edu/api/v1/files/" . $id;
+       $url = "http://cerberus.library.northeastern.edu/api/v1/files/" . $id;
        $data = get_response($url);
        $data = json_decode($data);
        if (!$data->error){

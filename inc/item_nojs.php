@@ -2,7 +2,7 @@
 global $item_pid, $data, $collection;
 $item_pid = get_query_var( 'pid' );
 $collection = drstk_get_pid();
-$url = "https://repository.library.northeastern.edu/api/v1/files/" . $item_pid;
+$url = "http://cerberus.library.northeastern.edu/api/v1/files/" . $item_pid;
 $data = get_response($url);
 $data = json_decode($data);
 
@@ -29,7 +29,7 @@ function get_item_title(){
 function get_item_breadcrumbs(){
   global $item_pid, $data, $breadcrumb_html, $collection;
   $breadcrumb_html = '';
-  $breadcrumb_url = "https://repository.library.northeastern.edu/api/v1/search/".$collection."?"."f['id'][]=".$item_pid;
+  $breadcrumb_url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection."?"."f['id'][]=".$item_pid;
   get_this_breadcrumb($breadcrumb_url);
   echo $breadcrumb_html;
 }
@@ -55,7 +55,7 @@ function parse_this_breadcrumb($doc){
   if ($doc->fields_parent_id_tesim){
     $parent = $doc->fields_parent_id_tesim[0];
     if ($parent != $collection){
-      $breadcrumb_url = "https://repository.library.northeastern.edu/api/v1/search/".$collection."?"."f['id'][]=".$parent;
+      $breadcrumb_url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection."?"."f['id'][]=".$parent;
       get_this_breadcrumb($breadcrumb_url);
     } else {
       $breadcrumb_html = "<a href='".site_url()."/browse'>Browse</a>" . $breadcrumb_html;
