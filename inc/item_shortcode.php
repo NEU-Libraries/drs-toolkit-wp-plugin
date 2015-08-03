@@ -1,5 +1,4 @@
 <?php
-/* side box content for video playlist shortcode */
 
 add_action( 'wp_ajax_get_item_code', 'drstk_add_item' ); //for auth users
 function drstk_add_item() {
@@ -39,7 +38,7 @@ function drstk_add_item() {
  $data .= '<hr/><div class="item-metadata"></div>';
     $data .= '<ol id="sortable-item-list">';
     foreach ($collection as $key => $doc) {
-        $data .= '<li style="display:inline-block;padding:10px;">';
+        $data .= '<li style="display:inline-block;padding:10px;" id="drsitemkey-'. $key. '">';
         $data .= '<label for="drsitem-'. $key. '"><img src="'. $doc['thumbnail']. '" width="150" /><br/>';
         $data .= '<input id="drsitem-'. $key. '" type="checkbox" class="drstk-include-item" value="'.$doc['pid'].'" />';
         $data .= '<span style="width:100px;display:inline-block">'.$doc['title'].'</span></label>';
@@ -57,7 +56,7 @@ function drstk_item( $atts ){
   $data = get_response($url);
   $data = json_decode($data);
   $thumbnail = $data->thumbnails[3];
-  $master = end($data->thumbnails);
+  $master = $data->thumbnails[4];
   $img_html = "<img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
   if (isset($atts['zoom']) && $atts['zoom'] == 'on'){
     // if ($data->canonical_object[0][1] == 'Master Image'){
