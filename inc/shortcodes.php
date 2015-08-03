@@ -6,9 +6,7 @@ add_action('media_buttons', 'add_drs_button', 15);
 function add_drs_button() {
     echo '<a href="#TB_inline?width=750&height=675&inlineId=drs-tile-modal" id="insert-drs" class="button thickbox" title="Add DRS Item(s)">Add DRS Item(s)</a>';
     echo '<div id="drs-tile-modal" style="display:none;padding:10px;">';
-    echo '<div id="tabs"><ul><li><a href="#tabs-1">Tile Gallery</a></li><li><a href="#tabs-2">Gallery Slider</a></li><li><a href="#tabs-3">Single Item</a></li><li><a href="#tabs-4">Video Playlist</a></li></ul><div id="tabs-1">';
-    echo drstk_add_tile_gallery();
-    echo '</div><div id="tabs-2">';
+    echo '<div id="tabs"><ul><li><a href="#tabs-1">Tile Gallery</a></li><li><a href="#tabs-2">Gallery Slider</a></li><li><a href="#tabs-3">Single Item</a></li><li><a href="#tabs-4">Video Playlist</a></li></ul><div id="tabs-1"></div><div id="tabs-2">';
     echo '</div><div id="tabs-3">';
     echo '</div><div id="tabs-4">';
     echo '</div></div>';
@@ -47,6 +45,11 @@ function drstk_enqueue_page_scripts( $hook ) {
    wp_localize_script( 'drstk_admin_js', 'gallery_ajax_obj', array(
      'ajax_url' => admin_url('admin-ajax.php'),
      'gallery_ajax_nonce' => $gallery_ajax_nonce,
+   ));
+   $tile_ajax_nonce = wp_create_nonce( 'tile_ajax_nonce');
+   wp_localize_script( 'drstk_admin_js', 'tile_ajax_obj', array(
+     'ajax_url' => admin_url('admin-ajax.php'),
+     'tile_ajax_nonce' => $tile_ajax_nonce,
    ));
 
  } else {

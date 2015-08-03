@@ -127,6 +127,14 @@
   });
 
    $("#tabs").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
+   $("#insert-drs").on('click', function(){
+     $.post(tile_ajax_obj.ajax_url, {
+        _ajax_nonce: tile_ajax_obj.tile_ajax_nonce,
+         action: "get_tile_code",
+     }, function(data) {
+        $("#TB_ajaxContent #tabs-1").html(data);
+      });
+   });
    $("[id^=ui-id-]").on("click", function(e){
      var id = $(this).attr('id');
      id = id.substr(id.length - 1);

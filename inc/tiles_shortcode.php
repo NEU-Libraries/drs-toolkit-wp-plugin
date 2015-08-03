@@ -1,9 +1,9 @@
 <?php
 /* side box content for tile gallery shortcode */
-function drstk_add_tile_gallery() {
-    $col_pid = drstk_get_pid();
-    wp_nonce_field( 'drstk_add_tile_gallery', 'drstk_add_tile_gallery_nonce' );
-    $collection = array();
+add_action( 'wp_ajax_get_tile_code', 'drstk_add_tile_gallery' ); //for auth users
+function drstk_add_tile_gallery(){
+  check_ajax_referer( 'tile_ajax_nonce' );
+  $col_pid = drstk_get_pid();
     $url = "http://cerberus.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=2&page=1";
     $drs_data = get_response($url);
     $json = json_decode($drs_data);
