@@ -72,11 +72,29 @@ function drstk_item( $atts ){
     $metadata = explode(",",$atts['metadata']);
     foreach($metadata as $field){
       $this_field = $data->mods->$field;
-      $img_metadata .= $this_field[0] . "<br/>";
+      if (is_array($this_field)){
+        foreach($this_field as $field_val){
+          $img_metadata .= $field_val . "<br/>";
+        }
+      } else {
+        $img_metadata .= $this_field[0] . "<br/>";
+      }
     }
   }
   $img_html .= "/>";
   $img_html .= "<div class='wp-caption-text drstk-caption'>".$img_metadata."</div>";
+  $img_html .= "<div class='hidden'>";
+  $meta = $data->mods;
+  foreach($meta as $field){
+    if (is_array($field)){
+      foreach($field as $field_val){
+        $img_html .= $field_val . "<br/>";
+      }
+    } else {
+      $img_html .= $field[0] . "<br/>";
+    }
+  }
+  $img_html .= "</div>";
   return $img_html;
 }
 

@@ -68,6 +68,7 @@ function ajax_wp_search(){
   if (isset($_GET['query']) && $query_string != ''){
     $query_args = array( 's' => $query_string, 'post_type'=>array('post', 'page'), 'posts_per_page'=>3 , 'paged'=>$paged);
     $wp_query = new WP_Query( $query_args );
+    $rel_query = relevanssi_do_query($wp_query);
     if ( $wp_query->have_posts() ) {
       	while ( $wp_query->have_posts() ) {
       		$wp_query->the_post();
