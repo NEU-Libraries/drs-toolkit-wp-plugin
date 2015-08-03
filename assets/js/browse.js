@@ -218,6 +218,9 @@ jQuery(document).ready(function($) {
       if (type == 'f') {
         var facet = $(this).data("facet");
         delete params.f[facet];
+      } else if (type == 'q') {
+        params[type] = '';
+        location.href=location.href.replace(/&?q=([^&]$|[^&]*)/i, "");
       } else {
         params[type] = '';
       }
