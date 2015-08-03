@@ -51,12 +51,14 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
     rm -rf twentythirteen
   ```
 
-7. Go to /wp-admin/plugins.php in your browser. Activate DRS Toolkit Plugin
+7. Go to /wp-admin/plugins.php in your browser. Install dependent plugins: Relevanssi
 
-8. Go to Settings > Reading and set Front Page Displays to a static page then choose a static page.
+8. Go to /wp-admin/plugins.php in your browser. Activate DRS Toolkit Plugin
 
-9. Go to DRS Toolkit settings and enter collection URL and click Update
+9. Go to Settings > Reading and set Front Page Displays to a static page then choose a static page.
 
-10. Go to Appearance > Themes and activate DSG (Minamaze Child Theme)
+10. Go to DRS Toolkit settings and enter collection URL and click Update
 
-11. Go to Appearance > Theme Options > Header and enable search then save changes
+11. Go to Appearance > Themes and activate DSG (Minamaze Child Theme)
+
+12. Go to Appearance > Theme Options > Header and enable search then save changes
