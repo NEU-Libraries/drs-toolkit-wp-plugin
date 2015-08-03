@@ -93,8 +93,7 @@ $TEMPLATE = array(
      $html = '</pre>
      <div class="wrap">
      <form action="options.php" method="post" name="options">
-     <h2>Select Your Settings</h2>'.drstk_get_pid().'
-     ' . wp_nonce_field('update-options') . '
+     <h2>Select Your Settings</h2>'. wp_nonce_field('update-options') . '
      <table class="form-table" width="100%" cellpadding="10">
      <tbody>
      <tr>
@@ -107,9 +106,57 @@ $TEMPLATE = array(
      </tr>
      </tbody>
      </table>
+     <table class="form-table" width="100%">
+     <tbody>
+     <tr>
+     <td><h4>Search Settings</h4></td>
+     </tr>
+     <tr>
+     <td>What metadata should be visible for each record by default?</td>
+     </tr>
+     <tr>
+     <td><label><input type="checkbox" name="drstk_search_title" ';
+     if (get_option('drstk_search_title') == 'on'){ $html .= 'checked="checked"';}
+     $html .= '/>Title</label><br/>
+     <label><input type="checkbox" name="drstk_search_creator" ';
+     if (get_option('drstk_search_creator') == 'on'){ $html .= 'checked="checked"';}
+     $html .= '/>Creator</label><br/>
+     <label><input type="checkbox" name="drstk_search_abstract" ';
+     if (get_option('drstk_search_abstract') == 'on'){ $html .= 'checked="checked"';}
+     $html .= '/>Abstract/Description</label><br/>
+     <label><input type="checkbox" name="drstk_search_date" ';
+     if (get_option('drstk_search_date') == 'on'){ $html .= 'checked="checked"';}
+     $html .= '/>Date Created</label></td>
+     </tr>
+     </tbody>
+     </table>
+     <table class="form-table" width="100%">
+     <tbody>
+     <tr>
+     <td><h4>Browse Settings</h4></td>
+     </tr>
+     <tr>
+     <td>What metadata should be visible for each record by default?</td>
+     </tr>
+     <tr>
+     <td><label><input type="checkbox" name="drstk_browse_title" ';
+     if (get_option('drstk_browse_title') == 'on'){ $html .= 'checked="checked"';}
+     $html .= '/>Title</label><br/>
+     <label><input type="checkbox" name="drstk_browse_creator" ';
+     if (get_option('drstk_browse_creator') == 'on'){ $html .= 'checked="checked"';}
+     $html .= '/>Creator</label><br/>
+     <label><input type="checkbox" name="drstk_browse_abstract" ';
+     if (get_option('drstk_browse_abstract') == 'on'){ $html .= 'checked="checked"';}
+     $html .= '/>Abstract/Description</label><br/>
+     <label><input type="checkbox" name="drstk_browse_date" ';
+     if (get_option('drstk_browse_date') == 'on'){ $html .= 'checked="checked"';}
+     $html .= '/>Date Created</label></td>
+     </tr>
+     </tbody>
+     </table>
       <input type="hidden" name="action" value="update" />
 
-      <input type="hidden" name="page_options" value="drstk_collection, drstk_sync_images" />
+      <input type="hidden" name="page_options" value="drstk_collection, drstk_search_title, drstk_search_creator, drstk_search_date, drstk_search_abstract, drstk_browse_title, drstk_browse_creator, drstk_browse_abstract, drstk_browse_date" />
 
       <input type="submit" name="Submit" value="Update" /></form></div>
       <br/>
@@ -216,6 +263,32 @@ function drstk_browse_script() {
         plugins_url( '/assets/js/browse.js', __FILE__ ),
         array( 'jquery' )
     );
+    $search_options = array();
+    if (get_option('drstk_search_title') == 'on'){
+      $search_options[] = 'title';
+    }
+    if (get_option('drstk_search_creator') == 'on'){
+      $search_options[] = 'creator';
+    }
+    if (get_option('drstk_search_date') == 'on'){
+      $search_options[] = 'date';
+    }
+    if (get_option('drstk_search_abstract') == 'on'){
+      $search_options[] = 'abstract';
+    }
+    $browse_options = array();
+    if (get_option('drstk_browse_title') == 'on'){
+      $browse_options[] = 'title';
+    }
+    if (get_option('drstk_browse_creator') == 'on'){
+      $browse_options[] = 'creator';
+    }
+    if (get_option('drstk_browse_date') == 'on'){
+      $browse_options[] = 'date';
+    }
+    if (get_option('drstk_browse_abstract') == 'on'){
+      $browse_options[] = 'abstract';
+    }
     //wp_enqueue_style( 'drstk_browse_style', plugins_url('/assets/css/browse.css', __FILE__));
     //this creates a unique nonce to pass back and forth from js/php to protect
     $browse_nonce = wp_create_nonce( 'browse_drs' );
@@ -226,6 +299,8 @@ function drstk_browse_script() {
        'template' => $wp_query->query_vars['drstk_template_type'],
        'site_url' => $SITE_URL,
        'sub_collection_pid' => $sub_collection_pid,
+       'search_options' => json_encode($search_options),
+       'browse_options' => json_encode($browse_options),
     ) );
 }
 

@@ -7,6 +7,8 @@ jQuery(document).ready(function($) {
   var sort = "score+desc%2C+system_create_dtsi+desc";
   var params = {q:q, per_page:per_page, page:page, f:f, sort:sort};
   var template = browse_obj.template;
+  var search_options = $.parseJSON(browse_obj.search_options);
+  var browse_options = $.parseJSON(browse_obj.browse_options);
   if ((q) && (q != '')){
     $("#drs-selection").show();
     $("#drs-selection a[data-type='q']").remove();
@@ -22,6 +24,7 @@ jQuery(document).ready(function($) {
   }
   get_data(params);
   get_wp_data(params.q);
+
 
   function get_data(params){
     $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-pulse'></span></h2>").show();
@@ -137,12 +140,13 @@ jQuery(document).ready(function($) {
     //do grid or list depending on if template is search or browse
     var docs_html = '';
     $.each(data.docs, function(doc, doc_vals){
-      var title, abstract, creator = '';
+      var title, abstract, creator, date = '';
       var thumbnail = [];
       doc_vals.title_ssi? title = doc_vals.title_ssi : "";
       doc_vals.abstract_tesim? abstract = doc_vals.abstract_tesim : "";
       doc_vals.creator_ssi? creator = doc_vals.creator_ssi : "";
       doc_vals.thumbnail_list_tesim? thumbnail = doc_vals.thumbnail_list_tesim : "";
+      doc_vals.origin_info_date_created_tesim? date = doc_vals.origin_info_date_created_tesim : "";
       if (doc_vals.active_fedora_model_ssi == 'Collection') {
         this_doc_url = '/collection/' + doc_vals.id;
       } else if (doc_vals.active_fedora_model_ssi == 'CoreFile') {
@@ -157,12 +161,18 @@ jQuery(document).ready(function($) {
         } else {
           this_doc += "<div class='dashicons dashicons-portfolio'></div>";
         }
-        this_doc += "</a></div><div class='three_fourth last'><h4 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>" + title + "</a></h4>";
-        if (creator){
+        this_doc += "</a></div><div class='three_fourth last'>";
+        if (search_options.indexOf('title') > -1){
+          this_doc += "<h4 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>" + title + "</a></h4>";
+        }
+        if (creator && search_options.indexOf('creator') > -1){
           this_doc += "<h6>"+ creator + "</h6>";
         }
-        if (abstract){
+        if (abstract  && search_options.indexOf('abstract') > -1){
           this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
+        }
+        if (date  && search_options.indexOf('date') > -1){
+          this_doc += "<p class='drs-item-date'>" + date + "</p>";
         }
         this_doc += "</div><div class=''><a href='"+browse_obj.site_url+this_doc_url+"' class='themebutton'>View More</a></div></div>";
       } else {
@@ -173,7 +183,20 @@ jQuery(document).ready(function($) {
         } else {
           this_doc += "<div class='dashicons dashicons-portfolio'></div>";
         }
-        this_doc += "</a></div><div class=''><h5 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>" + title + "</a></h5></div></div>";
+        this_doc += "</a></div><div class=''>";
+        if (browse_options.indexOf('title') > -1){
+          this_doc += "<h5 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>" + title + "</a></h5>";
+        }
+        if (creator && browse_options.indexOf('creator') > -1){
+          this_doc += "<h6>"+ creator + "</h6>";
+        }
+        if (abstract  && browse_options.indexOf('abstract') > -1){
+          this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
+        }
+        if (date  && browse_options.indexOf('date') > -1){
+          this_doc += "<p class='drs-item-date'>" + date + "</p>";
+        }
+        this_doc += "</div></div>";
       }
       docs_html += this_doc;
     });
