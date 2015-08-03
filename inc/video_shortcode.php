@@ -46,7 +46,7 @@ function drstk_add_video_playlist() {
     $return .= '<input type="hidden" id="drstk_collection_json" name="drstk_collection_json" value="' . encode_to_safe_json($collection) . '" />';
     $return .= '<ol id="sortable-source-list">';
     foreach ($collection as $key => $doc) {
-        $return .= '<li id="drsvideokey-'. $key/ '">';
+        $return .= '<li id="drsvideokey-'. $key. '">';
         $return .= '<img src="'. $doc['poster']. '" width="150" /><br/>';
         $return .= '<input type="checkbox" class="drstk-include-video" '. ( $doc['include'] ? 'checked' : '' ). ' />';
         $return .= $doc['title'];
