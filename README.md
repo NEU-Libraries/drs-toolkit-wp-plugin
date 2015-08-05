@@ -44,10 +44,10 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
 
 7. If the project is going to need to override styles, add a overrides.css file (which is gitignored so changes won't be overwritten)
 
-```
-  cd /wp-content/themes/minamaze-child
-  touch overrides.css
-```
+  ```
+    cd /wp-content/themes/minamaze-child
+    touch overrides.css
+  ```
 
 8. Delete extra themes to avoid user confusion
 
