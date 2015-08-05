@@ -126,66 +126,99 @@
     tb_remove();
   });
 
+
+  var search_q = '';
+  var search_page = 1;
+  var search_params = {q:search_q, page:search_page};
    $("#tabs").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
    $("#insert-drs").on('click', function(){
+     get_updated_items(search_params);
+   });
+
+   $("body").on("click", "button[id^=search-button-]", function(){
+    //  console.log($(this).val());
+    //  console.log(search_params);
+     var id =  jQuery(this).attr('id');
+     id = id.split('-')[2];
+    //  console.log(id);
+    //  console.log("#TB_ajaxContent #search-"+id);
+    //  console.log($("#TB_ajaxContent #search-"+id).val());
+     $("#TB_ajaxContent #search-"+id).css("color", "red");
+     search_params.q = $("#TB_ajaxContent #search-"+id).val();
+    //  console.log(search_params);
+     get_updated_items(search_params);
+   });
+
+   $("body").on("click", ".tablenav-pages a", function(){
+     console.log($(this).html());
+     val = $(this).html();
+     if (val == '&lt;&lt;'){
+       val = 1
+     }
+     if (val == '&gt;&gt;'){
+       val = $(this).data('val');
+     }
+     if ($.isNumeric(val)){
+       search_params.page = val;
+       console.log(val);
+       get_updated_items(search_params);
+     }
+   });
+
+   function get_updated_items(search_params){
+     var tile_html = '';
+     console.log(search_params);
      $.post(tile_ajax_obj.ajax_url, {
         _ajax_nonce: tile_ajax_obj.tile_ajax_nonce,
          action: "get_tile_code",
+         params: search_params,
      }, function(data) {
         // $("#TB_ajaxContent #tabs-1").html(data);
         // console.log(data);
         var data = $.parseJSON(data);
-        var tile_html = '<h4>Tile Gallery</h4>';
-        if (data.pagination.table.total_count > 0){
+        if (data.response.response.numFound > 0){
           console.log("there are more than ten");
           tile_html += '<a href="#" id="drstk_insert_tile_gallery" class="button" title="Insert shortcode">Insert shortcode</a><ol id="sortable-tile-list">';
-          $.each(data.items, function(id, item){
-            console.log(item.thumbnails);
-            tile_html += '<li style="display:inline-block;padding:10px;">';
-            tile_html += '<label for="drstile-' + id + '"><img src="' + item.thumbnails[0] + '" width="150" /><br/>';
-            tile_html += '<input id="drstile-' + id + '" type="checkbox" class="drstk-include-tile" value="' + item.pid + '" />';
-            tile_html += '<span style="width:100px;display:inline-block">' + item.mods.Title + '</span></label>';
-            tile_html += '</li>';
+          $.each(data.response.response.docs, function(id, item){
+            // console.log(item.thumbnails);
+            if (item.active_fedora_model_ssi == 'CoreFile'){
+              tile_html += '<li style="display:inline-block;padding:10px;">';
+              tile_html += '<label for="drstile-' + id + '"><img src="https://repository.library.northeastern.edu' + item.thumbnail_list_tesim[0] + '" width="150" /><br/>';
+              tile_html += '<input id="drstile-' + id + '" type="checkbox" class="drstk-include-tile" value="' + item.id + '" />';
+              tile_html += '<span style="width:100px;display:inline-block">' + item.title_ssi + '</span></label>';
+              tile_html += '</li>';
+            }
           });
           tile_html += "</ol><p>Drag and drop the thumbnails in the order you want them to appear in the playlist. You can un-check the images you wish to exclude entirely.</p>";
-
-          // if (data.pagination.table.num_pages > 1) {
-          //   var pagination = "<div class='";
-          //   if (data.pagination.table.current_page > 1){
-          //     pagination += "'><a href='#' class='prev'><<</a>";
-          //   } else {
-          //     pagination += "disabled'><span><<</span>";
-          //   }
-          //   pagination += "</div>";
-          //   for (var i = 1; i <= data.pagination.table.num_pages; i++) {
-          //     if (data.pagination.table.current_page == i){
-          //       var pagination_class = 'current';
-          //     } else {
-          //       var pagination_class = '';
-          //     }
-          //     pagination += "<div class='"+pagination_class+"'>";
-          //     if (data.pagination.table.current_page == i) {
-          //       pagination += "<span>" + i + "</span>";
-          //     } else {
-          //       pagination += "<a href='#'>" + i + "</a>";
-          //     }
-          //     pagination += "</div>";
-          //   }
-          //   pagination += "<div class='";
-          //   if (data.pagination.table.current_page == data.pagination.table.num_pages){
-          //     pagination += "disabled'><span>>></span>";
-          //   } else {
-          //     pagination += "'><a href='#' class='next'>>></a>";
-          //   }
-          //   pagination += "</div>";
-          // }
-          //   tile_html += '<div class="tablenav"><div class="tablenav-pages" style="margin: 1em 0">'+pagination+'</div></div>';
+          if (data.pagination.table.num_pages > 1){
+              var pagination = "";
+              if (data.pagination.table.current_page > 1){
+                pagination += "<a href='#' class='prev-page'><<</a>";
+              } else {
+                pagination += "<a href='#' class='prev-page disabled'><<</a>";
+              }
+              for (var i = 1; i <= data.pagination.table.num_pages; i++) {
+                if (data.pagination.table.current_page == i){
+                  var pagination_class = 'current-page disabled';
+                } else {
+                  var pagination_class = '';
+                }
+                  pagination += "<a href='#' class='"+pagination_class+"'>" + i + "</a>";
+              }
+              if (data.pagination.table.current_page == data.pagination.table.num_pages){
+                pagination += "<a href='#' class='next-page' data-val='"+data.pagination.table.num_pages+"'>>></a>";
+              } else {
+                pagination += "<a href='#' class='next-page disabled' data-val='"+data.pagination.table.num_pages+"'>>></a>";
+              }
+              tile_html += "<span class='tablenav'><span class='tablenav-pages'>" + pagination + "</span></span>";
+          }
         } else {
-          console.log("there are less than 10");
+          tile_html += "No results were retrieved for your query. Please try a different query.";
         }
-        $("#TB_ajaxContent #tabs-1").html(tile_html);
+        $("#TB_ajaxContent #tabs-1 .drs-items").html(tile_html);
       });
-   });
+   }
+
    $("[id^=ui-id-]").on("click", function(e){
      var id = $(this).attr('id');
      id = id.substr(id.length - 1);

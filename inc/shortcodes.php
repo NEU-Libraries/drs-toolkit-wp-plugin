@@ -6,7 +6,7 @@ add_action('media_buttons', 'add_drs_button', 15);
 function add_drs_button() {
     echo '<a href="#TB_inline?width=750&height=675&inlineId=drs-tile-modal" id="insert-drs" class="button thickbox" title="Add DRS Item(s)">Add DRS Item(s)</a>';
     echo '<div id="drs-tile-modal" style="display:none;padding:10px;">';
-    echo '<div id="tabs"><ul><li><a href="#tabs-1">Tile Gallery</a></li><li><a href="#tabs-2">Gallery Slider</a></li><li><a href="#tabs-3">Single Item</a></li><li><a href="#tabs-4">Video Playlist</a></li></ul><div id="tabs-1"></div><div id="tabs-2">';
+    echo '<div id="tabs"><ul><li><a href="#tabs-1">Tile Gallery</a></li><li><a href="#tabs-2">Gallery Slider</a></li><li><a href="#tabs-3">Single Item</a></li><li><a href="#tabs-4">Video Playlist</a></li></ul><div id="tabs-1"><h4>Tile Gallery</h4><br/><label for="search">Search for an item: </label><input type="text" name="search" id="search-tile" /><button class="themebutton" id="search-button-tile">Search</button><br/><div class="drs-items"></div></div><div id="tabs-2">';
     echo '</div><div id="tabs-3">';
     echo '</div><div id="tabs-4">';
     echo '</div></div>';
