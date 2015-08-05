@@ -4,7 +4,7 @@ function drstk_add_gallery(){
   check_ajax_referer( 'gallery_ajax_nonce' );
   $col_pid = drstk_get_pid();
   $collection = array();
-  $url = "https://repository.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=2&page=1";
+  $url = "https://repository.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=20&page=1";
   $drs_data = get_response($url);
   $json = json_decode($drs_data);
   $data = '';
@@ -13,11 +13,11 @@ function drstk_add_gallery(){
     wp_send_json($data);
     return;
   }
-  if ($json->pagination->table->total_count > 0){
-    for ($x = 1; $x <= $json->pagination->table->num_pages; $x++) {
-      $url = "https://repository.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=10&page=".$x;
-      $drs_data = get_response($url);
-      $json = json_decode($drs_data);
+  // if ($json->pagination->table->total_count > 0){
+  //   for ($x = 1; $x <= $json->pagination->table->num_pages; $x++) {
+  //     $url = "https://repository.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=10&page=".$x;
+  //     $drs_data = get_response($url);
+  //     $json = json_decode($drs_data);
       foreach ($json->items as $item){
           $img = array(
             'pid' => $item->pid,
@@ -26,8 +26,8 @@ function drstk_add_gallery(){
           );
           $collection[] = $img;
       }
-    }
-  }
+    // }
+  // }
 $data .= '<h4>Gallery Slider</h4><a href="#" id="drstk_insert_gallery" class="button" title="Insert shortcode">Insert shortcode</a>';
 $data .= '<button class="gallery-options button"><span class="dashicons dashicons-admin-generic"></span></button>';
 $data .= '<div class="hidden gallery-options">

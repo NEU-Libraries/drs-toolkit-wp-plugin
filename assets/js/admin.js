@@ -112,7 +112,7 @@
   $("#sortable-tile-list").sortable();
   $("#sortable-gallery-list").sortable();
   //insert tile gallery button
-  $("#drstk_insert_tile_gallery").click(function(e){
+  $("body").on("click", "#drstk_insert_tile_gallery", function(e){
     e.preventDefault();
     var tiles = [];
     $(".drstk-include-tile:checked").each(function(){
@@ -132,7 +132,58 @@
         _ajax_nonce: tile_ajax_obj.tile_ajax_nonce,
          action: "get_tile_code",
      }, function(data) {
-        $("#TB_ajaxContent #tabs-1").html(data);
+        // $("#TB_ajaxContent #tabs-1").html(data);
+        // console.log(data);
+        var data = $.parseJSON(data);
+        var tile_html = '<h4>Tile Gallery</h4>';
+        if (data.pagination.table.total_count > 0){
+          console.log("there are more than ten");
+          tile_html += '<a href="#" id="drstk_insert_tile_gallery" class="button" title="Insert shortcode">Insert shortcode</a><ol id="sortable-tile-list">';
+          $.each(data.items, function(id, item){
+            console.log(item.thumbnails);
+            tile_html += '<li style="display:inline-block;padding:10px;">';
+            tile_html += '<label for="drstile-' + id + '"><img src="' + item.thumbnails[0] + '" width="150" /><br/>';
+            tile_html += '<input id="drstile-' + id + '" type="checkbox" class="drstk-include-tile" value="' + item.pid + '" />';
+            tile_html += '<span style="width:100px;display:inline-block">' + item.mods.Title + '</span></label>';
+            tile_html += '</li>';
+          });
+          tile_html += "</ol><p>Drag and drop the thumbnails in the order you want them to appear in the playlist. You can un-check the images you wish to exclude entirely.</p>";
+
+          // if (data.pagination.table.num_pages > 1) {
+          //   var pagination = "<div class='";
+          //   if (data.pagination.table.current_page > 1){
+          //     pagination += "'><a href='#' class='prev'><<</a>";
+          //   } else {
+          //     pagination += "disabled'><span><<</span>";
+          //   }
+          //   pagination += "</div>";
+          //   for (var i = 1; i <= data.pagination.table.num_pages; i++) {
+          //     if (data.pagination.table.current_page == i){
+          //       var pagination_class = 'current';
+          //     } else {
+          //       var pagination_class = '';
+          //     }
+          //     pagination += "<div class='"+pagination_class+"'>";
+          //     if (data.pagination.table.current_page == i) {
+          //       pagination += "<span>" + i + "</span>";
+          //     } else {
+          //       pagination += "<a href='#'>" + i + "</a>";
+          //     }
+          //     pagination += "</div>";
+          //   }
+          //   pagination += "<div class='";
+          //   if (data.pagination.table.current_page == data.pagination.table.num_pages){
+          //     pagination += "disabled'><span>>></span>";
+          //   } else {
+          //     pagination += "'><a href='#' class='next'>>></a>";
+          //   }
+          //   pagination += "</div>";
+          // }
+          //   tile_html += '<div class="tablenav"><div class="tablenav-pages" style="margin: 1em 0">'+pagination+'</div></div>';
+        } else {
+          console.log("there are less than 10");
+        }
+        $("#TB_ajaxContent #tabs-1").html(tile_html);
       });
    });
    $("[id^=ui-id-]").on("click", function(e){
