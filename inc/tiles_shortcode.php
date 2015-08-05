@@ -13,7 +13,20 @@ function drstk_tiles( $atts ){
       $thumbnail = end($data->thumbnails);
       $title = $data->mods->Title[0];
       $creator = $data->mods->Creator[0];
-      $img_html .= "<div class='brick'><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'></a><div class='info'><h5><a href='".site_url()."/item/".$pid."'>".$title."</a></h5>".$creator."</div></div>";
+      $img_html .= "<div class='brick'><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'></a><div class='info'><h5><a href='".site_url()."/item/".$pid."'>".$title."</a></h5>".$creator;
+      $img_html .= "<div class='hidden'>";
+      $meta = $data->mods;
+      foreach($meta as $field){
+        if (is_array($field)){
+          foreach($field as $field_val){
+            $img_html .= $field_val . "<br/>";
+          }
+        } else {
+          $img_html .= $field[0] . "<br/>";
+        }
+      }
+      $img_html .= "</div>";
+      $img_html .= "</div></div>";
     } else {
       $img_html = "There was an error";
     }

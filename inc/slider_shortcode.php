@@ -36,6 +36,18 @@ function drstk_gallery( $atts ){
              }
            }
            $img_html .= "<p class='caption'>".$img_metadata."</p>";
+           $img_html .= "<div class='hidden'>";
+           $meta = $data->mods;
+           foreach($meta as $field){
+             if (is_array($field)){
+               foreach($field as $field_val){
+                 $img_html .= $field_val . "<br/>";
+               }
+             } else {
+               $img_html .= $field[0] . "<br/>";
+             }
+           }
+           $img_html .= "</div>";
          }
          $img_html .= "</li>";
        } else {
