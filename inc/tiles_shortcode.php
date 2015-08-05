@@ -1,25 +1,4 @@
 <?php
-/* side box content for tile gallery shortcode */
-add_action( 'wp_ajax_get_tile_code', 'drstk_add_tile_gallery' ); //for auth users
-function drstk_add_tile_gallery(){
-  check_ajax_referer( 'tile_ajax_nonce' );
-  $col_pid = drstk_get_pid();
-    $url = "https://repository.library.northeastern.edu/api/v1/search/".$col_pid."?per_page=20";
-    if ($_POST['params']['q'] ){
-      $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
-    }
-    if ($_POST['params']['page']) {
-      $url .= "&page=" . $_POST['params']['page'];
-    }
-    $data = get_response($url);
-    $json = json_decode($data);
-    if ($json->error) {
-      wp_send_json(json_encode( "There was an error: " . $json->error));
-      return;
-    }
-    wp_send_json($data);
-}
-
 /* adds shortcode */
 add_shortcode( 'drstk_tiles', 'drstk_tiles' );
 function drstk_tiles( $atts ){
