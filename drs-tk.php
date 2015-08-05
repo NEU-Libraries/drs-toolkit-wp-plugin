@@ -392,7 +392,7 @@ function drstk_breadcrumb_script(){
      'template' => $wp_query->query_vars['drstk_template_type'],
      'item_pid' => $item_pid,
      'sub_collection_pid' => $sub_collection_pid,
-     'collection_pid' => get_option('drstk_collection'),
+     'collection_pid' => drstk_get_pid(),
   ) );
 
 
