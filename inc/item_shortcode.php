@@ -7,11 +7,11 @@ function drstk_item( $atts ){
   $data = json_decode($data);
   $thumbnail = $data->thumbnails[3];
   $master = $data->thumbnails[4];
+  if (in_array("Large Image", $data->content_objects)){
+    $master = $data->content_objects['Large Image'];
+  }
   $img_html = "<img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
   if (isset($atts['zoom']) && $atts['zoom'] == 'on'){
-    // if ($data->canonical_object[0][1] == 'Master Image'){
-      // $master = $data->canonical_object[0][0];
-    // }
     $img_html .= " data-zoom-image='".$master."' data-zoom='on'";
     if (isset($atts['zoom_position'])){
       $img_html .= " data-zoom-position='".$atts['zoom_position']."'";
