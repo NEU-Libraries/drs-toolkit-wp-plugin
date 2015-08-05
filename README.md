@@ -42,7 +42,14 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
       echo "<script type='text/javascript'>[YOUR GOOGLE ANALYTICS CODE]</script>";
   ```
 
-6. Delete extra themes to avoid user confusion
+7. If the project is going to need to override styles, add a overrides.css file (which is gitignored so changes won't be overwritten)
+
+```
+  cd /wp-content/themes/minamaze-child
+  touch overrides.css
+```
+
+8. Delete extra themes to avoid user confusion
 
   ```
     cd wp-content/themes
@@ -51,14 +58,14 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
     rm -rf twentythirteen
   ```
 
-7. Go to /wp-admin/plugins.php in your browser. Install dependent plugins: Relevanssi
+9. Go to /wp-admin/plugins.php in your browser. Install dependent plugins: Relevanssi
 
-8. Go to /wp-admin/plugins.php in your browser. Activate DRS Toolkit Plugin
+10. Go to /wp-admin/plugins.php in your browser. Activate DRS Toolkit Plugin
 
-9. Go to Settings > Reading and set Front Page Displays to a static page then choose a static page.
+11. Go to Settings > Reading and set Front Page Displays to a static page then choose a static page.
 
-10. Go to DRS Toolkit settings and enter collection URL and click Update
+12. Go to DRS Toolkit settings and enter collection URL and click Update
 
-11. Go to Appearance > Themes and activate DSG (Minamaze Child Theme)
+13. Go to Appearance > Themes and activate DSG (Minamaze Child Theme)
 
-12. Go to Appearance > Theme Options > Header and enable search then save changes
+14. Go to Appearance > Theme Options > Header and enable search then save changes
