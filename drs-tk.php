@@ -98,7 +98,7 @@ $TEMPLATE = array(
 //this creates the form for entering the pid on the settings page
  function drstk_display_settings() {
 
-     $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'http://cerberus.library.northeastern.edu/collections/neu:1';
+     $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'https://repository.library.northeastern.edu/collections/neu:1';
      $html = '</pre>
      <div class="wrap">
      <form action="options.php" method="post" name="options">
@@ -110,7 +110,7 @@ $TEMPLATE = array(
       <label>Project Collection URL</label>
      <input name="drstk_collection" type="text" value="'.$collection_pid.'" style="width:100%;"></input>
      <br/>
-     <small>Ie. <a href="http://cerberus.library.northeastern.edu/collections/neu:6012">http://cerberus.library.northeastern.edu/collections/neu:6012</a></small>
+     <small>Ie. <a href="https://repository.library.northeastern.edu/collections/neu:6012">https://repository.library.northeastern.edu/collections/neu:6012</a></small>
      </td>
      </tr>
      </tbody>
@@ -119,6 +119,11 @@ $TEMPLATE = array(
      <tbody>
      <tr>
      <td><h4>Search Settings</h4></td>
+     </tr>
+     <tr><td>Search Page Title<br/>
+     <input type="text" name="drstk_search_page_title" value="';
+     if (get_option('drstk_search_page_title') == ''){ $html .= 'Search';} else { $html .= get_option('drstk_search_page_title'); }
+     $html .= '" /></td>
      </tr>
      <tr>
      <td>What metadata should be visible for each record by default?</td>
@@ -144,6 +149,11 @@ $TEMPLATE = array(
      <tr>
      <td><h4>Browse Settings</h4></td>
      </tr>
+     <tr><td>Browse Page Title<br/>
+     <input type="text" name="drstk_browse_page_title" value="';
+     if (get_option('drstk_browse_page_title') == ''){ $html .= 'Browse';} else {$html .= get_option('drstk_browse_page_title');}
+     $html .='" /></td>
+     </tr>
      <tr>
      <td>What metadata should be visible for each record by default?</td>
      </tr>
@@ -163,9 +173,30 @@ $TEMPLATE = array(
      </tr>
      </tbody>
      </table>
+     <table>
+     <tbody>
+     <tr>
+     <td><h4>Collections Page Settings</h4></td>
+     </tr>
+     <tr><td>Collections Page Title<br/>
+     <input type="text" name="drstk_collections_page_title" value="';
+     if (get_option('drstk_collections_page_title') == ''){ $html .= 'Collections';} else { $html .= get_option('drstk_collections_page_title'); }
+     $html .='" /></td>
+     </tr>
+     <tr>
+     <td><h4>Single Collection Page Settings</h4></td>
+     </tr>
+     <tr><td>Single Collection Page Title<br/>
+     <input type="text" name="drstk_collection_page_title" value="';
+     if (get_option('drstk_collection_page_title') == ''){ $html .= 'Browse';} else { $html .= get_option('drstk_collection_page_title'); }
+     $html .='" /></td>
+     </tr>
+     </tbody>
+     </table>
+
       <input type="hidden" name="action" value="update" />
 
-      <input type="hidden" name="page_options" value="drstk_collection, drstk_search_title, drstk_search_creator, drstk_search_date, drstk_search_abstract, drstk_browse_title, drstk_browse_creator, drstk_browse_abstract, drstk_browse_date" />
+      <input type="hidden" name="page_options" value="drstk_collection, drstk_search_title, drstk_search_creator, drstk_search_date, drstk_search_abstract, drstk_browse_title, drstk_browse_creator, drstk_browse_abstract, drstk_browse_date, drstk_search_page_title, drstk_browse_page_title, drstk_collection_page_title, drstk_collections_page_title" />
 
       <input type="submit" name="Submit" value="Update" /></form></div>
       <br/>
