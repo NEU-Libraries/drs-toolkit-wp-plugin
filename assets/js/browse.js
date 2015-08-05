@@ -27,7 +27,7 @@ jQuery(document).ready(function($) {
 
 
   function get_data(params){
-    $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-pulse'></span></h2>").show();
+    $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-spin'></span></h2>").show();
     $.post(browse_obj.ajax_url, {
        _ajax_nonce: browse_obj.nonce,
         action: "get_browse",
