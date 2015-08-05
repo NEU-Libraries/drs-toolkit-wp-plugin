@@ -4,7 +4,7 @@ add_action( 'wp_ajax_nopriv_get_item', 'item_ajax_handler' ); //for nonauth user
 function item_ajax_handler() {
   // Handle the ajax request
   check_ajax_referer( 'item_drs' );
-    $url = "http://cerberus.library.northeastern.edu/api/v1/files/";
+    $url = "https://repository.library.northeastern.edu/api/v1/files/";
     if ($_POST['pid'] ){
       $url .= $_POST['pid'];
     }

@@ -9,12 +9,12 @@ function browse_ajax_handler() {
       $data = array('error'=>'Please enter a correct collection or community id in order to configure the search and browse functionality. Please proceed to /wp-admin to enter a Collection id');
       $data = json_encode($data);
       wp_send_json($data);
-  } elseif ($collection == "http://cerberus.library.northeastern.edu/collections/neu:1") {
+  } elseif ($collection == "https://repository.library.northeastern.edu/collections/neu:1") {
     $data = array('error'=>'Please enter a correct collection or community id in order to configure the search and browse functionality. Please proceed to /wp-admin to enter a Collection id');
     $data = json_encode($data);
     wp_send_json($data);
   } else {
-    $url = "http://cerberus.library.northeastern.edu/api/v1/search/".$collection."?";
+    $url = "https://repository.library.northeastern.edu/api/v1/search/".$collection."?";
     if ($_POST['params']['q'] ){
       $url .= "q=". urlencode(sanitize_text_field($_POST['params']['q']));
     }
