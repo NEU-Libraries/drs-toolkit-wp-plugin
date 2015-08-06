@@ -68,8 +68,11 @@
  });
 
  //click the main add drs button
- $("#insert-drs").on('click', function(){
+ $("body").on('click', "#insert-drs",  function(){
    get_updated_items(search_params, 'tile');
+   if ($(this).parent(".wp-media-buttons").attr("id").indexOf("black-studio") > 0){
+     $content = $(".black-studio-tinymce.wp-editor-area");
+   }
  });
 
    //when an item is selected
@@ -156,6 +159,7 @@
          action: "get_tile_code",
          params: search_params,
      }, function(data) {
+       console.log(data);
         var data = $.parseJSON(data);
         if (data.response.response.numFound > 0){
           tile_html += '<a href="#" id="drstk_insert_'+name+'" class="button" title="Insert shortcode">Insert shortcode</a><ol id="sortable-'+name+'-list">';
