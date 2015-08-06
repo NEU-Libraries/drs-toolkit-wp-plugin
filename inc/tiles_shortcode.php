@@ -8,12 +8,24 @@ function drstk_tiles( $atts ){
     $url = "https://repository.library.northeastern.edu/api/v1/files/" . $img;
     $data = get_response($url);
     $data = json_decode($data);
+    $type = $atts['type'];
     if (!$data->error){
       $pid = $data->pid;
-      $thumbnail = end($data->thumbnails);
-      $title = $data->mods->Title[0];
-      $creator = $data->mods->Creator[0];
-      $img_html .= "<div class='brick'><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'></a><div class='info'><h5><a href='".site_url()."/item/".$pid."'>".$title."</a></h5>".$creator;
+      $thumbnail = $data->thumbnails[4];
+      if (isset($atts['metadata'])){
+        $img_metadata = '';
+        $metadata = explode(",",$atts['metadata']);
+        foreach($metadata as $field){
+          $this_field = $data->mods->$field;
+          $img_metadata .= $this_field[0] . "<br/>";
+        }
+      }
+      if ($type == 'pinterest'){
+        $img_html .= "<div class='brick'><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'></a><div class='info'><a href='".site_url()."/item/".$pid."'>".$img_metadata."</a>";
+      }
+      if ($type == 'even-row' || $type == 'square'){
+        $img_html .= "<div class='cell' data-thumbnail='".$thumbnail."'><div class='info'><a href='".site_url()."/item/".$pid."'>".$img_metadata."</a>";
+      }
       $img_html .= "<div class='hidden'>";
       $meta = $data->mods;
       foreach($meta as $field){
@@ -32,7 +44,7 @@ function drstk_tiles( $atts ){
     }
 
   }
-  $shortcode = "<div class='freewall' id='freewall'>".$img_html."</div>";
+  $shortcode = "<div class='freewall' id='freewall' data-type='".$type."'>".$img_html."</div>";
   return $shortcode;
 }
 

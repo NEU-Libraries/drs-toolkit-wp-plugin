@@ -72,7 +72,7 @@
    get_updated_items(search_params, 'tile');
  });
 
-   //when an item is selected on the single item option
+   //when an item is selected
   $("body").on("change", "[class^='drstk-include-']", function(e){
     var pid = $(this).val();
     var type = $(this).attr("class").split("-")[2];
@@ -234,7 +234,14 @@
      }
      if(type == 'tile'){
        var tiles = $(".selected-"+type).val();
-       shortcode = '[drstk_tiles id="'+tiles+'"]\n';
+       shortcode = '[drstk_tiles id="'+tiles+'"';
+      shortcode += ' type="'+$("#TB_ajaxContent #drstk-tile-type").val()+'"';
+       var metadata = [];
+       $(".drstk-tile-metadata input[type='checkbox']:checked").each(function(){
+         metadata.push($(this).attr('name'));
+       });
+       if (metadata.length > 0) {shortcode += ' metadata="'+metadata+'"';}
+       shortcode += ']\n';
      }
      if(type == 'item'){
        var pid = '';
@@ -268,13 +275,10 @@
    })
 
    //enables settings toggle
-   $("body").on("click", "button.zoom-options", function(e){
+   $("body").on("click", "button[class*='-options']", function(e){
      e.preventDefault();
-     $("div.zoom-options").toggleClass('hidden');
-   });
-   $("body").on("click", "button.gallery-options", function(e){
-     e.preventDefault();
-     $("div.gallery-options").toggleClass('hidden');
+     var type = $(this).attr("class").split("-")[0];
+     $("div."+type+"-options").toggleClass('hidden');
    });
 
 });
