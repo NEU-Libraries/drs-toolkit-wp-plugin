@@ -118,7 +118,7 @@
       }
     }
     if(type == 'video'){
-      updateHiddenJSONl
+      updateHiddenJSON;
     }
   });
 
@@ -159,7 +159,6 @@
          action: "get_tile_code",
          params: search_params,
      }, function(data) {
-       console.log(data);
         var data = $.parseJSON(data);
         if (data.response.response.numFound > 0){
           tile_html += '<a href="#" id="drstk_insert_'+name+'" class="button" title="Insert shortcode">Insert shortcode</a><ol id="sortable-'+name+'-list">';
@@ -230,7 +229,7 @@
          shortcode += ' timeout="'+$("#drstk-slider-timeout").val()+'"';
        }
        var metadata = [];
-       $(".drstk-slider-metadata input[type='checkbox']:checked").each(function(){
+       $(this).parent(".drs-items").siblings("div.tile-options").find(".drstk-slider-metadata input[type='checkbox']:checked").each(function(){
          metadata.push($(this).attr('name'));
        });
        if (metadata.length > 0) {shortcode += ' metadata="'+metadata+'"';}
@@ -241,7 +240,7 @@
        shortcode = '[drstk_tiles id="'+tiles+'"';
       shortcode += ' type="'+$("#TB_ajaxContent #drstk-tile-type").val()+'"';
        var metadata = [];
-       $(".drstk-tile-metadata input[type='checkbox']:checked").each(function(){
+       $(this).parent(".drs-items").siblings("div.tile-options").find(".drstk-tile-metadata input[type='checkbox']:checked").each(function(){
          metadata.push($(this).attr('name'));
        });
        if (metadata.length > 0) {shortcode += ' metadata="'+metadata+'"';}
@@ -255,7 +254,7 @@
          }
        });
        var metadata = [];
-       $(".item-metadata input[type='checkbox']:checked").each(function(){
+       $(this).parent(".drs-items").siblings("div.tile-options").find(".item-metadata input[type='checkbox']:checked").each(function(){
          metadata.push($(this).attr('name'));
        });
        shortcode = '[drstk_item id="'+pid+'"';
