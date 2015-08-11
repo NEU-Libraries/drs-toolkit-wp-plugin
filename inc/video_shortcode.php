@@ -4,16 +4,17 @@ add_action( 'wp_ajax_get_video_code', 'drstk_add_video_playlist' ); //for auth u
 // function drstk_add_video_playlist( $post ) {
 function drstk_add_video_playlist() {
     check_ajax_referer( 'video_ajax_nonce' );
+    // wp_nonce_field( 'drstk_add_video_playlist', 'drstk_add_video_playlist_nonce' );
     global $post;
     $post_id = $post->ID;
     $col_pid = drstk_get_pid();
-    $collection = get_collection_from_post( $post_id );
-    // wp_nonce_field( 'drstk_add_video_playlist', 'drstk_add_video_playlist_nonce' );
+    $orig_collection = get_collection_from_post( $post_id );
+    // echo "collection is " . $collection;
     $collection = array();
     $url = "https://repository.library.northeastern.edu/api/v1/export/".$col_pid."?per_page=2&page=1";
     $drs_data = get_response($url);
     $json = json_decode($drs_data);
-    $return = '';
+    // $return = '';
     if ($json->error) {
       $return = "There was an error: " . $json->error;
       wp_send_json($return);
@@ -25,36 +26,39 @@ function drstk_add_video_playlist() {
         $drs_data = get_response($url);
         $json = json_decode($drs_data);
         foreach ($json->items as $item){
-          if ($item->canonical_object[0][1] == 'Video File' && !in_array($item->pid, $collection)){
+          if (!in_array($item->pid, $collection)){
             $encoded = str_replace(':','%3A', $item->pid);
             $dir = substr(md5("info:fedora/".$item->pid."/content/content.0"), 0, 2);
             $video = array(
               'include' => true,
-              'rtmp' => 'rtmp://libwowza.neu.edu:1935/vod/_definst_/MP4:datastreamStore/repositoryData/newfedoradata/datastreamStore/'.$dir.'/info%3Afedora%2F'.$encoded.'%2Fcontent%2Fcontent.0',
-              'playlist' => 'http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/repositoryData/newfedoradata/datastreamStore/'.$dir.'/MP4:'. urlencode("info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0") .'/playlist.m3u8',
+              // 'rtmp' => 'rtmp://libwowza.neu.edu:1935/vod/_definst_/MP4:datastreamStore/repositoryData/newfedoradata/datastreamStore/'.$dir.'/info%3Afedora%2F'.$encoded.'%2Fcontent%2Fcontent.0',
+              // 'playlist' => 'http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/repositoryData/newfedoradata/datastreamStore/'.$dir.'/MP4:'. urlencode("info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0") .'/playlist.m3u8',
               'download' => 'download',
               'poster' => end($item->thumbnails),
               'title' => $item->mods->Title[0],
+              // 'type' => 'MP4'
+              // 'provider' => 'video'
             );
+            if ($item->canonical_object[0][1] == 'Audio File'){
+              $video['rtmp'] = 'rtmp://libwowza.neu.edu:1935/vod/_definst_/MP3:datastreamStore/repositoryData/newfedoradata/datastreamStore/'.$dir.'/info%3Afedora%2F'.$encoded.'%2Fcontent%2Fcontent.0';
+              $video['playlist'] = 'http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/repositoryData/newfedoradata/datastreamStore/'.$dir.'/MP3:'. urlencode("info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0") .'/playlist.m3u8';
+              $video['type'] = 'MP3';
+              $video['provider'] = 'audio';
+            }
+            if ($item->canonical_object[0][1] == 'Video File'){
+              $video['rtmp'] = 'rtmp://libwowza.neu.edu:1935/vod/_definst_/MP4:datastreamStore/repositoryData/newfedoradata/datastreamStore/'.$dir.'/info%3Afedora%2F'.$encoded.'%2Fcontent%2Fcontent.0';
+              $video['playlist'] = 'http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/repositoryData/newfedoradata/datastreamStore/'.$dir.'/MP4:'. urlencode("info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0") .'/playlist.m3u8';
+              $video['type'] = 'MP4';
+              $video['provider'] = 'video';
+            }
             $collection[] = $video;
           }
         }
       }
+      update_post_meta( $post_id, 'drstk_collection_json', encode_to_safe_json($collection) );
     }
-    update_post_meta( $post_id, 'drstk_collection_json', encode_to_safe_json($collection) );
-    $return .= '<h4>Video Playlist</h4><a href="#" id="drstk_insert_shortcode" class="button" title="Insert shortcode">Insert shortcode</a>';
-    $return .= '<input type="hidden" id="drstk_collection_json" name="drstk_collection_json" value="' . encode_to_safe_json($collection) . '" />';
-    $return .= '<ol id="sortable-source-list">';
-    foreach ($collection as $key => $doc) {
-        $return .= '<li id="drsvideokey-'. $key. '">';
-        $return .= '<img src="'. $doc['poster']. '" width="150" /><br/>';
-        $return .= '<input type="checkbox" class="drstk-include-video" '. ( $doc['include'] ? 'checked' : '' ). ' />';
-        $return .= $doc['title'];
-        $return .= '</li>';
-    }
-    $return .= '</ol>';
-    $return .= '<p>Drag and drop the videos in the order you want them to appear in the playlist. You can un-check the videos you wish to exclude entirely.';
-    wp_send_json($return);
+    $return = array('collection' => $collection, 'safe_collection' => encode_to_safe_json($collection), 'orig_collection'=>$orig_collection);
+    wp_send_json(json_encode($return));
     return;
 }
 
@@ -62,13 +66,15 @@ function drstk_add_video_playlist() {
 /* save data */
 add_action( 'save_post', 'drstk_save_collection_id' );
 function drstk_save_collection_id( $post_id ) {
+  // echo "hello?";
+  // echo $_POST['drstk_collection_json'];
     // Check if our nonce is set.
-    if ( ! isset( $_POST['drstk_add_video_playlist_nonce'] ) )
-        return $post_id;
-    $nonce = $_POST['drstk_add_video_playlist_nonce'];
+    // if ( ! isset( $_POST['drstk_add_video_playlist_nonce'] ) )
+    //     return $post_id;
+    // $nonce = $_POST['drstk_add_video_playlist_nonce'];
       // Verify that the nonce is valid.
-    if ( ! wp_verify_nonce( $nonce, 'drstk_add_video_playlist' ) )
-      return $post_id;
+    // if ( ! wp_verify_nonce( $nonce, 'drstk_add_video_playlist' ) )
+      // return $post_id;
       // Check the user's permissions.
     if ( ! current_user_can( 'edit_post', $post_id ) )
         return $post_id;
@@ -80,6 +86,7 @@ function get_collection_from_post($post_id) {
     $str = get_post_meta( $post_id, 'drstk_collection_json', true);
     $raw = rawurldecode($str);
     $arr = json_decode($raw, true);
+    // print_r($arr);
     return $arr;
 }
 
@@ -93,15 +100,16 @@ function encode_to_safe_json($obj) {
 add_shortcode( 'drstk_collection_playlist', 'drstk_collection_playlist' );
 function drstk_collection_playlist( $atts ){
     $collection = get_collection_from_post( get_the_ID() );
+    echo $collection;
     $playlists = '';
 
-    foreach ($collection as $key => $video) {
-        if ($video['include']) {
-            $playlists .= '{ sources: [ { file: "' .  $video['rtmp'] . '"},';
-            $playlists .= '{ file: "' . $video['playlist'] . '"}, { file: "' . $video['download'] . '",';
-            $playlists .=  ' type: "MP4" } ], image: "' . $video['poster'] . '", title: "' . $video['title'] . '" },';
-        };
-    }
+    // foreach ($collection as $key => $video) {
+    //     if ($video['include']) {
+    //         $playlists .= '{ sources: [ { file: "' .  $video['rtmp'] . '"},';
+    //         $playlists .= '{ file: "' . $video['playlist'] . '"}, { file: "' . $video['download'] . '",';
+    //         $playlists .=  ' type: "' . $video['type'] . '" } ], image: "' . $video['poster'] . '", title: "' . $video['title'] . '" },';
+    //     };
+    // }
 
     return '<div id="drs-item-video">
         <img style="width: 100%;" src="' . $collection[0]["poster"] .'" />
