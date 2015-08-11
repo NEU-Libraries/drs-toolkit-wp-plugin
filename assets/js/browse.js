@@ -144,7 +144,7 @@ jQuery(document).ready(function($) {
       var thumbnail = [];
       doc_vals.title_ssi? title = doc_vals.title_ssi : "";
       doc_vals.abstract_tesim? abstract = doc_vals.abstract_tesim : "";
-      doc_vals.creator_ssi? creator = doc_vals.creator_ssi : "";
+      doc_vals.creator_tesim? creator = doc_vals.creator_tesim : "";
       doc_vals.thumbnail_list_tesim? thumbnail = doc_vals.thumbnail_list_tesim : "";
       doc_vals.origin_info_date_created_tesim? date = doc_vals.origin_info_date_created_tesim : "";
       if (doc_vals.active_fedora_model_ssi == 'Collection') {
@@ -254,7 +254,7 @@ jQuery(document).ready(function($) {
 
   }
 
-  $("#drs-sort").html("<div>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance</option><option value='title_info_title_ssi%20asc'>Title A-Z</option><option value='title_info_title_ssi%20desc'>Title Z-A</option><option value='creator_ssi%20asc'>Creator A-Z</option><option value='creator_ssi%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></div>");
+  $("#drs-sort").html("<div>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance</option><option value='title_info_title_ssi%20asc'>Title A-Z</option><option value='title_info_title_ssi%20desc'>Title Z-A</option><option value='creator_tesim%20asc'>Creator A-Z</option><option value='creator_tesim%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></div>");
 
   $("#drs-sort-option").on("change", function() {
     params.sort = $(this).val();
