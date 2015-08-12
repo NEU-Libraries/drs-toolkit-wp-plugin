@@ -8,7 +8,7 @@ function drstk_collection_playlist($atts){
         $url = "https://repository.library.northeastern.edu/api/v1/files/" . $video;
         $data = get_response($url);
         $data = json_decode($data);
-        $poster = [];
+        $poster;
         if (!$data->error){
           $poster[] = $data->thumbnails[4];
           $this_poster = $data->thumbnails[4];
