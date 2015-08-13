@@ -21,7 +21,7 @@
    search_params.page = 1;
    if (id == 4){
      $("#TB_ajaxContent #tabs-4").html('<div class="drs-items">Loading...<ol id="sortable-video-list"></ol></div><div class="drs-pagination"></div>');
-     $("#TB_ajaxContent #tabs-4 .drs-items").prepend('<h4>Video Playlist</h4><input type="hidden" class="selected-video" />').append('<p>Drag and drop the videos in the order you want them to appear in the playlist. You can un-check the videos you wish to exclude entirely.</p>');
+     $("#TB_ajaxContent #tabs-4 .drs-items").prepend('<h4>Media Playlist</h4><input type="hidden" class="selected-video" />').append('<p>Drag and drop the videos in the order you want them to appear in the playlist. You can un-check the videos you wish to exclude entirely.</p>');
      get_updated_items(search_params, 'video');
    }
    if (id == 3){
