@@ -10,7 +10,7 @@
 
   //enables tabs
  $("#tabs").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
- $("#tabs-1").html('<h4>Tile Gallery</h4><br/><label for="search">Search for an item: </label><input type="text" name="search" id="search-tile" /><button class="themebutton" id="search-button-tile">Search</button><br/><button class="tile-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden tile-options"><label for="tile-type">Type Layout Type</label><select name="tile-type" id="drstk-tile-type"><option value="pinterest">Pinterest style with caption below</option><option value="even-row">Even rows with caption on hover</option><option value="square">Even Squares with caption on hover</option></select><div class="drstk-tile-metadata"><h5>Metadata for Captions</h5><label><input type="checkbox" name="Title" checked="checked"/>Title</label><br/><label><input type="checkbox" name="Contributor"/>Creator</label><br/><label><input type="checkbox" name="Date created"/>Date Created</label><br/><label><input type="checkbox" name="Abstract/Description"/>Abstract/Description</label></div></div><div class="drs-items">Loading...<ol id="sortable-tile-list"></ol></div><div class="drs-pagination"></div><input type="hidden" class="selected-tile" />');
+ $("#tabs-1").html('<h4>Tile Gallery</h4><br/><label for="search">Search for an item: </label><input type="text" name="search" id="search-tile" /><button class="themebutton" id="search-button-tile">Search</button><br/><button class="tile-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden tile-options"><label for="tile-type">Type Layout Type</label><select name="tile-type" id="drstk-tile-type"><option value="pinterest">Pinterest style with caption below</option><option value="even-row">Even rows with caption on hover</option><option value="square">Even Squares with caption on hover</option></select><div class="drstk-tile-metadata"><h5>Metadata for Captions</h5><label><input type="checkbox" name="Title" checked="checked"/>Title</label><br/><label><input type="checkbox" name="Contributor"/>Creator</label><br/><label><input type="checkbox" name="Date created"/>Date Created</label><br/><label><input type="checkbox" name="Abstract/Description"/>Abstract/Description</label></div></div><div class="drs-items">Loading...</div><ol id="sortable-tile-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-tile" />');
 
 
  //enables the tabs to get their content dynamically
@@ -20,22 +20,23 @@
    search_params.q = '';
    search_params.page = 1;
    if (id == 4){
-     $("#TB_ajaxContent #tabs-4").html('<div class="drs-items">Loading...<ol id="sortable-video-list"></ol></div><div class="drs-pagination"></div>');
-     $("#TB_ajaxContent #tabs-4 .drs-items").prepend('<h4>Media Playlist</h4><input type="hidden" class="selected-video" />').append('<p>Drag and drop the videos in the order you want them to appear in the playlist. You can un-check the videos you wish to exclude entirely.</p>');
+     $("#TB_ajaxContent #tabs-4").html('<div class="drs-items"></div><ol id="sortable-video-list"></ol><div class="drs-pagination"></div>');
+     $("#TB_ajaxContent #tabs-4").prepend('<h4>Media Playlist</h4><input type="hidden" class="selected-video" />');
      get_updated_items(search_params, 'video');
    }
    if (id == 3){
-     $("#TB_ajaxContent #tabs-3").html('<h4>Item</h4><br/><label for="search">Search for an item: </label><input type="text" name="search" id="search-item" /><button class="themebutton" id="search-button-item">Search</button><br/><button class="zoom-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden zoom-options"><label for="drsitem-zoom"><input id="drsitem-zoom" name="drsitem-zoom" value="yes" type="checkbox" />Enable zoom</label><br/><label for="drsitem-zoom-inner"><input id="drsitem-zoom-inner" name="drsitem-zoom-inner" value="yes" type="checkbox" />Zoom inside image</label><br/><label for="drsitem-zoom-window">Zoom position (outside image)<select name="drsitem-zoom-window" id="drsitem-zoom-window"><option value="0">Select Position</option><option value="1">Top Right</option><option value="2">Middle Right</option><option value="3">Bottom Right</option><option value="4">Bottom Corner Right</option><option value="5">Under Right</option><option value="6">Under Middle</option><option value="7">Under Left</option><option value="8">Bottom Corner Left </option><option value="9">Bottom Left</option><option value="10">Middle Left</option><option value="11">Top Left</option><option value="12">Top Corner Left</option><option value="12">Above Left</option><option value="14">Above Middle</option><option value="15">Above Right</option><option value="16">Top Right Corner</option></select><br><i>Recommended and Default position:Top Right</i></div><hr/><div class="item-metadata"></div><div class="drs-items">Loading...<ol id="sortable-item-list"></ol></div><div class="drs-pagination"></div></div>');
+     $("#TB_ajaxContent #tabs-3").html('<h4>Item</h4><br/><label for="search">Search for an item: </label><input type="text" name="search" id="search-item" /><button class="themebutton" id="search-button-item">Search</button><br/><button class="zoom-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden zoom-options"><label for="drsitem-zoom"><input id="drsitem-zoom" name="drsitem-zoom" value="yes" type="checkbox" />Enable zoom</label><br/><label for="drsitem-zoom-inner"><input id="drsitem-zoom-inner" name="drsitem-zoom-inner" value="yes" type="checkbox" />Zoom inside image</label><br/><label for="drsitem-zoom-window">Zoom position (outside image)<select name="drsitem-zoom-window" id="drsitem-zoom-window"><option value="0">Select Position</option><option value="1">Top Right</option><option value="2">Middle Right</option><option value="3">Bottom Right</option><option value="4">Bottom Corner Right</option><option value="5">Under Right</option><option value="6">Under Middle</option><option value="7">Under Left</option><option value="8">Bottom Corner Left </option><option value="9">Bottom Left</option><option value="10">Middle Left</option><option value="11">Top Left</option><option value="12">Top Corner Left</option><option value="12">Above Left</option><option value="14">Above Middle</option><option value="15">Above Right</option><option value="16">Top Right Corner</option></select><br><i>Recommended and Default position:Top Right</i></div><hr/><div class="item-metadata"></div><div class="drs-items"></div><ol id="sortable-item-list"></ol><div class="drs-pagination"></div></div>');
      get_updated_items(search_params, 'item');
    }
    if (id == 2){
-     $("#TB_ajaxContent #tabs-2").html('<h4>Gallery Slider</h4><br/><label for="search">Search for an item: </label><input type="text" name="search" id="search-gallery" /><button class="themebutton" id="search-button-gallery">Search</button><br/><button class="gallery-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden gallery-options"><label for="drstk-slider-auto"><input type="checkbox" name="drstk-slider-auto" id="drstk-slider-auto" value="yes" checked="checked" />Auto rotate</label><br/><label for="drstk-slider-nav"><input type="checkbox" name="drstk-slider-nav" id="drstk-slider-nav" value="yes" checked="checked" />Next/Prev Buttons</label><br/><label for="drstk-slider-pager"><input type="checkbox" name="drstk-slider-pager" id="drstk-slider-pager" value="yes" checked="checked" />Dot Pager</label><br/><label for="drstk-slider-speed">Rotation Speed<input type="text" name="drstk-slider-speed" id="drstk-slider-speed" /></label><br/><label for="drstk-slider-timeout">Time between Slides<input type="text" name="drstk-slider-timeout" id="drstk-slider-timeout" /></label><br/><label for="drstk-slider-caption"><input type="checkbox" name="drstk-slider-caption" id="drstk-slider-caption" value="yes" checked="checked"/>Enable captions</label><br/><div class="drstk-slider-metadata"><h5>Metadata for Captions</h5><label><input type="checkbox" name="Title"/>Title</label><br/><label><input type="checkbox" name="Contributor"/>Creator</label><br/><label><input type="checkbox" name="Date created"/>Date Created</label><br/><label><input type="checkbox" name="Abstract/Description"/>Abstract/Description</label></div></div><div class="drs-items">Loading...<ol id="sortable-gallery-list"></ol></div><div class="drs-pagination"></div><input type="hidden" class="selected-gallery" />');
+     $("#TB_ajaxContent #tabs-2").html('<h4>Gallery Slider</h4><br/><label for="search">Search for an item: </label><input type="text" name="search" id="search-gallery" /><button class="themebutton" id="search-button-gallery">Search</button><br/><button class="gallery-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden gallery-options"><label for="drstk-slider-auto"><input type="checkbox" name="drstk-slider-auto" id="drstk-slider-auto" value="yes" checked="checked" />Auto rotate</label><br/><label for="drstk-slider-nav"><input type="checkbox" name="drstk-slider-nav" id="drstk-slider-nav" value="yes" checked="checked" />Next/Prev Buttons</label><br/><label for="drstk-slider-pager"><input type="checkbox" name="drstk-slider-pager" id="drstk-slider-pager" value="yes" checked="checked" />Dot Pager</label><br/><label for="drstk-slider-speed">Rotation Speed<input type="text" name="drstk-slider-speed" id="drstk-slider-speed" /></label><br/><label for="drstk-slider-timeout">Time between Slides<input type="text" name="drstk-slider-timeout" id="drstk-slider-timeout" /></label><br/><label for="drstk-slider-caption"><input type="checkbox" name="drstk-slider-caption" id="drstk-slider-caption" value="yes" checked="checked"/>Enable captions</label><br/><div class="drstk-slider-metadata"><h5>Metadata for Captions</h5><label><input type="checkbox" name="Title"/>Title</label><br/><label><input type="checkbox" name="Contributor"/>Creator</label><br/><label><input type="checkbox" name="Date created"/>Date Created</label><br/><label><input type="checkbox" name="Abstract/Description"/>Abstract/Description</label></div></div><div class="drs-items"></div><ol id="sortable-gallery-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-gallery" />');
      get_updated_items(search_params, 'gallery');
    }
  });
 
  //click the main add drs button
  $("body").on('click', "#insert-drs",  function(){
+  //  $("#TB_ajaxContent #tabs-1 .drs-items").html("Loading...");
    get_updated_items(search_params, 'tile');
  });
 
@@ -108,13 +109,13 @@
    });
 
    function get_updated_items(search_params, name){
-     $("#TB_ajaxContent #tabs-"+tab+" .drs-items").html("Loading...");
      var tile_html = '';
      var tab = 0;
      if(name == 'tile'){ tab = 1}
      if(name == 'gallery'){ tab = 2}
      if(name == 'item'){ tab = 3}
      if(name == 'video'){ tab = 4}
+     $("#TB_ajaxContent #tabs-"+tab+" .drs-items").html("Loading...");
      $.post(tile_ajax_obj.ajax_url, {
         _ajax_nonce: tile_ajax_obj.tile_ajax_nonce,
          action: "get_tile_code",
@@ -123,16 +124,25 @@
         var data = $.parseJSON(data);
         if (data.response.response.numFound > 0){
           $("#sortable-"+name+"-list").children("li").remove();
+          var media_count = 0;
           $.each(data.response.response.docs, function(id, item){
             if (item.active_fedora_model_ssi == 'CoreFile'){
-              $("#sortable-"+name+"-list").append('<li style="display:inline-block;padding:10px;"><label for="drstile-' + id + '"><img src="https://repository.library.northeastern.edu' + item.thumbnail_list_tesim[0] + '" width="150" /><br/><input id="drstile-' + id + '" type="checkbox" class="drstk-include-'+name+'" value="' + item.id + '" /><span style="width:100px;display:inline-block">' + item.title_ssi + '</span></label></li>');
+              if (tab == 4){
+                if (item.canonical_class_tesim == 'AudioFile' || item.canonical_class_tesim == 'VideoFile'){
+                  $("#sortable-"+name+"-list").append('<li style="display:inline-block;padding:10px;"><label for="drstile-' + id + '"><img src="https://repository.library.northeastern.edu' + item.thumbnail_list_tesim[0] + '" width="150" /><br/><input id="drstile-' + id + '" type="checkbox" class="drstk-include-'+name+'" value="' + item.id + '" /><span style="width:100px;display:inline-block">' + item.title_ssi + '</span></label></li>');
+                  media_count++;
+                  data.pagination.table.num_pages = Math.ceil(media_count / 10);
+                }
+              } else {
+                $("#sortable-"+name+"-list").append('<li style="display:inline-block;padding:10px;"><label for="drstile-' + id + '"><img src="https://repository.library.northeastern.edu' + item.thumbnail_list_tesim[0] + '" width="150" /><br/><input id="drstile-' + id + '" type="checkbox" class="drstk-include-'+name+'" value="' + item.id + '" /><span style="width:100px;display:inline-block">' + item.title_ssi + '</span></label></li>');
+              }
             }
           });
           update_pagination(tab, data);
         } else {
           $("#TB_ajaxContent #tabs-"+tab+" .drs-items").html("No results were retrieved for your query. Please try a different query.");
         }
-        $("#TB_ajaxContent #tabs-"+tab+" .drs-items").prepend('<a href="#" id="drstk_insert_'+name+'" class="button" title="Insert shortcode">Insert shortcode</a>').append("<p>Drag and drop the thumbnails in the order you want them to appear in the playlist. You can un-check the images you wish to exclude entirely.</p>");
+        $("#TB_ajaxContent #tabs-"+tab+" .drs-items").html('<a href="#" id="drstk_insert_'+name+'" class="button" title="Insert shortcode">Insert shortcode</a><p>Drag and drop the thumbnails in the order you want them to appear in the playlist. You can un-check the images you wish to exclude entirely.</p>');
 
       });
       $("#sortable-"+name+"-list").sortable();
