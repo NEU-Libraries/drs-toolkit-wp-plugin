@@ -202,7 +202,7 @@ $TEMPLATE = array(
       <br/>
       <table>
       <tr>
-      <td><a class="button" id="drstk-import" href="#">Import Items from the DRS</a></td>
+      <td><a class="button" id="drstk-import" href="#" disabled="true">Import Items from the DRS</a></td>
       </tr>
       </table>
      <pre>
