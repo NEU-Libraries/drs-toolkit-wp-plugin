@@ -69,3 +69,5 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
 13. Go to Appearance > Themes and activate DSG (Minamaze Child Theme)
 
 14. Go to Appearance > Theme Options > Header and enable search then save changes
+
+15. Go to Settings > Reading and Set a static page for underneath the specialized content for the homepage.
