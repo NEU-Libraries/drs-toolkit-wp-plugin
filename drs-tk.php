@@ -197,8 +197,8 @@ $TEMPLATE = array(
       <input type="hidden" name="action" value="update" />
 
       <input type="hidden" name="page_options" value="drstk_collection, drstk_search_title, drstk_search_creator, drstk_search_date, drstk_search_abstract, drstk_browse_title, drstk_browse_creator, drstk_browse_abstract, drstk_browse_date, drstk_search_page_title, drstk_browse_page_title, drstk_collection_page_title, drstk_collections_page_title" />
-
-      <input type="submit" name="Submit" value="Update" /></form></div>
+      <br/><br/>
+      <input type="submit" name="Submit" value="Update" class="button" style="font-size: 16px;padding: 10px 20px;height: auto;"/></form></div>
       <br/>
       <table>
       <tr>
