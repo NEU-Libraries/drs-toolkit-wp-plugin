@@ -71,19 +71,27 @@ jQuery(document).ready(function($) {
         pagination += "disabled'><span><<</span>";
       }
       pagination += "</li>";
+      var ellipsis = 0;
       for (var i = 1; i <= data.num_pages; i++) {
         if (data.current_page == i){
           var pagination_class = 'current';
         } else {
           var pagination_class = '';
         }
-        pagination += "<li class='"+pagination_class+"'>";
         if (data.current_page == i) {
-          pagination += "<span>" + i + "</span>";
-        } else {
-          pagination += "<a href='#'>" + i + "</a>";
+          pagination += "<li class='"+pagination_class+"'><span>" + i + "</span>";
+        } else{
+          if(i <=1 || (data.current_page && i >= data.current_page -2 && i <= data.current_page + 2) || i > data.num_pages -1){
+            pagination += "<li class='"+pagination_class+"'><a href='#'>" + i + "</a>";
+          } else {
+            ellipsis++;
+          }
         }
         pagination += "</li>";
+        if (ellipsis > 0 && (i >= data.num_pages -1 || i <= 2 || (data.current_page && i <= data.num_pages -2) )){
+          pagination += "<span class='ellipsis'>...</span>";
+          ellipsis = 0;
+        }
       }
       pagination += "<li class='";
       if (data.current_page == data.num_pages){
