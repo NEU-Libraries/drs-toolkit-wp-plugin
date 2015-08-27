@@ -104,28 +104,34 @@ jQuery(document).ready(function($) {
     $.each(data.facet_fields, function(facet, facet_vals){
       var facet_name = titleize(facet); //need to prettize this
       var facet_values = '';
-      if (facet_vals.length > 0) {
+      if (Object.keys(facet_vals).length > 0) {
         var this_facet, this_facet_name;
         var facet_modal = facet_modal_vals = '';
-        $.each(facet_vals, function(index, val_q) {
-          if (index % 2 != 0) { //odd index means it is a count for a specific facet value
-            var this_facet_count = val_q;
-          } else { //even or 0 index means it is a name of a facet value
-            this_facet_name = val_q;
-          }
+        var i=1;
+        var facet_array = [];
+        $.each(facet_vals,function(index, val_q){
+          facet_array.push({v:index, k:val_q});
+        });
+        facet_array.sort(function(a,b){
+           if(a.k > b.k){ return -1}
+            if(a.k < b.k){ return 1}
+              return 0;
+        });
+        $.each(facet_array, function(index, val_q) {
+            var this_facet_count = val_q.k;
+            this_facet_name = val_q.v;
           if (this_facet_count != undefined) {
             this_facet = "<a href='#' class='drs-facet-val' ><div class='three_fourth'>"+this_facet_name+"</div><div class='one_fourth last'>"+this_facet_count+"</div></a>";
-            if (index < 10){
+            if (i <= 5){
               facet_values += this_facet;
-              facet_modal_vals += this_facet;
-            } else {
-              facet_modal_vals += this_facet;
             }
+              facet_modal_vals += this_facet;
           }
+          i++;
         });
         facet_modal = '<button type="button" class="themebutton" data-toggle="modal" data-target="#drs_modal_'+facet+'">More '+facet_name+'s</button><div class="modal fade hide" id="drs_modal_'+facet+'"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">All '+facet_name+'s</h4></div><div class="modal-body">'+facet_modal_vals+'</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div><!-- /.modal-content --></div><!-- /.modal-dialog --></div><!-- /.modal -->';
         facet_html += "<div id='drs_"+facet+"' class='drs-facet'><b class='drs-facet-name'>" + facet_name + "</b>"+facet_values;
-        if (facet_vals.length > 10){
+        if (Object.keys(facet_vals).length > 5){
           facet_html += facet_modal;
         }
         facet_html += "</div>";
@@ -142,7 +148,7 @@ jQuery(document).ready(function($) {
     $.each(data.docs, function(doc, doc_vals){
       var title, abstract, creator, date = '';
       var thumbnail = [];
-      doc_vals.title_ssi? title = doc_vals.title_ssi : "";
+      doc_vals.title_info_title_ssi? title = doc_vals.title_info_title_ssi : "";
       doc_vals.abstract_tesim? abstract = doc_vals.abstract_tesim : "";
       doc_vals.creator_tesim? creator = doc_vals.creator_tesim : "";
       doc_vals.thumbnail_list_tesim? thumbnail = doc_vals.thumbnail_list_tesim : "";

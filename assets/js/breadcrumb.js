@@ -30,7 +30,7 @@ jQuery(document).ready(function($) {
   }
   function parse_breadcrumb(data){
     var doc_vals = data.docs[0]
-    var title = doc_vals.title_ssi;
+    var title = doc_vals.title_info_title_ssi;
     var parent = '';
     var object_type = doc_vals.active_fedora_model_ssi;
     if (object_type == 'CoreFile'){

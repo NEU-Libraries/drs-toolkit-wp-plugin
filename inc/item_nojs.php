@@ -44,7 +44,7 @@ function get_this_breadcrumb($breadcrumb_url){
 
 function parse_this_breadcrumb($doc){
   global $collection, $breadcrumb_html;
-  $title = $doc->title_ssi;
+  $title = $doc->title_info_title_ssi;
   $object_type = $doc->active_fedora_model_ssi;
   if ($object_type == 'CoreFile'){
     $object_url = '/item/'.$doc->id;
