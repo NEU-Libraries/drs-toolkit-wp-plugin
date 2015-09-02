@@ -70,4 +70,4 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
 
 14. Go to Appearance > Theme Options > Header and enable search then save changes
 
-15. Go to Settings > Reading and Set a static page for underneath the specialized content for the homepage.
+15. Go to Settings > Discussion and uncheck the box that says 'Allow people to post comments on new articles' to disable comments by default
