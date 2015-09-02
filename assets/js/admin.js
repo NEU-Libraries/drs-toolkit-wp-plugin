@@ -197,7 +197,7 @@
          shortcode += ' timeout="'+$("#drstk-slider-timeout").val()+'"';
        }
        var metadata = [];
-       $(this).parent(".drs-items").siblings("div.tile-options").find(".drstk-slider-metadata input[type='checkbox']:checked").each(function(){
+       $(this).parent(".drs-items").siblings("div.gallery-options").find(".drstk-slider-metadata input[type='checkbox']:checked").each(function(){
          metadata.push($(this).attr('name'));
        });
        if (metadata.length > 0) {shortcode += ' metadata="'+metadata+'"';}
