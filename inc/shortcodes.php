@@ -106,7 +106,7 @@ function thickbox_styles() {
             }
             .ui-tabs.ui-tabs-vertical .ui-tabs-panel {
                 float: left;
-                width: 39em;
+                width: 38em;
                 background:#FFF;
                 padding:26px;
                 max-height:597px;
