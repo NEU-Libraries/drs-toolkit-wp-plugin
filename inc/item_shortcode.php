@@ -10,7 +10,7 @@ function drstk_item( $atts ){
   if (in_array("Large Image", $data->content_objects)){
     $master = $data->content_objects['Large Image'];
   }
-  $img_html = "<img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
+  $img_html = "<a href='".site_url()."/item/".$atts['id']."'><img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
   if (isset($atts['zoom']) && $atts['zoom'] == 'on'){
     $img_html .= " data-zoom-image='".$master."' data-zoom='on'";
     if (isset($atts['zoom_position'])){
@@ -44,7 +44,7 @@ function drstk_item( $atts ){
       $img_html .= $field[0] . "<br/>";
     }
   }
-  $img_html .= "</div>";
+  $img_html .= "</div></a>";
   return $img_html;
 }
 
