@@ -1,4 +1,5 @@
 jQuery(document).ready(function($) {
+  $(".breadcrumbs").children("li").remove();
   var q = '';
   q = GetURLParameter(window.location.search.substring(1), 'q');
   var per_page = 10;

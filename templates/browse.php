@@ -19,7 +19,6 @@ $view = quest_get_view();
 				<div id="primary" class="content-area col-md-12">
 					<main id="main" class="site-main" role="main">
 
-						<div id="drs-breadcrumbs" class="breadcrumb"></div>
 						<div id="drs-content" class="container">
 							<div id="drs-loading"></div>
 							<div id="drs-selection" class="hide hidden">You've selected: </div>
