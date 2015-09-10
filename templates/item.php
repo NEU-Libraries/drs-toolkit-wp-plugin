@@ -18,17 +18,17 @@ $url = site_url() . "/" . $request[2] . "/" . $request[3] . "?js=false";
 ?>
 </noscript>
 
-	<div id="primary" class="content-area">
-		<main id="main" class="site-main" role="main">
+	<div id="primary" class="content-area container">
+		<main id="main" class="site-main row" role="main">
 
 
-<div id="drs-breadcrumbs"></div>
-<div id="drs-content">
+<div id="drs-breadcrumbs" class="breadcrumb"></div>
+<div id="drs-content" class="row">
   <div id="drs-loading"></div>
-  <div id="drs-item-left" class="one_half">
+  <div id="drs-item-left" class="col-sm-6 one_half">
 		<img id="drs-item-img"/>
 	</div>
-  <div id="drs-item-right" class="one_half last">
+  <div id="drs-item-right" class="col-sm-6 last">
 		<div id="drs-item-details"></div>
 	</div>
 </div><!-- #drs-content -->
