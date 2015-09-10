@@ -39,9 +39,6 @@ $view = quest_get_view();
 
 				<div id="primary" class="content-area single col-md-12">
 					<main id="main" class="site-main" role="main">
-              <!-- <h1 class="post-title entry-title"></h1> -->
-
-            <div id="drs-breadcrumbs" class="breadcrumb"></div>
             <div id="drs-content" class="row">
               <div id="drs-loading"></div>
               <div id="drs-item-left" class="col-sm-6 one_half">
