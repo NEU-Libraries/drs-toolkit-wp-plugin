@@ -13,7 +13,7 @@ jQuery(document).ready(function($) {
   if ((q) && (q != '')){
     $("#drs-selection").show();
     $("#drs-selection a[data-type='q']").remove();
-    $("#drs-selection").append("<a class='themebutton button btn' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+"</a>");
+    $("#drs-selection .col-md-10").append("<a class='themebutton button btn' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+"</a>");
   }
   if (template == 'collections'){
     params.f['type_sim'] = 'Collection';
@@ -61,8 +61,8 @@ jQuery(document).ready(function($) {
 
   //parses pagination data
   function paginate(data){
-    $("#drs-item-count").html("<div>Displaying " + data.start + " to " + data.end + " of " + data.total_count + "</div>");
-    $("#drs-per-page-div").html("<div>Show <select id='drs-per-page'><option val='10'>10</option><option val='20'>20</option><option val='50'>50</option></select> per page</div>");
+    $("#drs-item-count").html("<h6>Displaying " + data.start + " to " + data.end + " of " + data.total_count + "</h6>");
+    $("#drs-per-page-div").html("<h6>Show <select id='drs-per-page'><option val='10'>10</option><option val='20'>20</option><option val='50'>50</option></select> per page</h6>");
     $("#drs-per-page").val(params.per_page);
     if (data.num_pages > 1) {
       var pagination = "<li class='";
@@ -75,7 +75,7 @@ jQuery(document).ready(function($) {
       var ellipsis = 0;
       for (var i = 1; i <= data.num_pages; i++) {
         if (data.current_page == i){
-          var pagination_class = 'current';
+          var pagination_class = 'active';
         } else {
           var pagination_class = '';
         }
@@ -90,7 +90,7 @@ jQuery(document).ready(function($) {
         }
         pagination += "</li>";
         if (ellipsis > 0 && (i >= data.num_pages -1 || i <= 2 || (data.current_page && i <= data.num_pages -2) )){
-          pagination += "<span class='ellipsis'>...</span>";
+          pagination += "<li class='disabled ellipsis'><span class='ellipsis'>...</span></li>";
           ellipsis = 0;
         }
       }
@@ -130,7 +130,7 @@ jQuery(document).ready(function($) {
             var this_facet_count = val_q.k;
             this_facet_name = val_q.v;
           if (this_facet_count != undefined) {
-            this_facet = "<a href='#' class='drs-facet-val' ><div class='three_fourth col-sm-9'>"+this_facet_name+"</div><div class='one_fourth col-sm-3 last'>"+this_facet_count+"</div></a>";
+            this_facet = "<a href='#' class='drs-facet-val'><div class='three_fourth col-sm-9'>"+this_facet_name+"</div><div class='one_fourth col-sm-3 last'>"+this_facet_count+"</div></a>";
             if (i <= 5){
               facet_values += this_facet;
             }
@@ -240,7 +240,7 @@ jQuery(document).ready(function($) {
     });
     $("#drs-facets a").on("click", function(e){
       e.preventDefault();
-      var facet = $(this).parent().attr("id");
+      var facet = $(this).parents('.drs-facet').attr("id");
       if ($(this).parent().hasClass('modal-body')){
         facet = $(this).parents('.modal').attr('id').substr(10);
         $(this).parents('.modal').modal('hide');
@@ -250,7 +250,7 @@ jQuery(document).ready(function($) {
       var facet_val = $(this).children(".drs-facet-val div:first-of-type").html();
       params.f[facet] = facet_val;
       $("#drs-selection").show();
-      $("#drs-selection").append("<a class='themebutton button btn' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+"</a>");
+      $("#drs-selection .col-md-10").append("<a class='themebutton btn btn-more' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+" <span class='fa fa-close'></span></a>");
       get_data(params);
     });
     $("#drs-selection a").on("click", function(e){
@@ -272,7 +272,7 @@ jQuery(document).ready(function($) {
 
   }
 
-  $("#drs-sort").html("<div>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance</option><option value='full_title_ssi%20asc'>Title A-Z</option><option value='full_title_ssi%20desc'>Title Z-A</option><option value='creator_tesim%20asc'>Creator A-Z</option><option value='creator_tesim%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></div>");
+  $("#drs-sort").html("<h6>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance</option><option value='full_title_ssi%20asc'>Title A-Z</option><option value='full_title_ssi%20desc'>Title Z-A</option><option value='creator_tesim%20asc'>Creator A-Z</option><option value='creator_tesim%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></h6>");
 
   $("#drs-sort-option").on("change", function() {
     params.sort = $(this).val();
