@@ -70,11 +70,8 @@ function ajax_wp_search(){
     $wp_query = new WP_Query( $query_args );
     $rel_query = relevanssi_do_query($wp_query);
     if ( $wp_query->have_posts() ) {
-      	while ( $wp_query->have_posts() ) {
       		$wp_query->the_post();
-          get_template_part( 'content', 'search' );
-      	}
-        thinkup_input_pagination();
+          get_template_part( 'partials/content', 'normal' );
       } else {
         echo "No related content was found";
       }

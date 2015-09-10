@@ -23,6 +23,13 @@ jQuery(document).ready(function($) {
   if (template == 'collection'){
     params.f['fields_parent_id_tesim'] = browse_obj.sub_collection_pid;
   }
+  if (template == 'search'){
+    $("#primary").removeClass('col-md-12').addClass('col-md-9');
+    $("#secondary").show();
+  } else {
+    $("#primary").addClass('col-md-12').removeClass('col-md-9');
+    $("#secondary").hide();
+  }
   get_data(params);
   get_wp_data(params.q);
 
@@ -319,18 +326,21 @@ jQuery(document).ready(function($) {
   			},
   			beforeSend: function ()
   			{
-          $("#sidebar-core").html("Looking for related content...");
+          $("#secondary").html("Looking for related content...");
   			},
   			success: function(data)
   			{
-          $("#sidebar-core").html("<h3 class='widget-title'>Related Content</h3>"+data);
-          $("#sidebar").addClass('drs-sidebar');
-          $("#main").addClass('drs-main');
+          console.log(data);
+          $("#secondary").html("<div class='panel panel-default'><div class='panel-heading'><b>Related Content</b></div><div class='panel-body'>"+data+"</div></div>");
+          $("#secondary").addClass('drs-sidebar');
+          $("#primary").addClass('drs-main');
+          $("#secondary #title-container").hide();
           fix_wp_pagination();
   			},
   			error: function()
   			{
-  				$("#sidebar-core").hide();
+  				$("#secondary").hide();
+          $("#primary").removeClass('col-md-9').addClass('col-md-12');
   			}
   		});
     } else {
@@ -339,7 +349,7 @@ jQuery(document).ready(function($) {
   }
 
   function fix_wp_pagination() {
-    $('#sidebar-core .pag li a').on("click", function(e) {
+    $('#secondary .pagination li a').on("click", function(e) {
       e.preventDefault();
       var wp_page = GetURLParameter($(this).attr('href'), 'paged');
       get_wp_data(params.q, wp_page);
