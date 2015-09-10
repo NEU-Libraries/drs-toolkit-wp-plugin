@@ -23,14 +23,14 @@ $view = quest_get_view();
 							<div id="drs-loading"></div>
 							<div id="drs-selection" class="row" style="display:none"><div class="col-md-2"><h5>You've selected: </h5></div><div class="col-md-10"></div></div>
 						  <div id="drs-browse-header-row" class="row">
-								<div id="drs-item-count" class="one_fourth col-sm-4 col-md-2"></div>
-								<div id="drs-per-page-div" class="one_fourth col-sm-4 col-md-2"></div>
+								<div id="drs-item-count" class="one_fourth col-xs-6 col-sm-4 col-md-2"></div>
+								<div id="drs-per-page-div" class="one_fourth col-xs-6 col-sm-4 col-md-2"></div>
 								<div id="drs-sort" class="one_fourth col-sm-4 col-md-3" style="display:none"></div>
 						  	<div id="drs-pagination" class="one_fourth last col-sm-12 col-md-5"><ul class="pag pagination"></ul></div>
 						  </div><!-- #drs-browse-header-row -->
 							<div class="row">
-								<div id="drs-facets" class="one_fourth col-sm-3 hidden-phone hidden-xs"></div>
-						  	<div id="drs-docs" class="three_fourth col-sm-9 last">
+								<div id="drs-facets" class="one_fourth col-md-3 hidden-phone hidden-xs hidden-sm"></div>
+						  	<div id="drs-docs" class="three_fourth col-md-9 last">
 							</div>
 						  </div>
 						</div><!-- #drs-content -->

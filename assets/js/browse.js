@@ -130,7 +130,7 @@ jQuery(document).ready(function($) {
             var this_facet_count = val_q.k;
             this_facet_name = val_q.v;
           if (this_facet_count != undefined) {
-            this_facet = "<a href='#' class='drs-facet-val'><div class='three_fourth col-sm-9'>"+this_facet_name+"</div><div class='one_fourth col-sm-3 last'>"+this_facet_count+"</div></a>";
+            this_facet = "<a href='#' class='drs-facet-val'><div class='three_fourth col-xs-9'>"+this_facet_name+"</div><div class='one_fourth col-xs-3 last'>"+this_facet_count+"</div></a>";
             if (i <= 5){
               facet_values += this_facet;
             }
@@ -147,7 +147,7 @@ jQuery(document).ready(function($) {
       }
     });
     $("#drs-facets").html(facet_html);
-    $("#drs-facets").before("<button class='themebutton button btn visible-phone hidden-tablet hidden-desktop drs-facet-toggle hidden-mg hidden-lg visible-sm visible-xs'>Show Facets</button>");
+    $("#drs-facets").before("<button class='themebutton button btn visible-phone hidden-tablet hidden-desktop drs-facet-toggle hidden-md hidden-lg visible-sm visible-xs'>Show Facets</button>");
   }//end facetize
 
   //parses actual results
@@ -281,7 +281,7 @@ jQuery(document).ready(function($) {
   });
 
   $("#drs-content").on("click", ".drs-facet-toggle",  function() {
-    $("#drs-facets").toggleClass("hidden-phone visible-phone");
+    $("#drs-facets").toggleClass("hidden-xs hidden-sm visible-sm visible-xs");
     $(".drs-facet-toggle").html($('.drs-facet-toggle').text() == 'Hide Facets' ? 'Show Facets' : 'Hide Facets');
   });
 
