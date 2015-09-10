@@ -23,7 +23,8 @@ jQuery(document).ready(function($) {
 
   function parse_item(data){
     if (data.mods.Title) {
-      $(".page-title").html(data.mods.Title);
+      $("#title-container h3").html(data.mods.Title);
+      $(".post-title").html(data.mods.Title);
     }
     if (data.thumbnails) {
       $("#drs-item-img").attr("src",data.thumbnails[data.thumbnails.length - 1]);
