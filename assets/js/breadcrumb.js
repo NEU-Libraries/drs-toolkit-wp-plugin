@@ -10,6 +10,7 @@ jQuery(document).ready(function($) {
   } else if (template == 'collection'){
     params = {pid:sub_collection_pid};
   }
+  $(".breadcrumbs").children("li").remove();
   get_data(params);
 
   function get_data(params){
@@ -35,11 +36,12 @@ jQuery(document).ready(function($) {
     var object_type = doc_vals.active_fedora_model_ssi;
     if (object_type == 'CoreFile'){
       var object_url = '/item/'+doc_vals.id;
+      $(".breadcrumbs").prepend(" / " + title);
     }
     if (object_type == 'Collection'){
       var object_url = '/collection/'+doc_vals.id;
+      $(".breadcrumbs").prepend(" / " + "<a href='"+site_url+object_url+"'>" + title + "</a>");
     }
-    $("#drs-breadcrumbs").prepend(" > " + "<a href='"+site_url+object_url+"'>" + title + "</a>");
 
     if (doc_vals.fields_parent_id_tesim) {
       parent = doc_vals.fields_parent_id_tesim[0];
@@ -47,7 +49,7 @@ jQuery(document).ready(function($) {
         params.pid = parent;
         get_data(params);
       } else {
-        $("#drs-breadcrumbs").prepend("<a href='"+site_url+"/browse'>Browse</a>");
+        $(".breadcrumbs").prepend("<a href='"+site_url+"/browse'>Browse</a>");
       }
     }
     if ((template == 'collection') && (doc_vals.id == sub_collection_pid)){
