@@ -13,7 +13,7 @@ jQuery(document).ready(function($) {
   if ((q) && (q != '')){
     $("#drs-selection").show();
     $("#drs-selection a[data-type='q']").remove();
-    $("#drs-selection .col-md-10").append("<a class='themebutton button btn' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+"</a>");
+    $("#drs-selection .col-md-10").append("<a class='themebutton btn btn-more' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+" <span class='fa fa-close'></span></a>");
   }
   if (template == 'collections'){
     params.f['type_sim'] = 'Collection';
