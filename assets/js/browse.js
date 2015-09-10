@@ -12,7 +12,7 @@ jQuery(document).ready(function($) {
   if ((q) && (q != '')){
     $("#drs-selection").show();
     $("#drs-selection a[data-type='q']").remove();
-    $("#drs-selection").append("<a class='themebutton' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+"</a>");
+    $("#drs-selection").append("<a class='themebutton button btn' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+"</a>");
   }
   if (template == 'collections'){
     params.f['type_sim'] = 'Collection';
@@ -54,7 +54,7 @@ jQuery(document).ready(function($) {
           $("#drs-content").html("Your query produced no results. Please go back and try a different query. Thanks!");
         }
     }).fail(function() {
-      $("#drs-content").html("<div class='alert error'>There was an error connecting to the data. Please try a different query. Thanks!</div>");
+      $("#drs-content").html("<div class='alert error alert-error'>There was an error connecting to the data. Please try a different query. Thanks!</div>");
     });
   }
 
@@ -129,7 +129,7 @@ jQuery(document).ready(function($) {
             var this_facet_count = val_q.k;
             this_facet_name = val_q.v;
           if (this_facet_count != undefined) {
-            this_facet = "<a href='#' class='drs-facet-val' ><div class='three_fourth'>"+this_facet_name+"</div><div class='one_fourth last'>"+this_facet_count+"</div></a>";
+            this_facet = "<a href='#' class='drs-facet-val' ><div class='three_fourth col-sm-9'>"+this_facet_name+"</div><div class='one_fourth col-sm-3 last'>"+this_facet_count+"</div></a>";
             if (i <= 5){
               facet_values += this_facet;
             }
@@ -137,16 +137,16 @@ jQuery(document).ready(function($) {
           }
           i++;
         });
-        facet_modal = '<button type="button" class="themebutton" data-toggle="modal" data-target="#drs_modal_'+facet+'">More '+facet_name+'s</button><div class="modal fade hide" id="drs_modal_'+facet+'"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">All '+facet_name+'s</h4></div><div class="modal-body">'+facet_modal_vals+'</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div><!-- /.modal-content --></div><!-- /.modal-dialog --></div><!-- /.modal -->';
-        facet_html += "<div id='drs_"+facet+"' class='drs-facet'><b class='drs-facet-name'>" + facet_name + "</b>"+facet_values;
+        facet_modal = '<button type="button" class="themebutton btn btn-more" data-toggle="modal" data-target="#drs_modal_'+facet+'">More '+facet_name+'s</button><div class="modal fade" id="drs_modal_'+facet+'"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">All '+facet_name+'s</h4></div><div class="modal-body">'+facet_modal_vals+'</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div><!-- /.modal-content --></div><!-- /.modal-dialog --></div><!-- /.modal -->';
+        facet_html += "<div id='drs_"+facet+"' class='drs-facet'><div class='panel panel-default'><div class='panel-heading'><b class='drs-facet-name'>" + facet_name + "</b></div><div class='panel-body'>"+facet_values;
         if (Object.keys(facet_vals).length > 5){
           facet_html += facet_modal;
         }
-        facet_html += "</div>";
+        facet_html += "</div></div></div>";
       }
     });
     $("#drs-facets").html(facet_html);
-    $("#drs-facets").before("<button class='themebutton visible-phone hidden-tablet hidden-desktop drs-facet-toggle'>Show Facets</button>");
+    $("#drs-facets").before("<button class='themebutton button btn visible-phone hidden-tablet hidden-desktop drs-facet-toggle hidden-mg hidden-lg visible-sm visible-xs'>Show Facets</button>");
   }//end facetize
 
   //parses actual results
@@ -156,7 +156,7 @@ jQuery(document).ready(function($) {
     $.each(data.docs, function(doc, doc_vals){
       var title, abstract, creator, date = '';
       var thumbnail = [];
-      doc_vals.title_info_title_ssi? title = doc_vals.title_info_title_ssi : "";
+      doc_vals.full_title_ssi? title = doc_vals.full_title_ssi : "";
       doc_vals.abstract_tesim? abstract = doc_vals.abstract_tesim : "";
       doc_vals.creator_tesim? creator = doc_vals.creator_tesim : "";
       doc_vals.thumbnail_list_tesim? thumbnail = doc_vals.thumbnail_list_tesim : "";
@@ -169,13 +169,13 @@ jQuery(document).ready(function($) {
       var this_doc = '';
       if (template == 'search'){
         //search = grid
-        this_doc += "<div class='drs-item'><div class='one_fourth'><a href='"+browse_obj.site_url+this_doc_url+"'>";
+        this_doc += "<div class='drs-item search panel panel-default'><div class='panel-body'><div class='one_fourth col-sm-3'><a href='"+browse_obj.site_url+this_doc_url+"'>";
         if (thumbnail[1]) {
           this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
         } else {
           this_doc += "<div class='dashicons dashicons-portfolio'></div>";
         }
-        this_doc += "</a></div><div class='three_fourth last'>";
+        this_doc += "</a></div><div class='three_fourth col-sm-9 last'>";
         if (search_options.indexOf('title') > -1){
           this_doc += "<h4 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>" + title + "</a></h4>";
         }
@@ -188,29 +188,32 @@ jQuery(document).ready(function($) {
         if (date  && search_options.indexOf('date') > -1){
           this_doc += "<p class='drs-item-date'>" + date + "</p>";
         }
-        this_doc += "</div><div class=''><a href='"+browse_obj.site_url+this_doc_url+"' class='themebutton'>View More</a></div></div>";
+        this_doc += "<div class=''><a href='"+browse_obj.site_url+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";
       } else {
         //browse = tile
-        this_doc += "<div class='drs-item one_third'><div class=''><a href='"+browse_obj.site_url+this_doc_url+"'>";
+        this_doc += "<div class='drs-item browse one_third col-sm-4'><div class='thumbnail'><a href='"+browse_obj.site_url+this_doc_url+"'>";
         if (thumbnail[1]) {
           this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
         } else {
           this_doc += "<div class='dashicons dashicons-portfolio'></div>";
         }
-        this_doc += "</a></div><div class=''>";
+        this_doc += "</a><div class='caption text-center'><h5 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>";
         if (browse_options.indexOf('title') > -1){
-          this_doc += "<h5 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>" + title + "</a></h5>";
+          this_doc += title;
         }
+        this_doc += "</a></h5><h6 class='drs-item-creator'>"
         if (creator && browse_options.indexOf('creator') > -1){
-          this_doc += "<h6>"+ creator + "</h6>";
+          this_doc += creator;
         }
+        this_doc += "</h6><p class='drs-item-abstract'>";
         if (abstract  && browse_options.indexOf('abstract') > -1){
-          this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
+          this_doc += abstract;
         }
+        this_doc += "</p><p class='drs-item-date'>"
         if (date  && browse_options.indexOf('date') > -1){
-          this_doc += "<p class='drs-item-date'>" + date + "</p>";
+          this_doc += date;
         }
-        this_doc += "</div></div>";
+        this_doc += "</p></div></div></div>";
       }
       docs_html += this_doc;
     });
@@ -246,7 +249,7 @@ jQuery(document).ready(function($) {
       var facet_val = $(this).children(".drs-facet-val div:first-of-type").html();
       params.f[facet] = facet_val;
       $("#drs-selection").show();
-      $("#drs-selection").append("<a class='themebutton' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+"</a>");
+      $("#drs-selection").append("<a class='themebutton button btn' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+"</a>");
       get_data(params);
     });
     $("#drs-selection a").on("click", function(e){
@@ -268,7 +271,7 @@ jQuery(document).ready(function($) {
 
   }
 
-  $("#drs-sort").html("<div>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance</option><option value='title_info_title_ssi%20asc'>Title A-Z</option><option value='title_info_title_ssi%20desc'>Title Z-A</option><option value='creator_tesim%20asc'>Creator A-Z</option><option value='creator_tesim%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></div>");
+  $("#drs-sort").html("<div>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance</option><option value='full_title_ssi%20asc'>Title A-Z</option><option value='full_title_ssi%20desc'>Title Z-A</option><option value='creator_tesim%20asc'>Creator A-Z</option><option value='creator_tesim%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></div>");
 
   $("#drs-sort-option").on("change", function() {
     params.sort = $(this).val();
