@@ -47,6 +47,7 @@ function drstk_tiles( $atts ){
   $shortcode = "<div class='freewall' id='freewall' data-type='".$type."'";
   if (isset($atts['cell-height'])){ $shortcode .= " data-cell-height='".$atts['cell-height']."'";} else {$shortcode .= " data-cell-height='200'";}
   if (isset($atts['cell-width'])){ $shortcode .= " data-cell-width='".$atts['cell-width']."'";} else {$shortcode .= " data-cell-width='200'";}
+  if (isset($atts['text-align'])){ $shortcode .= " data-text-align='".$atts['text-align']."'";} else {$shortcode .= " data-text-align='center'";}
   $shortcode .= ">".$img_html."</div>";
   return $shortcode;
 }

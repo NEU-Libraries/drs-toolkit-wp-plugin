@@ -10,7 +10,7 @@
 
   //enables tabs
  $("#tabs").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
- $("#tabs-1").html('<h4>Tile Gallery</h4><br/><label for="search">Search for an item: </label><input type="text" name="search" id="search-tile" /><button class="themebutton" id="search-button-tile">Search</button><br/><button class="tile-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden tile-options"><label for="tile-type">Type Layout Type</label><select name="tile-type" id="drstk-tile-type"><option value="pinterest">Pinterest style with caption below</option><option value="even-row">Even rows with caption on hover</option><option value="square">Even Squares with caption on hover</option></select><br/><label for="cell-height">Cell Height (auto for Pinterest style)</label><input type="number" value="200" name="cell-height"/></label><br/><label for="cell-width">Cell Width</label><input type="number" value="200" name="cell-width"/></label><p>Make the height and width the same for squares</p><div class="drstk-tile-metadata"><h5>Metadata for Captions</h5><label><input type="checkbox" name="Title" checked="checked"/>Title</label><br/><label><input type="checkbox" name="Contributor"/>Creator</label><br/><label><input type="checkbox" name="Date created"/>Date Created</label><br/><label><input type="checkbox" name="Abstract/Description"/>Abstract/Description</label></div></div><div class="drs-items">Loading...</div><ol id="sortable-tile-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-tile" />');
+ $("#tabs-1").html('<h4>Tile Gallery</h4><br/><label for="search">Search for an item: </label><input type="text" name="search" id="search-tile" /><button class="themebutton" id="search-button-tile">Search</button><br/><button class="tile-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden tile-options"><label for="tile-type">Type Layout Type</label><select name="tile-type" id="drstk-tile-type"><option value="pinterest">Pinterest style with caption below</option><option value="even-row">Even rows with caption on hover</option><option value="square">Even Squares with caption on hover</option></select><br/><label for="caption-align">Caption Text Alignment</label><select name="caption-align" id="drstk-tile-caption-align"><option value="center">Center</option><option value="left">Left</option><option value="right">Right</option></select><br/><label for="cell-height">Cell Height (auto for Pinterest style)</label><input type="number" value="200" name="cell-height"/></label><br/><label for="cell-width">Cell Width</label><input type="number" value="200" name="cell-width"/></label><p>Make the height and width the same for squares</p><div class="drstk-tile-metadata"><h5>Metadata for Captions</h5><label><input type="checkbox" name="Title" checked="checked"/>Title</label><br/><label><input type="checkbox" name="Contributor"/>Creator</label><br/><label><input type="checkbox" name="Date created"/>Date Created</label><br/><label><input type="checkbox" name="Abstract/Description"/>Abstract/Description</label></div></div><div class="drs-items">Loading...</div><ol id="sortable-tile-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-tile" />');
 
 
  //enables the tabs to get their content dynamically
@@ -206,7 +206,7 @@
      if(type == 'tile'){
        var tiles = $(".selected-"+type).val();
        shortcode = '[drstk_tiles id="'+tiles+'"';
-      shortcode += ' type="'+$("#TB_ajaxContent #drstk-tile-type").val()+'"';
+       shortcode += ' type="'+$("#TB_ajaxContent #drstk-tile-type").val()+'"';
        var metadata = [];
        $(this).parent(".drs-items").siblings("div.tile-options").find(".drstk-tile-metadata input[type='checkbox']:checked").each(function(){
          metadata.push($(this).attr('name'));
@@ -220,6 +220,7 @@
        if ($.isNumeric(cell_height) && cell_height != 200){
          shortcode += ' cell-height="'+cell_height+'"';
        }
+       shortcode += ' text-align="'+$("#TB_ajaxContent #drstk-tile-caption-align").val()+'"';
        shortcode += ']\n';
      }
      if(type == 'item'){

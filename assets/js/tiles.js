@@ -3,6 +3,7 @@ jQuery(document).ready(function($) {
     var type = $(this).data("type");
     var cell_height = $(this).data("cell-height");
     var cell_width = $(this).data("cell-width");
+    var text_align = $(this).data("text-align");
     if (type == 'pinterest'){
       var wall = new freewall(this);
       wall.reset({
@@ -17,11 +18,12 @@ jQuery(document).ready(function($) {
       wall.container.find(".brick img").load(function() {
         wall.fitWidth();
       });
+      $(this).find(".brick").css("text-align", text_align);
     }
     if (type == 'even-row'){
       var w = 1, html = '', i = 0;
       $(this).find(".cell").each( function(){
-        var temp = "<div class='cell' style='width:{width}px; height: {height}px; background-image: url("+$(this).data("thumbnail")+")'><div class='info'>"+$(this).children(".info").html()+"</div></div>";
+        var temp = "<div class='cell' style='width:{width}px; height: {height}px; background-image: url("+$(this).data("thumbnail")+")'><div class='info'><div>"+$(this).children(".info").html()+"</div></div></div>";
         w = cell_width + cell_height * Math.random() << 0;
         html += temp.replace(/\{height\}/g, cell_height).replace(/\{width\}/g, w);
         i++;
@@ -41,11 +43,12 @@ jQuery(document).ready(function($) {
   		wall.fitWidth();
   		// for scroll bar appear;
   		$(window).trigger("resize");
+      $(this).find(".cell").css("text-align", text_align);
     }
     if (type == 'square'){
       var w = cell_width, h = cell_height, html = '', i = 0;
       $(this).find(".cell").each( function(){
-        var temp = "<div class='cell' style='width:{width}px; height: {height}px; background-image: url("+$(this).data("thumbnail")+")'><div class='info'>"+$(this).children(".info").html()+"</div></div>";
+        var temp = "<div class='cell' style='width:{width}px; height: {height}px; background-image: url("+$(this).data("thumbnail")+")'><div class='info'><div>"+$(this).children(".info").html()+"</div></div></div>";
         html += temp.replace(/\{height\}/g, h).replace(/\{width\}/g, w);
         i++;
       });
@@ -64,6 +67,7 @@ jQuery(document).ready(function($) {
   		wall.fitWidth();
   		// for scroll bar appear;
   		$(window).trigger("resize");
+      $(this).find(".cell").css("text-align", text_align);
     }
   });
 });//end doc ready
