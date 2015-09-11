@@ -25,7 +25,9 @@ function drstk_gallery( $atts ){
          }
          $title = $data->mods->Title[0];
          $creator = $data->mods->Creator[0];
-         $img_html .= "<li><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'  alt='".$title."'></a>";
+         $img_html .= "<div class='item";
+         if (current($images) == $images[0]){ $img_html .= " active";}
+         $img_html .= "'><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'  alt='".$title."'></a>";
          if ($atts['caption'] && $atts['caption'] == "on"){
            $img_metadata = "";
            if (isset($atts['metadata'])){
@@ -35,7 +37,7 @@ function drstk_gallery( $atts ){
                $img_metadata .= $this_field[0] . "<br/>";
              }
            }
-           $img_html .= "<p class='caption'>".$img_metadata."</p>";
+           $img_html .= "<div class='carousel-caption'><a href='".site_url()."/item/".$pid."'>".$img_metadata."</a></div>";
            $img_html .= "<div class='hidden'>";
            $meta = $data->mods;
            foreach($meta as $field){
@@ -49,29 +51,40 @@ function drstk_gallery( $atts ){
            }
            $img_html .= "</div>";
          }
-         $img_html .= "</li>";
+         $img_html .= "</div>";
        } else {
          $img_html .= "There was an error";
        }
    }
-   $slide_data = '';
-   if ($atts['auto'] && $atts['auto'] == 'on'){
-     $slide_data .= " data-auto='true'";
+   if (isset($atts['speed']) && $atts['speed'] > 1){
+     $interval = $atts['speed'];
    }
-   if ($atts['nav'] && $atts['nav'] == 'on'){
-     $slide_data .= " data-nav='true'";
+   if (isset($atts['auto']) && $atts['auto'] == 'on'){
+     if (!isset($interval)){
+      $interval = 5000;
+     }
+   } else if (isset($atts['auto']) && $atts['auto'] == 'off'){
+     $interval = 'false';
    }
+   $rand = rand();
+   $gallery_html = '<div class="carousel slide" id="carousel-'.$rand.'" data-height="'.$height.'" data-width="'.$width.'" data-interval="'.$interval.'">';
    if ($atts['pager'] && $atts['pager'] == 'on'){
-     $slide_data .= " data-pager='true'";
+     $gallery_html .= '<ol class="carousel-indicators">';
+     $i = 0;
+     foreach($images as $id){
+       $gallery_html .= '<li data-target="#carousel-'.$rand.'" data-slide-to="'.$i.'" class="';
+       if ($i == 0){ $gallery_html .= "active";}
+       $gallery_html .= '"></li>';
+       $i++;
+     }
+     $gallery_html .= '</ol>';
    }
-   if ($atts['speed'] && $atts['speed']){
-     $slide_data .= " data-speed='".$atts['speed']."'";
+   $gallery_html .= '<div class="carousel-inner">'.$img_html.'</div>';
+   if ($atts['nav'] && $atts['nav'] == 'on'){
+     $gallery_html .= '<a class="left carousel-control" href="#carousel-'.$rand.'" role="button" data-slide="prev"><i class="glyphicon-chevron-left fa fa-chevron-left" aria-hidden="true"></i><span class="sr-only">Previous</span></a><a class="right carousel-control" href="#carousel-'.$rand.'" role="button" data-slide="next"><i class="glyphicon-chevron-right fa fa-chevron-right" aria-hidden="true"></i><span class="sr-only">Next</span></a>';
    }
-   if ($atts['timeout'] && $atts['timeout']){
-     $slide_data .= " data-timeout='".$atts['timeout']."'";
-   }
-   return '<div class="rslides-drstk" data-height="'.$height.'" data-width="'.$width.'" ><div class="rslidesd-container"><div class="rslidesd-inner"><ul class="slides" '.$slide_data.'>'.$img_html.'</ul></div></div></div><div class="clearboth"></div>';
-
+   $gallery_html .= '</div>';
+   return $gallery_html;
   }
 }
 
