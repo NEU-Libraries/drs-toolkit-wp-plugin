@@ -1,12 +1,14 @@
 jQuery(document).ready(function($) {
   $(".freewall").each(function(){
     var type = $(this).data("type");
+    var cell_height = $(this).data("cell-height");
+    var cell_width = $(this).data("cell-width");
     if (type == 'pinterest'){
       var wall = new freewall(this);
       wall.reset({
         selector: ".brick",
         animate: true,
-        cellW: 200,
+        cellW: cell_width,
         cellH: "auto",
         onResize: function() {
           wall.fitWidth();
@@ -20,8 +22,8 @@ jQuery(document).ready(function($) {
       var w = 1, html = '', i = 0;
       $(this).find(".cell").each( function(){
         var temp = "<div class='cell' style='width:{width}px; height: {height}px; background-image: url("+$(this).data("thumbnail")+")'><div class='info'>"+$(this).children(".info").html()+"</div></div>";
-        w = 200 + 200 * Math.random() << 0;
-        html += temp.replace(/\{height\}/g, 200).replace(/\{width\}/g, w);
+        w = cell_width + cell_height * Math.random() << 0;
+        html += temp.replace(/\{height\}/g, cell_height).replace(/\{width\}/g, w);
         i++;
       });
   		$(this).html(html);
@@ -31,7 +33,7 @@ jQuery(document).ready(function($) {
   			selector: '.cell',
   			animate: true,
   			cellW: 20,
-  			cellH: 200,
+  			cellH: cell_height,
   			onResize: function() {
   				wall.fitWidth();
   			}
@@ -41,7 +43,7 @@ jQuery(document).ready(function($) {
   		$(window).trigger("resize");
     }
     if (type == 'square'){
-      var w = 200, h = 200, html = '', i = 0;
+      var w = cell_width, h = cell_height, html = '', i = 0;
       $(this).find(".cell").each( function(){
         var temp = "<div class='cell' style='width:{width}px; height: {height}px; background-image: url("+$(this).data("thumbnail")+")'><div class='info'>"+$(this).children(".info").html()+"</div></div>";
         html += temp.replace(/\{height\}/g, h).replace(/\{width\}/g, w);
@@ -53,8 +55,8 @@ jQuery(document).ready(function($) {
   		wall.reset({
   			selector: '.cell',
   			animate: true,
-  			cellW: 200,
-  			cellH: 200,
+  			cellW: cell_width,
+  			cellH: cell_height,
   			onResize: function() {
   				wall.refresh();
   			}
