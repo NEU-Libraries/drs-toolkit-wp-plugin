@@ -11,6 +11,9 @@ function drstk_item( $atts ){
     $master = $data->content_objects['Large Image'];
   }
   $img_html = "<a href='".site_url()."/item/".$atts['id']."'><img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
+  if (isset($atts['align'])){
+    $img_html .= " data-align='".$atts['align']."'";
+  }
   if (isset($atts['zoom']) && $atts['zoom'] == 'on'){
     $img_html .= " data-zoom-image='".$master."' data-zoom='on'";
     if (isset($atts['zoom_position'])){
