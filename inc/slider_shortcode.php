@@ -25,9 +25,7 @@ function drstk_gallery( $atts ){
          }
          $title = $data->mods->Title[0];
          $creator = $data->mods->Creator[0];
-         $img_html .= "<div class='item";
-         if (current($images) == $images[0]){ $img_html .= " active";}
-         $img_html .= "'><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'  alt='".$title."'></a>";
+         $img_html .= "<div class='item'><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'  alt='".$title."'></a>";
          if ($atts['caption'] && $atts['caption'] == "on"){
            $img_metadata = "";
            if (isset($atts['metadata'])){
@@ -71,7 +69,14 @@ function drstk_gallery( $atts ){
      $interval = 'false';
    }
    $rand = rand();
-   $gallery_html = '<div class="carousel slide" id="carousel-'.$rand.'" data-height="'.$height.'" data-width="'.$width.'" data-interval="'.$interval.'">';
+   $gallery_html = '<div class="carousel slide" id="carousel-'.$rand.'" data-height="'.$height.'" data-width="'.$width.'" data-interval="'.$interval.'"';
+   if (isset($atts['max-height'])){
+     $gallery_html .= " data-max-height='".$atts['max-height']."'";
+   }
+   if (isset($atts['max-width'])){
+     $gallery_html .= " data-max-width='".$atts['max-width']."'";
+   }
+   $gallery_html .= '>';
    if ($atts['pager'] && $atts['pager'] == 'on'){
      $gallery_html .= '<ol class="carousel-indicators">';
      $i = 0;
