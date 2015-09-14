@@ -37,7 +37,11 @@ function drstk_gallery( $atts ){
                $img_metadata .= $this_field[0] . "<br/>";
              }
            }
-           $img_html .= "<div class='carousel-caption'><a href='".site_url()."/item/".$pid."'>".$img_metadata."</a></div>";
+           $img_html .= "<div class='carousel-caption'";
+           if (isset($atts['caption-align'])){
+             $img_html .= "style='text-align:".$atts['caption-align']."'";
+           }
+           $img_html .= "><a href='".site_url()."/item/".$pid."'>".$img_metadata."</a></div>";
            $img_html .= "<div class='hidden'>";
            $meta = $data->mods;
            foreach($meta as $field){
