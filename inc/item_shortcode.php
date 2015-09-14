@@ -10,10 +10,11 @@ function drstk_item( $atts ){
   if (in_array("Large Image", $data->content_objects)){
     $master = $data->content_objects['Large Image'];
   }
-  $img_html = "<a href='".site_url()."/item/".$atts['id']."'><img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
+  $img_html = "<div class='drs-item'><a href='".site_url()."/item/".$atts['id']."'><img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
   if (isset($atts['align'])){
     $img_html .= " data-align='".$atts['align']."'";
   }
+
   if (isset($atts['zoom']) && $atts['zoom'] == 'on'){
     $img_html .= " data-zoom-image='".$master."' data-zoom='on'";
     if (isset($atts['zoom_position'])){
@@ -35,7 +36,11 @@ function drstk_item( $atts ){
     }
   }
   $img_html .= "/>";
-  $img_html .= "<div class='wp-caption-text drstk-caption'>".$img_metadata."</div>";
+  $img_html .= "<div class='wp-caption-text drstk-caption'";
+  if (isset($atts['caption-align'])){
+    $img_html .= " data-caption-align='".$atts['caption-align']."'";
+  }
+  $img_html .= ">".$img_metadata."</div>";
   $img_html .= "<div class='hidden'>";
   $meta = $data->mods;
   foreach($meta as $field){
@@ -47,7 +52,7 @@ function drstk_item( $atts ){
       $img_html .= $field[0] . "<br/>";
     }
   }
-  $img_html .= "</div></a>";
+  $img_html .= "</div></a></div>";
   return $img_html;
 }
 

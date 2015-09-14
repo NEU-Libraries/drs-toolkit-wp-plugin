@@ -1,7 +1,7 @@
 jQuery(document).ready(function($) {
   $("img.drs-item-img").each(function(){
     if ($(this).data('align')){
-      $(this).parent('a').css("display","block").css("text-align", $(this).data('align'));
+      $(this).parent('a').css("text-align", $(this).data('align'));
     }
     if ($(this).data('zoom') == 'on'){
       if($(this).attr('data-zoom-position') == 'inner'){
@@ -15,6 +15,11 @@ jQuery(document).ready(function($) {
       } else {
         $(this).elevateZoom();
       }
+    }
+  });
+  $(".drstk-caption").each(function(){
+    if($(this).data('caption-align')){
+      $(this).css("text-align", $(this).data('caption-align'));
     }
   })
 });//end doc ready
