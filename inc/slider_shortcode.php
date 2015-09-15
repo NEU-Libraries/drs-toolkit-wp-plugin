@@ -12,7 +12,12 @@ function drstk_gallery( $atts ){
        $data = json_decode($data);
        if (!$data->error){
          $pid = $data->pid;
-         $thumbnail = end($data->thumbnails);
+         if (isset($atts['image-size'])){
+           $num = $atts['image-size']-1;
+         } else {
+           $num = 4;
+         }
+         $thumbnail = $data->thumbnails[$num];
          $this_height = getimagesize($thumbnail);
          $this_height = $this_height[1];
          if ($this_height > $height){

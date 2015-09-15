@@ -5,7 +5,12 @@ function drstk_item( $atts ){
   $url = "https://repository.library.northeastern.edu/api/v1/files/" . $atts['id'];
   $data = get_response($url);
   $data = json_decode($data);
-  $thumbnail = $data->thumbnails[3];
+  if (isset($atts['image-size'])){
+    $num = $atts['image-size']-1;
+  } else {
+    $num = 3;
+  }
+  $thumbnail = $data->thumbnails[$num];
   $master = $data->thumbnails[4];
   if (in_array("Large Image", $data->content_objects)){
     $master = $data->content_objects['Large Image'];

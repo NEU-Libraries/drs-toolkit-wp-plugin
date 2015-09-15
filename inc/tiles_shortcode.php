@@ -11,7 +11,12 @@ function drstk_tiles( $atts ){
     $type = $atts['type'];
     if (!$data->error){
       $pid = $data->pid;
-      $thumbnail = $data->thumbnails[4];
+      if (isset($atts['image-size'])){
+        $num = $atts['image-size']-1;
+      } else {
+        $num = 4;
+      }
+      $thumbnail = $data->thumbnails[$num];
       if (isset($atts['metadata'])){
         $img_metadata = '';
         $metadata = explode(",",$atts['metadata']);
