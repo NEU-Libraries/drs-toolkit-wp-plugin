@@ -70,10 +70,12 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
 
 14. Go to Appearance > Themes and activate DRS Toolkit (Quest Child Theme)
 
-15. Go to Appearance > Customize > Colors > Global. Change Accent Color and  Accent Shade Color to #c00
+15. Go to Appearance > Customize > Layout > Search Results. Change sidebar to none.
 
-16. Click the '<' arrow then Header. Change Secondary Header > Background Color to #c00, Text Color and Social Icon Color to #e2b7b7, Top Border Color and Social Icon Hover Color to #8e0000
+16. Go to Appearance > Customize > Colors > Global. Change Accent Color and  Accent Shade Color to #c00
 
-17. Click the '<' arrow then Main Menu. Change Menu Items > Text Hover/Focus Color and SubMenu Items Hover/Focus Text Color to #c00.
+17. Click the '<' arrow then Header. Change Secondary Header > Background Color to #494949, Text Color and Social Icon Color to #AFAFAF, Top Border Color to #3C3C3C and Social Icon Hover Color to #EFEFEF
 
-18. Click the '<' arrow then Footer. Change Social Icon Hover Color to #c00.
+18. Click the '<' arrow then Main Menu. Change Menu Items > Text Hover/Focus Color and SubMenu Items Hover/Focus Text Color to #c00.
+
+18. Click the '<' arrow then Footer. Change Social Icon Hover Color and Social Icon Hover background color to #c00. Change Secondary Footer Background Color to #3C3C3C.
