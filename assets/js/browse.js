@@ -111,6 +111,7 @@ jQuery(document).ready(function($) {
       $("#drs-pagination ul.pag").html(pagination);
     } else {
       $("#drs-pagination ul.pag").html("");
+      $("#drs-pagination").hide();
     }
   }//end paginate
 
@@ -169,6 +170,7 @@ jQuery(document).ready(function($) {
       doc_vals.creator_tesim? creator = doc_vals.creator_tesim : "";
       doc_vals.thumbnail_list_tesim? thumbnail = doc_vals.thumbnail_list_tesim : "";
       doc_vals.origin_info_date_created_tesim? date = doc_vals.origin_info_date_created_tesim : "";
+      doc_vals.canonical_class_tesim? klass = doc_vals.canonical_class_tesim : "";
       if (doc_vals.active_fedora_model_ssi == 'Collection') {
         this_doc_url = '/collection/' + doc_vals.id;
       } else if (doc_vals.active_fedora_model_ssi == 'CoreFile') {
@@ -177,13 +179,13 @@ jQuery(document).ready(function($) {
       var this_doc = '';
       if (template == 'search'){
         //search = grid
-        this_doc += "<div class='drs-item search panel panel-default'><div class='panel-body'><div class='one_fourth col-sm-3'><a href='"+browse_obj.site_url+this_doc_url+"'>";
+        this_doc += "<div class='drs-item search panel panel-default'><div class='panel-body'><div class='one_fourth col-sm-3'><figure><a href='"+browse_obj.site_url+this_doc_url+"'>";
         if (thumbnail[1]) {
           this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
         } else {
           this_doc += "<div class='fa fa-folder-open-o'></div>";
         }
-        this_doc += "</a></div><div class='three_fourth col-sm-9 last'>";
+        this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure></div><div class='three_fourth col-sm-9 last'>";
         if (search_options.indexOf('title') > -1){
           this_doc += "<h4 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>" + title + "</a></h4>";
         }
@@ -199,13 +201,13 @@ jQuery(document).ready(function($) {
         this_doc += "<div class=''><a href='"+browse_obj.site_url+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";
       } else {
         //browse = tile
-        this_doc += "<div class='drs-item browse one_third col-sm-4'><div class='thumbnail'><a href='"+browse_obj.site_url+this_doc_url+"'>";
+        this_doc += "<div class='drs-item browse one_third col-sm-4'><div class='thumbnail'><figure><a href='"+browse_obj.site_url+this_doc_url+"'>";
         if (thumbnail[1]) {
           this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
         } else {
           this_doc += "<div class=fa fa-folder-open-o'></div>";
         }
-        this_doc += "</a><div class='caption text-center'><h5 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>";
+        this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure><div class='caption text-center'><h5 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>";
         if (browse_options.indexOf('title') > -1){
           this_doc += title;
         }
