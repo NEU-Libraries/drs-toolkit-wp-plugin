@@ -163,7 +163,7 @@ jQuery(document).ready(function($) {
     //do grid or list depending on if template is search or browse
     var docs_html = '';
     $.each(data.docs, function(doc, doc_vals){
-      var title, abstract, creator, date = '';
+      var title, abstract, creator, date, klass = '';
       var thumbnail = [];
       doc_vals.full_title_ssi? title = doc_vals.full_title_ssi : "";
       doc_vals.abstract_tesim? abstract = doc_vals.abstract_tesim : "";
