@@ -39,7 +39,15 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
 
   ```
     <?php
-      echo "<script type='text/javascript'>[YOUR GOOGLE ANALYTICS CODE]</script>";
+      echo "<script>[YOUR GOOGLE ANALYTICS CODE]
+      function add_google_tracking(){
+        jQuery('.button').on('click', function() {
+          ga('send', 'event', jQuery(this).data('label'), 'click', jQuery(this).data('pid'));
+          console.log('send', 'event', jQuery(this).data('label'), 'click', jQuery(this).data('pid'));
+        });
+      }
+      </script>
+      ";
   ```
 
 7. If the project is going to need to override styles, add a overrides.css file (which is gitignored so changes won't be overwritten)

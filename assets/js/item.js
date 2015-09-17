@@ -115,7 +115,13 @@ jQuery(document).ready(function($) {
     });
     $("#drs-item-details").append("<br/><h4>Downloads</h4>"+download_links);
     function make_object_url(object_array){
-      return " <a href='"+object_array[0]+"' target='_blank' class='themebutton button btn'>"+object_array[1]+"</a> ";
+      return " <a href='"+object_array[0]+"' target='_blank' class='themebutton button btn' data-label='download' data-pid='"+data.pid+"'>"+object_array[1]+"</a> ";
+    }
+    if (isFunction(add_google_tracking)){
+      add_google_tracking();
     }
   }
+  function isFunction(possibleFunction) {
+    return typeof(possibleFunction) === typeof(Function);
+   }
 });
