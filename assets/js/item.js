@@ -98,7 +98,11 @@ jQuery(document).ready(function($) {
           }
         }
       } else {
-        data_html += value;
+        if (value[0].indexOf('http://') == 0){
+          data_html += '<a href="'+value[0]+'" target="_blank">'+value[0]+'</a>';
+        } else {
+          data_html += value;
+        }
       }
       data_html += "</div>";
     });
