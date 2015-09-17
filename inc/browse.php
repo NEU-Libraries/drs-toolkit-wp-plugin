@@ -14,7 +14,11 @@ function browse_ajax_handler() {
     $data = json_encode($data);
     wp_send_json($data);
   } else {
-    $url = "https://repository.library.northeastern.edu/api/v1/search/".$collection."?";
+    if ($_POST['params']['collection']){
+      $url = "https://repository.library.northeastern.edu/api/v1/search/".$_POST['params']['collection']."?";
+    } else {
+      $url = "https://repository.library.northeastern.edu/api/v1/search/".$collection."?";
+    }
     if ($_POST['params']['q'] ){
       $url .= "q=". urlencode(sanitize_text_field($_POST['params']['q']));
     }

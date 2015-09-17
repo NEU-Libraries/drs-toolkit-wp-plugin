@@ -21,7 +21,7 @@ jQuery(document).ready(function($) {
     $("#drs-docs").css("width", "100%");
   }
   if (template == 'collection'){
-    params.f['fields_parent_id_tesim'] = browse_obj.sub_collection_pid;
+    params.collection = browse_obj.sub_collection_pid;
   }
   if (template == 'search'){
     $("#primary").removeClass('col-md-12').addClass('col-md-9');
