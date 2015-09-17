@@ -170,7 +170,8 @@ jQuery(document).ready(function($) {
       doc_vals.creator_tesim? creator = doc_vals.creator_tesim : "";
       doc_vals.thumbnail_list_tesim? thumbnail = doc_vals.thumbnail_list_tesim : "";
       doc_vals.origin_info_date_created_tesim? date = doc_vals.origin_info_date_created_tesim : "";
-      doc_vals.canonical_class_tesim? klass = doc_vals.canonical_class_tesim : "";
+      doc_vals.active_fedora_model_ssi? klass = doc_vals.active_fedora_model_ssi : "";
+      if (klass == 'CoreFile'){klass = get_short_name(doc_vals.canonical_class_tesim);}
       if (doc_vals.active_fedora_model_ssi == 'Collection') {
         this_doc_url = '/collection/' + doc_vals.id;
       } else if (doc_vals.active_fedora_model_ssi == 'CoreFile') {
@@ -356,6 +357,25 @@ jQuery(document).ready(function($) {
       var wp_page = GetURLParameter($(this).attr('href'), 'paged');
       get_wp_data(params.q, wp_page);
     });
+  }
+
+  function get_short_name(klass){
+    if (klass == 'AudioFile'){
+      klass = 'Audio';
+    } else if (klass == 'ImageLargeFile' || klass == 'ImageMasterFile' || klass == 'ImageMediumFile' || klass == 'ImageSmallFile' || klass == 'ImageThumbnailFile'){
+      klass = 'Image';
+    } else if (klass == 'MsexcelFile'){
+      klass = 'Dataset';
+    } else if (klass == 'MspowerpointFile'){
+      klass = 'Presentation';
+    } else if (klass == 'MswordFile' || klass == 'PdfFile' || klass == 'TextFile'){
+      klass = 'Document';
+    } else if (klass == 'VideoFile'){
+      klass = 'Video';
+    } else if (klass == 'ZipFile'){
+      klass = 'Zip';
+    }
+    return klass;
   }
 
 });//end doc ready
