@@ -89,20 +89,21 @@ jQuery(document).ready(function($) {
     var data_html = '';
     $.each(data.mods, function(key,value){
       data_html += "<div><b>"+key+"</b></div><div>";
-      if (value.length > 1){
+      if (value.length > 0){
         var i = 0;
         for (i; i<value.length; i++){
-          data_html += value[i];
+          console.log(value[i]);
+          if (value[i].indexOf('http://') == 0){
+            data_html += '<a href="'+value[i]+'" target="_blank">'+value[i]+'</a>';
+          } else {
+            data_html += value[i];
+          }
           if (i != value.length-1){
             data_html += ", ";
           }
         }
       } else {
-        if (value[0].indexOf('http://') == 0){
-          data_html += '<a href="'+value[0]+'" target="_blank">'+value[0]+'</a>';
-        } else {
-          data_html += value;
-        }
+        data_html += value;
       }
       data_html += "</div>";
     });
