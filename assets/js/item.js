@@ -88,7 +88,7 @@ jQuery(document).ready(function($) {
     }
     var data_html = '';
     $.each(data.mods, function(key,value){
-      data_html += "<div><b>"+key+"</b></div><div>";
+      data_html += "<div class='drs-field-label'><b>"+key+"</b></div><div class='drs-field-value'>";
       if (value.length > 0){
         var i = 0;
         for (i; i<value.length; i++){
