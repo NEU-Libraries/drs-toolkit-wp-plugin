@@ -86,4 +86,6 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
 
 18. Click the '<' arrow then Main Menu. Change Menu Items > Text Hover/Focus Color and SubMenu Items Hover/Focus Text Color to #c00.
 
-18. Click the '<' arrow then Footer. Change Social Icon Hover Color and Social Icon Hover background color to #c00. Change Secondary Footer Background Color to #3C3C3C.
+19. Click the '<' arrow then Footer. Change Social Icon Hover Color and Social Icon Hover background color to #c00. Change Secondary Footer Background Color to #3C3C3C.
+
+20. Go to Pages > Delete the 'Sample Page'. Go to Posts > Delete the 'Hello World'.
