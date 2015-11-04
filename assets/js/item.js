@@ -27,7 +27,11 @@ jQuery(document).ready(function($) {
       $(".post-title").html(data.mods.Title);
     }
     if (data.thumbnails) {
-      $("#drs-item-img").attr("src",data.thumbnails[data.thumbnails.length - 1]);
+      if ($(window).width() < 900){
+        $("#drs-item-img").attr("src",data.thumbnails[data.thumbnails.length - 2]);
+      } else {
+        $("#drs-item-img").attr("src",data.thumbnails[data.thumbnails.length - 1]);
+      }
     }
     console.log(data.canonical_object[0][1]);
     console.log(data.canonical_object[0][0]);
