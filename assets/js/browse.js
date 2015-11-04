@@ -138,7 +138,7 @@ jQuery(document).ready(function($) {
             var this_facet_count = val_q.k;
             this_facet_name = val_q.v;
           if (this_facet_count != undefined) {
-            this_facet = "<a href='#' class='drs-facet-val row'><div class='three_fourth col-xs-9'>"+this_facet_name+"</div><div class='one_fourth col-xs-3 last'>"+this_facet_count+"</div></a>";
+            this_facet = "<a href='#' class='drs-facet-val row'><div class='three_fourth col-xs-8'>"+this_facet_name+"</div><div class='one_fourth col-xs-4 last'>"+this_facet_count+"</div></a>";
             if (i <= 5){
               facet_values += this_facet;
             }
