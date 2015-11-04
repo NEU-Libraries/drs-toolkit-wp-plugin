@@ -27,15 +27,17 @@ jQuery(document).ready(function($) {
       $(".post-title").html(data.mods.Title);
     }
     if (data.thumbnails) {
-      $("#drs-item-img").attr("src",data.thumbnails[data.thumbnails.length - 1]);
+      $("#drs-item-img").attr("src",data.thumbnails[data.thumbnails.length - 2]);
     }
     console.log(data.canonical_object[0][1]);
     console.log(data.canonical_object[0][0]);
     if (data.canonical_object[0][1] == 'Master Image'){
       var canonical_image = data.canonical_object[0][0];
-      $("#drs-item-img").attr('data-zoom-image', canonical_image);
-      $("#drs-item-img").elevateZoom();
+      $("#drs-item-img").attr('data-zoom-image', data.thumbnails[data.thumbnails.length - 1]);
+    } else {
+      $("#drs-item-img").attr('data-zoom-image', data.thumbnails[data.thumbnails.length - 1]);
     }
+    $("#drs-item-img").elevateZoom();
     if (data.canonical_object[0][1] == 'PDF'){
       if (data.mods.Location && data.mods.Location[0].indexOf("issuu") > -1){
         var location_link = String(data.mods.Location[0]);
@@ -118,11 +120,11 @@ jQuery(document).ready(function($) {
     function make_object_url(object_array){
       return " <a href='"+object_array[0]+"' target='_blank' class='themebutton button btn' data-label='download' data-pid='"+data.pid+"'>"+object_array[1]+"</a> ";
     }
-    // if (isFunction(add_google_tracking)){
-    //   add_google_tracking();
-    // }
+    if (isFunction(add_google_tracking)){
+      add_google_tracking();
+    }
   }
-  // function isFunction(possibleFunction) {
-    // return typeof(possibleFunction) === typeof(Function);
-  //  }
+  function isFunction(possibleFunction) {
+    return typeof(possibleFunction) === typeof(Function);
+   }
 });
