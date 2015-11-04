@@ -491,6 +491,6 @@ add_filter( 'attachment_link', 'drstk_attachment_link', 20, 2 );
 /*fix for weird jumpiness in wp admin menu*/
 function fix_admin_head() {
 	echo "<script type='text/javascript'>jQuery(window).load(function(){jQuery('#adminmenuwrap').hide().show(0);});</script>";
-  echo "<style>#postimagediv{display:none !important;}";
+  echo "<style>#postimagediv, #start-pt-pb-tour{display:none !important;}";
 }
 add_action( 'admin_head', 'fix_admin_head' );
