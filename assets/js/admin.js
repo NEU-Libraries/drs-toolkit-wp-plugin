@@ -20,7 +20,7 @@
    search_params.q = '';
    search_params.page = 1;
    if (id == 4){
-     $("#TB_ajaxContent #tabs-4").html('<div class="drs-items"></div><ol id="sortable-video-list"></ol><div class="drs-pagination"></div>');
+     $("#TB_ajaxContent #tabs-4").html('<div class="drs-items"></div><button class="video-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden video-options"><label for="drstk-video-height">Height: <input type="text" name="drstk-video-height" id="drstk-video-height" />(Enter in pixels or %, Default is 270)</label><br/><label for="drstk-video-width">Width: <input type="text" name="drstk-video-width" id="drstk-video-width" />(Enter in pixels or %, Default is 100%)</label><br/></div><ol id="sortable-video-list"></ol><div class="drs-pagination"></div>');
      $("#TB_ajaxContent #tabs-4").prepend('<h4>Media Playlist</h4><input type="hidden" class="selected-video" />');
      get_updated_items(search_params, 'video');
    }
@@ -265,7 +265,12 @@
      }
      if(type == 'video'){
         var videos = $(".selected-"+type).val();
-        shortcode = '[drstk_collection_playlist id="'+videos+'"]\n';
+        shortcode = '[drstk_collection_playlist id="'+videos+'"';
+        var width = $(this).parent(".drs-items").siblings("div.video-options").find("input[name='drstk-video-width']").val();
+        shortcode += ' width="'+width+'"';
+        var height = $(this).parent(".drs-items").siblings("div.video-options").find("input[name='drstk-video-height']").val();
+        shortcode += ' height="'+height+'"';
+        shortcode += ']\n';
      }
     window.wp.media.editor.insert(shortcode);
    })

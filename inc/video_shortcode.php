@@ -4,6 +4,16 @@ add_shortcode( 'drstk_collection_playlist', 'drstk_collection_playlist' );
 function drstk_collection_playlist($atts){
     $collection = explode(', ', $atts['id']);
     $playlists = '';
+    if (isset($atts['height'])){
+      $height = $atts['height'];
+    } else {
+      $height = '270';
+    }
+    if (isset($atts['width'])){
+      $width = $atts['width'];
+    } else {
+      $width = '100%';
+    }
     foreach($collection as $video){
         $url = "https://repository.library.northeastern.edu/api/v1/files/" . $video;
         $data = get_response($url);
@@ -41,7 +51,8 @@ function drstk_collection_playlist($atts){
       <script type="text/javascript">
         jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A==";
         jwplayer("drs-item-video").setup({
-          width: "100%",
+          width: "'.$width.'",
+          height: "'.$height.'",
           rtmp: { bufferlength: 5 } ,
           fallback: true,
               listbar: {
