@@ -41,8 +41,15 @@ function drstk_gallery( $atts ){
              }
            }
            $img_html .= "<div class='carousel-caption'";
-           if (isset($atts['caption-align'])){
-             $img_html .= "style='text-align:".$atts['caption-align']."'";
+           if (isset($atts['caption-align']) || isset($atts['caption-position'])){
+             $img_html .= "style='";
+             if (isset($atts['caption-align'])){
+               $img_html .= "text-align:".$atts['caption-align'];
+             }
+             if (isset($atts['caption-position'])){
+               $img_html .= "; position:".$atts['caption-position'];
+             }
+             $img_html .= "'";
            }
            $img_html .= "><a href='".site_url()."/item/".$pid."'>".$img_metadata."</a></div>";
            $img_html .= "<div class='hidden'>";
