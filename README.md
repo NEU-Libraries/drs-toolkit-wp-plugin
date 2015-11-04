@@ -66,7 +66,7 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
     rm -rf twentythirteen
   ```
 
-9. Go to /wp-admin/plugins.php in your browser. Install dependent plugins: Relevanssi, Page Builder by SiteOrigin, and Black Studio TinyMCE Widget and activate them.
+9. Go to /wp-admin/plugins.php in your browser. Install dependent plugins: Relevanssi, Page Builder by SiteOrigin, Black Studio TinyMCE Widget, and Widget Context and activate them.
 
 10. Go to /wp-admin/plugins.php in your browser. Activate DRS Toolkit Plugin
 
