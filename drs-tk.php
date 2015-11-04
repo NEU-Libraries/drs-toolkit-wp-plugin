@@ -99,6 +99,8 @@ $TEMPLATE = array(
  function drstk_display_settings() {
 
      $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'https://repository.library.northeastern.edu/collections/neu:1';
+     $item_meta = get_option('drstk_item_page_metadata');
+     $item_options = explode(',',$item_meta);
      $html = '</pre>
      <div class="wrap">
      <form action="options.php" method="post" name="options">
@@ -193,10 +195,76 @@ $TEMPLATE = array(
      </tr>
      </tbody>
      </table>
+     <table>
+     <tbody>
+     <tr>
+     <td><h4>Single Item Page Settings</h4></td>
+     </tr>
+     <tr><td>Metadata to display<br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Title" ';
+     if (in_array('Title', $item_options)){$html.='checked="checked"';}
+     $html.='/> Title</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Creator" ';
+     if (in_array('Creator', $item_options)){$html.='checked="checked"';}
+     $html.='/> Creator</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Contributor" ';
+     if (in_array('Contributor', $item_options)){$html.='checked="checked"';}
+     $html.='/> Contributor</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Publisher" ';
+     if (in_array('Publisher', $item_options)){$html.='checked="checked"';}
+     $html.='/> Publisher</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Type of Resource" ';
+     if (in_array('Type of Resource', $item_options)){$html.='checked="checked"';}
+     $html.='/> Type of Resource</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Genre" ';
+     if (in_array('Genre', $item_options)){$html.='checked="checked"';}
+     $html.='/> Genre</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Language" ';
+     if (in_array('Language', $item_options)){$html.='checked="checked"';}
+     $html.='/> Language</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Physical description" ';
+     if (in_array('Physical description', $item_options)){$html.='checked="checked"';}
+     $html.='/> Physical description</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Abstract/Description" ';
+     if (in_array('Abstract/Description', $item_options)){$html.='checked="checked"';}
+     $html.='/> Abstract/Description</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Table of contents" ';
+     if (in_array('Table of contents', $item_options)){$html.='checked="checked"';}
+     $html.='/> Table of contents</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Notes" ';
+     if (in_array('Notes', $item_options)){$html.='checked="checked"';}
+     $html.='/> Notes</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Subjects and keywords" ';
+     if (in_array('Subjects and keywords', $item_options)){$html.='checked="checked"';}
+     $html.='/> Subjects and keywords</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Related item ';
+     if (in_array('Related item', $item_options)){$html.='checked="checked"';}
+     $html.='"/> Related item</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Identifier" ';
+     if (in_array('Identifier', $item_options)){$html.='checked="checked"';}
+     $html.='/> Identifier</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Location" ';
+     if (in_array('Location', $item_options)){$html.='checked="checked"';}
+     $html.='/> Location</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Access condition" ';
+     if (in_array('Access condition', $item_options)){$html.='checked="checked"';}
+     $html.='/> Access condition</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="uri" ';
+     if (in_array('uri', $item_options)){$html.='checked="checked"';}
+     $html.='/> uri</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Format" ';
+     if (in_array('Format', $item_options)){$html.='checked="checked"';}
+     $html.='/> Format</label><br/>
+
+     <input type="hidden" name="drstk_item_page_metadata" value="'.get_option('drstk_item_page_metadata').'"/>
+     </td>
+     </tr>
+     </tbody>
+     </table>
 
       <input type="hidden" name="action" value="update" />
 
-      <input type="hidden" name="page_options" value="drstk_collection, drstk_search_title, drstk_search_creator, drstk_search_date, drstk_search_abstract, drstk_browse_title, drstk_browse_creator, drstk_browse_abstract, drstk_browse_date, drstk_search_page_title, drstk_browse_page_title, drstk_collection_page_title, drstk_collections_page_title" />
+      <input type="hidden" name="page_options" value="drstk_collection, drstk_search_title, drstk_search_creator, drstk_search_date, drstk_search_abstract, drstk_browse_title, drstk_browse_creator, drstk_browse_abstract, drstk_browse_date, drstk_search_page_title, drstk_browse_page_title, drstk_collection_page_title, drstk_collections_page_title, drstk_item_page_metadata" />
       <br/><br/>
       <input type="submit" name="Submit" value="Update" class="button" style="font-size: 16px;padding: 10px 20px;height: auto;"/></form></div>
       <br/>
@@ -215,6 +283,11 @@ $TEMPLATE = array(
  function drstk_admin_enqueue() {
     if (get_current_screen()->base == 'settings_page_drstk_admin_menu') {
       //we are on the settings page
+      wp_register_script('drstk_meta_helper_js',
+          plugins_url('/assets/js/item_meta_helper.js', __FILE__),
+          array('jquery'));
+      wp_enqueue_script( 'drstk_meta_helper_js' );
+
       wp_enqueue_script( 'drstk_import',
           plugins_url( '/assets/js/import.js', __FILE__ ),
           array( 'jquery' )
@@ -361,6 +434,7 @@ function drstk_item_script() {
         array( 'jquery' )
     );
     wp_enqueue_script('drstk_jwplayer');
+    $meta_options = get_option('drstk_item_page_metadata');
 
     //this creates a unique nonce to pass back and forth from js/php to protect
     $item_nonce = wp_create_nonce( 'item_drs' );
@@ -370,6 +444,7 @@ function drstk_item_script() {
        'nonce'    => $item_nonce,
        'template' => $wp_query->query_vars['drstk_template_type'],
        'pid' => $item_pid,
+       'meta_options' => json_encode($meta_options),
     ) );
 }
 

@@ -1,5 +1,8 @@
 jQuery(document).ready(function($) {
   $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-spin'></span></h2>");
+  var meta_options = $.parseJSON(item_obj.meta_options);
+  meta_options = meta_options.split(",");
+  console.log(meta_options);
   $.post(item_obj.ajax_url, {
      _ajax_nonce: item_obj.nonce,
       action: "get_item",
@@ -90,24 +93,26 @@ jQuery(document).ready(function($) {
     }
     var data_html = '';
     $.each(data.mods, function(key,value){
-      data_html += "<div class='drs-field-label'><b>"+key+"</b></div><div class='drs-field-value'>";
-      if (value.length > 0){
-        var i = 0;
-        for (i; i<value.length; i++){
-          console.log(value[i]);
-          if (value[i].indexOf('http://') == 0){
-            data_html += '<a href="'+value[i]+'" target="_blank">'+value[i]+'</a>';
-          } else {
-            data_html += value[i];
+      if($.inArray(key, meta_options) >= 0){
+        data_html += "<div class='drs-field-label'><b>"+key+"</b></div><div class='drs-field-value'>";
+        if (value.length > 0){
+          var i = 0;
+          for (i; i<value.length; i++){
+            console.log(value[i]);
+            if (value[i].indexOf('http://') == 0){
+              data_html += '<a href="'+value[i]+'" target="_blank">'+value[i]+'</a>';
+            } else {
+              data_html += value[i];
+            }
+            if (i != value.length-1){
+              data_html += ", ";
+            }
           }
-          if (i != value.length-1){
-            data_html += ", ";
-          }
+        } else {
+          data_html += value;
         }
-      } else {
-        data_html += value;
+        data_html += "</div>";
       }
-      data_html += "</div>";
     });
     $("#drs-item-details").html(data_html);
     var download_links = '';
