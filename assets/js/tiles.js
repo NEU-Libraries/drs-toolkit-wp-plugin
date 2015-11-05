@@ -5,6 +5,7 @@ jQuery(document).ready(function($) {
     var cell_width = $(this).data("cell-width");
     var text_align = $(this).data("text-align");
     if (type == 'pinterest'){
+      console.log("pinterest");
       var wall = new freewall(this);
       wall.reset({
         selector: ".brick",

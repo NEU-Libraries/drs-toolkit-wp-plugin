@@ -64,10 +64,10 @@ function drstk_tile_shortcode_scripts() {
         plugins_url('../assets/js/freewall/freewall.js', __FILE__),
         array( 'jquery' ));
     wp_enqueue_script('drstk_freewall');
-    wp_enqueue_script( 'drstk_tiles',
+    wp_register_script( 'drstk_tiles',
         plugins_url( '../assets/js/tiles.js', __FILE__ ),
-        array( 'jquery' )
-    );
+        array( 'jquery' ));
+    wp_enqueue_script('drstk_tiles');
 	}
 }
 add_action( 'wp_enqueue_scripts', 'drstk_tile_shortcode_scripts');
