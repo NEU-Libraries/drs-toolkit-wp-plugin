@@ -5,7 +5,6 @@ jQuery(document).ready(function($) {
     var cell_width = $(this).data("cell-width");
     var text_align = $(this).data("text-align");
     if (type == 'pinterest'){
-      console.log("pinterest");
       var wall = new freewall(this);
       wall.reset({
         selector: ".brick",
@@ -15,10 +14,6 @@ jQuery(document).ready(function($) {
         onResize: function() {
           wall.fitWidth();
         }
-      });
-      wall.container.find(".brick img").load(function() {
-        console.log("we loaded");
-        wall.fitWidth();
       });
       wall.fitWidth();
       $(this).find(".brick").css("text-align", text_align);
