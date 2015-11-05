@@ -46,7 +46,7 @@ function drstk_item( $atts ){
     $img_html .= " data-caption-align='".$atts['caption-align']."'";
   }
   $img_html .= ">".$img_metadata."</div>";
-  $img_html .= "<div class='hidden'>";
+  $img_html .= "</a><div class='hidden'>";
   $meta = $data->mods;
   foreach($meta as $field){
     if (is_array($field)){
@@ -57,7 +57,7 @@ function drstk_item( $atts ){
       $img_html .= $field[0] . "<br/>";
     }
   }
-  $img_html .= "</div></a></div>";
+  $img_html .= "</div></div>";
   return $img_html;
 }
 

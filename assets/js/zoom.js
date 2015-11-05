@@ -21,5 +21,8 @@ jQuery(document).ready(function($) {
     if($(this).data('caption-align')){
       $(this).css("text-align", $(this).data('caption-align'));
     }
-  })
+  });
+  $(".hidden").each(function(){
+    $(this).appendTo("body");
+  });
 });//end doc ready

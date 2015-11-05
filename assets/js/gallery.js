@@ -29,5 +29,8 @@ jQuery(document).ready(function($) {
 			$(this).css("max-width", $(this).data("max-width"));
 			$(this).find(".carousel-inner, img").css("max-width", $(this).data("max-width"));
 		}
-	})
+	});
+	$(".hidden").each(function(){
+		$(this).appendTo("body");
+	});
 });

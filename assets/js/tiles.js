@@ -68,4 +68,7 @@ jQuery(document).ready(function($) {
       $(this).find(".cell").css("text-align", text_align);
     }
   });
+  $(".hidden").each(function(){
+    $(this).appendTo("body");
+  });
 });//end doc ready
