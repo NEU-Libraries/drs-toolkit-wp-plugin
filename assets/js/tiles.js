@@ -17,8 +17,10 @@ jQuery(document).ready(function($) {
         }
       });
       wall.container.find(".brick img").load(function() {
+        console.log("we loaded");
         wall.fitWidth();
       });
+      wall.fitWidth();
       $(this).find(".brick").css("text-align", text_align);
     }
     if (type == 'even-row'){
