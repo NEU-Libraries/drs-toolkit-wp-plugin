@@ -237,7 +237,7 @@ $TEMPLATE = array(
      <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Subjects and keywords" ';
      if (in_array('Subjects and keywords', $item_options)){$html.='checked="checked"';}
      $html.='/> Subjects and keywords</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Related item ';
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Related item" ';
      if (in_array('Related item', $item_options)){$html.='checked="checked"';}
      $html.='"/> Related item</label><br/>
      <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Identifier" ';
@@ -435,8 +435,8 @@ function drstk_item_script() {
     );
     wp_enqueue_script('drstk_jwplayer');
     $meta_options = get_option('drstk_item_page_metadata');
-    if (count($meta_options) == 0){
-      $meta_options = array("Title", "Creator", "Contributor", "Publisher", "Type of Resource", "Genre", "Language", "Physical Description", "Abstract/Description", "Table of contents", "Notes", "Subjects and keywords", "Related item", "Identifier", "Access condition", "Location", "uri", "Format");
+    if ($meta_options == NULL){
+      $meta_options = "Title,Creator,Contributor,Publisher,Type of Resource,Genre,Language,Physical Description,Abstract/Description,Table of contents,Notes,Subjects and keywords,Related item,Identifier,Access condition,Location,uri,Format";
     }
 
     //this creates a unique nonce to pass back and forth from js/php to protect
