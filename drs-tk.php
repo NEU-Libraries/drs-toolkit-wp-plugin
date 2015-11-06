@@ -435,6 +435,9 @@ function drstk_item_script() {
     );
     wp_enqueue_script('drstk_jwplayer');
     $meta_options = get_option('drstk_item_page_metadata');
+    if ($meta_options.length == 0){
+      $meta_options = array("Title", "Creator", "Contributor", "Publisher", "Type of Resource", "Genre", "Language", "Physical Description", "Abstract/Description", "Table of contents", "Notes", "Subjects and keywords", "Related item", "Identifier", "Access condition", "Location", "uri", "Format");
+    }
 
     //this creates a unique nonce to pass back and forth from js/php to protect
     $item_nonce = wp_create_nonce( 'item_drs' );
