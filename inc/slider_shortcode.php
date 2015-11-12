@@ -112,10 +112,10 @@ function drstk_gallery( $atts ){
 function drstk_gallery_shortcode_scripts() {
 	global $post;
 	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_gallery') ) {
-    wp_enqueue_script( 'drstk_gallery',
+    wp_register_script( 'drstk_gallery',
         plugins_url( '../assets/js/gallery.js', __FILE__ ),
-        array( 'jquery' )
-    );
+        array( 'jquery' ));
+    wp_enqueue_script('drstk_gallery');
 	}
 }
 add_action( 'wp_enqueue_scripts', 'drstk_gallery_shortcode_scripts');
