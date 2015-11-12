@@ -15,7 +15,9 @@ jQuery(document).ready(function($) {
           wall.fitWidth();
         }
       });
-      wall.fitWidth();
+      $(window).on("load", function() {//this wont fire until all the images are loaded
+        wall.fitWidth();
+      });
       $(this).find(".brick").css("text-align", text_align);
     }
     if (type == 'even-row'){
