@@ -37,7 +37,9 @@ function drstk_gallery( $atts ){
              $metadata = explode(",",$atts['metadata']);
              foreach($metadata as $field){
                $this_field = $data->mods->$field;
-               $img_metadata .= $this_field[0] . "<br/>";
+               if (isset($this_field[0])){
+                 $img_metadata .= $this_field[0] . "<br/>";
+               }
              }
            }
            $img_html .= "<div class='carousel-caption'";

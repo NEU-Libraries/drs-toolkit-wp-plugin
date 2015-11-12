@@ -36,7 +36,9 @@ function drstk_item( $atts ){
           $img_metadata .= $field_val . "<br/>";
         }
       } else {
-        $img_metadata .= $this_field[0] . "<br/>";
+        if (isset($this_field[0])){
+          $img_metadata .= $this_field[0] . "<br/>";
+        }
       }
     }
   }
