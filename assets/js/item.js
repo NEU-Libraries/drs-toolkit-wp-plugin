@@ -40,7 +40,6 @@ jQuery(document).ready(function($) {
     } else {
       $("#drs-item-img").attr('data-zoom-image', data.thumbnails[data.thumbnails.length - 1]);
     }
-    $("#drs-item-img").elevateZoom();
     if (data.canonical_object[0][1] == 'PDF'){
       if (data.mods.Location && data.mods.Location[0].indexOf("issuu") > -1){
         var location_link = String(data.mods.Location[0]);
@@ -50,9 +49,9 @@ jQuery(document).ready(function($) {
         $("#drs-item-img").hide();
       } else {
         //no issuu link - do nothing
+        $("#drs-item-img").elevateZoom();
       }
-    }
-    if (data.canonical_object[0][1] == 'Video File' || data.canonical_object[0][1] == 'Audio File'){
+    } else if (data.canonical_object[0][1] == 'Video File' || data.canonical_object[0][1] == 'Audio File'){
       $("#drs-item-img").after("<div id='drs-item-video'></div>").hide();
         jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A=="
         var provider = data.av_provider;
@@ -90,6 +89,8 @@ jQuery(document).ready(function($) {
             $("#drs-item-video").hide()
           }, 5000)
         })
+    } else {
+      $("#drs-item-img").elevateZoom();
     }
     var data_html = '';
     $.each(data.mods, function(key,value){
