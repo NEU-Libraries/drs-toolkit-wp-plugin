@@ -49,6 +49,9 @@ jQuery(document).ready(function($) {
           $("#drs-content").html("There seems to be an issue connecting with the place where the data is stored. Try again later. Thanks!");
         } else if (data.error) {
           $("#drs-content").html("Your query produced no results. The error received was '"+data.error+"'. Thanks!");
+          if (template == 'collections'){
+            $("#drs-content").html("This project has no sub-collections. Thanks!");
+          }
         } else if (data.response.response.numFound > 0) {
           paginate(data.pagination.table);//send to paginate function
           facetize(data.response.facet_counts);//send to facetize function
