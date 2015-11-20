@@ -1,0 +1,16 @@
+admin:
+  search_fail:
+  item_metadata:
+breadcrumbs:
+  fail:
+search:
+  no_results:
+  fail:
+  no_sub_collections:
+  missing_collection:
+item:
+  no_results:
+  fail:
+  jwplayer_fail:
+shortcodes:
+  fail:
