@@ -70,12 +70,11 @@ function ajax_wp_search(){
   $query_string = $_GET['query'];
   $paged = $_GET['page'];
   if (isset($_GET['query']) && $query_string != ''){
-    $query_args = array( 's' => $query_string, 'post_type'=>array('post', 'page'), 'posts_per_page'=>3 , 'paged'=>$paged);
+    $query_args = array( 's' => $query_string, 'post_type'=>array('post', 'page'), 'posts_per_page'=>3, 'paged'=>$paged);
     $wp_query = new WP_Query( $query_args );
     $rel_query = relevanssi_do_query($wp_query);
-    if ( $wp_query->have_posts() ) {
-      		$wp_query->the_post();
-          get_template_part( 'partials/content', 'normal' );
+    if (count($rel_query) > 0){
+        get_template_part( 'partials/content', 'normal' );
       } else {
         echo "No related content was found";
       }
