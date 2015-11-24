@@ -26,7 +26,7 @@ jQuery(document).ready(function($) {
           parse_breadcrumb(data.response.response);
         }
     }).fail(function() {
-      $("#drs-content").html("<div class='alert error'>There was an error connecting to the external service. Please try a different request. Thanks!</div>");
+      $(".breadcrumbs").hide();
     });
   }
   function parse_breadcrumb(data){
