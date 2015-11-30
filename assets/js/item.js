@@ -66,8 +66,8 @@ jQuery(document).ready(function($) {
         jwplayer("drs-item-video").setup({
         sources:
         [
-        { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/"+type+":datastreamStore/repositoryData/newfedoradata/datastreamStore/"+dir+"/info%3Afedora%2F"+encoded+"%2Fcontent%2Fcontent.0"},
-        { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/repositoryData/newfedoradata/datastreamStore/"+dir+"/"+type+":" + encodeURIComponent("info%3Afedora%2F"+encoded+"%2Fcontent%2Fcontent.0") + "/playlist.m3u8", type:type}
+        { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/"+type+":datastreamStore/cerberusData/newfedoradata/datastreamStore/"+dir+"/info%3Afedora%2F"+encoded+"%2Fcontent%2Fcontent.0"},
+        { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/"+dir+"/"+type+":" + encodeURIComponent("info%3Afedora%2F"+encoded+"%2Fcontent%2Fcontent.0") + "/playlist.m3u8", type:type}
         ],
         image: poster,
         provider: provider,
