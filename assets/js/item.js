@@ -2,7 +2,6 @@ jQuery(document).ready(function($) {
   $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-spin'></span></h2>");
   var meta_options = $.parseJSON(item_obj.meta_options);
   meta_options = meta_options.split(",");
-  console.log(meta_options);
   $.post(item_obj.ajax_url, {
      _ajax_nonce: item_obj.nonce,
       action: "get_item",
@@ -32,8 +31,6 @@ jQuery(document).ready(function($) {
     if (data.thumbnails) {
       $("#drs-item-img").attr("src",data.thumbnails[data.thumbnails.length - 2]);
     }
-    console.log(data.canonical_object[0][1]);
-    console.log(data.canonical_object[0][0]);
     if (data.canonical_object[0][1] == 'Master Image'){
       var canonical_image = data.canonical_object[0][0];
       $("#drs-item-img").attr('data-zoom-image', data.thumbnails[data.thumbnails.length - 1]);
@@ -67,7 +64,7 @@ jQuery(document).ready(function($) {
         sources:
         [
         { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/"+type+":datastreamStore/cerberusData/newfedoradata/datastreamStore/"+dir+"/info%3Afedora%2F"+encoded+"%2Fcontent%2Fcontent.0"},
-        { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/"+dir+"/"+type+":" + encodeURIComponent("info%3Afedora%2F"+encoded+"%2Fcontent%2Fcontent.0") + "/playlist.m3u8", type:type}
+        { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/"+dir+"/"+type+":" + "info%3Afedora%2F"+encoded+"%2Fcontent%2Fcontent.0" + "/playlist.m3u8", type:type}
         ],
         image: poster,
         provider: provider,
@@ -77,18 +74,18 @@ jQuery(document).ready(function($) {
         width: "100%",
         height: 400,
         })
+
         var errorMessage = function() {
-          $("#drs-item-img").show()
-          $("#drs-item-video").hide()
-        }
-        jwplayer().onError(errorMessage);
-        jwplayer().onSetupError(errorMessage);
-        jwplayer().onBuffer(function() {
-          theTimeout = setTimeout(function() {
-            $("#drs-item-img").show()
-            $("#drs-item-video").hide()
-          }, 5000)
-        })
+          $("#drs-item-img").show();
+          $("#drs-item-video").hide();
+        };
+       jwplayer().onError(errorMessage);
+       jwplayer().onSetupError(errorMessage);
+       jwplayer().onBuffer(function() {
+         theTimeout = setTimeout(function() {
+           errorMessage;
+         }, 5000);
+       });
     } else {
       $("#drs-item-img").elevateZoom();
     }
@@ -99,7 +96,6 @@ jQuery(document).ready(function($) {
         if (value.length > 0){
           var i = 0;
           for (i; i<value.length; i++){
-            console.log(value[i]);
             if (value[i].indexOf('http://') == 0){
               data_html += '<a href="'+value[i]+'" target="_blank">'+value[i]+'</a>';
             } else {
