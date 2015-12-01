@@ -17,10 +17,8 @@ function item_ajax_handler() {
       $data['encoded_av_pid'] = str_replace(':','%3A', $data['av_pid']);
       $data['av_dir'] = substr(md5("info:fedora/".$data['av_pid']."/content/content.0"), 0, 2);
       $data['av_type'] = $data['canonical_object'][0][0];
-      foreach ($data['content_objects'] as $key=>$val){
-        if ($val[1] == 'Master Image'){
-          $data['av_poster'] = $val[0];
-        }
+      if ($data['thumbnails']){
+        $data['av_poster'] = $data['thumbnails'][3];
       }
       if ($data['canonical_object'][0][1] == 'Video File'){
         $data['av_provider'] = 'video';
