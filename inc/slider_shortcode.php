@@ -10,7 +10,7 @@ function drstk_gallery( $atts ){
        $url = "https://repository.library.northeastern.edu/api/v1/files/" . $id;
        $data = get_response($url);
        $data = json_decode($data);
-       if (!$data->error){
+       if (!isset($data->error)){
          $pid = $data->pid;
          if (isset($atts['image-size'])){
            $num = $atts['image-size']-1;
@@ -29,16 +29,17 @@ function drstk_gallery( $atts ){
            $width = $this_width;
          }
          $title = $data->mods->Title[0];
-         $creator = $data->mods->Creator[0];
          $img_html .= "<div class='item'><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'  alt='".$title."'></a>";
          if ($atts['caption'] && $atts['caption'] == "on"){
            $img_metadata = "";
            if (isset($atts['metadata'])){
              $metadata = explode(",",$atts['metadata']);
              foreach($metadata as $field){
-               $this_field = $data->mods->$field;
-               if (isset($this_field[0])){
-                 $img_metadata .= $this_field[0] . "<br/>";
+               if (isset($data->mods->$field)){
+                 $this_field = $data->mods->$field;
+                 if (isset($this_field[0])){
+                   $img_metadata .= $this_field[0] . "<br/>";
+                 }
                }
              }
            }
@@ -91,7 +92,7 @@ function drstk_gallery( $atts ){
      $gallery_html .= " data-max-width='".$atts['max-width']."'";
    }
    $gallery_html .= '>';
-   if ($atts['pager'] && $atts['pager'] == 'on'){
+   if (isset($atts['pager']) && $atts['pager'] == 'on'){
      $gallery_html .= '<ol class="carousel-indicators">';
      $i = 0;
      foreach($images as $id){
