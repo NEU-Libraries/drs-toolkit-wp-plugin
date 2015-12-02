@@ -7,6 +7,7 @@
  * Description: This plugin provides the core functionality of the DRS Project Toolkit and brings the content of a project from the DRS into Wordpress using the DRS API.
  */
 
+require_once( plugin_dir_path( __FILE__ ) . 'inc/errors.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/item.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/import.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/browse.php' );
@@ -16,6 +17,8 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/video_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/item_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/tiles_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/slider_shortcode.php' );
+
+
 
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
 
@@ -32,10 +35,6 @@ $TEMPLATE = array(
 
  register_activation_hook( __FILE__, 'drstk_install' );
  register_deactivation_hook( __FILE__, 'drstk_deactivation' );
-
- wp_register_script('drstk_jwplayer',
-     plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
-     array(), $VERSION, false );
 
  /**
   * Rewrite rules for the plugin.
@@ -288,10 +287,11 @@ $TEMPLATE = array(
           array('jquery'));
       wp_enqueue_script( 'drstk_meta_helper_js' );
 
-      wp_enqueue_script( 'drstk_import',
+      wp_register_script( 'drstk_import',
           plugins_url( '/assets/js/import.js', __FILE__ ),
           array( 'jquery' )
       );
+      wp_enqueue_script( 'drstk_import' );
       //this creates a unique nonce to pass back and forth from js/php to protect
       $import_nonce = wp_create_nonce( 'import_drs' );
       $import_data_nonce = wp_create_nonce( 'import_data_drs' );
@@ -372,10 +372,11 @@ function drstk_browse_script() {
     global $SITE_URL;
     global $sub_collection_pid;
     //this enqueues the JS file
-    wp_enqueue_script( 'drstk_browse',
+    wp_register_script( 'drstk_browse',
         plugins_url( '/assets/js/browse.js', __FILE__ ),
         array( 'jquery' )
     );
+    wp_enqueue_script('drstk_browse');
     $search_options = array();
     if (get_option('drstk_search_title') == 'on'){
       $search_options[] = 'title';
@@ -429,10 +430,14 @@ function drstk_item_script() {
         plugins_url('/assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__),
         array());
     wp_enqueue_script('drstk_elevatezoom');
-    wp_enqueue_script( 'drstk_item',
+    wp_register_script( 'drstk_item',
         plugins_url( '/assets/js/item.js', __FILE__ ),
         array( 'jquery' )
     );
+    wp_enqueue_script('drstk_item');
+    wp_register_script('drstk_jwplayer',
+        plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
+        array(), $VERSION, false );
     wp_enqueue_script('drstk_jwplayer');
     $meta_options = get_option('drstk_item_page_metadata');
     if ($meta_options == NULL){
@@ -458,10 +463,11 @@ function drstk_breadcrumb_script(){
   global $sub_collection_pid;
   global $item_pid;
 
-  wp_enqueue_script( 'drstk_breadcrumb',
+  wp_register_script( 'drstk_breadcrumb',
       plugins_url( '/assets/js/breadcrumb.js', __FILE__ ),
       array( 'jquery' )
   );
+  wp_enqueue_script('drstk_breadcrumb');
   $breadcrumb_nonce = wp_create_nonce( 'breadcrumb_drs' );
 
   wp_localize_script( 'drstk_breadcrumb', 'breadcrumb_obj', array(
