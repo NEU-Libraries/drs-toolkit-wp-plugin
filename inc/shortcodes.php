@@ -16,8 +16,8 @@ function add_drs_button() {
 }
 
 /*enques extra js*/
-add_action('admin_enqueue_scripts', 'drstk_enqueue_page_scripts');
 function drstk_enqueue_page_scripts( $hook ) {
+  global $errors;
     if ($hook == 'post.php' || $hook == 'post-new.php') {
     wp_register_script('drstk_admin_js',
         plugins_url('../assets/js/admin.js', __FILE__),
@@ -27,10 +27,12 @@ function drstk_enqueue_page_scripts( $hook ) {
    //this creates a unique nonce to pass back and forth from js/php to protect
    $item_admin_nonce = wp_create_nonce( 'item_admin_nonce' );
    //this allows an ajax call from admin.js
+
    wp_localize_script( 'drstk_admin_js', 'item_admin_obj', array(
       'ajax_url' => admin_url( 'admin-ajax.php' ),
       'item_admin_nonce'    => $item_admin_nonce,
       'pid' => '',
+      'errors' => json_encode($errors),
    ) );
 
    $video_ajax_nonce = wp_create_nonce( 'video_ajax_nonce' );
@@ -48,6 +50,7 @@ function drstk_enqueue_page_scripts( $hook ) {
    return;
  }
 }
+add_action('admin_enqueue_scripts', 'drstk_enqueue_page_scripts');
 
 /* side box content for tile gallery shortcode */
 add_action( 'wp_ajax_get_tile_code', 'drstk_add_tile_gallery' ); //for auth users

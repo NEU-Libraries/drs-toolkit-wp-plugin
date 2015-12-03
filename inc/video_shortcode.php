@@ -43,6 +43,8 @@ function drstk_collection_playlist($atts){
           $download = 'download';
           $playlists .= '{ sources: [ { file: "' .  $rtmp . '"},';
           $playlists .= '{ file: "' . $playlist . '"} ], image: "' . $this_poster . '", title: "' . $title . '" },';
+        } else {
+          return $errors['shortcodes']['fail'];
         }
       }
     return '<div id="drs-item-video">
@@ -68,6 +70,9 @@ function drstk_collection_playlist($atts){
 function drstk_video_shortcode_scripts() {
     global $post;
     if( has_shortcode( $post->post_content, 'drstk_collection_playlist') ) {
+      wp_register_script('drstk_jwplayer',
+          plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
+          array(), $VERSION, false );
         wp_enqueue_script( 'drstk_jwplayer');
     }
 }
