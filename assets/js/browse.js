@@ -35,6 +35,7 @@ jQuery(document).ready(function($) {
 
 
   function get_data(params){
+    var errors = $.parseJSON(browse_obj.errors);
     $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-spin'></span></h2>").show();
     $.post(browse_obj.ajax_url, {
        _ajax_nonce: browse_obj.nonce,
@@ -44,7 +45,6 @@ jQuery(document).ready(function($) {
     }, function(data) {
       $("#drs-loading").hide();
         var data = $.parseJSON(data);
-        var errors = $.parseJSON(browse_obj.errors);
         console.log(data);
         if (data == null) {
           $("#drs-content").html(errors.search.fail_null);
