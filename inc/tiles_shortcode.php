@@ -2,6 +2,7 @@
 /* adds shortcode */
 add_shortcode( 'drstk_tiles', 'drstk_tiles' );
 function drstk_tiles( $atts ){
+  global $errors;
   $imgs = explode(", ",$atts['id']);
   $img_html = "";
   foreach($imgs as $img){
@@ -27,8 +28,11 @@ function drstk_tiles( $atts ){
           }
         }
       }
-      if ($type == 'pinterest'){
+      if ($type == 'pinterest-below' || $type == 'pinterest'){
         $img_html .= "<div class='brick'><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'></a><div class='info'><a href='".site_url()."/item/".$pid."'>".$img_metadata."</a>";
+      }
+      if ($type == 'pinterest-hover'){
+        $img_html .= "<div class='brick brick-hover'><img src='".$thumbnail."' style='width:100%'><div class='info'><a href='".site_url()."/item/".$pid."'>".$img_metadata."</a>";
       }
       if ($type == 'even-row' || $type == 'square'){
         $img_html .= "<div class='cell' data-thumbnail='".$thumbnail."'><div class='info'><a href='".site_url()."/item/".$pid."'>".$img_metadata."</a>";
@@ -47,7 +51,7 @@ function drstk_tiles( $atts ){
       $img_html .= "</div>";
       $img_html .= "</div></div>";
     } else {
-      $img_html = "There was an error";
+      $img_html = $errors['shortcodes']['fail'];
     }
 
   }

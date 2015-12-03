@@ -2,6 +2,7 @@
 /* adds shortcode */
 add_shortcode( 'drstk_gallery', 'drstk_gallery' );
 function drstk_gallery( $atts ){
+  global $errors;
   if ($atts['id']){
     $images = explode(", ",$atts['id']);
     $img_html = '';
@@ -70,7 +71,7 @@ function drstk_gallery( $atts ){
          }
          $img_html .= "</div>";
        } else {
-         $img_html .= "There was an error";
+         $img_html .= $errors['shortcodes']['fail'];
        }
    }
    if (isset($atts['speed']) && $atts['speed'] > 1){

@@ -4,7 +4,7 @@ jQuery(document).ready(function($) {
     var cell_height = $(this).data("cell-height");
     var cell_width = $(this).data("cell-width");
     var text_align = $(this).data("text-align");
-    if (type == 'pinterest'){
+    if (type == 'pinterest-below' || type == 'pinterest' || type == 'pinterest-hover'){
       var wall = new freewall(this);
       wall.reset({
         selector: ".brick",
