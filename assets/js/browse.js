@@ -206,7 +206,7 @@ jQuery(document).ready(function($) {
         this_doc += "<div class=''><a href='"+browse_obj.site_url+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";
       } else {
         //browse = tile
-        this_doc += "<div class='drs-item browse one_third col-sm-4'><div class='thumbnail'><figure><a href='"+browse_obj.site_url+this_doc_url+"'>";
+        this_doc += "<div class='drs-item browse one_third col-lg-3 col-md-4 col-sm-5'><div class='thumbnail'><figure><a href='"+browse_obj.site_url+this_doc_url+"'>";
         if (thumbnail[1]) {
           this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
         } else {
