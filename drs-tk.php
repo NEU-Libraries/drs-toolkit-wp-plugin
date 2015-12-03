@@ -371,6 +371,7 @@ function drstk_browse_script() {
     global $VERSION;
     global $SITE_URL;
     global $sub_collection_pid;
+    global $errors;
     //this enqueues the JS file
     wp_register_script( 'drstk_browse',
         plugins_url( '/assets/js/browse.js', __FILE__ ),
@@ -415,6 +416,7 @@ function drstk_browse_script() {
        'sub_collection_pid' => $sub_collection_pid,
        'search_options' => json_encode($search_options),
        'browse_options' => json_encode($browse_options),
+       'errors' => json_encode($errors),
     ) );
 }
 
@@ -425,6 +427,7 @@ function drstk_item_script() {
     global $VERSION;
     global $wp_query;
     global $item_pid;
+    global $errors;
     //this enqueues the JS file
     wp_register_script('drstk_elevatezoom',
         plugins_url('/assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__),
@@ -453,6 +456,7 @@ function drstk_item_script() {
        'template' => $wp_query->query_vars['drstk_template_type'],
        'pid' => $item_pid,
        'meta_options' => json_encode($meta_options),
+       'errors' => json_encode($errors),
     ) );
 }
 

@@ -44,13 +44,14 @@ jQuery(document).ready(function($) {
     }, function(data) {
       $("#drs-loading").hide();
         var data = $.parseJSON(data);
+        var errors = $.parseJSON(browse_obj.errors);
         console.log(data);
         if (data == null) {
-          $("#drs-content").html("There seems to be an issue connecting with the place where the data is stored. Try again later. Thanks!");
+          $("#drs-content").html(errors.search.fail_null);
         } else if (data.error) {
-          $("#drs-content").html("Your query produced no results. The error received was '"+data.error+"'. Thanks!");
+          $("#drs-content").html(errors.search.no_results);
           if (template == 'collections'){
-            $("#drs-content").html("This project has no sub-collections. Thanks!");
+            $("#drs-content").html(errors.search.no_sub_collections);
           }
         } else if (data.response.response.numFound > 0) {
           paginate(data.pagination.table);//send to paginate function
@@ -62,10 +63,10 @@ jQuery(document).ready(function($) {
             $("#drs-selection").hide();
           }
         } else {
-          $("#drs-content").html("Your query produced no results. Please go back and try a different query. Thanks!");
+          $("#drs-content").html(errors.search.no_results);
         }
     }).fail(function() {
-      $("#drs-content").html("<div class='alert error alert-error'>There was an error connecting to the data. Please try a different query. Thanks!</div>");
+      $("#drs-content").html("<div class='alert error alert-error'>"+errors.search.fail_null+"</div>");
     });
   }
 
