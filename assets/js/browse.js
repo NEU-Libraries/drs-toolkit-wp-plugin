@@ -206,7 +206,13 @@ jQuery(document).ready(function($) {
         this_doc += "<div class=''><a href='"+browse_obj.site_url+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";
       } else {
         //browse = tile
-        this_doc += "<div class='drs-item browse one_third col-lg-3 col-md-4 col-sm-5'><div class='thumbnail'><figure><a href='"+browse_obj.site_url+this_doc_url+"'>";
+        this_doc += "<div class='drs-item browse one_third ";
+        if (template == 'collections'){
+          this_doc += "col-lg-3 col-md-4 col-sm-5";
+        } else {
+          this_doc += "col-sm-4";
+        }
+        this_doc += "'><div class='thumbnail'><figure><a href='"+browse_obj.site_url+this_doc_url+"'>";
         if (thumbnail[1]) {
           this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
         } else {
@@ -337,7 +343,7 @@ jQuery(document).ready(function($) {
   			},
   			success: function(data)
   			{
-          console.log(data);
+          // console.log(data);
           $("#secondary").html("<div class='panel panel-default'><div class='panel-heading'><b>Related Content</b></div><div class='panel-body'>"+data+"</div></div>");
           $("#secondary").addClass('drs-sidebar');
           $("#primary").addClass('drs-main');
