@@ -2,6 +2,7 @@ jQuery(document).ready(function($) {
   $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-spin'></span></h2>");
   var meta_options = $.parseJSON(item_obj.meta_options);
   meta_options = meta_options.split(",");
+  var errors = $.parseJSON(item_obj.errors);
   $.post(item_obj.ajax_url, {
      _ajax_nonce: item_obj.nonce,
       action: "get_item",
@@ -10,7 +11,6 @@ jQuery(document).ready(function($) {
   }, function(data) {
       $("#drs-loading").hide();
       var data = $.parseJSON(data);
-      var errors = $.parseJSON(item_obj.errors);
       if (data == null) {
         $("#drs-content").html(errors.item.fail);
       } else if (data.error) {
