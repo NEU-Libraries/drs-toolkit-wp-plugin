@@ -36,6 +36,10 @@ $TEMPLATE = array(
  register_activation_hook( __FILE__, 'drstk_install' );
  register_deactivation_hook( __FILE__, 'drstk_deactivation' );
 
+ wp_register_script('drstk_jwplayer',
+     plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
+     array(), $VERSION, false );
+
  /**
   * Rewrite rules for the plugin.
   */
