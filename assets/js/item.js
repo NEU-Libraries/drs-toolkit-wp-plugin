@@ -10,20 +10,21 @@ jQuery(document).ready(function($) {
   }, function(data) {
       $("#drs-loading").hide();
       var data = $.parseJSON(data);
+      var errors = $.parseJSON(item_obj.errors);
       if (data == null) {
-        $("#drs-content").html("There seems to be an issue connecting with the place where the data is stored. Try again later. Thanks!");
+        $("#drs-content").html(errors.item.fail);
       } else if (data.error) {
-        $("#drs-content").html("Your request produced no results. The error received was '"+data.error+"'. Thanks!");
+        $("#drs-content").html(errors.item.no_results);
       } else if (jQuery.type(data) == 'object') {
-        parse_item(data);
+        parse_item(data, errors);
       } else {
-        $("#drs-content").html("Your request produced no results. Please go back and try a different request. Thanks!");
+        $("#drs-content").html(errors.item.no_results);
       }
   }).fail(function() {
-    $("#drs-content").html("<div class='alert error'>There was an error connecting to the external service. Please try a different request. Thanks!</div>");
+    $("#drs-content").html("<div class='alert error'>"+errors.item.fail+"</div>");
   });
 
-  function parse_item(data){
+  function parse_item(data, errors){
     if (data.mods.Title) {
       $("#title-container h3").html(data.mods.Title);
       $(".post-title").html(data.mods.Title);
@@ -76,6 +77,7 @@ jQuery(document).ready(function($) {
         })
 
         var errorMessage = function() {
+          $("#drs-item-img").before("<div class='alert alert-warning'>"+errors.item.jwplayer_fail+"</div>");
           $("#drs-item-img").show();
           $("#drs-item-video").hide();
         };
