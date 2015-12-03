@@ -286,16 +286,16 @@ $TEMPLATE = array(
  function drstk_admin_enqueue() {
     if (get_current_screen()->base == 'settings_page_drstk_admin_menu') {
       //we are on the settings page
-      wp_register_script('drstk_meta_helper_js',
+      wp_enqueue_script('drstk_meta_helper_js',
           plugins_url('/assets/js/item_meta_helper.js', __FILE__),
           array('jquery'));
-      wp_enqueue_script( 'drstk_meta_helper_js' );
+      // wp_enqueue_script( 'drstk_meta_helper_js' );
 
-      wp_register_script( 'drstk_import',
+      wp_enqueue_script( 'drstk_import',
           plugins_url( '/assets/js/import.js', __FILE__ ),
           array( 'jquery' )
       );
-      wp_enqueue_script( 'drstk_import' );
+      // wp_enqueue_script( 'drstk_import' );
       //this creates a unique nonce to pass back and forth from js/php to protect
       $import_nonce = wp_create_nonce( 'import_drs' );
       $import_data_nonce = wp_create_nonce( 'import_data_drs' );
