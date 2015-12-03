@@ -22,7 +22,10 @@ jQuery(document).ready(function($) {
     }, function(data) {
         var data = $.parseJSON(data);
         site_url = data.site_url;
-        if (jQuery.type(data) == 'object') {
+        if (data.error){
+          $(".breadcrumbs").hide();
+        }
+        else if (jQuery.type(data) == 'object') {
           parse_breadcrumb(data.response.response);
         }
     }).fail(function() {
