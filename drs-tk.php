@@ -377,11 +377,11 @@ function drstk_browse_script() {
     global $sub_collection_pid;
     global $errors;
     //this enqueues the JS file
-    wp_register_script( 'drstk_browse',
+    wp_enqueue_script( 'drstk_browse',
         plugins_url( '/assets/js/browse.js', __FILE__ ),
         array( 'jquery' )
     );
-    wp_enqueue_script('drstk_browse');
+    // wp_enqueue_script('drstk_browse');
     $search_options = array();
     if (get_option('drstk_search_title') == 'on'){
       $search_options[] = 'title';
@@ -437,14 +437,14 @@ function drstk_item_script() {
         plugins_url('/assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__),
         array());
     wp_enqueue_script('drstk_elevatezoom');
-    wp_register_script( 'drstk_item',
+    wp_enqueue_script( 'drstk_item',
         plugins_url( '/assets/js/item.js', __FILE__ ),
         array( 'jquery' )
     );
-    wp_enqueue_script('drstk_item');
-    wp_register_script('drstk_jwplayer',
-        plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
-        array(), $VERSION, false );
+    // wp_enqueue_script('drstk_item');
+    // wp_register_script('drstk_jwplayer',
+    //     plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
+    //     array(), $VERSION, false );
     wp_enqueue_script('drstk_jwplayer');
     $meta_options = get_option('drstk_item_page_metadata');
     if ($meta_options == NULL){
@@ -471,11 +471,11 @@ function drstk_breadcrumb_script(){
   global $sub_collection_pid;
   global $item_pid;
 
-  wp_register_script( 'drstk_breadcrumb',
+  wp_enqueue_script( 'drstk_breadcrumb',
       plugins_url( '/assets/js/breadcrumb.js', __FILE__ ),
       array( 'jquery' )
   );
-  wp_enqueue_script('drstk_breadcrumb');
+  // wp_enqueue_script('drstk_breadcrumb');
   $breadcrumb_nonce = wp_create_nonce( 'breadcrumb_drs' );
 
   wp_localize_script( 'drstk_breadcrumb', 'breadcrumb_obj', array(
