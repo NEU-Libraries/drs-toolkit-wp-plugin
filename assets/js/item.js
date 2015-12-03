@@ -104,7 +104,7 @@ jQuery(document).ready(function($) {
               data_html += value[i];
             }
             if (i != value.length-1){
-              data_html += ", ";
+              data_html += "<br/> ";
             }
           }
         } else {
