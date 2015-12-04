@@ -56,7 +56,7 @@ function drstk_gallery( $atts ){
              $img_html .= "'";
            }
            $img_html .= "><a href='".site_url()."/item/".$pid."'>".$img_metadata."</a></div>";
-           $img_html .= "<div class='hidden'>";
+           $img_html .= "<div class=\"hidden\">";
            $meta = $data->mods;
            foreach($meta as $field){
              if (is_array($field)){

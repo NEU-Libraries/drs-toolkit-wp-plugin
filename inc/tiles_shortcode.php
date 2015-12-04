@@ -10,7 +10,7 @@ function drstk_tiles( $atts ){
     $data = get_response($url);
     $data = json_decode($data);
     $type = $atts['type'];
-    if (!$data->error){
+    if (!isset($data->error)){
       $pid = $data->pid;
       if (isset($atts['image-size'])){
         $num = $atts['image-size']-1;
@@ -37,7 +37,7 @@ function drstk_tiles( $atts ){
       if ($type == 'even-row' || $type == 'square'){
         $img_html .= "<div class='cell' data-thumbnail='".$thumbnail."'><div class='info'><a href='".site_url()."/item/".$pid."'>".$img_metadata."</a>";
       }
-      $img_html .= "<div class='hidden'>";
+      $img_html .= "<div class=\"hidden\">";
       $meta = $data->mods;
       foreach($meta as $field){
         if (is_array($field)){
