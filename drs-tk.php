@@ -258,6 +258,18 @@ $TEMPLATE = array(
      <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Format" ';
      if (in_array('Format', $item_options)){$html.='checked="checked"';}
      $html.='/> Format</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Permanent URL" ';
+     if (in_array('Permanent URL', $item_options)){$html.='checked="checked"';}
+     $html.='/> Permanent URL</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Date created" ';
+     if (in_array('Date created', $item_options)){$html.='checked="checked"';}
+     $html.='/> Date created</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Date issued" ';
+     if (in_array('Date issued', $item_options)){$html.='checked="checked"';}
+     $html.='/> Date issued</label><br/>
+     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Copyright date" ';
+     if (in_array('Copyright date', $item_options)){$html.='checked="checked"';}
+     $html.='/> Copyright date</label><br/>
 
      <input type="hidden" name="drstk_item_page_metadata" value="'.get_option('drstk_item_page_metadata').'"/>
      </td>
@@ -448,7 +460,7 @@ function drstk_item_script() {
     wp_enqueue_script('drstk_jwplayer');
     $meta_options = get_option('drstk_item_page_metadata');
     if ($meta_options == NULL){
-      $meta_options = "Title,Creator,Contributor,Publisher,Type of Resource,Genre,Language,Physical Description,Abstract/Description,Table of contents,Notes,Subjects and keywords,Related item,Identifier,Access condition,Location,uri,Format";
+      $meta_options = "Title,Creator,Contributor,Publisher,Type of Resource,Genre,Language,Physical Description,Abstract/Description,Table of contents,Notes,Subjects and keywords,Related item,Identifier,Access condition,Location,uri,Format,Permanent URL,Date created,Date issued,Copyright date";
     }
 
     //this creates a unique nonce to pass back and forth from js/php to protect
