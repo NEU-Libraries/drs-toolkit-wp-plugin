@@ -28,8 +28,8 @@ $view = quest_get_view();
         <div class="noscript_warning">PLEASE NOTE: JAVASCRIPT IS DISABLED ON YOUR BROWSER. For the best user experience, please enable javascript on your browser now.</div>
         <?php
         if (!isset($_GET['js'])){
-        $request = explode('/', $_SERVER[REQUEST_URI]);
-        $url = site_url() . "/" . $request[2] . "/" . $request[3] . "?js=false";
+        	$request = explode('/', $_SERVER['REQUEST_URI']);
+        	$url = site_url() . "/" . $request[2] . "/" . $request[3] . "?js=false";
          ?>
         <meta http-equiv="refresh" content="0;url=<?php echo $url; ?>"/>
         <?php

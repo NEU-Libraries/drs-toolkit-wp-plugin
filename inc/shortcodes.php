@@ -1,8 +1,6 @@
 <?php
 //allows modals in admin
-add_thickbox();
 
-add_action('media_buttons', 'add_drs_button', 1000);
 function add_drs_button() {
     echo '<a href="#TB_inline?width=750&height=675&inlineId=drs-tile-modal" id="insert-drs" class="button thickbox" title="Add DRS Item(s)">Add DRS Item(s)</a>';
     echo '<div id="drs-tile-modal" style="display:none;padding:10px;">';
@@ -14,10 +12,13 @@ function add_drs_button() {
     echo '</div>';
     echo '</div>';
 }
+add_action('media_buttons', 'add_drs_button', 1000);
+
 
 /*enques extra js*/
 function drstk_enqueue_page_scripts( $hook ) {
   global $errors;
+  add_thickbox();
     if ($hook == 'post.php' || $hook == 'post-new.php') {
     wp_register_script('drstk_admin_js',
         plugins_url('../assets/js/admin.js', __FILE__),
@@ -53,7 +54,6 @@ function drstk_enqueue_page_scripts( $hook ) {
 add_action('admin_enqueue_scripts', 'drstk_enqueue_page_scripts');
 
 /* side box content for tile gallery shortcode */
-add_action( 'wp_ajax_get_tile_code', 'drstk_add_tile_gallery' ); //for auth users
 function drstk_add_tile_gallery(){
   check_ajax_referer( 'tile_ajax_nonce' );
   $col_pid = drstk_get_pid();
@@ -66,12 +66,13 @@ function drstk_add_tile_gallery(){
     }
     $data = get_response($url);
     $json = json_decode($data);
-    if ($json->error) {
+    if (isset($json->error)) {
       wp_send_json(json_encode( "There was an error: " . $json->error));
       return;
     }
     wp_send_json($data);
 }
+add_action( 'wp_ajax_get_tile_code', 'drstk_add_tile_gallery' ); //for auth users
 
 function thickbox_styles() {
    echo '<style type="text/css">

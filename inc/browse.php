@@ -15,29 +15,29 @@ function browse_ajax_handler() {
     $data = json_encode($data);
     wp_send_json($data);
   } else {
-    if ($_POST['params']['collection']){
+    if (isset($_POST['params']['collection'])){
       $url = "https://repository.library.northeastern.edu/api/v1/search/".$_POST['params']['collection']."?";
     } else {
       $url = "https://repository.library.northeastern.edu/api/v1/search/".$collection."?";
     }
-    if ($_POST['params']['q'] ){
+    if (isset($_POST['params']['q'])){
       $url .= "q=". urlencode(sanitize_text_field($_POST['params']['q']));
     }
-    if ($_GET['q'] ){
+    if (isset($_GET['q'])){
       $url .= "q=". urlencode(sanitize_text_field($_GET['q']));
     }
-    if ($_POST['params']['per_page']) {
+    if (isset($_POST['params']['per_page'])) {
       $url .= "&per_page=" . $_POST['params']['per_page'];
     }
-    if ($_POST['params']['page']) {
+    if (isset($_POST['params']['page'])) {
       $url .= "&page=" . $_POST['params']['page'];
     }
-    if ($_POST['params']['f']) {
+    if (isset($_POST['params']['f'])) {
       foreach($_POST['params']['f'] as $facet=>$facet_val){
         $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
       }
     }
-    if ($_POST['params']['sort']) {
+    if (isset($_POST['params']['sort'])) {
       $url .= "&sort=" . $_POST['params']['sort'];
     }
     $data = get_response($url);
@@ -68,7 +68,7 @@ add_action('wp_ajax_nopriv_wp_search', 'ajax_wp_search');
 function ajax_wp_search(){
   global $wp_query;
   global $paged;
-  $query_string = $_GET['query'];
+  $query_string = isset($_GET['query']) ? $_GET['query'] : "";
   $paged = $_GET['page'];
   if (isset($_GET['query']) && $query_string != ''){
     $query_args = array( 's' => $query_string, 'post_type'=>array('post', 'page'), 'posts_per_page'=>3, 'paged'=>$paged);

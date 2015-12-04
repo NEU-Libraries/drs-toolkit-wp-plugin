@@ -69,7 +69,7 @@ function drstk_collection_playlist($atts){
 
 function drstk_video_shortcode_scripts() {
     global $post;
-    if( has_shortcode( $post->post_content, 'drstk_collection_playlist') ) {
+    if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_collection_playlist') ) {
       wp_register_script('drstk_jwplayer',
           plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
           array(), $VERSION, false );
