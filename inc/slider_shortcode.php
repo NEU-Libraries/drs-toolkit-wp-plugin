@@ -3,7 +3,7 @@
 add_shortcode( 'drstk_gallery', 'drstk_gallery' );
 function drstk_gallery( $atts ){
   global $errors;
-  if ($atts['id']){
+  if (isset($atts['id'])){
     $images = explode(", ",$atts['id']);
     $img_html = '';
     $height = $width = 0;
@@ -31,7 +31,7 @@ function drstk_gallery( $atts ){
          }
          $title = $data->mods->Title[0];
          $img_html .= "<div class='item'><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'  alt='".$title."'></a>";
-         if ($atts['caption'] && $atts['caption'] == "on"){
+         if (isset($atts['caption']) && $atts['caption'] == "on"){
            $img_metadata = "";
            if (isset($atts['metadata'])){
              $metadata = explode(",",$atts['metadata']);
@@ -105,7 +105,7 @@ function drstk_gallery( $atts ){
      $gallery_html .= '</ol>';
    }
    $gallery_html .= '<div class="carousel-inner">'.$img_html.'</div>';
-   if ($atts['nav'] && $atts['nav'] == 'on'){
+   if (isset($atts['nav']) && $atts['nav'] == 'on'){
      $gallery_html .= '<a class="left carousel-control" href="#carousel-'.$rand.'" role="button" data-slide="prev"><i class="glyphicon-chevron-left fa fa-chevron-left" aria-hidden="true"></i><span class="sr-only">Previous</span></a><a class="right carousel-control" href="#carousel-'.$rand.'" role="button" data-slide="next"><i class="glyphicon-chevron-right fa fa-chevron-right" aria-hidden="true"></i><span class="sr-only">Next</span></a>';
    }
    $gallery_html .= '</div>';
