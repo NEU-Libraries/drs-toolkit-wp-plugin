@@ -8,6 +8,7 @@ jQuery(document).ready(function($) {
   var sort = "score+desc%2C+system_create_dtsi+desc";
   var params = {q:q, per_page:per_page, page:page, f:f, sort:sort};
   var template = browse_obj.template;
+  console.log(browse_obj);
   var search_options = $.parseJSON(browse_obj.search_options);
   var browse_options = $.parseJSON(browse_obj.browse_options);
   if ((q) && (q != '')){
