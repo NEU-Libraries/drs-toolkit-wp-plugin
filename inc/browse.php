@@ -53,7 +53,7 @@ function browse_ajax_handler() {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 
     // if it returns a 403 it will return no $output
     curl_setopt($ch, CURLOPT_FAILONERROR, 1);
