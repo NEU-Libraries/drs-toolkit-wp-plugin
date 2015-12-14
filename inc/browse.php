@@ -8,10 +8,12 @@ function browse_ajax_handler() {
   check_ajax_referer( 'browse_drs' );
   $collection = drstk_get_pid();
   if ($collection == '' || $collection == NULL) {
+    echo "collection is null";
       $data = array('error'=>$errors['search']['missing_collection']);
       $data = json_encode($data);
       wp_send_json($data);
   } elseif ($collection == "https://repository.library.northeastern.edu/collections/neu:1") {
+    echo "collection is set to neu:1";
     $data = array('error'=>$errors['search']['missing_collection']);
     $data = json_encode($data);
     wp_send_json($data);
