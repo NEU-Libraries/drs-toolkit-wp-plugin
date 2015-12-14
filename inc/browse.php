@@ -2,12 +2,10 @@
 add_action( 'wp_ajax_get_browse', 'browse_ajax_handler' ); //for auth users
 add_action( 'wp_ajax_nopriv_get_browse', 'browse_ajax_handler' ); //for nonauth users
 function browse_ajax_handler() {
-  // echo "we are in browse function";
   // Handle the ajax request
   global $errors;
   check_ajax_referer( 'browse_drs' );
   $collection = drstk_get_pid();
-  // echo $collection;
   if ($collection == '' || $collection == NULL) {
       $data = array('error'=>$errors['search']['missing_collection']);
       $data = json_encode($data);
