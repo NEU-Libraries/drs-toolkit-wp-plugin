@@ -13,7 +13,7 @@ function browse_ajax_handler() {
       $data = json_encode($data);
       wp_send_json($data);
   } elseif ($collection == "https://repository.library.northeastern.edu/collections/neu:1") {
-    echo "collection is set to neu:1";
+    echo "collection is set wrong";
     $data = array('error'=>$errors['search']['missing_collection']);
     $data = json_encode($data);
     wp_send_json($data);
