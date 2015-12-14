@@ -41,7 +41,7 @@ function browse_ajax_handler() {
       $url .= "&sort=" . $_POST['params']['sort'];
     }
     $data = get_response($url);
-    if ($data == -1) {
+    if ($data == '-1') {
       $data = array('url'=>$url);
     }
     wp_send_json($data);

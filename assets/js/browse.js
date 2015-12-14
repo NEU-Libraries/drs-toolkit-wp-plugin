@@ -45,6 +45,7 @@ jQuery(document).ready(function($) {
     }, function(data) {
       console.log(params)
       $("#drs-loading").hide();
+      console.log(data);
         var data = $.parseJSON(data);
         console.log(data);
         if (data == null) {
