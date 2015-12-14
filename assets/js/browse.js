@@ -43,11 +43,15 @@ jQuery(document).ready(function($) {
         params: params,
 
     }, function(data) {
+      console.log(params)
       $("#drs-loading").hide();
         var data = $.parseJSON(data);
         console.log(data);
         if (data == null) {
           $("#drs-content").html(errors.search.fail_null);
+        } else if (data == -1){
+          get_data(params);
+          console.log(params);
         } else if (data.error) {
           $("#drs-content").html(errors.search.no_results);
           if (template == 'collections'){
