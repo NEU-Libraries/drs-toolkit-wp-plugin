@@ -2,18 +2,17 @@
 add_action( 'wp_ajax_get_browse', 'browse_ajax_handler' ); //for auth users
 add_action( 'wp_ajax_nopriv_get_browse', 'browse_ajax_handler' ); //for nonauth users
 function browse_ajax_handler() {
-  echo "we are in browse function";
+  // echo "we are in browse function";
   // Handle the ajax request
   global $errors;
   check_ajax_referer( 'browse_drs' );
   $collection = drstk_get_pid();
+  echo $collection;
   if ($collection == '' || $collection == NULL) {
-    echo "collection is null";
       $data = array('error'=>$errors['search']['missing_collection']);
       $data = json_encode($data);
       wp_send_json($data);
   } elseif ($collection == "https://repository.library.northeastern.edu/collections/neu:1") {
-    echo "collection is set wrong";
     $data = array('error'=>$errors['search']['missing_collection']);
     $data = json_encode($data);
     wp_send_json($data);
@@ -45,7 +44,6 @@ function browse_ajax_handler() {
     }
     // $data = get_response($url);
     // if ($data == '-1') {
-    echo $url;
     $data = array('url'=>$url);
     // }
     wp_send_json($data);
