@@ -43,6 +43,7 @@ function browse_ajax_handler() {
     }
     // $data = get_response($url);
     // if ($data == '-1') {
+    echo $url;
     $data = array('url'=>$url);
     // }
     wp_send_json($data);
