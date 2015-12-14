@@ -477,3 +477,20 @@ function fix_admin_head() {
   echo "<style>#postimagediv, #start-pt-pb-tour{display:none !important;}";
 }
 add_action( 'admin_head', 'fix_admin_head' );
+
+
+/**
+* Basic curl response mechanism.
+*/
+function get_response( $url ) {
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+
+  // if it returns a 403 it will return no $output
+  curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+  $output = curl_exec($ch);
+  curl_close($ch);
+  return $output;
+}
