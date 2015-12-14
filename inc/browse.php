@@ -42,10 +42,7 @@ function browse_ajax_handler() {
     if (isset($_POST['params']['sort'])) {
       $url .= "&sort=" . $_POST['params']['sort'];
     }
-    // $data = get_response($url);
-    // if ($data == '-1') {
-    $data = array('url'=>$url);
-    // }
+    $data = get_response($url);
     wp_send_json($data);
   }
 }
