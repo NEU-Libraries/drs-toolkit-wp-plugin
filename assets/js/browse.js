@@ -50,8 +50,7 @@ jQuery(document).ready(function($) {
         if (data == null) {
           $("#drs-content").html(errors.search.fail_null);
         } else if (data == -1){
-          get_data(params);
-          console.log(params);
+          $("#drs-content").html(errors.search.fail_null);
         } else if (data.error) {
           $("#drs-content").html(errors.search.no_results);
           if (template == 'collections'){
