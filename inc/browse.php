@@ -7,7 +7,7 @@ function browse_ajax_handler() {
   global $errors;
   check_ajax_referer( 'browse_drs' );
   $collection = drstk_get_pid();
-  echo $collection;
+  // echo $collection;
   if ($collection == '' || $collection == NULL) {
       $data = array('error'=>$errors['search']['missing_collection']);
       $data = json_encode($data);
