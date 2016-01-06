@@ -8,7 +8,7 @@ jQuery(document).ready(function($) {
   var sort = "score+desc%2C+system_create_dtsi+desc";
   var params = {q:q, per_page:per_page, page:page, f:f, sort:sort};
   var template = browse_obj.template;
-  console.log(browse_obj);
+  // console.log(browse_obj);
   var search_options = $.parseJSON(browse_obj.search_options);
   var browse_options = $.parseJSON(browse_obj.browse_options);
   if ((q) && (q != '')){
@@ -28,6 +28,7 @@ jQuery(document).ready(function($) {
     $("#primary").removeClass('col-md-12').addClass('col-md-9');
     $("#secondary").show();
   } else {
+    params.sort = "title_ssi+asc";
     $("#primary").addClass('col-md-12').removeClass('col-md-9');
     $("#secondary").hide();
   }
@@ -44,11 +45,11 @@ jQuery(document).ready(function($) {
         params: params,
 
     }, function(data) {
-      console.log(params)
+      // console.log(params)
       $("#drs-loading").hide();
-      console.log(data);
+      // console.log(data);
         var data = $.parseJSON(data);
-        console.log(data);
+        // console.log(data);
         if (data == null) {
           $("#drs-content").html(errors.search.fail_null);
         } else if (data == -1){
