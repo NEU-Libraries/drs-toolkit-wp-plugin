@@ -26,10 +26,8 @@ $SITE_URL = site_url();
 
 // Set template names here so we don't have to go into the code.
 $TEMPLATE = array(
-    //'custom_template' => 'nusolr-template.php', //this attaches the plugin to the separate theme template
     'browse_template' => dirname(__FILE__) . '/templates/browse.php',
     'item_template' => dirname(__FILE__) . '/templates/item.php',
-    'item_nojs_template' => dirname(__FILE__) . '/templates/item_nojs.php',
 );
 
  register_activation_hook( __FILE__, 'drstk_install' );
@@ -93,6 +91,19 @@ $TEMPLATE = array(
     return $collection_pid;
   }
 
+  function drstk_get_meta_options(){
+    $meta_options = get_option('drstk_item_page_metadata');
+    if ($meta_options == NULL){
+      $meta_options = "Title,Creator,Contributor,Publisher,Type of Resource,Genre,Language,Physical Description,Abstract/Description,Table of contents,Notes,Subjects and keywords,Related item,Identifier,Access condition,Location,uri,Format,Permanent URL,Date created,Date issued,Copyright date";
+    }
+    $meta_options = explode(",", $meta_options);
+    return $meta_options;
+  }
+
+  function drstk_get_errors(){
+    global $errors;
+    return $errors;
+  }
 //this creates the form for entering the pid on the settings page
  function drstk_display_settings() {
 
@@ -333,15 +344,11 @@ function drstk_content_template( $template ) {
 
         if ($template_type == 'item') {
             global $item_pid;
-            $item_pid = get_query_var( 'pid' );
-          if (isset ($wp_query->query_vars['js']) && $wp_query->query_vars['js'] == 'false'){
-            include( plugin_dir_path( __FILE__ ) . 'inc/item_nojs.php' );
-            return $TEMPLATE['item_nojs_template'];
-          } else {
+            $item_pid = get_query_var('pid');
             add_action('wp_enqueue_scripts', 'drstk_item_script');
-            add_action('wp_enqueue_scripts', 'drstk_breadcrumb_script');
+          //   add_action('wp_enqueue_scripts', 'drstk_breadcrumb_script');
             return $TEMPLATE['item_template'];
-          }
+          // }
         }
 
     } else {
@@ -420,31 +427,10 @@ function drstk_item_script() {
         plugins_url('/assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__),
         array());
     wp_enqueue_script('drstk_elevatezoom');
-    wp_register_script( 'drstk_item',
-        plugins_url( '/assets/js/item.js', __FILE__ ),
-        array( 'jquery' )
-    );
-    wp_enqueue_script('drstk_item');
     wp_register_script('drstk_jwplayer',
         plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
         array(), $VERSION, false );
     wp_enqueue_script('drstk_jwplayer');
-    $meta_options = get_option('drstk_item_page_metadata');
-    if ($meta_options == NULL){
-      $meta_options = "Title,Creator,Contributor,Publisher,Type of Resource,Genre,Language,Physical Description,Abstract/Description,Table of contents,Notes,Subjects and keywords,Related item,Identifier,Access condition,Location,uri,Format,Permanent URL,Date created,Date issued,Copyright date";
-    }
-
-    //this creates a unique nonce to pass back and forth from js/php to protect
-    $item_nonce = wp_create_nonce( 'item_drs' );
-    //this allows an ajax call from item.js
-    wp_localize_script( 'drstk_item', 'item_obj', array(
-       'ajax_url' => admin_url( 'admin-ajax.php' ),
-       'nonce'    => $item_nonce,
-       'template' => $wp_query->query_vars['drstk_template_type'],
-       'pid' => $item_pid,
-       'meta_options' => json_encode($meta_options),
-       'errors' => json_encode($errors),
-    ) );
 }
 
 function drstk_breadcrumb_script(){
