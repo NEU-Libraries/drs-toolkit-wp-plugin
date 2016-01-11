@@ -62,7 +62,7 @@ function get_item_breadcrumbs(){
   if (check_for_bad_data()){
     return false;
   }
-  $breadcrumb_html = [];
+  $breadcrumb_html = array();
   $end = false;
   $breadcrumbs = $data->breadcrumbs;
   if (array_key_exists($collection,$breadcrumbs)){
