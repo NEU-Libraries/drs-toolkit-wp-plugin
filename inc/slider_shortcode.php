@@ -7,6 +7,7 @@ function drstk_gallery( $atts ){
     $images = explode(", ",$atts['id']);
     $img_html = '';
     $height = $width = 0;
+    $i = 0;
    foreach($images as $id){
        $url = "https://repository.library.northeastern.edu/api/v1/files/" . $id;
        $data = get_response($url);
@@ -30,7 +31,17 @@ function drstk_gallery( $atts ){
            $width = $this_width;
          }
          $title = $data->mods->Title[0];
-         $img_html .= "<div class='item'><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'  alt='".$title."'></a>";
+         $img_html .= "<div class='item";
+         if ($i == 0){
+           $img_html .= " active";
+         }
+         $img_html .= "'><a href='".site_url()."/item/".$pid."'><img";
+         if ($i == 0){
+           $img_html .= " src='".$thumbnail."'";
+         } else {
+           $img_html .= " data-src='".$thumbnail."'";
+         }
+         $img_html .= "  alt='".$title."'></a>";
          if (isset($atts['caption']) && $atts['caption'] == "on"){
            $img_metadata = "";
            if (isset($atts['metadata'])){
@@ -73,6 +84,7 @@ function drstk_gallery( $atts ){
        } else {
          $img_html .= $errors['shortcodes']['fail'];
        }
+      $i++;
    }
    if (isset($atts['speed']) && $atts['speed'] > 1){
      $interval = $atts['speed'];
