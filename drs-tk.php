@@ -346,9 +346,7 @@ function drstk_content_template( $template ) {
             global $item_pid;
             $item_pid = get_query_var('pid');
             add_action('wp_enqueue_scripts', 'drstk_item_script');
-          //   add_action('wp_enqueue_scripts', 'drstk_breadcrumb_script');
             return $TEMPLATE['item_template'];
-          // }
         }
 
     } else {

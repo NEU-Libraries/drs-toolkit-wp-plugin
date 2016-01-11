@@ -62,39 +62,26 @@ function get_item_breadcrumbs(){
   if (check_for_bad_data()){
     return false;
   }
-  $breadcrumb_html = '';
-  $breadcrumb_url = "https://repository.library.northeastern.edu/api/v1/search/".$collection."?"."f['id'][]=".$item_pid;
-  // get_this_breadcrumb($breadcrumb_url);
-  echo $breadcrumb_html;
-}
-
-function get_this_breadcrumb($breadcrumb_url){
-  global $breadcrumb_html;
-  $breadcrumb_data = get_response($breadcrumb_url);
-  $breadcrumb_data = json_decode($breadcrumb_data);
-  $doc = $breadcrumb_data->response->response->docs[0];
-  parse_this_breadcrumb($doc);
-}
-
-function parse_this_breadcrumb($doc){
-  global $collection, $breadcrumb_html;
-  $title = $doc->full_title_ssi;
-  $object_type = $doc->active_fedora_model_ssi;
-  if ($object_type == 'CoreFile'){
-    $object_url = '/item/'.$doc->id;
-  } else if ($object_type == 'Collection') {
-    $object_url = '/collection/'.$doc->id;
-  }
-  $breadcrumb_html = " > <a href='".site_url().$object_url."'>".$title."</a>" . $breadcrumb_html;
-  if ($doc->fields_parent_id_tesim){
-    $parent = $doc->fields_parent_id_tesim[0];
-    if ($parent != $collection){
-      $breadcrumb_url = "https://repository.library.northeastern.edu/api/v1/search/".$collection."?"."f['id'][]=".$parent;
-      get_this_breadcrumb($breadcrumb_url);
-    } else {
-      $breadcrumb_html = "<a href='".site_url()."/browse'>Browse</a>" . $breadcrumb_html;
+  $breadcrumb_html = [];
+  $end = false;
+  $breadcrumbs = $data->breadcrumbs;
+  if (array_key_exists($collection,$breadcrumbs)){
+    foreach($breadcrumbs as $pid=>$title){
+      if ($pid == $item_pid){
+        $breadcrumb_html[]= "<a href='".site_url()."/item/".$pid."'> ".$title."</a>";
+      } else if ($pid == $collection){
+        $breadcrumb_html[]= "<a href='".site_url()."/browse'>Browse</a>";
+        $end = true;
+      } else if ($end == true) {
+      } else {
+        $breadcrumb_html[]= "<a href='".site_url()."/collection/".$pid."'> ".$title."</a>";
+      }
     }
+  } else {
+    $breadcrumb_html[]= "<a href='".site_url()."/item/".$item_pid."'> ".$data->mods->Title[0]."</a>";
+    $breadcrumb_html[] = "<a href='".site_url()."/browse'>Browse</a>";
   }
+  echo implode(" > ", array_reverse($breadcrumb_html));
 }
 
 function get_item_image(){
