@@ -2,6 +2,11 @@
 /* adds shortcode */
 add_shortcode( 'drstk_collection_playlist', 'drstk_collection_playlist' );
 function drstk_collection_playlist($atts){
+  $cache = get_transient(md5('PREFIX'.serialize($atts)));
+
+  if($cache) {
+      return $cache;
+  }
     $collection = explode(', ', $atts['id']);
     $playlists = '';
     if (isset($atts['height'])){
@@ -47,7 +52,7 @@ function drstk_collection_playlist($atts){
           return $errors['shortcodes']['fail'];
         }
       }
-    return '<div id="drs-item-video">
+    $cache_output = '<div id="drs-item-video">
         <img style="width: 100%;" src="' . $poster[0] .'" />
       </div>
       <script type="text/javascript">
@@ -64,6 +69,9 @@ function drstk_collection_playlist($atts){
               },
           playlist: [ '. $playlists . ']
     });</script>';
+    $cache_time = 10;
+    set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
+    return $cache_output;
 
 }
 

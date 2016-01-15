@@ -2,6 +2,11 @@
 /* adds shortcode */
 add_shortcode( 'drstk_item', 'drstk_item' );
 function drstk_item( $atts ){
+  $cache = get_transient(md5('PREFIX'.serialize($atts)));
+
+  if($cache) {
+      return $cache;
+  }
   $url = "https://repository.library.northeastern.edu/api/v1/files/" . $atts['id'];
   $data = get_response($url);
   $data = json_decode($data);
@@ -60,6 +65,9 @@ function drstk_item( $atts ){
     }
   }
   $img_html .= "</div></div>";
+  $cache_output = $img_html;
+  $cache_time = 10;
+  set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
   return $img_html;
 }
 

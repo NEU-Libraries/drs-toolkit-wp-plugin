@@ -3,6 +3,11 @@
 add_shortcode( 'drstk_tiles', 'drstk_tiles' );
 function drstk_tiles( $atts ){
   global $errors;
+  $cache = get_transient(md5('PREFIX'.serialize($atts)));
+
+  if($cache) {
+      return $cache;
+  }
   $imgs = explode(", ",$atts['id']);
   $img_html = "";
   foreach($imgs as $img){
@@ -60,6 +65,9 @@ function drstk_tiles( $atts ){
   if (isset($atts['cell-width'])){ $shortcode .= " data-cell-width='".$atts['cell-width']."'";} else {$shortcode .= " data-cell-width='200'";}
   if (isset($atts['text-align'])){ $shortcode .= " data-text-align='".$atts['text-align']."'";} else {$shortcode .= " data-text-align='center'";}
   $shortcode .= ">".$img_html."</div>";
+  $cache_output = $shortcode;
+  $cache_time = 10;
+  set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
   return $shortcode;
 }
 

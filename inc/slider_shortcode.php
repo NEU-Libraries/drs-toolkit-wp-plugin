@@ -3,6 +3,11 @@
 add_shortcode( 'drstk_gallery', 'drstk_gallery' );
 function drstk_gallery( $atts ){
   global $errors;
+  $cache = get_transient(md5('PREFIX'.serialize($atts)));
+
+  if($cache) {
+      return $cache;
+  }
   if (isset($atts['id'])){
     $images = explode(", ",$atts['id']);
     $img_html = '';
@@ -121,6 +126,9 @@ function drstk_gallery( $atts ){
      $gallery_html .= '<a class="left carousel-control" href="#carousel-'.$rand.'" role="button" data-slide="prev"><i class="glyphicon-chevron-left fa fa-chevron-left" aria-hidden="true"></i><span class="sr-only">Previous</span></a><a class="right carousel-control" href="#carousel-'.$rand.'" role="button" data-slide="next"><i class="glyphicon-chevron-right fa fa-chevron-right" aria-hidden="true"></i><span class="sr-only">Next</span></a>';
    }
    $gallery_html .= '</div>';
+   $cache_output = $gallery_html;
+   $cache_time = 10;
+   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
    return $gallery_html;
   }
 }
