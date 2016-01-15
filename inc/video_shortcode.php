@@ -69,7 +69,7 @@ function drstk_collection_playlist($atts){
               },
           playlist: [ '. $playlists . ']
     });</script>';
-    $cache_time = 10;
+    $cache_time = 1000;
     set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
     return $cache_output;
 

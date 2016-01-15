@@ -66,7 +66,7 @@ function drstk_item( $atts ){
   }
   $img_html .= "</div></div>";
   $cache_output = $img_html;
-  $cache_time = 10;
+  $cache_time = 1000;
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
   return $img_html;
 }

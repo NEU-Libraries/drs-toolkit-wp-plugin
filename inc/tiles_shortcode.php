@@ -66,7 +66,7 @@ function drstk_tiles( $atts ){
   if (isset($atts['text-align'])){ $shortcode .= " data-text-align='".$atts['text-align']."'";} else {$shortcode .= " data-text-align='center'";}
   $shortcode .= ">".$img_html."</div>";
   $cache_output = $shortcode;
-  $cache_time = 10;
+  $cache_time = 1000;
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
   return $shortcode;
 }
