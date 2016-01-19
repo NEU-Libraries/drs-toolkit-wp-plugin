@@ -30,6 +30,11 @@ $TEMPLATE = array(
     'item_template' => dirname(__FILE__) . '/templates/item.php',
 );
 
+$TEMPLATE_THEME = array(
+    'browse_template' => 'drstk-browse.php',
+    'item_template' => 'drstk-item.php',
+);
+
  register_activation_hook( __FILE__, 'drstk_install' );
  register_deactivation_hook( __FILE__, 'drstk_deactivation' );
 
@@ -327,6 +332,7 @@ add_filter('template_include', 'drstk_content_template', 1, 1);
 function drstk_content_template( $template ) {
     global $wp_query;
     global $TEMPLATE;
+    global $TEMPLATE_THEME;
 
     if ( isset($wp_query->query_vars['drstk_template_type']) ) {
 
@@ -339,14 +345,20 @@ function drstk_content_template( $template ) {
             if ($template_type == 'collection') {
               add_action('wp_enqueue_scripts', 'drstk_breadcrumb_script');
             }
-            return $TEMPLATE['browse_template'];
+
+            // look for theme template first, load plugin template as fallback
+            $theme_template = locate_template( array( $TEMPLATE_THEME['browse_template'] ) );
+            return ($theme_template ? $theme_template : $TEMPLATE['browse_template']);
         }
 
         if ($template_type == 'item') {
             global $item_pid;
             $item_pid = get_query_var('pid');
             add_action('wp_enqueue_scripts', 'drstk_item_script');
-            return $TEMPLATE['item_template'];
+
+            // look for theme template first, load plugin template as fallback
+            $theme_template = locate_template( array( $TEMPLATE_THEME['item_template'] ) );
+            return ($theme_template ? $theme_template : $TEMPLATE['item_template']);
         }
 
     } else {
