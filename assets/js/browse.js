@@ -119,6 +119,7 @@ jQuery(document).ready(function($) {
       }
       pagination += "</li>";
       $("#drs-pagination ul.pag").html(pagination);
+      $("#drs-pagination").show();
     } else {
       $("#drs-pagination ul.pag").html("");
       $("#drs-pagination").hide();
