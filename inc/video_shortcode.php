@@ -24,7 +24,7 @@ function drstk_collection_playlist($atts){
         $data = get_response($url);
         $data = json_decode($data);
         $poster;
-        if (!$data->error){
+        if (!isset($data->error)){
           $poster[] = $data->thumbnails[4];
           $this_poster = $data->thumbnails[4];
           $title = $data->mods->Title[0];
@@ -79,7 +79,7 @@ function drstk_video_shortcode_scripts() {
     global $post;
     if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_collection_playlist') ) {
       wp_register_script('drstk_jwplayer',
-          plugins_url('../assets/js/jwplayer/jwplayer.js', __FILE__),
+          plugins_url('/assets/js/jwplayer/jwplayer.js', dirname(__FILE__)),
           array(), $VERSION, false );
         wp_enqueue_script( 'drstk_jwplayer');
     }
