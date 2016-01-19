@@ -79,7 +79,7 @@ function drstk_video_shortcode_scripts() {
     global $post;
     if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_collection_playlist') ) {
       wp_register_script('drstk_jwplayer',
-          plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
+          plugins_url('../assets/js/jwplayer/jwplayer.js', __FILE__),
           array(), $VERSION, false );
         wp_enqueue_script( 'drstk_jwplayer');
     }
