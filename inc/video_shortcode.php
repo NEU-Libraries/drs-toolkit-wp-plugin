@@ -28,22 +28,24 @@ function drstk_collection_playlist($atts){
           $poster[] = $data->thumbnails[4];
           $this_poster = $data->thumbnails[4];
           $title = $data->mods->Title[0];
-          $pid = $data->canonical_object[0][0];
-          $pid = explode("/", $pid);
-          $pid = end($pid);
-          $encoded = str_replace(':','%3A', $pid);
-          $dir = substr(md5("info:fedora/".$pid."/content/content.0"), 0, 2);
-          if ($data->canonical_object[0][1] == 'Audio File'){
-            $rtmp = 'rtmp://libwowza.neu.edu:1935/vod/_definst_/MP3:datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/info%3Afedora%2F'.$encoded.'%2Fcontent%2Fcontent.0';
-            $playlist = 'http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/MP3:'. urlencode("info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0") .'/playlist.m3u8';
-            $type = 'MP3';
-            $provider = 'audio';
-          }
-          if ($data->canonical_object[0][1] == 'Video File'){
-            $rtmp = 'rtmp://libwowza.neu.edu:1935/vod/_definst_/MP4:datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/info%3Afedora%2F'.$encoded.'%2Fcontent%2Fcontent.0';
-            $playlist = 'http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/MP4:'. urlencode("info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0") .'/playlist.m3u8';
-            $type = 'MP4';
-            $provider = 'video';
+          foreach($data->canonical_object as $key=>$val){
+            $pid = $key;
+            $pid = explode("/", $pid);
+            $pid = end($pid);
+            $encoded = str_replace(':','%3A', $pid);
+            $dir = substr(md5("info:fedora/".$pid."/content/content.0"), 0, 2);
+            if ($val == 'Audio File'){
+              $rtmp = 'rtmp://libwowza.neu.edu:1935/vod/_definst_/MP3:datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/info%3Afedora%2F'.$encoded.'%2Fcontent%2Fcontent.0';
+              $playlist = 'http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/MP3:'. urlencode("info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0") .'/playlist.m3u8';
+              $type = 'MP3';
+              $provider = 'audio';
+            }
+            if ($val == 'Video File'){
+              $rtmp = 'rtmp://libwowza.neu.edu:1935/vod/_definst_/MP4:datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/info%3Afedora%2F'.$encoded.'%2Fcontent%2Fcontent.0';
+              $playlist = 'http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/MP4:'. urlencode("info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0") .'/playlist.m3u8';
+              $type = 'MP4';
+              $provider = 'video';
+            }
           }
           $download = 'download';
           $playlists .= '{ sources: [ { file: "' .  $rtmp . '"},';

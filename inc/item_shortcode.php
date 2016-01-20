@@ -17,8 +17,10 @@ function drstk_item( $atts ){
   }
   $thumbnail = $data->thumbnails[$num];
   $master = $data->thumbnails[4];
-  if (in_array("Large Image", $data->content_objects)){
-    $master = $data->content_objects['Large Image'];
+  foreach($data->content_objects as $key=>$val){
+    if ($val == 'Large Image'){
+      $master = $key;
+    }
   }
   $img_html = "<div class='drs-item'><a href='".site_url()."/item/".$atts['id']."'><img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
   if (isset($atts['align'])){
