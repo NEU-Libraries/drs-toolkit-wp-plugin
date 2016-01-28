@@ -62,7 +62,7 @@ function ajax_wp_search(){
         echo "No related content was found";
       }
   } else {
-    echo "Please enter a search term to retreive related content";
+    echo "Please enter a search term to retrieve related content";
   }
   wp_reset_postdata();
   die();
