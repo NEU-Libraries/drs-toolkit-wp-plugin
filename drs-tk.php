@@ -99,9 +99,10 @@ $TEMPLATE_THEME = array(
   function drstk_get_meta_options(){
     $meta_options = get_option('drstk_item_page_metadata');
     if ($meta_options == NULL){
-      $meta_options = "Title,Creator,Contributor,Publisher,Type of Resource,Genre,Language,Physical Description,Abstract/Description,Table of contents,Notes,Subjects and keywords,Related item,Identifier,Access condition,Location,uri,Format,Permanent URL,Date created,Date issued,Copyright date";
+      // $meta_options = "Title,Creator,Contributor,Publisher,Type of Resource,Genre,Language,Physical Description,Abstract/Description,Table of contents,Notes,Subjects and keywords,Related item,Identifier,Access condition,Location,uri,Format,Permanent URL,Date created,Date issued,Copyright date";
+    } else {
+      $meta_options = explode(",", $meta_options);
     }
-    $meta_options = explode(",", $meta_options);
     return $meta_options;
   }
 
@@ -438,9 +439,13 @@ function drstk_item_script() {
         array());
     wp_enqueue_script('drstk_elevatezoom');
     wp_register_script('drstk_jwplayer',
-        plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
+        plugins_url('/assets/js/jwplayer7/jwplayer.js', __FILE__),
         array(), $VERSION, false );
     wp_enqueue_script('drstk_jwplayer');
+    wp_register_script('drstk_swf',
+        plugins_url('/assets/js/jwplayer/swfobject.js', __FILE__),
+        array(), $VERSION, false );
+    wp_enqueue_script('drstk_swf');
 }
 
 function drstk_breadcrumb_script(){

@@ -113,6 +113,7 @@ function get_item_image(){
           echo  '<img id="drs-item-img" src="'.$img.'" />';
         }
       } else if ($val == 'Video File' || $val == 'Audio File'){
+        echo  '<img id="drs-item-img" src="'.$img.'" />';
         $av_pid = $key;
         $av_pid = explode("/", $av_pid);
         $av_pid = end($av_pid);
@@ -132,11 +133,17 @@ function get_item_image(){
         }
         echo "<div id='drs-item-video'></div>";
         echo '<script type="text/javascript">
-        jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A=="
+        // jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A=="
+        // jwplayer.key="SRxWvl6hZ4R2pTst0E5T6v2GKIxWdOZCyVx0eQ=="
+        jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc="
         var primary = "flash"
+        console.log(swfobject.getFlashPlayerVersion().major)
         if (typeof swfobject == "undefined" || swfobject.getFlashPlayerVersion().major == 0) {
-          primary == "html5"
+          primary = "html5"
         }
+        console.log(primary)
+        jQuery(document).ready(function($){
+        $("#drs-item-img").hide();
         jwplayer("drs-item-video").setup({
         sources:
         [
@@ -145,17 +152,20 @@ function get_item_image(){
         ],
         image: "'.$av_poster.'",
         provider: "'.$av_provider.'",
-        fallback: "true",
-        androidhls: "true",
-        primary: primary,
+        // fallback: "false",
+        // androidhls: "true",
+        // primary: primary,
         width: "100%",
         height: 400,
+        // flashplayer: "/~beekerz/wordpress/wp-content/plugins/drs-tk/assets/js/jwplayer/jwplayer.flash.swf",
+        // html5player: "/~beekerz/wordpress/wp-content/plugins/drs-tk/assets/js/jwplayer/jwplayer.html5.js"
         })
 
         var errorMessage = function() {
+          console.log("reporting an error");
           $("#drs-item-img").before("<div class=\'alert alert-warning\'>'.$errors['item']['jwplayer_fail'].'</div>");
           $("#drs-item-img").show();
-          $("#drs-item-video").hide();
+          // $("#drs-item-video").hide();
         };
        jwplayer().onError(errorMessage);
        jwplayer().onSetupError(errorMessage);
@@ -163,7 +173,9 @@ function get_item_image(){
          theTimeout = setTimeout(function() {
            errorMessage;
          }, 5000);
-       });</script>';
+       });
+        });
+       </script>';
       }
     }
   }
