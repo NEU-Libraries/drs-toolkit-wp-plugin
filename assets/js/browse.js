@@ -223,7 +223,7 @@ jQuery(document).ready(function($) {
         if (thumbnail[1]) {
           this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
         } else {
-          this_doc += "<div class=fa fa-folder-open-o'></div>";
+          this_doc += "<div class='fa fa-folder-open-o'></div>";
         }
         this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure><div class='caption text-center'><h5 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>";
         if (browse_options.indexOf('title') > -1){
