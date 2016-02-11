@@ -98,10 +98,12 @@ $TEMPLATE_THEME = array(
 
   function drstk_get_meta_options(){
     $meta_options = get_option('drstk_item_page_metadata');
-    if ($meta_options == NULL){
-      $meta_options = "Title,Creator,Contributor,Publisher,Type of Resource,Genre,Language,Physical Description,Abstract/Description,Table of contents,Notes,Subjects and keywords,Related item,Identifier,Access condition,Location,uri,Format,Permanent URL,Date created,Date issued,Copyright date";
+    if ($meta_options != NULL && length($meta_options) > 0){
+      $meta_options = explode(",", $meta_options);
+    } else {
+      $meta_options == NULL;
+      // $meta_options = "Title,Creator,Contributor,Publisher,Type of Resource,Genre,Language,Physical Description,Abstract/Description,Table of contents,Notes,Subjects and keywords,Related item,Identifier,Access condition,Location,uri,Format,Permanent URL,Date created,Date issued,Copyright date";
     }
-    $meta_options = explode(",", $meta_options);
     return $meta_options;
   }
 
