@@ -216,7 +216,7 @@ $TEMPLATE_THEME = array(
      <tr>
      <td><h4>Single Item Page Settings</h4></td>
      </tr>
-     <tr><td>Metadata to display<br/>';
+     <tr><td>Metadata to display<br/>(If none are selected, all metadata will display.)<br/>';
      foreach($all_meta_options as $option){
        $html .='<label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="'.$option.'" ';
        if (in_array($option, $item_options)){$html.='checked="checked"';}
