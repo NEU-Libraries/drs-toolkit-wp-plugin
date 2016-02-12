@@ -98,7 +98,7 @@ $TEMPLATE_THEME = array(
 
   function drstk_get_meta_options(){
     $meta_options = get_option('drstk_item_page_metadata');
-    if ($meta_options != NULL && length($meta_options) > 0){
+    if ($meta_options != NULL){
       $meta_options = explode(",", $meta_options);
     } else {
       $meta_options == NULL;
