@@ -10,7 +10,7 @@ function get_item_details(){
     return false;
   }
   foreach($data->mods as $key => $value){
-    if (in_array($key, $meta_options) || ($meta_options == NULL)){
+    if (($meta_options == NULL) || in_array($key, $meta_options)){
       echo "<div class='drs-field-label'><b>".$key."</b></div><div class='drs-field-value'>";
       if (count($value) > 0){
         for ($i =0; $i<count($value); $i++){
