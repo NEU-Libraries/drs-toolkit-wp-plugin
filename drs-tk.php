@@ -98,10 +98,10 @@ $TEMPLATE_THEME = array(
 
   function drstk_get_meta_options(){
     $meta_options = get_option('drstk_item_page_metadata');
-    if ($meta_options == NULL){
-      // $meta_options = "Title,Creator,Contributor,Publisher,Type of Resource,Genre,Language,Physical Description,Abstract/Description,Table of contents,Notes,Subjects and keywords,Related item,Identifier,Access condition,Location,uri,Format,Permanent URL,Date created,Date issued,Copyright date";
-    } else {
+    if ($meta_options != NULL){
       $meta_options = explode(",", $meta_options);
+    } else {
+      $meta_options == NULL;
     }
     return $meta_options;
   }
@@ -114,8 +114,9 @@ $TEMPLATE_THEME = array(
  function drstk_display_settings() {
 
      $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'https://repository.library.northeastern.edu/collections/neu:1';
-     $item_meta = get_option('drstk_item_page_metadata');
-     $item_options = explode(',',$item_meta);
+     $item_options = drstk_get_meta_options();
+     $all_meta_options = explode(",", "Title,Creator,Contributor,Publisher,Type of Resource,Genre,Language,Physical Description,Abstract/Description,Table of contents,Notes,Subjects and keywords,Related item,Identifier,Access condition,Location,uri,Format,Permanent URL,Date created,Date issued,Copyright date,Biographical/Historical,Biográfica/histórica");
+
      $html = '</pre>
      <div class="wrap">
      <form action="options.php" method="post" name="options">
@@ -124,7 +125,7 @@ $TEMPLATE_THEME = array(
      <tbody>
      <tr>
      <td scope="row" align="left">
-      <label>Project Collection URL</label>
+      <label>Project Collection or Set URL</label>
      <input name="drstk_collection" type="text" value="'.$collection_pid.'" style="width:100%;"></input>
      <br/>
      <small>Ie. <a href="https://repository.library.northeastern.edu/collections/neu:6012">https://repository.library.northeastern.edu/collections/neu:6012</a></small>
@@ -215,74 +216,13 @@ $TEMPLATE_THEME = array(
      <tr>
      <td><h4>Single Item Page Settings</h4></td>
      </tr>
-     <tr><td>Metadata to display<br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Title" ';
-     if (in_array('Title', $item_options)){$html.='checked="checked"';}
-     $html.='/> Title</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Creator" ';
-     if (in_array('Creator', $item_options)){$html.='checked="checked"';}
-     $html.='/> Creator</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Contributor" ';
-     if (in_array('Contributor', $item_options)){$html.='checked="checked"';}
-     $html.='/> Contributor</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Publisher" ';
-     if (in_array('Publisher', $item_options)){$html.='checked="checked"';}
-     $html.='/> Publisher</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Type of Resource" ';
-     if (in_array('Type of Resource', $item_options)){$html.='checked="checked"';}
-     $html.='/> Type of Resource</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Genre" ';
-     if (in_array('Genre', $item_options)){$html.='checked="checked"';}
-     $html.='/> Genre</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Language" ';
-     if (in_array('Language', $item_options)){$html.='checked="checked"';}
-     $html.='/> Language</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Physical description" ';
-     if (in_array('Physical description', $item_options)){$html.='checked="checked"';}
-     $html.='/> Physical description</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Abstract/Description" ';
-     if (in_array('Abstract/Description', $item_options)){$html.='checked="checked"';}
-     $html.='/> Abstract/Description</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Table of contents" ';
-     if (in_array('Table of contents', $item_options)){$html.='checked="checked"';}
-     $html.='/> Table of contents</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Notes" ';
-     if (in_array('Notes', $item_options)){$html.='checked="checked"';}
-     $html.='/> Notes</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Subjects and keywords" ';
-     if (in_array('Subjects and keywords', $item_options)){$html.='checked="checked"';}
-     $html.='/> Subjects and keywords</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Related item" ';
-     if (in_array('Related item', $item_options)){$html.='checked="checked"';}
-     $html.='"/> Related item</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Identifier" ';
-     if (in_array('Identifier', $item_options)){$html.='checked="checked"';}
-     $html.='/> Identifier</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Location" ';
-     if (in_array('Location', $item_options)){$html.='checked="checked"';}
-     $html.='/> Location</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Access condition" ';
-     if (in_array('Access condition', $item_options)){$html.='checked="checked"';}
-     $html.='/> Access condition</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="uri" ';
-     if (in_array('uri', $item_options)){$html.='checked="checked"';}
-     $html.='/> uri</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Format" ';
-     if (in_array('Format', $item_options)){$html.='checked="checked"';}
-     $html.='/> Format</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Permanent URL" ';
-     if (in_array('Permanent URL', $item_options)){$html.='checked="checked"';}
-     $html.='/> Permanent URL</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Date created" ';
-     if (in_array('Date created', $item_options)){$html.='checked="checked"';}
-     $html.='/> Date created</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Date issued" ';
-     if (in_array('Date issued', $item_options)){$html.='checked="checked"';}
-     $html.='/> Date issued</label><br/>
-     <label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="Copyright date" ';
-     if (in_array('Copyright date', $item_options)){$html.='checked="checked"';}
-     $html.='/> Copyright date</label><br/>
-
+     <tr><td>Metadata to display<br/>(If none are selected, all metadata will display.)<br/>';
+     foreach($all_meta_options as $option){
+       $html .='<label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="'.$option.'" ';
+       if (in_array($option, $item_options)){$html.='checked="checked"';}
+       $html.='/> '.$option.'</label><br/>';
+     }
+    $html .= '
      <input type="hidden" name="drstk_item_page_metadata" value="'.get_option('drstk_item_page_metadata').'"/>
      </td>
      </tr>

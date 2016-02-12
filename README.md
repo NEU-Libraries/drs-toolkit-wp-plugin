@@ -89,3 +89,30 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
 19. Click the '<' arrow then Footer. Change Social Icon Hover Color and Social Icon Hover background color to #c00. Change Secondary Footer Background Color to #3C3C3C.
 
 20. Go to Pages > Delete the 'Sample Page'. Go to Posts > Delete the 'Hello World'.
+
+---
+Optional Steps for Updating
+
+1. Install [Composer](https://getcomposer.org) ([Install Directions](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx))
+
+2. Add a `composer.json` file to the root directory of your Wordpress install with the following content:
+
+  ```
+      {
+    	"repositories":[
+    		{
+    			"type":"vcs",
+    			"url":"https://github.com/NEU-Libraries/drs-toolkit-wp-plugin"
+    		}
+    	],
+    	"require": {
+    		"drs-tk/drs-tk":"dev-master"
+    	},
+    	"extra" : {
+            	"installer-paths" : {
+                		"wp-content/plugins/{$name}/": ["type:wordpress-plugin"]
+            	}
+        	}
+    }
+  ```
+3. Update the plugin by running `php composer.phar update` in the root directory of your wordpress install.
