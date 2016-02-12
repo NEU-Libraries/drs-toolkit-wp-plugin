@@ -115,7 +115,7 @@ $TEMPLATE_THEME = array(
 
      $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'https://repository.library.northeastern.edu/collections/neu:1';
      $item_options = drstk_get_meta_options();
-     $all_meta_options = explode(",", "Title,Creator,Contributor,Publisher,Type of Resource,Genre,Language,Physical Description,Abstract/Description,Table of contents,Notes,Subjects and keywords,Related item,Identifier,Access condition,Location,uri,Format,Permanent URL,Date created,Date issued,Copyright date,Biographical/Historical");
+     $all_meta_options = explode(",", "Title,Creator,Contributor,Publisher,Type of Resource,Genre,Language,Physical Description,Abstract/Description,Table of contents,Notes,Subjects and keywords,Related item,Identifier,Access condition,Location,uri,Format,Permanent URL,Date created,Date issued,Copyright date,Biographical/Historical,Biográfica/histórica");
 
      $html = '</pre>
      <div class="wrap">
