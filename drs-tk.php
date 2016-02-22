@@ -219,7 +219,7 @@ $TEMPLATE_THEME = array(
      <tr><td>Metadata to display<br/>(If none are selected, all metadata will display.)<br/>';
      foreach($all_meta_options as $option){
        $html .='<label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="'.$option.'" ';
-       if (in_array($option, $item_options)){$html.='checked="checked"';}
+       if (is_array($item_options) && in_array($option, $item_options)){$html.='checked="checked"';}
        $html.='/> '.$option.'</label><br/>';
      }
     $html .= '
@@ -382,6 +382,10 @@ function drstk_item_script() {
         plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
         array(), $VERSION, false );
     wp_enqueue_script('drstk_jwplayer');
+    wp_register_script('drstk_item_gallery',
+        plugins_url('/assets/js/item_gallery.js', __FILE__),
+        array(), $VERSION, false );
+    wp_enqueue_script('drstk_item_gallery');
 }
 
 function drstk_breadcrumb_script(){
