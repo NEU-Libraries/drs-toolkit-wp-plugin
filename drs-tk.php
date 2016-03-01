@@ -38,6 +38,11 @@ $TEMPLATE_THEME = array(
  register_activation_hook( __FILE__, 'drstk_install' );
  register_deactivation_hook( __FILE__, 'drstk_deactivation' );
 
+ $all_meta_options = array("Title","Creator","Contributor","Publisher","Type of Resource","Genre","Language","Physical Description","Abstract/Description","Table of contents","Notes","Subjects and keywords","Related item","Identifier","Access condition","Location","uri","Format","Permanent URL","Date created","Date issued","Copyright date","Biographical/Historical","Biográfica/histórica");
+ $all_assoc_meta_options = array("Title","Creator","Abstract/Description");
+ $facet_options = array("creator_sim", "creation_year_sim", "subject_sim", "type_sim", "community_name_ssim", "drs_department_ssim", "drs_degree_ssim", "drs_course_number_ssim", "drs_course_title_ssim");
+ $niec_facet_options = array("niec_gender_ssim", "niec_age_ssim", "niec_race_ssim", "niec_sign_pace_ssim", "niec_fingerspelling_extent_ssim", "niec_fingerspelling_pace_ssim", "niec_numbers_pace_ssim", "niec_numbers_extent_ssim", "niec_classifiers_extent_ssim", "niec_use_of_space_extent_ssim", "niec_how_space_used_ssim", "niec_text_type_ssim", "niec_register_ssim", "niec_conversation_type_ssim", "niec_audience_ssim", "niec_signed_language_ssim");
+
  /**
   * Rewrite rules for the plugin.
   */
@@ -82,6 +87,7 @@ $TEMPLATE_THEME = array(
 
 //This registers the settings
 function register_drs_settings() {
+  global $facet_options;
 	register_setting( 'drs_options', 'drstk_collection' );
   register_setting( 'drs_options', 'drstk_item_page_metadata' );
   register_setting( 'drs_options', 'drstk_assoc_file_metadata' );
@@ -99,6 +105,10 @@ function register_drs_settings() {
   register_setting( 'drs_options', 'drstk_collection_page_title' );
   register_setting( 'drs_options', 'drstk_assoc' );
   register_setting( 'drs_options', 'drstk_assoc_title' );
+  register_setting( 'drs_options', 'drstk_facets' );
+  foreach($facet_options as $option){
+    register_setting( 'drs_options', 'drstk_'.$option.'_title');
+  }
 }
 add_action( 'admin_init', 'register_drs_settings' );
 
@@ -137,50 +147,63 @@ function drstk_plugin_settings_save(){
     return $meta_options;
   }
 
+  function drstk_get_facets_to_display(){
+    $facet_options = get_option('drstk_facets');
+    if ($facet_options != NULL){
+      $facet_options = explode(",", $facet_options);
+    } else {
+      $facet_options = array("creator_sim","creation_year_sim","subject_sim","type_sim");
+    }
+    return $facet_options;
+  }
+
+  function drstk_get_facet_name($facet){
+    $name = get_option('drstk_'.$facet.'_title');
+    if ($name == NULL){
+      $name = titleize($facet);
+    }
+    return $name;
+  }
+
   function drstk_get_errors(){
     global $errors;
     return $errors;
   }
 //this creates the form for entering the pid on the settings page
  function drstk_display_settings() {
-
+  global $facet_options, $all_meta_options, $all_assoc_meta_options, $niec_facet_options;
      $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'https://repository.library.northeastern.edu/collections/neu:1';
      $item_options = drstk_get_meta_options();
      $assoc_options = drstk_get_assoc_meta_options();
-     $all_meta_options = explode(",", "Title,Creator,Contributor,Publisher,Type of Resource,Genre,Language,Physical Description,Abstract/Description,Table of contents,Notes,Subjects and keywords,Related item,Identifier,Access condition,Location,uri,Format,Permanent URL,Date created,Date issued,Copyright date,Biographical/Historical,Biográfica/histórica");
-     $all_assoc_meta_options = explode(",","Title,Creator,Abstract/Description");
+     $facets_to_display = drstk_get_facets_to_display();
+
 
      $html = '
 </pre>
      <div class="wrap">
      <form action="options.php" method="post" name="options">
-     <h2>Select Your Settings</h2>'. wp_nonce_field('update-options') . '
+     <h1>DRS Settings</h1>'. wp_nonce_field('update-options') . '
      <table class="form-table" width="100%" cellpadding="10">
      <tbody>
      <tr>
-     <td scope="row" align="left">
-      <label>Project Collection or Set URL</label>
-     <input name="drstk_collection" type="text" value="'.$collection_pid.'" style="width:100%;"></input>
-     <br/>
+     <th>
+      <label>Project Collection or Set URL</label></th>
+     <td><input name="drstk_collection" type="text" value="'.$collection_pid.'" style="width:100%;"></input><br/>
      <small>Ie. <a href="https://repository.library.northeastern.edu/collections/neu:6012">https://repository.library.northeastern.edu/collections/neu:6012</a></small>
      </td>
      </tr>
      </tbody>
      </table>
+     <h2>Search Settings</h2>
      <table class="form-table" width="100%">
      <tbody>
-     <tr>
-     <td><h4>Search Settings</h4></td>
-     </tr>
-     <tr><td>Search Page Title<br/>
-     <input type="text" name="drstk_search_page_title" value="';
+     <tr><th>Search Page Title</th>
+     <td><input type="text" name="drstk_search_page_title" value="';
      if (get_option('drstk_search_page_title') == ''){ $html .= 'Search';} else { $html .= get_option('drstk_search_page_title'); }
      $html .= '" /></td>
      </tr>
      <tr>
-     <td>What metadata should be visible for each record by default?</td>
-     </tr>
-     <tr>
+     <th>What metadata should be visible for each record by default?</th>
      <td><label><input type="checkbox" name="drstk_search_title" ';
      if (get_option('drstk_search_title') == 'on'){ $html .= 'checked="checked"';}
      $html .= '/>Title</label><br/>
@@ -196,20 +219,16 @@ function drstk_plugin_settings_save(){
      </tr>
      </tbody>
      </table>
+     <h2>Browse Settings</h2>
      <table class="form-table" width="100%">
      <tbody>
-     <tr>
-     <td><h4>Browse Settings</h4></td>
-     </tr>
-     <tr><td>Browse Page Title<br/>
-     <input type="text" name="drstk_browse_page_title" value="';
+     <tr><th>Browse Page Title</th>
+     <td><input type="text" name="drstk_browse_page_title" value="';
      if (get_option('drstk_browse_page_title') == ''){ $html .= 'Browse';} else {$html .= get_option('drstk_browse_page_title');}
      $html .='" /></td>
      </tr>
      <tr>
-     <td>What metadata should be visible for each record by default?</td>
-     </tr>
-     <tr>
+     <th>What metadata should be visible for each record by default?</th>
      <td><label><input type="checkbox" name="drstk_browse_title" ';
      if (get_option('drstk_browse_title') == 'on'){ $html .= 'checked="checked"';}
      $html .= '/>Title</label><br/>
@@ -225,32 +244,46 @@ function drstk_plugin_settings_save(){
      </tr>
      </tbody>
      </table>
-     <table>
+     <h2>Facets</h2>
+     <table class="form-table">
      <tbody>
-     <tr>
-     <td><h4>Collections Page Settings</h4></td>
-     </tr>
-     <tr><td>Collections Page Title<br/>
-     <input type="text" name="drstk_collections_page_title" value="';
+     <tr><th>Facets to Display<br/><small>Select which facets you would like to display on the search and browse pages. Once selected, you may enter custom names for these facets. Drag and drop the order of the facets to change the order of display.</small></th><td><table><tbody id="facets_sortable">';
+     foreach($facets_to_display as $option){
+       $html .= '<tr><td style="padding:0;"><input type="checkbox" name="drstk_facet" value="'.$option.'" checked="checked"/> <label for="drstk_facet">'.titleize($option).'</label></td><td class="title" style="padding:0;"><input type="text" name="drstk_'.$option.'_title" value="'.get_option('drstk_'.$option.'_title').'"></td></tr>';
+     }
+     foreach($facet_options as $option){
+       if (!in_array($option, $facets_to_display)){
+         $html .= '<tr><td style="padding:0;"><input type="checkbox" name="drstk_facet" value="'.$option.'"/> <label for="drstk_facet">'.titleize($option).'</label></td><td class="title" style="padding:0;display:none"><input type="text" name="drstk_'.$option.'_title" value="'.get_option('drstk_'.$option.'_title').'"></td></tr>';
+       }
+     }
+     $html .='<input type="hidden" name="drstk_facets" value="'.get_option('drstk_facets').'"/>
+     </tbody></table></td></tr>
+     </tbody>
+     </table>
+     <h2>Collections Page Settings</h2>
+     <table class="form-table">
+     <tbody>
+     <tr><th>Collections Page Title</th>
+     <td><input type="text" name="drstk_collections_page_title" value="';
      if (get_option('drstk_collections_page_title') == ''){ $html .= 'Collections';} else { $html .= get_option('drstk_collections_page_title'); }
      $html .='" /></td>
      </tr>
-     <tr>
-     <td><h4>Single Collection Page Settings</h4></td>
-     </tr>
-     <tr><td>Single Collection Page Title<br/>
-     <input type="text" name="drstk_collection_page_title" value="';
+     </tbody>
+     </table>
+     <h2>Single Collection Page Settings</h2>
+     <table class="form-table">
+     <tbody>
+     <tr><th>Single Collection Page Title</th>
+     <td><input type="text" name="drstk_collection_page_title" value="';
      if (get_option('drstk_collection_page_title') == ''){ $html .= 'Browse';} else { $html .= get_option('drstk_collection_page_title'); }
      $html .='" /></td>
      </tr>
      </tbody>
      </table>
-     <table>
+     <h2>Single Item Page Settings</h2>
+     <table class="form-table">
      <tbody>
-     <tr>
-     <td><h4>Single Item Page Settings</h4></td>
-     </tr>
-     <tr><td>Metadata to display<br/>(If none are selected, all metadata will display.)<br/>';
+     <tr><th>Metadata to display<br/><small>If none are selected, all metadata will display.</small></th><td>';
      foreach($all_meta_options as $option){
        $html .='<label for="drstk_item_metadata"><input type="checkbox" name="drstk_item_metadata" value="'.$option.'" ';
        if (is_array($item_options) && in_array($option, $item_options)){$html.='checked="checked"';}
@@ -260,23 +293,19 @@ function drstk_plugin_settings_save(){
      <input type="hidden" name="drstk_item_page_metadata" value="'.get_option('drstk_item_page_metadata').'"/>
      </td>
      </tr>
-     </tbody>
-     </table>
-     <table>
-     <tbody>
-     <tr><td><h4>Associated Files</h4></td></tr>
-     <tr><td>Display Associated Files?<br/>
-     <label><input type="checkbox" name="drstk_assoc" ';
+     <tr><th>Display Associated Files?</th>
+     <td><label><input type="checkbox" name="drstk_assoc" ';
      if (get_option('drstk_assoc') == 'on'){ $html .= 'checked="checked"';}
      $html .= '/>Display</label></td></tr>
-     </tbody>
-     <tbody class="assoc" ';
+     <tr class="assoc" ';
      if (get_option('drstk_assoc') != 'on'){$html .= 'style="display:none"';}
-     $html .= '><tr><td>Associated Files Title<br/>
+     $html .= '><th>Associated Files Title</th><td>
      <input type="text" name="drstk_assoc_title" value="';
      if (get_option('drstk_assoc_title') == ''){ $html .= 'Associated Files';} else { $html .= get_option('drstk_assoc_title'); }
      $html .= '" /></td></tr>
-     <tr><td>Associated Files Metadata to Display<br/>';
+     <tr class="assoc" ';
+     if (get_option('drstk_assoc') != 'on'){$html .= 'style="display:none"';}
+     $html .= '><th>Associated Files Metadata to Display</th><td>';
      foreach($all_assoc_meta_options as $option){
        $html .='<label for="drstk_assoc_metadata"><input type="checkbox" name="drstk_assoc_metadata" value="'.$option.'" ';
        if (is_array($assoc_options) && in_array($option, $assoc_options)){$html.='checked="checked"';}
@@ -289,7 +318,11 @@ function drstk_plugin_settings_save(){
 
       <input type="hidden" name="action" value="update" />
 
-      <input type="hidden" name="page_options" value="drstk_collection, drstk_search_title, drstk_search_creator, drstk_search_date, drstk_search_abstract, drstk_browse_title, drstk_browse_creator, drstk_browse_abstract, drstk_browse_date, drstk_search_page_title, drstk_browse_page_title, drstk_collection_page_title, drstk_collections_page_title, drstk_item_page_metadata, drstk_assoc_file_metadata, drstk_assoc_title, drstk_assoc" />
+      <input type="hidden" name="page_options" value="drstk_collection, drstk_search_title, drstk_search_creator, drstk_search_date, drstk_search_abstract, drstk_browse_title, drstk_browse_creator, drstk_browse_abstract, drstk_browse_date, drstk_search_page_title, drstk_browse_page_title, drstk_collection_page_title, drstk_collections_page_title, drstk_item_page_metadata, drstk_assoc_file_metadata, drstk_assoc_title, drstk_assoc, drstk_facets,';
+      foreach($facet_options as $facet){
+        $html.='drstk_'.$facet.'_title,';
+      }
+      $html.='" />
       <br/><br/>
       <input type="submit" name="Submit" value="Update" class="button" style="font-size: 16px;padding: 10px 20px;height: auto;"/></form></div>
      ';
@@ -301,10 +334,11 @@ function drstk_plugin_settings_save(){
  function drstk_admin_enqueue() {
     if (get_current_screen()->base == 'settings_page_drstk_admin_menu') {
       // we are on the settings page
+      wp_enqueue_script('jquery-ui-sortable');
       wp_register_script('drstk_meta_helper_js',
           plugins_url('/assets/js/item_meta_helper.js', __FILE__),
           array('jquery'));
-      wp_enqueue_script( 'drstk_meta_helper_js' );
+      wp_enqueue_script( 'drstk_meta_helper_js');
     }
 }
 
@@ -409,17 +443,25 @@ function drstk_browse_script() {
     }
     //this creates a unique nonce to pass back and forth from js/php to protect
     $browse_nonce = wp_create_nonce( 'browse_drs' );
+    $facets = drstk_get_facets_to_display();
+    $facets_to_display = array();
+    foreach($facets as $facet){
+      $facets_to_display[$facet] = drstk_get_facet_name($facet);
+    }
     //this allows an ajax call from browse.js
-    wp_localize_script( 'drstk_browse', 'browse_obj', array(
-       'ajax_url' => admin_url( 'admin-ajax.php' ),
-       'nonce'    => $browse_nonce,
-       'template' => $wp_query->query_vars['drstk_template_type'],
-       'site_url' => $SITE_URL,
-       'sub_collection_pid' => $sub_collection_pid,
-       'search_options' => json_encode($search_options),
-       'browse_options' => json_encode($browse_options),
-       'errors' => json_encode($errors),
-    ) );
+    $browse_obj = array(
+      'ajax_url' => admin_url( 'admin-ajax.php' ),
+      'nonce'    => $browse_nonce,
+      'template' => $wp_query->query_vars['drstk_template_type'],
+      'site_url' => $SITE_URL,
+      'sub_collection_pid' => $sub_collection_pid,
+      'search_options' => json_encode($search_options),
+      'browse_options' => json_encode($browse_options),
+      'errors' => json_encode($errors),
+      'facets_to_display' => $facets_to_display,
+    );
+
+    wp_localize_script( 'drstk_browse', 'browse_obj', $browse_obj );
 }
 
 
@@ -492,4 +534,15 @@ function get_response( $url ) {
   $output = curl_exec($ch);
   curl_close($ch);
   return $output;
+}
+
+function titleize($string){
+  $string = str_replace("_tesim","",$string);
+  $string = str_replace("_sim","",$string);
+  $string = str_replace("_ssim","",$string);
+  $string = str_replace("drs_","",$string);
+  $string = str_replace("niec_","",$string);
+  $string = str_replace("_"," ",$string);
+  $string = ucfirst($string);
+  return $string;
 }
