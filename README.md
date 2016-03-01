@@ -91,6 +91,9 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
 20. Go to Pages > Delete the 'Sample Page'. Go to Posts > Delete the 'Hello World'.
 
 ---
+If you would like breadcrumbs on single pages/posts (not drs items) that reflect hierarchy, simply drag and drop the pages in the wp-admin pages screen to nest.
+
+---
 Optional Steps for Updating
 
 1. Install [Composer](https://getcomposer.org) ([Install Directions](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx))

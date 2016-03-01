@@ -2,40 +2,43 @@
 global $item_pid, $data, $collection, $meta_options, $errors;
 $collection = drstk_get_pid();
 $meta_options = drstk_get_meta_options();
+$assoc_meta_options = drstk_get_assoc_meta_options();
 $errors = drstk_get_errors();
 
-function get_item_details(){
-  global $item_pid, $data, $meta_options, $errors;
-  if (check_for_bad_data()){
+function get_item_details($data, $meta_options){
+  global $errors;
+  if (check_for_bad_data($data)){
     return false;
   }
+  $html = '';
   foreach($data->mods as $key => $value){
     if (($meta_options == NULL) || in_array($key, $meta_options)){
-      echo "<div class='drs-field-label'><b>".$key."</b></div><div class='drs-field-value'>";
+      $html .= "<div class='drs-field-label'><b>".$key."</b></div><div class='drs-field-value'>";
       if (count($value) > 0){
         for ($i =0; $i<count($value); $i++){
           if (substr($value[$i], 0, 4) == "http"){
-            echo '<a href="'.$value[$i].'" target="_blank">'.$value[$i].'</a>';
+            $html .= '<a href="'.$value[$i].'" target="_blank">'.$value[$i].'</a>';
           } else {
-            echo $value[$i];
+            $html .= $value[$i];
           }
           if ($i != count($value)-1){
-            echo "<br/> ";
+            $html .= "<br/> ";
           }
         }
       } else if (is_array($value)) {
-        echo "";
+        $html .= "";
       } else {
-        echo $value;
+        $html .= $value;
       }
-      echo "</div>";
+      $html .= "</div>";
     }
   }
+  return $html;
 }
 
 function get_download_links(){
   global $data;
-  if (check_for_bad_data()){
+  if (check_for_bad_data($data)){
     return false;
   }
   echo "<br/><h4>Downloads</h4>";
@@ -51,7 +54,7 @@ function get_item_title(){
   $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item_pid;
   $data = get_response($url);
   $data = json_decode($data);
-  if (check_for_bad_data()){
+  if (check_for_bad_data($data)){
     return false;
   }
   echo $data->mods->Title[0];
@@ -59,7 +62,7 @@ function get_item_title(){
 
 function get_item_breadcrumbs(){
   global $item_pid, $data, $breadcrumb_html, $collection;
-  if (check_for_bad_data()){
+  if (check_for_bad_data($data)){
     return false;
   }
   $breadcrumb_html = array();
@@ -86,8 +89,8 @@ function get_item_breadcrumbs(){
 
 function get_item_image(){
   global $item_pid, $data, $errors;
-  if (check_for_bad_data()){
-    echo check_for_bad_data();
+  if (check_for_bad_data($data)){
+    echo check_for_bad_data($data);
     return false;
   }
   if (isset($data->thumbnails)){
@@ -200,8 +203,34 @@ function get_item_image(){
   }
 }
 
-function check_for_bad_data(){
-  global $data, $errors;
+function get_associated_files(){
+  global $data, $errors, $assoc_meta_options;
+  if (($data->associated != NULL) && (get_option('drstk_assoc') == 'on')){
+    $associated_html = '';
+    $title = (get_option('drstk_assoc_title') != '') ? get_option('drstk_assoc_title') : 'Associated Files';
+    $associated_html .= "<div class='panel panel-default assoc_files'><div class='panel-heading'>".$title."</div><div class='panel-body'>";
+    // foreach($data->associated as $assoc_pid => $assoc_title){ //disabling multivalued associated files until a new less resource intensive api call for associated files exists
+      $assoc_pid = key(get_object_vars($data->associated)); //using this just to get the first title
+      $assoc_title .= $data->associated->$assoc_pid; //using this just to get the first title
+      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $assoc_pid;
+      $assoc_data = get_response($url);
+      $assoc_data = json_decode($assoc_data);
+      if (check_for_bad_data($assoc_data)){
+        return false;
+      } else {
+        if (isset($assoc_data->thumbnails)){
+          $associated_html .= "<a href='".site_url()."/item/".$assoc_data->pid."'><img src='".$assoc_data->thumbnails[1]."'/></a>";
+        }
+        $associated_html .= get_item_details($assoc_data, $assoc_meta_options);
+      }
+    // }
+    $associated_html .= "</div></div>";
+    echo $associated_html;
+  }
+}
+
+function check_for_bad_data($data){
+  global $errors;
   if ($data == null) {
     return $errors['item']['fail'];
   } else if (isset($data->error)) {

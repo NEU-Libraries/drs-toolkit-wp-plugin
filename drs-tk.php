@@ -80,14 +80,19 @@ $TEMPLATE_THEME = array(
    add_action('load-'.$hook,'drstk_plugin_settings_save');
  }
 
-  function drstk_plugin_settings_save()
-  {
-    if(isset($_GET['settings-updated']) && $_GET['settings-updated'])
-     {
-        //plugin settings have been saved.
-        $collection_pid = drstk_get_pid();
-     }
-  }
+//This registers the settings
+function register_drs_settings() {
+	register_setting( 'options_group', 'my_option_name', 'intval' );
+}
+add_action( 'admin_init', 'register_drs_settings' );
+
+function drstk_plugin_settings_save(){
+  if(isset($_GET['settings-updated']) && $_GET['settings-updated'])
+   {
+      //plugin settings have been saved.
+      $collection_pid = drstk_get_pid();
+   }
+}
 
   function drstk_get_pid(){
     $collection_pid = get_option('drstk_collection');
@@ -101,7 +106,17 @@ $TEMPLATE_THEME = array(
     if ($meta_options != NULL){
       $meta_options = explode(",", $meta_options);
     } else {
-      $meta_options == NULL;
+      $meta_options = NULL;
+    }
+    return $meta_options;
+  }
+
+  function drstk_get_assoc_meta_options(){
+    $meta_options = get_option('drstk_assoc_file_metadata');
+    if ($meta_options != NULL){
+      $meta_options = explode(",", $meta_options);
+    } else {
+      $meta_options = array("Title","Creator","Abstract/Description");
     }
     return $meta_options;
   }
@@ -115,9 +130,12 @@ $TEMPLATE_THEME = array(
 
      $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'https://repository.library.northeastern.edu/collections/neu:1';
      $item_options = drstk_get_meta_options();
+     $assoc_options = drstk_get_assoc_meta_options();
      $all_meta_options = explode(",", "Title,Creator,Contributor,Publisher,Type of Resource,Genre,Language,Physical Description,Abstract/Description,Table of contents,Notes,Subjects and keywords,Related item,Identifier,Access condition,Location,uri,Format,Permanent URL,Date created,Date issued,Copyright date,Biographical/Historical,Biográfica/histórica");
+     $all_assoc_meta_options = explode(",","Title,Creator,Abstract/Description");
 
-     $html = '</pre>
+     $html = '
+</pre>
      <div class="wrap">
      <form action="options.php" method="post" name="options">
      <h2>Select Your Settings</h2>'. wp_nonce_field('update-options') . '
@@ -228,10 +246,34 @@ $TEMPLATE_THEME = array(
      </tr>
      </tbody>
      </table>
+     <table>
+     <tbody>
+     <tr><td><h4>Associated Files</h4></td></tr>
+     <tr><td>Display Associated Files?<br/>
+     <label><input type="checkbox" name="drstk_assoc" ';
+     if (get_option('drstk_assoc') == 'on'){ $html .= 'checked="checked"';}
+     $html .= '/>Display</label></td></tr>
+     </tbody>
+     <tbody class="assoc" ';
+     if (get_option('drstk_assoc') != 'on'){$html .= 'style="display:none"';}
+     $html .= '><tr><td>Associated Files Title<br/>
+     <input type="text" name="drstk_assoc_title" value="';
+     if (get_option('drstk_assoc_title') == ''){ $html .= 'Associated Files';} else { $html .= get_option('drstk_assoc_title'); }
+     $html .= '" /></td></tr>
+     <tr><td>Associated Files Metadata to Display<br/>';
+     foreach($all_assoc_meta_options as $option){
+       $html .='<label for="drstk_assoc_metadata"><input type="checkbox" name="drstk_assoc_metadata" value="'.$option.'" ';
+       if (is_array($assoc_options) && in_array($option, $assoc_options)){$html.='checked="checked"';}
+       $html.='/> '.$option.'</label><br/>';
+     }
+    $html .= '<input type="hidden" name="drstk_assoc_file_metadata" value="'.get_option('drstk_assoc_file_metadata').'"/>
+     </td></tr>
+     </tbody>
+     </table>
 
       <input type="hidden" name="action" value="update" />
 
-      <input type="hidden" name="page_options" value="drstk_collection, drstk_search_title, drstk_search_creator, drstk_search_date, drstk_search_abstract, drstk_browse_title, drstk_browse_creator, drstk_browse_abstract, drstk_browse_date, drstk_search_page_title, drstk_browse_page_title, drstk_collection_page_title, drstk_collections_page_title, drstk_item_page_metadata" />
+      <input type="hidden" name="page_options" value="drstk_collection, drstk_search_title, drstk_search_creator, drstk_search_date, drstk_search_abstract, drstk_browse_title, drstk_browse_creator, drstk_browse_abstract, drstk_browse_date, drstk_search_page_title, drstk_browse_page_title, drstk_collection_page_title, drstk_collections_page_title, drstk_item_page_metadata, drstk_assoc_file_metadata, drstk_assoc_title, drstk_assoc" />
       <br/><br/>
       <input type="submit" name="Submit" value="Update" class="button" style="font-size: 16px;padding: 10px 20px;height: auto;"/></form></div>
      ';
