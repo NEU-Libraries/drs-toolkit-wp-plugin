@@ -82,7 +82,23 @@ $TEMPLATE_THEME = array(
 
 //This registers the settings
 function register_drs_settings() {
-	register_setting( 'options_group', 'my_option_name', 'intval' );
+	register_setting( 'drs_options', 'drstk_collection' );
+  register_setting( 'drs_options', 'drstk_item_page_metadata' );
+  register_setting( 'drs_options', 'drstk_assoc_file_metadata' );
+  register_setting( 'drs_options', 'drstk_search_page_title' );
+  register_setting( 'drs_options', 'drstk_search_title' );
+  register_setting( 'drs_options', 'drstk_search_creator' );
+  register_setting( 'drs_options', 'drstk_search_abstract' );
+  register_setting( 'drs_options', 'drstk_search_date' );
+  register_setting( 'drs_options', 'drstk_browse_page_title' );
+  register_setting( 'drs_options', 'drstk_browse_title' );
+  register_setting( 'drs_options', 'drstk_browse_creator' );
+  register_setting( 'drs_options', 'drstk_browse_abstract' );
+  register_setting( 'drs_options', 'drstk_browse_date' );
+  register_setting( 'drs_options', 'drstk_collections_page_title' );
+  register_setting( 'drs_options', 'drstk_collection_page_title' );
+  register_setting( 'drs_options', 'drstk_assoc' );
+  register_setting( 'drs_options', 'drstk_assoc_title' );
 }
 add_action( 'admin_init', 'register_drs_settings' );
 
