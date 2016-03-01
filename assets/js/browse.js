@@ -8,9 +8,9 @@ jQuery(document).ready(function($) {
   var sort = "score+desc%2C+system_create_dtsi+desc";
   var params = {q:q, per_page:per_page, page:page, f:f, sort:sort};
   var template = browse_obj.template;
-  // console.log(browse_obj);
   var search_options = $.parseJSON(browse_obj.search_options);
   var browse_options = $.parseJSON(browse_obj.browse_options);
+  var facets_to_display = browse_obj.facets_to_display;
   if ((q) && (q != '')){
     $("#drs-selection").show();
     $("#drs-selection a[data-type='q']").remove();
@@ -129,15 +129,15 @@ jQuery(document).ready(function($) {
   //parses facet data
   function facetize(data){
     var facet_html = '';
-    $.each(data.facet_fields, function(facet, facet_vals){
-      var facet_name = titleize(facet); //need to prettize this
+    $.each(facets_to_display, function(facet, title){
+      var facet_name = title;
       var facet_values = '';
-      if (Object.keys(facet_vals).length > 0) {
+      if (Object.keys(data.facet_fields[facet]).length > 0) {
         var this_facet, this_facet_name;
         var facet_modal = facet_modal_vals = '';
         var i=1;
         var facet_array = [];
-        $.each(facet_vals,function(index, val_q){
+        $.each(data.facet_fields[facet],function(index, val_q){
           facet_array.push({v:index, k:val_q});
         });
         facet_array.sort(function(a,b){
@@ -159,7 +159,7 @@ jQuery(document).ready(function($) {
         });
         facet_modal = '<button type="button" class="themebutton btn btn-more" data-toggle="modal" data-target="#drs_modal_'+facet+'">More '+facet_name+'s</button><div class="modal fade" id="drs_modal_'+facet+'"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">All '+facet_name+'s</h4></div><div class="modal-body">'+facet_modal_vals+'</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div><!-- /.modal-content --></div><!-- /.modal-dialog --></div><!-- /.modal -->';
         facet_html += "<div id='drs_"+facet+"' class='drs-facet'><div class='panel panel-default'><div class='panel-heading'><b class='drs-facet-name'>" + facet_name + "</b></div><div class='panel-body'>"+facet_values;
-        if (Object.keys(facet_vals).length > 5){
+        if (Object.keys(data.facet_fields[facet]).length > 5){
           facet_html += facet_modal;
         }
         facet_html += "</div></div></div>";
