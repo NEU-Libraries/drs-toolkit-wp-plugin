@@ -87,7 +87,7 @@ $TEMPLATE_THEME = array(
 
 //This registers the settings
 function register_drs_settings() {
-  global $facet_options;
+  global $facet_options, $niec_facet_options;
 
   add_settings_section('drstk_project', "Project Info", null, 'drstk_options');
   add_settings_field('drstk_collection', 'Project Collection or Set URL', 'drstk_collection_callback', 'drstk_options', 'drstk_project');
@@ -111,6 +111,14 @@ function register_drs_settings() {
   foreach($facet_options as $option){
     add_settings_field('drstk_'.$option.'_title', null, 'drstk_facet_title_callback', 'drstk_options', 'drstk_facet_settings', array('class'=>'hidden'));
     register_setting( 'drstk_options', 'drstk_'.$option.'_title');
+  }
+  add_settings_field('drstk_niec', 'Does your project include NEIC metadata?', 'drstk_niec_callback', 'drstk_options', 'drstk_facet_settings');
+  register_setting('drstk_options', 'drstk_niec');
+  add_settings_field('drstk_niec_metadata', 'Facets and Metadata to Display', 'drstk_niec_metadata_callback', 'drstk_options', 'drstk_facet_settings', array('class'=>'niec'));
+  register_setting( 'drstk_options', 'drstk_niec_metadata' );
+  foreach($niec_facet_options as $option){
+    add_settings_field('drstk_niec_'.$option.'_title', null, 'drstk_niec_metadata_title_callback', 'drstk_options', 'drstk_facet_settings', array('class'=>'hidden'));
+    register_setting( 'drstk_options', 'drstk_niec_'.$option.'_title');
   }
 
   add_settings_section('drstk_collections_settings', 'Collections Page Settings', null, 'drstk_options');
@@ -227,6 +235,20 @@ function drstk_facets_callback(){
 }
 
 function drstk_facet_title_callback(){
+  echo '';
+}
+
+function drstk_niec_callback(){
+  echo '<input type="checkbox" name="drstk_niec" ';
+  if (get_option('drstk_niec') == 'on'){ echo 'checked="checked"';}
+  echo '/>Yes</label>';
+}
+
+function drstk_niec_metadata_callback(){
+
+}
+
+function drstk_niec_metadata_title_callback(){
   echo '';
 }
 
@@ -490,3 +512,5 @@ function titleize($string){
   $string = ucfirst($string);
   return $string;
 }
+
+add_action( 'wp_enqueue_scripts', 'drstk_tile_shortcode_scripts');

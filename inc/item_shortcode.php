@@ -82,6 +82,7 @@ function item_admin_ajax_handler() {
   $data = get_response($url);
   $data = json_decode($data);
   wp_send_json(json_encode($data));
+  wp_die();
 }
 
 function drstk_item_shortcode_scripts() {
