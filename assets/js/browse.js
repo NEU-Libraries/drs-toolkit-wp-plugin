@@ -8,8 +8,8 @@ jQuery(document).ready(function($) {
   var sort = "score+desc%2C+system_create_dtsi+desc";
   var params = {q:q, per_page:per_page, page:page, f:f, sort:sort};
   var template = browse_obj.template;
-  var search_options = $.parseJSON(browse_obj.search_options);
-  var browse_options = $.parseJSON(browse_obj.browse_options);
+  var search_options = browse_obj.search_options;
+  var browse_options = browse_obj.browse_options;
   var facets_to_display = browse_obj.facets_to_display;
   if ((q) && (q != '')){
     $("#drs-selection").show();
@@ -198,16 +198,16 @@ jQuery(document).ready(function($) {
           this_doc += "<div class='fa fa-folder-open-o'></div>";
         }
         this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure></div><div class='three_fourth col-sm-9 last'>";
-        if (search_options.indexOf('title') > -1){
+        if (search_options.indexOf('Title') > -1){
           this_doc += "<h4 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>" + title + "</a></h4>";
         }
-        if (creator && search_options.indexOf('creator') > -1){
+        if (creator && search_options.indexOf('Creator') > -1){
           this_doc += "<h6>"+ creator + "</h6>";
         }
-        if (abstract  && search_options.indexOf('abstract') > -1){
+        if (abstract  && search_options.indexOf('Abstract') > -1){
           this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
         }
-        if (date  && search_options.indexOf('date') > -1){
+        if (date  && search_options.indexOf('Date') > -1){
           this_doc += "<p class='drs-item-date'>" + date + "</p>";
         }
         this_doc += "<div class=''><a href='"+browse_obj.site_url+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";
@@ -226,19 +226,19 @@ jQuery(document).ready(function($) {
           this_doc += "<div class='fa fa-folder-open-o'></div>";
         }
         this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure><div class='caption text-center'><h5 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>";
-        if (browse_options.indexOf('title') > -1){
+        if (browse_options.indexOf('Title') > -1){
           this_doc += title;
         }
-        this_doc += "</a></h5><h6 class='drs-item-creator'>"
-        if (creator && browse_options.indexOf('creator') > -1){
+        this_doc += "</a></h5><h6 class='drs-item-creator'>";
+        if (creator && browse_options.indexOf('Creator') > -1){
           this_doc += creator;
         }
         this_doc += "</h6><p class='drs-item-abstract'>";
-        if (abstract  && browse_options.indexOf('abstract') > -1){
+        if (abstract  && browse_options.indexOf('Abstract') > -1){
           this_doc += abstract;
         }
-        this_doc += "</p><p class='drs-item-date'>"
-        if (date  && browse_options.indexOf('date') > -1){
+        this_doc += "</p><p class='drs-item-date'>";
+        if (date  && browse_options.indexOf('Date') > -1){
           this_doc += date;
         }
         this_doc += "</p></div></div></div>";

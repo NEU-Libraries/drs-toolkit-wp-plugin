@@ -1,7 +1,7 @@
 <?php
 global $item_pid, $data, $collection, $meta_options, $errors;
 $collection = drstk_get_pid();
-$meta_options = drstk_get_meta_options();
+$meta_options = get_option('drstk_item_page_metadata');
 $assoc_meta_options = drstk_get_assoc_meta_options();
 $errors = drstk_get_errors();
 
@@ -211,7 +211,7 @@ function get_associated_files(){
     $associated_html .= "<div class='panel panel-default assoc_files'><div class='panel-heading'>".$title."</div><div class='panel-body'>";
     // foreach($data->associated as $assoc_pid => $assoc_title){ //disabling multivalued associated files until a new less resource intensive api call for associated files exists
       $assoc_pid = key(get_object_vars($data->associated)); //using this just to get the first title
-      $assoc_title .= $data->associated->$assoc_pid; //using this just to get the first title
+      $assoc_title = $data->associated->$assoc_pid; //using this just to get the first title
       $url = "https://repository.library.northeastern.edu/api/v1/files/" . $assoc_pid;
       $assoc_data = get_response($url);
       $assoc_data = json_decode($assoc_data);
