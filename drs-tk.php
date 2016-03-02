@@ -188,7 +188,7 @@ function drstk_search_metadata_callback(){
   $options = get_option('drstk_search_metadata');
   foreach($search_meta_options as $option){
     echo '<label><input type="checkbox" name="drstk_search_metadata[]" value="'.$option.'"';
-    if (in_array($option, $options)){ echo 'checked="checked"';}
+    if (is_array($options) && in_array($option, $options)){ echo 'checked="checked"';}
     echo '/> '.$option.'</label><br/>';
   }
 }
@@ -204,7 +204,7 @@ function drstk_browse_metadata_callback(){
   $options = get_option('drstk_browse_metadata');
   foreach($browse_meta_options as $option){
     echo '<label><input type="checkbox" name="drstk_browse_metadata[]" value="'.$option.'"';
-    if (in_array($option, $options)){ echo 'checked="checked"';}
+    if (is_array($options) && in_array($option, $options)){ echo 'checked="checked"';}
     echo '/> '.$option.'</label><br/>';
   }
 }
