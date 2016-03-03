@@ -10,10 +10,12 @@ function browse_ajax_handler() {
       $data = array('error'=>$errors['search']['missing_collection']);
       $data = json_encode($data);
       wp_send_json($data);
+      wp_die();
   } elseif ($collection == "https://repository.library.northeastern.edu/collections/neu:1") {
     $data = array('error'=>$errors['search']['missing_collection']);
     $data = json_encode($data);
     wp_send_json($data);
+    wp_die();
   } else {
     if (isset($_POST['params']['collection'])){
       $url = "https://repository.library.northeastern.edu/api/v1/search/".$_POST['params']['collection']."?";
@@ -42,11 +44,13 @@ function browse_ajax_handler() {
     }
     $data = get_response($url);
     wp_send_json($data);
+    wp_die();
   }
 }
 
 add_action('wp_ajax_wp_search', 'ajax_wp_search');
 add_action('wp_ajax_nopriv_wp_search', 'ajax_wp_search');
+
 function ajax_wp_search(){
   global $wp_query;
   global $paged;

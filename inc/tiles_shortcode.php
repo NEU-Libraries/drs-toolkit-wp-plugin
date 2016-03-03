@@ -84,3 +84,4 @@ function drstk_tile_shortcode_scripts() {
     wp_enqueue_script('drstk_tiles');
 	}
 }
+add_action( 'wp_enqueue_scripts', 'drstk_tile_shortcode_scripts');

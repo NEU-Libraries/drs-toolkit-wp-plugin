@@ -39,12 +39,16 @@ jQuery(document).ready(function($) {
   function get_data(params){
     var errors = $.parseJSON(browse_obj.errors);
     $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-spin'></span></h2>").show();
-    $.post(browse_obj.ajax_url, {
-       _ajax_nonce: browse_obj.nonce,
-        action: "get_browse",
-        params: params,
-
-    }, function(data) {
+    $.ajax({
+        type: 'GET',
+        url: browse_obj.ajax_url,
+        data: {
+          _ajax_nonce: browse_obj.nonce,
+           action: "get_browse",
+           params: params,
+        },
+    success: function(data)
+     {
       // console.log(params)
       $("#drs-loading").hide();
       // console.log(data);
@@ -71,9 +75,11 @@ jQuery(document).ready(function($) {
         } else {
           $("#drs-content").html(errors.search.no_results);
         }
-    }).fail(function() {
+    }, error: function()
+    {
       $("#drs-content").html("<div class='alert error alert-error'>"+errors.search.fail_null+"</div>");
-    });
+    }
+  });
   }
 
   //parses pagination data

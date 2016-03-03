@@ -52,6 +52,7 @@ function drstk_enqueue_page_scripts( $hook ) {
  }
 }
 add_action('admin_enqueue_scripts', 'drstk_enqueue_page_scripts');
+add_action( 'wp_ajax_get_tile_code', 'drstk_add_tile_gallery' ); //for auth users
 
 /* side box content for tile gallery shortcode */
 function drstk_add_tile_gallery(){
@@ -68,12 +69,12 @@ function drstk_add_tile_gallery(){
     $json = json_decode($data);
     if (isset($json->error)) {
       wp_send_json(json_encode( "There was an error: " . $json->error));
+      wp_die();
       return;
     }
     wp_send_json($data);
     wp_die();
 }
-add_action( 'wp_ajax_get_tile_code', 'drstk_add_tile_gallery' ); //for auth users
 
 function thickbox_styles() {
    echo '<style type="text/css">

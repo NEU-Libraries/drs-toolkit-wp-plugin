@@ -512,5 +512,3 @@ function titleize($string){
   $string = ucfirst($string);
   return $string;
 }
-
-add_action( 'wp_enqueue_scripts', 'drstk_tile_shortcode_scripts');
