@@ -11,9 +11,30 @@ function get_item_details($data, $meta_options){
     return false;
   }
   $html = '';
-  foreach($data->mods as $key => $value){
-    if (($meta_options == NULL) || in_array($key, $meta_options)){
-      $html .= "<div class='drs-field-label'><b>".$key."</b></div><div class='drs-field-value'>";
+  $html .= parse_metadata($data->mods, $meta_options, $html);
+  $niec_facets = get_option('drstk_niec_metadata');
+  $niec_facets_to_display = array();
+  if (is_array($niec_facets)){
+    foreach($niec_facets as $facet){
+      $niec_facets_to_display[$facet] = drstk_get_facet_name($facet, true);
+    }
+  }
+  if (get_option('drstk_niec') == 'on' && count($niec_facets_to_display) > 0 && isset($data->niec)){
+    $html = parse_metadata($data->niec, $niec_facets_to_display, $html);
+  }
+  return $html;
+}
+
+function parse_metadata($data, $meta_options, $html){
+  foreach($data as $key => $value){
+    if (($meta_options == NULL) || in_array($key, $meta_options) || array_key_exists($key, $meta_options)){
+      $html .= "<div class='drs-field-label'><b>";
+      if (isset($meta_options[$key])){
+        $html .= $meta_options[$key];
+      } else {
+        $html .= $key;
+      }
+      $html .= "</b></div><div class='drs-field-value'>";
       if (count($value) > 0){
         for ($i =0; $i<count($value); $i++){
           if (substr($value[$i], 0, 4) == "http"){
