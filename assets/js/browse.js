@@ -11,6 +11,7 @@ jQuery(document).ready(function($) {
   var search_options = browse_obj.search_options;
   var browse_options = browse_obj.browse_options;
   var facets_to_display = browse_obj.facets_to_display;
+  var niec_facets = 'niec_facets_to_display' in browse_obj ? browse_obj.niec_facets_to_display : null;
   if ((q) && (q != '')){
     $("#drs-selection").show();
     $("#drs-selection a[data-type='q']").remove();
@@ -135,7 +136,16 @@ jQuery(document).ready(function($) {
   //parses facet data
   function facetize(data){
     var facet_html = '';
-    $.each(facets_to_display, function(facet, title){
+    if (niec_facets != null){
+      facet_html += parse_facets(data, niec_facets, facet_html);
+    }
+    facet_html = parse_facets(data, facets_to_display, facet_html);
+    $("#drs-facets").html(facet_html);
+    $("#drs-facets").before("<button class='themebutton button btn visible-phone hidden-tablet hidden-desktop drs-facet-toggle hidden-md hidden-lg visible-sm visible-xs'>Show Facets</button>");
+  }//end facetize
+
+  function parse_facets(data, object, facet_html){
+    $.each(object, function(facet, title){
       var facet_name = title;
       var facet_values = '';
       if (Object.keys(data.facet_fields[facet]).length > 0) {
@@ -171,9 +181,8 @@ jQuery(document).ready(function($) {
         facet_html += "</div></div></div>";
       }
     });
-    $("#drs-facets").html(facet_html);
-    $("#drs-facets").before("<button class='themebutton button btn visible-phone hidden-tablet hidden-desktop drs-facet-toggle hidden-md hidden-lg visible-sm visible-xs'>Show Facets</button>");
-  }//end facetize
+    return facet_html;
+  }
 
   //parses actual results
   function resultize(data){
