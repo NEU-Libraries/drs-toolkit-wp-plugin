@@ -112,7 +112,7 @@ function register_drs_settings() {
     add_settings_field('drstk_'.$option.'_title', null, 'drstk_facet_title_callback', 'drstk_options', 'drstk_facet_settings', array('class'=>'hidden'));
     register_setting( 'drstk_options', 'drstk_'.$option.'_title');
   }
-  add_settings_field('drstk_niec', 'Does your project include NEIC metadata?', 'drstk_niec_callback', 'drstk_options', 'drstk_facet_settings');
+  add_settings_field('drstk_niec', 'Does your project include NIEC metadata?', 'drstk_niec_callback', 'drstk_options', 'drstk_facet_settings');
   register_setting('drstk_options', 'drstk_niec');
   add_settings_field('drstk_niec_metadata', 'Facets and Metadata to Display', 'drstk_niec_metadata_callback', 'drstk_options', 'drstk_facet_settings', array('class'=>'niec'));
   register_setting( 'drstk_options', 'drstk_niec_metadata' );
@@ -165,8 +165,12 @@ function drstk_get_facets_to_display(){
   return $facet_options;
 }
 
-function drstk_get_facet_name($facet){
-  $name = get_option('drstk_'.$facet.'_title');
+function drstk_get_facet_name($facet, $niec=false){
+  if ($niec){
+    $name = get_option('drstk_niec_'.$facet.'_title');
+  } else {
+    $name = get_option('drstk_'.$facet.'_title');
+  }
   if ($name == NULL){
     $name = titleize($facet);
   }
@@ -245,7 +249,22 @@ function drstk_niec_callback(){
 }
 
 function drstk_niec_metadata_callback(){
-
+  global $niec_facet_options;
+  $niec_facets_to_display = get_option('drstk_niec_metadata');
+  echo "<table><tbody id='niec_facets_sortable'>";
+  if (is_array($niec_facets_to_display)){
+    foreach($niec_facets_to_display as $option){
+      echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_niec_metadata[]" value="'.$option.'" checked="checked"/> <label>'.titleize($option).'</label></td>';
+      echo '<td style="padding:0;" class="title"><input type="text" name="drstk_niec_'.$option.'_title" value="'.get_option('drstk_niec_'.$option.'_title').'"></td></tr>';
+    }
+  }
+  foreach($niec_facet_options as $option){
+    if (!is_array($niec_facets_to_display) || (is_array($niec_facets_to_display) && !in_array($option, $niec_facets_to_display))){
+      echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_niec_metadata[]" value="'.$option.'"/> <label>'.titleize($option).'</label></td>';
+      echo '<td style="padding:0;display:none" class="title"><input type="text" name="drstk_niec_'.$option.'_title" value="'.get_option('drstk_niec_'.$option.'_title').'"></td></tr>';
+    }
+  }
+  echo "</tbody></table>";
 }
 
 function drstk_niec_metadata_title_callback(){
@@ -414,6 +433,13 @@ function drstk_browse_script() {
     foreach($facets as $facet){
       $facets_to_display[$facet] = drstk_get_facet_name($facet);
     }
+    $niec_facets = get_option('drstk_niec_metadata');
+    $niec_facets_to_display = array();
+    if (is_array($niec_facets)){
+      foreach($niec_facets as $facet){
+        $niec_facets_to_display[$facet] = drstk_get_facet_name($facet, true);
+      }
+    }
     //this allows an ajax call from browse.js
     $browse_obj = array(
       'ajax_url' => admin_url( 'admin-ajax.php' ),
@@ -426,6 +452,9 @@ function drstk_browse_script() {
       'errors' => json_encode($errors),
       'facets_to_display' => $facets_to_display,
     );
+    if (get_option('drstk_niec') == 'on' && count($niec_facets_to_display) > 0){
+      $browse_obj['niec_facets_to_display'] = $niec_facets_to_display;
+    }
 
     wp_localize_script( 'drstk_browse', 'browse_obj', $browse_obj );
 }
