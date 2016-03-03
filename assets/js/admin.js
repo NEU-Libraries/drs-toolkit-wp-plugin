@@ -19,6 +19,16 @@
    id = id.substr(id.length - 1);
    search_params.q = '';
    search_params.page = 1;
+   if (id == 6){
+     $("#TB_ajaxContent #tabs-6").html('<div class="drs-items"></div><button class="timeline-options button"><span class="dashicons dashicons-admin-generic"></span></button><ol id="sortable-timeline-list"></ol><div class="drs-pagination"></div>');
+     $("#TB_ajaxContent #tabs-6").prepend('<h4>Timeline</h4><input type="hidden" class="selected-timeline" />');
+     get_updated_items(search_params, 'video');
+   }
+   if (id == 5){
+     $("#TB_ajaxContent #tabs-5").html('<div class="drs-items"></div><button class="maps-options button"><span class="dashicons dashicons-admin-generic"></span></button></div><ol id="sortable-map-list"></ol><div class="drs-pagination"></div>');
+     $("#TB_ajaxContent #tabs-5").prepend('<h4>Map</h4><input type="hidden" class="selected-map" />');
+     get_updated_items(search_params, 'video');
+   }
    if (id == 4){
      $("#TB_ajaxContent #tabs-4").html('<div class="drs-items"></div><button class="video-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden video-options"><label for="drstk-video-height">Height: <input type="text" name="drstk-video-height" id="drstk-video-height" />(Enter in pixels or %, Default is 270)</label><br/><label for="drstk-video-width">Width: <input type="text" name="drstk-video-width" id="drstk-video-width" />(Enter in pixels or %, Default is 100%)</label><br/></div><ol id="sortable-video-list"></ol><div class="drs-pagination"></div>');
      $("#TB_ajaxContent #tabs-4").prepend('<h4>Media Playlist</h4><input type="hidden" class="selected-video" />');
