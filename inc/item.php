@@ -11,7 +11,11 @@ function get_item_details($data, $meta_options){
     return false;
   }
   $html = '';
-  $html .= parse_metadata($data->mods, $meta_options, $html);
+  if (isset($data->mods)){ //mods
+    $html .= parse_metadata($data->mods, $meta_options, $html);
+  } else if (isset($data->_source)){//solr_only = true
+    $html .= parse_metadata($data->_source, $meta_options, $html, true);
+  }
   $niec_facets = get_option('drstk_niec_metadata');
   $niec_facets_to_display = array();
   if (is_array($niec_facets)){
@@ -25,17 +29,26 @@ function get_item_details($data, $meta_options){
   return $html;
 }
 
-function parse_metadata($data, $meta_options, $html){
+function parse_metadata($data, $meta_options, $html, $solr=false){
+  if ($solr){//this is necessary to not use default solr ordering
+    $arr1 = (array) $data;
+    $arr2 = $meta_options;
+    $data = array();
+    foreach ($arr2 as $key=>$val) {
+      $data[$val] = $arr1[$val];
+    }
+  }
+
   foreach($data as $key => $value){
     if (($meta_options == NULL) || in_array($key, $meta_options) || array_key_exists($key, $meta_options)){
       $html .= "<div class='drs-field-label'><b>";
-      if (isset($meta_options[$key])){
-        $html .= $meta_options[$key];
+      if (!isset($meta_options[$key])){
+        $html .= titleize($key);
       } else {
-        $html .= $key;
+        $html .= $meta_options[$key];
       }
       $html .= "</b></div><div class='drs-field-value'>";
-      if (count($value) > 0){
+      if (is_array($value) && count($value) > 0){
         for ($i =0; $i<count($value); $i++){
           if (substr($value[$i], 0, 4) == "http"){
             $html .= '<a href="'.$value[$i].'" target="_blank">'.$value[$i].'</a>';
@@ -46,8 +59,6 @@ function parse_metadata($data, $meta_options, $html){
             $html .= "<br/> ";
           }
         }
-      } else if (is_array($value)) {
-        $html .= "";
       } else {
         $html .= $value;
       }
@@ -233,14 +244,14 @@ function get_associated_files(){
     // foreach($data->associated as $assoc_pid => $assoc_title){ //disabling multivalued associated files until a new less resource intensive api call for associated files exists
       $assoc_pid = key(get_object_vars($data->associated)); //using this just to get the first title
       $assoc_title = $data->associated->$assoc_pid; //using this just to get the first title
-      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $assoc_pid;
+      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $assoc_pid . "?solr_only=true";
       $assoc_data = get_response($url);
       $assoc_data = json_decode($assoc_data);
       if (check_for_bad_data($assoc_data)){
         return false;
       } else {
-        if (isset($assoc_data->thumbnails)){
-          $associated_html .= "<a href='".site_url()."/item/".$assoc_data->pid."'><img src='".$assoc_data->thumbnails[1]."'/></a>";
+        if (isset($assoc_data->_source->fields_thumbnail_list_tesim)){
+          $associated_html .= "<a href='".site_url()."/item/".$assoc_data->_source->id."'><img src='https://repository.library.northeastern.edu".$assoc_data->_source->fields_thumbnail_list_tesim[1]."'/></a>";
         }
         $associated_html .= get_item_details($assoc_data, $assoc_meta_options);
       }

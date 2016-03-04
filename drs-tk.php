@@ -39,7 +39,7 @@ $TEMPLATE_THEME = array(
  register_deactivation_hook( __FILE__, 'drstk_deactivation' );
 
  $all_meta_options = array("Title","Creator","Contributor","Publisher","Type of Resource","Genre","Language","Physical Description","Abstract/Description","Table of contents","Notes","Subjects and keywords","Related item","Identifier","Access condition","Location","uri","Format","Permanent URL","Date created","Date issued","Copyright date","Biographical/Historical","Biográfica/histórica");
- $all_assoc_meta_options = array("Title","Creator","Abstract/Description");
+ $all_assoc_meta_options = array("full_title_ssi","creator_tesim","abstract_tesim");
  $facet_options = array("creator_sim", "creation_year_sim", "subject_sim", "type_sim", "community_name_ssim", "drs_department_ssim", "drs_degree_ssim", "drs_course_number_ssim", "drs_course_title_ssim");
  $niec_facet_options = array("niec_gender_ssim", "niec_age_ssim", "niec_race_ssim", "niec_sign_pace_ssim", "niec_fingerspelling_extent_ssim", "niec_fingerspelling_pace_ssim", "niec_numbers_pace_ssim", "niec_numbers_extent_ssim", "niec_classifiers_extent_ssim", "niec_use_of_space_extent_ssim", "niec_how_space_used_ssim", "niec_text_type_ssim", "niec_register_ssim", "niec_conversation_type_ssim", "niec_audience_ssim", "niec_signed_language_ssim");
 
@@ -152,7 +152,7 @@ function drstk_get_pid(){
 function drstk_get_assoc_meta_options(){
   $meta_options = get_option('drstk_assoc_file_metadata');
   if ($meta_options == NULL){
-    $meta_options = array("Title","Creator","Abstract/Description");
+    $meta_options = array("full_title_ssi","creator_tesim","abstract_tesim");
   }
   return $meta_options;
 }
@@ -311,7 +311,7 @@ function drstk_assoc_file_metadata_callback(){
   foreach($all_assoc_meta_options as $option){
     echo'<label><input type="checkbox" name="drstk_assoc_file_metadata[]" value="'.$option.'" ';
     if (is_array($assoc_options) && in_array($option, $assoc_options)){echo'checked="checked"';}
-    echo'/> '.$option.'</label><br/>';
+    echo'/> '.titleize($option).'</label><br/>';
   }
 }
 
@@ -535,6 +535,8 @@ function titleize($string){
   $string = str_replace("_tesim","",$string);
   $string = str_replace("_sim","",$string);
   $string = str_replace("_ssim","",$string);
+  $string = str_replace("_ssi","",$string);
+  $string = str_replace("full_","",$string);
   $string = str_replace("drs_","",$string);
   $string = str_replace("niec_","",$string);
   $string = str_replace("_"," ",$string);
