@@ -33,6 +33,7 @@ jQuery(document).ready(function($) {
     $("#primary").addClass('col-md-12').removeClass('col-md-9');
     $("#secondary").hide();
   }
+  console.log(params);
   get_data(params);
   get_wp_data(params.q);
 
@@ -41,7 +42,7 @@ jQuery(document).ready(function($) {
     var errors = $.parseJSON(browse_obj.errors);
     $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-spin'></span></h2>").show();
     $.ajax({
-        type: 'GET',
+        type: 'POST',
         url: browse_obj.ajax_url,
         data: {
           _ajax_nonce: browse_obj.nonce,
@@ -50,11 +51,8 @@ jQuery(document).ready(function($) {
         },
     success: function(data)
      {
-      // console.log(params)
       $("#drs-loading").hide();
-      // console.log(data);
         var data = $.parseJSON(data);
-        // console.log(data);
         if (data == null) {
           $("#drs-content").html(errors.search.fail_null);
         } else if (data == -1){
