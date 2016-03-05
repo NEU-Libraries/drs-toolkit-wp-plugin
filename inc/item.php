@@ -167,16 +167,17 @@ function get_item_image(){
         }
         echo "<div id='drs-item-video'></div>";
         echo '<script type="text/javascript">
-        jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A=="
-        var primary = "flash"
-        if (typeof swfobject == "undefined" || swfobject.getFlashPlayerVersion().major == 0) {
-          primary == "html5"
+      jQuery( document ).ready(function( $ ) {
+        jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A==";
+        var primary = "flash";
+        if (typeof swfobject === "undefined" || swfobject.getFlashPlayerVersion().major === 0) {
+          primary = "html5";
         }
         jwplayer("drs-item-video").setup({
         sources:
         [
         { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"},
-        { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':" + "info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0" + "/playlist.m3u8", type:"'.$av_type.'"}
+        { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0/playlist.m3u8", type:"'.$av_type.'"}
         ],
         image: "'.$av_poster.'",
         provider: "'.$av_provider.'",
@@ -184,21 +185,21 @@ function get_item_image(){
         androidhls: "true",
         primary: primary,
         width: "100%",
-        height: 400,
-        })
+        height: 400
+        });
 
-        var errorMessage = function() {
-          $("#drs-item-img").before("<div class=\'alert alert-warning\'>'.$errors['item']['jwplayer_fail'].'</div>");
-          $("#drs-item-img").show();
+        var errorMessage = function(e) {
+          $("#drs-item-video").before("<div class=\'alert alert-danger\'>'.$errors['item']['jwplayer_fail'].'<br /><strong>Error Message:</strong> "+e.message+"</div>");
           $("#drs-item-video").hide();
         };
        jwplayer().onError(errorMessage);
        jwplayer().onSetupError(errorMessage);
        jwplayer().onBuffer(function() {
          theTimeout = setTimeout(function() {
-           errorMessage;
+           errorMessage();
          }, 5000);
-       });</script>';
+       });
+      });</script>';
       }
     }
   }
