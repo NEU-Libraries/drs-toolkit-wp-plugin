@@ -49,9 +49,10 @@
         $(this).parents("li").siblings("li").hide();
         $(".item-metadata").siblings(".drs-pagination").hide();
         var errors = $.parseJSON(item_admin_obj.errors);
-        $.post(item_admin_obj.ajax_url, {
+        $.ajax(item_admin_obj.ajax_url, {
            _ajax_nonce: item_admin_obj.item_admin_nonce,
             action: "get_item_admin",
+            method: "POST",
             pid: pid,
         }, function(data) {
             var data = $.parseJSON(data);

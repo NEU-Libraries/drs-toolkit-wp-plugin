@@ -1,41 +1,76 @@
 <?php
 global $item_pid, $data, $collection, $meta_options, $errors;
 $collection = drstk_get_pid();
-$meta_options = drstk_get_meta_options();
+$meta_options = get_option('drstk_item_page_metadata');
+$assoc_meta_options = drstk_get_assoc_meta_options();
 $errors = drstk_get_errors();
 
-function get_item_details(){
-  global $item_pid, $data, $meta_options, $errors;
-  if (check_for_bad_data()){
+function get_item_details($data, $meta_options){
+  global $errors;
+  if (check_for_bad_data($data)){
     return false;
   }
-  foreach($data->mods as $key => $value){
-    if (($meta_options == NULL) || in_array($key, $meta_options)){
-      echo "<div class='drs-field-label'><b>".$key."</b></div><div class='drs-field-value'>";
-      if (count($value) > 0){
-        for ($i =0; $i<count($value); $i++){
-          if (substr($value[$i], 0, 4) == "http"){
-            echo '<a href="'.$value[$i].'" target="_blank">'.$value[$i].'</a>';
-          } else {
-            echo $value[$i];
-          }
-          if ($i != count($value)-1){
-            echo "<br/> ";
-          }
-        }
-      } else if (is_array($value)) {
-        echo "";
-      } else {
-        echo $value;
-      }
-      echo "</div>";
+  $html = '';
+  if (isset($data->mods)){ //mods
+    $html .= parse_metadata($data->mods, $meta_options, $html);
+  } else if (isset($data->_source)){//solr_only = true
+    $html .= parse_metadata($data->_source, $meta_options, $html, true);
+  }
+  $niec_facets = get_option('drstk_niec_metadata');
+  $niec_facets_to_display = array();
+  if (is_array($niec_facets)){
+    foreach($niec_facets as $facet){
+      $niec_facets_to_display[$facet] = drstk_get_facet_name($facet, true);
     }
   }
+  if (get_option('drstk_niec') == 'on' && count($niec_facets_to_display) > 0 && isset($data->niec)){
+    $html = parse_metadata($data->niec, $niec_facets_to_display, $html);
+  }
+  return $html;
+}
+
+function parse_metadata($data, $meta_options, $html, $solr=false){
+  if ($solr){//this is necessary to not use default solr ordering
+    $arr1 = (array) $data;
+    $arr2 = $meta_options;
+    $data = array();
+    foreach ($arr2 as $key=>$val) {
+      $data[$val] = $arr1[$val];
+    }
+  }
+
+  foreach($data as $key => $value){
+    if (($meta_options == NULL) || in_array($key, $meta_options) || array_key_exists($key, $meta_options)){
+      $html .= "<div class='drs-field-label'><b>";
+      if (!isset($meta_options[$key])){
+        $html .= titleize($key);
+      } else {
+        $html .= $meta_options[$key];
+      }
+      $html .= "</b></div><div class='drs-field-value'>";
+      if (is_array($value) && count($value) > 0){
+        for ($i =0; $i<count($value); $i++){
+          if (substr($value[$i], 0, 4) == "http"){
+            $html .= '<a href="'.$value[$i].'" target="_blank">'.$value[$i].'</a>';
+          } else {
+            $html .= $value[$i];
+          }
+          if ($i != count($value)-1){
+            $html .= "<br/> ";
+          }
+        }
+      } else {
+        $html .= $value;
+      }
+      $html .= "</div>";
+    }
+  }
+  return $html;
 }
 
 function get_download_links(){
   global $data;
-  if (check_for_bad_data()){
+  if (check_for_bad_data($data)){
     return false;
   }
   echo "<br/><h4>Downloads</h4>";
@@ -51,7 +86,7 @@ function get_item_title(){
   $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item_pid;
   $data = get_response($url);
   $data = json_decode($data);
-  if (check_for_bad_data()){
+  if (check_for_bad_data($data)){
     return false;
   }
   echo $data->mods->Title[0];
@@ -59,7 +94,7 @@ function get_item_title(){
 
 function get_item_breadcrumbs(){
   global $item_pid, $data, $breadcrumb_html, $collection;
-  if (check_for_bad_data()){
+  if (check_for_bad_data($data)){
     return false;
   }
   $breadcrumb_html = array();
@@ -86,8 +121,8 @@ function get_item_breadcrumbs(){
 
 function get_item_image(){
   global $item_pid, $data, $errors;
-  if (check_for_bad_data()){
-    echo check_for_bad_data();
+  if (check_for_bad_data($data)){
+    echo check_for_bad_data($data);
     return false;
   }
   if (isset($data->thumbnails)){
@@ -148,7 +183,7 @@ function get_item_image(){
         sources:
         [
         { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"},
-        { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':" + "info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0" + "/playlist.m3u8", type:"'.$av_type.'"}
+        { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0/playlist.m3u8", type:"'.$av_type.'"}
         ],
         image: "'.$av_poster.'",
         provider: "'.$av_provider.'",
@@ -159,11 +194,11 @@ function get_item_image(){
         height: 400,
         // flashplayer: "/~beekerz/wordpress/wp-content/plugins/drs-tk/assets/js/jwplayer/jwplayer.flash.swf",
         // html5player: "/~beekerz/wordpress/wp-content/plugins/drs-tk/assets/js/jwplayer/jwplayer.html5.js"
-        })
+      });
 
-        var errorMessage = function() {
+        var errorMessage = function(e) {
           console.log("reporting an error");
-          $("#drs-item-img").before("<div class=\'alert alert-warning\'>'.$errors['item']['jwplayer_fail'].'</div>");
+          $("#drs-item-img").before("<div class=\'alert alert-warning\'>'.$errors['item']['jwplayer_fail'].'<br /><strong>Error Message:</strong> "+e.message+"</div>");
           $("#drs-item-img").show();
           // $("#drs-item-video").hide();
         };
@@ -171,18 +206,74 @@ function get_item_image(){
        jwplayer().onSetupError(errorMessage);
        jwplayer().onBuffer(function() {
          theTimeout = setTimeout(function() {
-           errorMessage;
+           errorMessage();
          }, 5000);
        });
-        });
-       </script>';
+      });</script>';
       }
+    }
+  }
+  if (isset($data->page_objects)){
+    $pages = $data->page_objects;
+    if (count($pages) > 0){
+      $gallery_html = '<div class="carousel slide" id="single_carousel">';
+      $img_html = "";
+      $i = 0;
+      foreach($pages as $img=>$ordinal_value){
+        $img_html .= "<div class='item";
+        if ($i == 0){
+          $img_html .= " active";
+        }
+        $img_html .= "'><a href='' data-toggle='modal' data-target='#drs_item_modal' class='drs_page_image' data-img='".$img."' data-ordinal_value='".$ordinal_value."'><img";
+        if ($i == 0){
+          $img_html .= " src='".$img."'";
+        } else {
+          $img_html .= " data-src='".$img."'";
+        }
+        $img_html .= "/></a><div class='carousel-caption'><a href='' data-toggle='modal' data-target='drs_item_modal' class='drs_item_modal' data-img='".$img."' data-ordinal_value='".$ordinal_value."'>Page ".$ordinal_value."</a></div></div>";
+        $i++;
+      }
+      $gallery_html .= '<div class="carousel-inner">'.$img_html.'</div>';
+      $gallery_html .= '<a class="left carousel-control" href="#single_carousel" role="button" data-slide="prev"><i class="glyphicon-chevron-left fa fa-chevron-left" aria-hidden="true"></i><span class="sr-only">Previous</span></a><a class="right carousel-control" href="#single_carousel" role="button" data-slide="next"><i class="glyphicon-chevron-right fa fa-chevron-right" aria-hidden="true"></i><span class="sr-only">Next</span></a>';
+      $gallery_html .= '</div>';
+      $gallery_html .= '<div class="modal fade" id="drs_item_modal"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Page Images</h4></div><div class="modal-body"><nav class="pagination"><ul class="pagination"><li><a href="#" class="drs_page_image prev"><span class="fa fa-chevron-left"></span></a></li>';
+      foreach($pages as $img=>$ordinal_value){
+        $gallery_html .= "<li><a href='#' class='drs_page_image' data-img='".$img."' data-ordinal_value='".$ordinal_value."'>".$ordinal_value."</a></li>";
+      }
+      $gallery_html .= '<li><a href="#" class="drs_page_image next"><span class="fa fa-chevron-right"></span></a></li></ul></nav><div class="body"></div></div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div><!-- /.modal-content --></div><!-- /.modal-dialog --></div><!-- /.modal -->';
+      echo $gallery_html;
     }
   }
 }
 
-function check_for_bad_data(){
-  global $data, $errors;
+function get_associated_files(){
+  global $data, $errors, $assoc_meta_options;
+  if (($data->associated != NULL) && (get_option('drstk_assoc') == 'on')){
+    $associated_html = '';
+    $title = (get_option('drstk_assoc_title') != '') ? get_option('drstk_assoc_title') : 'Associated Files';
+    $associated_html .= "<div class='panel panel-default assoc_files'><div class='panel-heading'>".$title."</div><div class='panel-body'>";
+    // foreach($data->associated as $assoc_pid => $assoc_title){ //disabling multivalued associated files until a new less resource intensive api call for associated files exists
+      $assoc_pid = key(get_object_vars($data->associated)); //using this just to get the first title
+      $assoc_title = $data->associated->$assoc_pid; //using this just to get the first title
+      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $assoc_pid . "?solr_only=true";
+      $assoc_data = get_response($url);
+      $assoc_data = json_decode($assoc_data);
+      if (check_for_bad_data($assoc_data)){
+        return false;
+      } else {
+        if (isset($assoc_data->_source->fields_thumbnail_list_tesim)){
+          $associated_html .= "<a href='".site_url()."/item/".$assoc_data->_source->id."'><img src='https://repository.library.northeastern.edu".$assoc_data->_source->fields_thumbnail_list_tesim[1]."'/></a>";
+        }
+        $associated_html .= get_item_details($assoc_data, $assoc_meta_options);
+      }
+    // }
+    $associated_html .= "</div></div>";
+    echo $associated_html;
+  }
+}
+
+function check_for_bad_data($data){
+  global $errors;
   if ($data == null) {
     return $errors['item']['fail'];
   } else if (isset($data->error)) {

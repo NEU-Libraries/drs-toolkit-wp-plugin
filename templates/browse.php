@@ -39,7 +39,7 @@ $view = 'search';
 				<!-- #primary -->
 
 				<div id="secondary" class="widget-area main-sidebar col-md-3" role="complementary">
-					
+
 				</div><!-- #secondary -->
 
 			</div>

@@ -8,9 +8,10 @@ jQuery(document).ready(function($) {
   var sort = "score+desc%2C+system_create_dtsi+desc";
   var params = {q:q, per_page:per_page, page:page, f:f, sort:sort};
   var template = browse_obj.template;
-  // console.log(browse_obj);
-  var search_options = $.parseJSON(browse_obj.search_options);
-  var browse_options = $.parseJSON(browse_obj.browse_options);
+  var search_options = browse_obj.search_options;
+  var browse_options = browse_obj.browse_options;
+  var facets_to_display = browse_obj.facets_to_display;
+  var niec_facets = 'niec_facets_to_display' in browse_obj ? browse_obj.niec_facets_to_display : null;
   if ((q) && (q != '')){
     $("#drs-selection").show();
     $("#drs-selection a[data-type='q']").remove();
@@ -32,6 +33,7 @@ jQuery(document).ready(function($) {
     $("#primary").addClass('col-md-12').removeClass('col-md-9');
     $("#secondary").hide();
   }
+  console.log(params);
   get_data(params);
   get_wp_data(params.q);
 
@@ -39,17 +41,18 @@ jQuery(document).ready(function($) {
   function get_data(params){
     var errors = $.parseJSON(browse_obj.errors);
     $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-spin'></span></h2>").show();
-    $.post(browse_obj.ajax_url, {
-       _ajax_nonce: browse_obj.nonce,
-        action: "get_browse",
-        params: params,
-
-    }, function(data) {
-      // console.log(params)
+    $.ajax({
+        type: 'POST',
+        url: browse_obj.ajax_url,
+        data: {
+          _ajax_nonce: browse_obj.nonce,
+           action: "get_browse",
+           params: params,
+        },
+    success: function(data)
+     {
       $("#drs-loading").hide();
-      // console.log(data);
         var data = $.parseJSON(data);
-        // console.log(data);
         if (data == null) {
           $("#drs-content").html(errors.search.fail_null);
         } else if (data == -1){
@@ -71,9 +74,11 @@ jQuery(document).ready(function($) {
         } else {
           $("#drs-content").html(errors.search.no_results);
         }
-    }).fail(function() {
+    }, error: function()
+    {
       $("#drs-content").html("<div class='alert error alert-error'>"+errors.search.fail_null+"</div>");
-    });
+    }
+  });
   }
 
   //parses pagination data
@@ -129,15 +134,24 @@ jQuery(document).ready(function($) {
   //parses facet data
   function facetize(data){
     var facet_html = '';
-    $.each(data.facet_fields, function(facet, facet_vals){
-      var facet_name = titleize(facet); //need to prettize this
+    if (niec_facets != null){
+      facet_html += parse_facets(data, niec_facets, facet_html);
+    }
+    facet_html = parse_facets(data, facets_to_display, facet_html);
+    $("#drs-facets").html(facet_html);
+    $("#drs-facets").before("<button class='themebutton button btn visible-phone hidden-tablet hidden-desktop drs-facet-toggle hidden-md hidden-lg visible-sm visible-xs'>Show Facets</button>");
+  }//end facetize
+
+  function parse_facets(data, object, facet_html){
+    $.each(object, function(facet, title){
+      var facet_name = title;
       var facet_values = '';
-      if (Object.keys(facet_vals).length > 0) {
+      if (Object.keys(data.facet_fields[facet]).length > 0) {
         var this_facet, this_facet_name;
         var facet_modal = facet_modal_vals = '';
         var i=1;
         var facet_array = [];
-        $.each(facet_vals,function(index, val_q){
+        $.each(data.facet_fields[facet],function(index, val_q){
           facet_array.push({v:index, k:val_q});
         });
         facet_array.sort(function(a,b){
@@ -159,15 +173,14 @@ jQuery(document).ready(function($) {
         });
         facet_modal = '<button type="button" class="themebutton btn btn-more" data-toggle="modal" data-target="#drs_modal_'+facet+'">More '+facet_name+'s</button><div class="modal fade" id="drs_modal_'+facet+'"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">All '+facet_name+'s</h4></div><div class="modal-body">'+facet_modal_vals+'</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div><!-- /.modal-content --></div><!-- /.modal-dialog --></div><!-- /.modal -->';
         facet_html += "<div id='drs_"+facet+"' class='drs-facet'><div class='panel panel-default'><div class='panel-heading'><b class='drs-facet-name'>" + facet_name + "</b></div><div class='panel-body'>"+facet_values;
-        if (Object.keys(facet_vals).length > 5){
+        if (Object.keys(data.facet_fields[facet]).length > 5){
           facet_html += facet_modal;
         }
         facet_html += "</div></div></div>";
       }
     });
-    $("#drs-facets").html(facet_html);
-    $("#drs-facets").before("<button class='themebutton button btn visible-phone hidden-tablet hidden-desktop drs-facet-toggle hidden-md hidden-lg visible-sm visible-xs'>Show Facets</button>");
-  }//end facetize
+    return facet_html;
+  }
 
   //parses actual results
   function resultize(data){
@@ -198,16 +211,16 @@ jQuery(document).ready(function($) {
           this_doc += "<div class='fa fa-folder-open-o'></div>";
         }
         this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure></div><div class='three_fourth col-sm-9 last'>";
-        if (search_options.indexOf('title') > -1){
+        if (search_options.indexOf('Title') > -1){
           this_doc += "<h4 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>" + title + "</a></h4>";
         }
-        if (creator && search_options.indexOf('creator') > -1){
-          this_doc += "<h6>"+ creator + "</h6>";
+        if (creator && search_options.indexOf('Creator') > -1){
+          this_doc += "<h6 class='drs-item-creator'>"+ creator + "</h6>";
         }
-        if (abstract  && search_options.indexOf('abstract') > -1){
+        if (abstract  && search_options.indexOf('Abstract') > -1){
           this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
         }
-        if (date  && search_options.indexOf('date') > -1){
+        if (date  && search_options.indexOf('Date') > -1){
           this_doc += "<p class='drs-item-date'>" + date + "</p>";
         }
         this_doc += "<div class=''><a href='"+browse_obj.site_url+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";
@@ -225,23 +238,20 @@ jQuery(document).ready(function($) {
         } else {
           this_doc += "<div class='fa fa-folder-open-o'></div>";
         }
-        this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure><div class='caption text-center'><h5 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>";
-        if (browse_options.indexOf('title') > -1){
-          this_doc += title;
+        this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure><div class='caption text-center'>";
+        if (browse_options.indexOf('Title') > -1){
+          this_doc += "<h5 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>"+title+"</a></h5>";
         }
-        this_doc += "</a></h5><h6 class='drs-item-creator'>"
-        if (creator && browse_options.indexOf('creator') > -1){
-          this_doc += creator;
+        if (creator && browse_options.indexOf('Creator') > -1){
+          this_doc += "<h6 class='drs-item-creator'>"+creator+"</h6>";
         }
-        this_doc += "</h6><p class='drs-item-abstract'>";
-        if (abstract  && browse_options.indexOf('abstract') > -1){
-          this_doc += abstract;
+        if (abstract  && browse_options.indexOf('Abstract') > -1){
+          this_doc += "<p class='drs-item-abstract'>"+abstract+"</p>";
         }
-        this_doc += "</p><p class='drs-item-date'>"
-        if (date  && browse_options.indexOf('date') > -1){
-          this_doc += date;
+        if (date  && browse_options.indexOf('Date') > -1){
+          this_doc += "<p class='drs-item-date'>"+date+"</p>";
         }
-        this_doc += "</p></div></div></div>";
+        this_doc += "</div></div></div>";
       }
       docs_html += this_doc;
     });
