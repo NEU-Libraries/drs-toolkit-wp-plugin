@@ -215,7 +215,7 @@ jQuery(document).ready(function($) {
           this_doc += "<h4 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>" + title + "</a></h4>";
         }
         if (creator && search_options.indexOf('Creator') > -1){
-          this_doc += "<h6>"+ creator + "</h6>";
+          this_doc += "<h6 class='drs-item-creator'>"+ creator + "</h6>";
         }
         if (abstract  && search_options.indexOf('Abstract') > -1){
           this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
@@ -238,23 +238,20 @@ jQuery(document).ready(function($) {
         } else {
           this_doc += "<div class='fa fa-folder-open-o'></div>";
         }
-        this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure><div class='caption text-center'><h5 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>";
+        this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure><div class='caption text-center'>";
         if (browse_options.indexOf('Title') > -1){
-          this_doc += title;
+          this_doc += "<h5 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>"+title+"</a></h5>";
         }
-        this_doc += "</a></h5><h6 class='drs-item-creator'>";
         if (creator && browse_options.indexOf('Creator') > -1){
-          this_doc += creator;
+          this_doc += "<h6 class='drs-item-creator'>"+creator+"</h6>";
         }
-        this_doc += "</h6><p class='drs-item-abstract'>";
         if (abstract  && browse_options.indexOf('Abstract') > -1){
-          this_doc += abstract;
+          this_doc += "<p class='drs-item-abstract'>"+abstract+"</p>";
         }
-        this_doc += "</p><p class='drs-item-date'>";
         if (date  && browse_options.indexOf('Date') > -1){
-          this_doc += date;
+          this_doc += "<p class='drs-item-date'>"+date+"</p>";
         }
-        this_doc += "</p></div></div></div>";
+        this_doc += "</div></div></div>";
       }
       docs_html += this_doc;
     });
