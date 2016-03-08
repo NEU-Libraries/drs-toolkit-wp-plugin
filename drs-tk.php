@@ -49,13 +49,12 @@ $TEMPLATE_THEME = array(
  add_action('init', 'drstk_rewrite_rule');
  function drstk_rewrite_rule() {
 
-     add_rewrite_rule('^browse/?$',
-         'index.php?post_type=drs&drstk_template_type=browse',
-         'top');
-     add_rewrite_rule('^search/?$', 'index.php?post_type=drs&drstk_template_type=search', 'top');
-     add_rewrite_rule('^item/([^/]*)/?([^/]*)*', 'index.php?post_type=drs&drstk_template_type=item&pid=$matches[1]&js=$matches[2]', 'top');
-     add_rewrite_rule('^collections/?$', 'index.php?post_type=drs&drstk_template_type=collections', 'top');
-     add_rewrite_rule('^collection/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=collection&pid=$matches[1]', 'top');
+    $home_url = get_option('drstk_home_url');
+    add_rewrite_rule('^'.$home_url.'browse/?$', 'index.php?post_type=drs&drstk_template_type=browse', 'top');
+    add_rewrite_rule('^'.$home_url.'search/?$', 'index.php?post_type=drs&drstk_template_type=search', 'top');
+    add_rewrite_rule('^'.$home_url.'item/([^/]*)/?([^/]*)*', 'index.php?post_type=drs&drstk_template_type=item&pid=$matches[1]&js=$matches[2]', 'top');
+    add_rewrite_rule('^'.$home_url.'collections/?$', 'index.php?post_type=drs&drstk_template_type=collections', 'top');
+    add_rewrite_rule('^'.$home_url.'collection/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=collection&pid=$matches[1]', 'top');
  }
 
 /*add something like this later to override manual paths to the original wp search */
@@ -364,6 +363,7 @@ function drstk_display_settings(){
 function drstk_plugin_settings_save(){
   if(isset($_GET['settings-updated']) && $_GET['settings-updated'])
    {
+      drstk_install();
       //plugin settings have been saved.
       // $collection_pid = drstk_get_pid();
    }
