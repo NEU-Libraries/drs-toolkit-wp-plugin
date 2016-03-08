@@ -34,13 +34,13 @@ function drstk_tiles( $atts ){
         }
       }
       if ($type == 'pinterest-below' || $type == 'pinterest'){
-        $img_html .= "<div class='brick'><a href='".site_url()."/item/".$pid."'><img src='".$thumbnail."'></a><div class='info wp-caption-text'><a href='".site_url()."/item/".$pid."'>".$img_metadata."</a>";
+        $img_html .= "<div class='brick'><a href='".drstk_home_url()."item/".$pid."'><img src='".$thumbnail."'></a><div class='info wp-caption-text'><a href='".drstk_home_url()."item/".$pid."'>".$img_metadata."</a>";
       }
       if ($type == 'pinterest-hover'){
-        $img_html .= "<div class='brick brick-hover'><img src='".$thumbnail."' style='width:100%'><div class='info wp-caption-text'><a href='".site_url()."/item/".$pid."'>".$img_metadata."</a>";
+        $img_html .= "<div class='brick brick-hover'><img src='".$thumbnail."' style='width:100%'><div class='info wp-caption-text'><a href='".drstk_home_url()."item/".$pid."'>".$img_metadata."</a>";
       }
       if ($type == 'even-row' || $type == 'square'){
-        $img_html .= "<div class='cell' data-thumbnail='".$thumbnail."'><div class='info wp-caption-text'><a href='".site_url()."/item/".$pid."'>".$img_metadata."</a>";
+        $img_html .= "<div class='cell' data-thumbnail='".$thumbnail."'><div class='info wp-caption-text'><a href='".drstk_home_url()."item/".$pid."'>".$img_metadata."</a>";
       }
       $img_html .= "<div class=\"hidden\">";
       $meta = $data->mods;

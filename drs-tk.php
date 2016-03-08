@@ -22,7 +22,6 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/slider_shortcode.php' );
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
 
 $VERSION = '0.5.0';
-$SITE_URL = site_url();
 
 // Set template names here so we don't have to go into the code.
 $TEMPLATE = array(
@@ -444,7 +443,6 @@ function drstk_content_template( $template ) {
 function drstk_browse_script() {
     global $wp_query;
     global $VERSION;
-    global $SITE_URL;
     global $sub_collection_pid;
     global $errors;
     //this enqueues the JS file
@@ -474,7 +472,7 @@ function drstk_browse_script() {
       'ajax_url' => admin_url( 'admin-ajax.php' ),
       'nonce'    => $browse_nonce,
       'template' => $wp_query->query_vars['drstk_template_type'],
-      'site_url' => $SITE_URL,
+      'home_url' => drstk_home_url(),
       'sub_collection_pid' => $sub_collection_pid,
       'search_options' => json_encode($search_options),
       'browse_options' => json_encode($browse_options),
@@ -515,7 +513,6 @@ function drstk_item_script() {
 function drstk_breadcrumb_script(){
   global $wp_query;
   global $VERSION;
-  global $SITE_URL;
   global $sub_collection_pid;
   global $item_pid;
 
@@ -533,6 +530,7 @@ function drstk_breadcrumb_script(){
      'item_pid' => $item_pid,
      'sub_collection_pid' => $sub_collection_pid,
      'collection_pid' => drstk_get_pid(),
+     'home_url' => drstk_home_url(),
   ) );
 }
 

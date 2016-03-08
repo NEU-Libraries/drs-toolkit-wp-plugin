@@ -40,7 +40,7 @@ function drstk_gallery( $atts ){
          if ($i == 0){
            $img_html .= " active";
          }
-         $img_html .= "'><a href='".site_url()."/item/".$pid."'><img";
+         $img_html .= "'><a href='".drstk_home_url()."item/".$pid."'><img";
          if ($i == 0){
            $img_html .= " src='".$thumbnail."'";
          } else {
@@ -71,7 +71,7 @@ function drstk_gallery( $atts ){
              }
              $img_html .= "'";
            }
-           $img_html .= "><a href='".site_url()."/item/".$pid."'>".$img_metadata."</a></div>";
+           $img_html .= "><a href='".drstk_home_url()."item/".$pid."'>".$img_metadata."</a></div>";
            $img_html .= "<div class=\"hidden\">";
            $meta = $data->mods;
            foreach($meta as $field){
