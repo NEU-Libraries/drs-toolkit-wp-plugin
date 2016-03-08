@@ -572,3 +572,21 @@ function titleize($string){
   $string = ucfirst($string);
   return $string;
 }
+
+/**
+ * Wraps home_url() to include the drstk_home_url after the home_url.
+ *
+ * If no $path is provided, will return the url with a trailing '/'
+ * which is different from how the normal home_url() would function.
+ */
+function drstk_home_url($path = '', $scheme = null) {
+  $drstk_url = get_option('drstk_home_url') ? get_option('drstk_home_url') : '/';
+  $url = home_url($drstk_url, $scheme);
+  if ($path) {
+    $url .= ltrim( $path, '/' );
+  } else {
+    $url = rtrim($url, '/') . '/';
+  }
+
+  return $url;
+}
