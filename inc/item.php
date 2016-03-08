@@ -103,18 +103,18 @@ function get_item_breadcrumbs(){
   if (array_key_exists($collection,$breadcrumbs)){
     foreach($breadcrumbs as $pid=>$title){
       if ($pid == $item_pid){
-        $breadcrumb_html[]= "<a href='".site_url()."/item/".$pid."'> ".$title."</a>";
+        $breadcrumb_html[]= "<a href='".drstk_home_url()."item/".$pid."'> ".$title."</a>";
       } else if ($pid == $collection){
-        $breadcrumb_html[]= "<a href='".site_url()."/browse'>Browse</a>";
+        $breadcrumb_html[]= "<a href='".drstk_home_url()."browse'>Browse</a>";
         $end = true;
       } else if ($end == true) {
       } else {
-        $breadcrumb_html[]= "<a href='".site_url()."/collection/".$pid."'> ".$title."</a>";
+        $breadcrumb_html[]= "<a href='".drstk_home_url()."collection/".$pid."'> ".$title."</a>";
       }
     }
   } else {
-    $breadcrumb_html[]= "<a href='".site_url()."/item/".$item_pid."'> ".$data->mods->Title[0]."</a>";
-    $breadcrumb_html[] = "<a href='".site_url()."/browse'>Browse</a>";
+    $breadcrumb_html[]= "<a href='".drstk_home_url()."item/".$item_pid."'> ".$data->mods->Title[0]."</a>";
+    $breadcrumb_html[] = "<a href='".drstk_home_url()."browse'>Browse</a>";
   }
   echo implode(" > ", array_reverse($breadcrumb_html));
 }
@@ -252,7 +252,7 @@ function get_associated_files(){
         return false;
       } else {
         if (isset($assoc_data->_source->fields_thumbnail_list_tesim)){
-          $associated_html .= "<a href='".site_url()."/item/".$assoc_data->_source->id."'><img src='https://repository.library.northeastern.edu".$assoc_data->_source->fields_thumbnail_list_tesim[1]."'/></a>";
+          $associated_html .= "<a href='".drstk_home_url()."item/".$assoc_data->_source->id."'><img src='https://repository.library.northeastern.edu".$assoc_data->_source->fields_thumbnail_list_tesim[1]."'/></a>";
         }
         $associated_html .= get_item_details($assoc_data, $assoc_meta_options);
       }

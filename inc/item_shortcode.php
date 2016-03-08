@@ -22,7 +22,7 @@ function drstk_item( $atts ){
       $master = $key;
     }
   }
-  $img_html = "<div class='drs-item'><a href='".site_url()."/item/".$atts['id']."'><img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
+  $img_html = "<div class='drs-item'><a href='".drstk_home_url()."item/".$atts['id']."'><img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
   if (isset($atts['align'])){
     $img_html .= " data-align='".$atts['align']."'";
   }
