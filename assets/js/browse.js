@@ -33,7 +33,6 @@ jQuery(document).ready(function($) {
     $("#primary").addClass('col-md-12').removeClass('col-md-9');
     $("#secondary").hide();
   }
-  console.log(params);
   get_data(params);
   get_wp_data(params.q);
 
@@ -189,6 +188,8 @@ jQuery(document).ready(function($) {
     $.each(data.docs, function(doc, doc_vals){
       var title, abstract, creator, date, klass = '';
       var thumbnail = [];
+      var home_url = browse_obj.home_url;
+      var this_doc_url;
       doc_vals.full_title_ssi? title = doc_vals.full_title_ssi : "";
       doc_vals.abstract_tesim? abstract = doc_vals.abstract_tesim : "";
       doc_vals.creator_tesim? creator = doc_vals.creator_tesim : "";
@@ -197,14 +198,14 @@ jQuery(document).ready(function($) {
       doc_vals.active_fedora_model_ssi? klass = doc_vals.active_fedora_model_ssi : "";
       if (klass == 'CoreFile'){klass = get_short_name(doc_vals.canonical_class_tesim);}
       if (doc_vals.active_fedora_model_ssi == 'Collection') {
-        this_doc_url = '/collection/' + doc_vals.id;
+        this_doc_url = home_url + 'collection/' + doc_vals.id;
       } else if (doc_vals.active_fedora_model_ssi == 'CoreFile') {
-        this_doc_url = '/item/' + doc_vals.id;
+        this_doc_url = home_url + 'item/' + doc_vals.id;
       }
       var this_doc = '';
       if (template == 'search'){
         //search = grid
-        this_doc += "<div class='drs-item search panel panel-default'><div class='panel-body'><div class='one_fourth col-sm-3'><figure><a href='"+browse_obj.site_url+this_doc_url+"'>";
+        this_doc += "<div class='drs-item search panel panel-default'><div class='panel-body'><div class='one_fourth col-sm-3'><figure><a href='"+this_doc_url+"'>";
         if (thumbnail[1]) {
           this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
         } else {
@@ -212,7 +213,7 @@ jQuery(document).ready(function($) {
         }
         this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure></div><div class='three_fourth col-sm-9 last'>";
         if (search_options.indexOf('Title') > -1){
-          this_doc += "<h4 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>" + title + "</a></h4>";
+          this_doc += "<h4 class='drs-item-title'><a href='"+this_doc_url+"'>" + title + "</a></h4>";
         }
         if (creator && search_options.indexOf('Creator') > -1){
           this_doc += "<h6 class='drs-item-creator'>"+ creator + "</h6>";
@@ -223,7 +224,7 @@ jQuery(document).ready(function($) {
         if (date  && search_options.indexOf('Date') > -1){
           this_doc += "<p class='drs-item-date'>" + date + "</p>";
         }
-        this_doc += "<div class=''><a href='"+browse_obj.site_url+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";
+        this_doc += "<div class=''><a href='"+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";
       } else {
         //browse = tile
         this_doc += "<div class='drs-item browse one_third ";
@@ -232,7 +233,7 @@ jQuery(document).ready(function($) {
         } else {
           this_doc += "col-sm-4";
         }
-        this_doc += "'><div class='thumbnail'><figure><a href='"+browse_obj.site_url+this_doc_url+"'>";
+        this_doc += "'><div class='thumbnail'><figure><a href='"+this_doc_url+"'>";
         if (thumbnail[1]) {
           this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
         } else {
@@ -240,7 +241,7 @@ jQuery(document).ready(function($) {
         }
         this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure><div class='caption text-center'>";
         if (browse_options.indexOf('Title') > -1){
-          this_doc += "<h5 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>"+title+"</a></h5>";
+          this_doc += "<h5 class='drs-item-title'><a href='"+this_doc_url+"'>"+title+"</a></h5>";
         }
         if (creator && browse_options.indexOf('Creator') > -1){
           this_doc += "<h6 class='drs-item-creator'>"+creator+"</h6>";

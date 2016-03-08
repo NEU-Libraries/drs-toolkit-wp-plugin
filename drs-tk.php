@@ -22,7 +22,6 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/slider_shortcode.php' );
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
 
 $VERSION = '0.5.0';
-$SITE_URL = site_url();
 
 // Set template names here so we don't have to go into the code.
 $TEMPLATE = array(
@@ -49,13 +48,12 @@ $TEMPLATE_THEME = array(
  add_action('init', 'drstk_rewrite_rule');
  function drstk_rewrite_rule() {
 
-     add_rewrite_rule('^browse/?$',
-         'index.php?post_type=drs&drstk_template_type=browse',
-         'top');
-     add_rewrite_rule('^search/?$', 'index.php?post_type=drs&drstk_template_type=search', 'top');
-     add_rewrite_rule('^item/([^/]*)/?([^/]*)*', 'index.php?post_type=drs&drstk_template_type=item&pid=$matches[1]&js=$matches[2]', 'top');
-     add_rewrite_rule('^collections/?$', 'index.php?post_type=drs&drstk_template_type=collections', 'top');
-     add_rewrite_rule('^collection/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=collection&pid=$matches[1]', 'top');
+    $home_url = get_option('drstk_home_url');
+    add_rewrite_rule('^'.$home_url.'browse/?$', 'index.php?post_type=drs&drstk_template_type=browse', 'top');
+    add_rewrite_rule('^'.$home_url.'search/?$', 'index.php?post_type=drs&drstk_template_type=search', 'top');
+    add_rewrite_rule('^'.$home_url.'item/([^/]*)/?([^/]*)*', 'index.php?post_type=drs&drstk_template_type=item&pid=$matches[1]&js=$matches[2]', 'top');
+    add_rewrite_rule('^'.$home_url.'collections/?$', 'index.php?post_type=drs&drstk_template_type=collections', 'top');
+    add_rewrite_rule('^'.$home_url.'collection/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=collection&pid=$matches[1]', 'top');
  }
 
 /*add something like this later to override manual paths to the original wp search */
@@ -92,6 +90,8 @@ function register_drs_settings() {
   add_settings_section('drstk_project', "Project Info", null, 'drstk_options');
   add_settings_field('drstk_collection', 'Project Collection or Set URL', 'drstk_collection_callback', 'drstk_options', 'drstk_project');
   register_setting( 'drstk_options', 'drstk_collection' );
+  add_settings_field('drstk_home_url', 'Permalink/URL Base', 'drstk_home_url_callback', 'drstk_options', 'drstk_project');
+  register_setting( 'drstk_options', 'drstk_home_url', 'drstk_home_url_validation' );
 
   add_settings_section('drstk_search_settings', 'Search Settings', null, 'drstk_options');
   add_settings_field('drstk_search_page_title', 'Search Page Title', 'drstk_search_page_title_callback', 'drstk_options', 'drstk_search_settings');
@@ -187,6 +187,33 @@ function drstk_collection_callback(){
   $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'https://repository.library.northeastern.edu/collections/neu:1';
   echo '<input name="drstk_collection" type="text" value="'.$collection_pid.'" style="width:100%;"></input><br/>
      <small>Ie. <a href="https://repository.library.northeastern.edu/collections/neu:6012">https://repository.library.northeastern.edu/collections/neu:6012</a></small>';
+}
+
+function drstk_home_url_callback() {
+  $url_base = get_option('drstk_home_url');
+  echo '<input name="drstk_home_url" type="text" value="'.$url_base.'"></input><br/>
+     <small>This sets the URL permalink base for /browse/, /search/, /item/, and /collection/<br/>
+     Currently, yours will look like: <strong>'.drstk_home_url().'browse/</strong></small>';
+}
+
+/**
+ * Basic validation and standardization of the $url_base entry;
+ * should return a safe string that ends with a forward slash
+ * (and does not begin with one).
+ */
+function drstk_home_url_validation($input){
+  $url_base = '';
+  $parts = explode("/", $input);
+  foreach ($parts as $part) {
+    if ($part != '') {
+      $safe_part = sanitize_title($part);
+      if ($safe_part) {
+        $url_base .= sanitize_title($part);
+        $url_base .= '/';
+      }
+    }
+  }
+  return $url_base;
 }
 
 function drstk_search_page_title_callback(){
@@ -335,6 +362,7 @@ function drstk_display_settings(){
 function drstk_plugin_settings_save(){
   if(isset($_GET['settings-updated']) && $_GET['settings-updated'])
    {
+      drstk_install();
       //plugin settings have been saved.
       // $collection_pid = drstk_get_pid();
    }
@@ -415,7 +443,6 @@ function drstk_content_template( $template ) {
 function drstk_browse_script() {
     global $wp_query;
     global $VERSION;
-    global $SITE_URL;
     global $sub_collection_pid;
     global $errors;
     //this enqueues the JS file
@@ -445,7 +472,7 @@ function drstk_browse_script() {
       'ajax_url' => admin_url( 'admin-ajax.php' ),
       'nonce'    => $browse_nonce,
       'template' => $wp_query->query_vars['drstk_template_type'],
-      'site_url' => $SITE_URL,
+      'home_url' => drstk_home_url(),
       'sub_collection_pid' => $sub_collection_pid,
       'search_options' => json_encode($search_options),
       'browse_options' => json_encode($browse_options),
@@ -490,7 +517,6 @@ function drstk_item_script() {
 function drstk_breadcrumb_script(){
   global $wp_query;
   global $VERSION;
-  global $SITE_URL;
   global $sub_collection_pid;
   global $item_pid;
 
@@ -508,6 +534,7 @@ function drstk_breadcrumb_script(){
      'item_pid' => $item_pid,
      'sub_collection_pid' => $sub_collection_pid,
      'collection_pid' => drstk_get_pid(),
+     'home_url' => drstk_home_url(),
   ) );
 }
 
@@ -546,4 +573,22 @@ function titleize($string){
   $string = str_replace("_"," ",$string);
   $string = ucfirst($string);
   return $string;
+}
+
+/**
+ * Wraps home_url() to include the drstk_home_url after the home_url.
+ *
+ * If no $path is provided, will return the url with a trailing '/'
+ * which is different from how the normal home_url() would function.
+ */
+function drstk_home_url($path = '', $scheme = null) {
+  $drstk_url = get_option('drstk_home_url') ? get_option('drstk_home_url') : '/';
+  $url = home_url($drstk_url, $scheme);
+  if ($path) {
+    $url .= ltrim( $path, '/' );
+  } else {
+    $url = rtrim($url, '/') . '/';
+  }
+
+  return $url;
 }
