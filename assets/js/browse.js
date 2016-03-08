@@ -33,7 +33,6 @@ jQuery(document).ready(function($) {
     $("#primary").addClass('col-md-12').removeClass('col-md-9');
     $("#secondary").hide();
   }
-  console.log(params);
   get_data(params);
   get_wp_data(params.q);
 
