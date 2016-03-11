@@ -3,7 +3,7 @@
 add_shortcode( 'drstk_tiles', 'drstk_tiles' );
 function drstk_tiles( $atts ){
   global $errors;
-  $cache = get_transient(md5('PREFIX'.serialize($atts)));
+  $cache = get_transient(md5('DRSTK'.serialize($atts)));
 
   if($cache) {
       return $cache;
@@ -69,7 +69,7 @@ function drstk_tiles( $atts ){
   $shortcode .= ">".$img_html."</div>";
   $cache_output = $shortcode;
   $cache_time = 1000;
-  set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
+  set_transient(md5('DRSTK'.serialize($atts)) , $cache_output, $cache_time * 60);
   return $shortcode;
 }
 

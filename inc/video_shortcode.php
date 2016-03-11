@@ -2,7 +2,7 @@
 /* adds shortcode */
 add_shortcode( 'drstk_collection_playlist', 'drstk_collection_playlist' );
 function drstk_collection_playlist($atts){
-  $cache = get_transient(md5('PREFIX'.serialize($atts)));
+  $cache = get_transient(md5('DRSTK'.serialize($atts)));
 
   if($cache) {
       return $cache;
@@ -72,7 +72,7 @@ function drstk_collection_playlist($atts){
           playlist: [ '. $playlists . ']
     });</script>';
     $cache_time = 1000;
-    set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
+    set_transient(md5('DRSTK'.serialize($atts)) , $cache_output, $cache_time * 60);
     return $cache_output;
 
 }

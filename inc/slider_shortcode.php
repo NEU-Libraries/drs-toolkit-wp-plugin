@@ -3,7 +3,7 @@
 add_shortcode( 'drstk_gallery', 'drstk_gallery' );
 function drstk_gallery( $atts ){
   global $errors;
-  $cache = get_transient(md5('PREFIX'.serialize($atts)));
+  $cache = get_transient(md5('DRSTK'.serialize($atts)));
 
   if($cache) {
       return $cache;
@@ -128,7 +128,7 @@ function drstk_gallery( $atts ){
    $gallery_html .= '</div>';
    $cache_output = $gallery_html;
    $cache_time = 1000;
-   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
+   set_transient(md5('DRSTK'.serialize($atts)) , $cache_output, $cache_time * 60);
    return $gallery_html;
   }
 }
