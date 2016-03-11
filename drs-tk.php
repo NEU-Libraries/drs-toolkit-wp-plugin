@@ -501,9 +501,13 @@ function drstk_item_script() {
         array());
     wp_enqueue_script('drstk_elevatezoom');
     wp_register_script('drstk_jwplayer',
-        plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__),
+        plugins_url('/assets/js/jwplayer7/jwplayer.js', __FILE__),
         array(), $VERSION, false );
     wp_enqueue_script('drstk_jwplayer');
+    wp_register_script('drstk_swf',
+        plugins_url('/assets/js/jwplayer7/swfobject.js', __FILE__),
+        array(), $VERSION, false );
+    wp_enqueue_script('drstk_swf');
     wp_register_script('drstk_item_gallery',
         plugins_url('/assets/js/item_gallery.js', __FILE__),
         array(), $VERSION, false );

@@ -9,12 +9,12 @@ function drstk_collection_playlist($atts){
   }
     $collection = explode(', ', $atts['id']);
     $playlists = '';
-    if (isset($atts['height'])){
+    if (isset($atts['height']) && $atts['height'] != 0){
       $height = $atts['height'];
     } else {
       $height = '270';
     }
-    if (isset($atts['width'])){
+    if (isset($atts['width']) && $atts['width'] != 0){
       $width = $atts['width'];
     } else {
       $width = '100%';
@@ -37,19 +37,21 @@ function drstk_collection_playlist($atts){
             if ($val == 'Audio File'){
               $rtmp = 'rtmp://libwowza.neu.edu:1935/vod/_definst_/MP3:datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/info%3Afedora%2F'.$encoded.'%2Fcontent%2Fcontent.0';
               $playlist = 'http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/MP3:'. urlencode("info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0") .'/playlist.m3u8';
+              $no_flash = 'http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/' . $dir . '/' . urlencode("info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0");
               $type = 'MP3';
               $provider = 'audio';
             }
             if ($val == 'Video File'){
               $rtmp = 'rtmp://libwowza.neu.edu:1935/vod/_definst_/MP4:datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/info%3Afedora%2F'.$encoded.'%2Fcontent%2Fcontent.0';
               $playlist = 'http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/MP4:'. urlencode("info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0") .'/playlist.m3u8';
+              $no_flash = 'http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/' . $dir . '/' . urlencode("info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0");
               $type = 'MP4';
               $provider = 'video';
             }
           }
           $download = 'download';
           $playlists .= '{ sources: [ { file: "' .  $rtmp . '"},';
-          $playlists .= '{ file: "' . $playlist . '"} ], image: "' . $this_poster . '", title: "' . $title . '" },';
+          $playlists .= '{ file: "' . $playlist . '"}, { file: "' . $no_flash . '", type: "'.strtolower($type).'" } ], image: "' . $this_poster . '", title: "' . $title . '" },';
         } else {
           return $errors['shortcodes']['fail'];
         }
@@ -58,7 +60,7 @@ function drstk_collection_playlist($atts){
         <img style="width: 100%;" src="' . $poster[0] .'" />
       </div>
       <script type="text/javascript">
-        jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A==";
+        jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc=";
         jwplayer("drs-item-video").setup({
           width: "'.$width.'",
           height: "'.$height.'",
@@ -79,11 +81,12 @@ function drstk_collection_playlist($atts){
 
 function drstk_video_shortcode_scripts() {
     global $post;
+    global $VERSION;
     if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_collection_playlist') ) {
-      wp_register_script('drstk_jwplayer',
-          plugins_url('/assets/js/jwplayer/jwplayer.js', dirname(__FILE__)),
+      wp_register_script('drstk_jwplayer7',
+          plugins_url('../assets/js/jwplayer7/jwplayer.js', __FILE__),
           array(), $VERSION, false );
-        wp_enqueue_script( 'drstk_jwplayer');
+      wp_enqueue_script('drstk_jwplayer7');
     }
 }
 add_action( 'wp_enqueue_scripts', 'drstk_video_shortcode_scripts');
