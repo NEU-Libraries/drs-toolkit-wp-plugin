@@ -177,7 +177,8 @@ function get_item_image(){
         sources:
         [
         { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"},
-        { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0/playlist.m3u8", type:"'.$av_type.'"}
+        { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0/playlist.m3u8", type:"'.$av_type.'"},
+        { file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0", type:"'.strtolower($av_type).'"}
         ],
         image: "'.$av_poster.'",
         provider: "'.$av_provider.'",
