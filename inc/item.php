@@ -168,39 +168,33 @@ function get_item_image(){
         }
         echo "<div id='drs-item-video'></div>";
         echo '<script type="text/javascript">
-        // jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A=="
-        // jwplayer.key="SRxWvl6hZ4R2pTst0E5T6v2GKIxWdOZCyVx0eQ=="
-        jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc="
-        var primary = "flash"
-        console.log(swfobject.getFlashPlayerVersion().major)
+        jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc=";
+        var primary = "flash";
         if (typeof swfobject == "undefined" || swfobject.getFlashPlayerVersion().major == 0) {
-          primary = "html5"
+          primary = "html5";
         }
-        console.log(primary)
         jQuery(document).ready(function($){
         $("#drs-item-img").hide();
         jwplayer("drs-item-video").setup({
         sources:
         [
         { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"},
-        { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0/playlist.m3u8", type:"'.$av_type.'"}
+        { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0/playlist.m3u8", type:"'.$av_type.'"},
+        { file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.urlencode("info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0").'", type:"'.strtolower($av_type).'"}
         ],
         image: "'.$av_poster.'",
         provider: "'.$av_provider.'",
-        // fallback: "false",
-        // androidhls: "true",
-        // primary: primary,
+        fallback: "false",
+        androidhls: "true",
+        primary: primary,
         width: "100%",
         height: 400,
-        // flashplayer: "/~beekerz/wordpress/wp-content/plugins/drs-tk/assets/js/jwplayer/jwplayer.flash.swf",
-        // html5player: "/~beekerz/wordpress/wp-content/plugins/drs-tk/assets/js/jwplayer/jwplayer.html5.js"
       });
 
         var errorMessage = function(e) {
-          console.log("reporting an error");
           $("#drs-item-img").before("<div class=\'alert alert-warning\'>'.$errors['item']['jwplayer_fail'].'<br /><strong>Error Message:</strong> "+e.message+"</div>");
           $("#drs-item-img").show();
-          // $("#drs-item-video").hide();
+          $("#drs-item-video").hide();
         };
        jwplayer().onError(errorMessage);
        jwplayer().onSetupError(errorMessage);
