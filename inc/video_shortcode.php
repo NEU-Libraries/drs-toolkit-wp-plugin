@@ -9,12 +9,12 @@ function drstk_collection_playlist($atts){
   }
     $collection = explode(', ', $atts['id']);
     $playlists = '';
-    if (isset($atts['height'])){
+    if (isset($atts['height']) && $atts['height'] != 0){
       $height = $atts['height'];
     } else {
       $height = '270';
     }
-    if (isset($atts['width'])){
+    if (isset($atts['width']) && $atts['width'] != 0){
       $width = $atts['width'];
     } else {
       $width = '100%';
@@ -60,7 +60,7 @@ function drstk_collection_playlist($atts){
         <img style="width: 100%;" src="' . $poster[0] .'" />
       </div>
       <script type="text/javascript">
-        jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A==";
+        jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc=";
         jwplayer("drs-item-video").setup({
           width: "'.$width.'",
           height: "'.$height.'",
@@ -81,11 +81,12 @@ function drstk_collection_playlist($atts){
 
 function drstk_video_shortcode_scripts() {
     global $post;
+    global $VERSION;
     if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_collection_playlist') ) {
-      wp_register_script('drstk_jwplayer',
-          plugins_url('/assets/js/jwplayer/jwplayer.js', dirname(__FILE__)),
+      wp_register_script('drstk_jwplayer7',
+          plugins_url('../assets/js/jwplayer7/jwplayer.js', __FILE__),
           array(), $VERSION, false );
-        wp_enqueue_script( 'drstk_jwplayer');
+      wp_enqueue_script('drstk_jwplayer7');
     }
 }
 add_action( 'wp_enqueue_scripts', 'drstk_video_shortcode_scripts');
