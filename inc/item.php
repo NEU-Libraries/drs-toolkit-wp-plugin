@@ -170,7 +170,6 @@ function get_item_image(){
         if (stripos( $user_agent, 'Chrome') !== false){
           $av_for_ext = 'MP4';
           $full_pid = "info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0";
-
         } elseif (stripos( $user_agent, 'Safari') !== false) {
           $av_for_ext = 'mp4';
           $full_pid = urlencode("info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0");
@@ -178,7 +177,6 @@ function get_item_image(){
         echo "<div id='drs-item-video'></div>";
         echo '<script type="text/javascript">
         jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc=";
-        console.log("trying to make this video play");
         var primary = "flash";
         if (typeof swfobject == "undefined" || swfobject.getFlashPlayerVersion().major == 0) {
           console.log("no flash");
