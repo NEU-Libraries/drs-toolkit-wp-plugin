@@ -39,6 +39,8 @@ function drstk_collection_playlist($atts){
               $full_pid = "info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0";
             } elseif (stripos( $user_agent, 'Safari') !== false) {
               $full_pid = urlencode("info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0");
+            } else {
+              $full_pid = "info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0";
             }
             if ($val == 'Audio File'){
               $rtmp = 'rtmp://libwowza.neu.edu:1935/vod/_definst_/MP3:datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/info%3Afedora%2F'.$encoded.'%2Fcontent%2Fcontent.0';
