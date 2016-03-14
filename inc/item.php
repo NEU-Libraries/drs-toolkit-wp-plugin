@@ -173,6 +173,9 @@ function get_item_image(){
         } elseif (stripos( $user_agent, 'Safari') !== false) {
           $av_for_ext = strtolower($av_type);
           $full_pid = urlencode("info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0");
+        } else {
+          $av_for_ext = "video/mp4";
+          $full_pid = "info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0";
         }
         echo "<div id='drs-item-video'></div>";
         echo '<script type="text/javascript">
