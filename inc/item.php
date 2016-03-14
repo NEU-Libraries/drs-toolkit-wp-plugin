@@ -166,11 +166,23 @@ function get_item_image(){
           $av_provider = 'sound';
           $av_type = "MP3";
         }
+        $user_agent = $_SERVER['HTTP_USER_AGENT'];
+        if (stripos( $user_agent, 'Chrome') !== false){
+          $av_for_ext = 'MP4';
+          $full_pid = "info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0";
+
+        } elseif (stripos( $user_agent, 'Safari') !== false) {
+          $av_for_ext = 'mp4';
+          $full_pid = urlencode("info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0");
+        }
+        echo $av_for_ext . " : " . $full_pid;
         echo "<div id='drs-item-video'></div>";
         echo '<script type="text/javascript">
         jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc=";
+        console.log("trying to make this video play");
         var primary = "flash";
         if (typeof swfobject == "undefined" || swfobject.getFlashPlayerVersion().major == 0) {
+          console.log("no flash");
           primary = "html5";
         }
         jQuery(document).ready(function($){
@@ -179,8 +191,8 @@ function get_item_image(){
         sources:
         [
         { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"},
-        { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0/playlist.m3u8", type:"'.$av_type.'"},
-        { file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.urlencode("info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0").'", type:"'.strtolower($av_type).'"}
+        { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':'.$full_pid.'/playlist.m3u8", type:"'.$av_for_ext.'"},
+        { file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$full_pid.'", type:"'.$av_for_ext.'"}
         ],
         image: "'.$av_poster.'",
         provider: "'.$av_provider.'",
@@ -193,14 +205,14 @@ function get_item_image(){
 
         var errorMessage = function(e) {
           $("#drs-item-img").before("<div class=\'alert alert-warning\'>'.$errors['item']['jwplayer_fail'].'<br /><strong>Error Message:</strong> "+e.message+"</div>");
-          $("#drs-item-img").show();
-          $("#drs-item-video").hide();
+          // $("#drs-item-img").show();
+          // $("#drs-item-video").hide();
         };
        jwplayer().onError(errorMessage);
        jwplayer().onSetupError(errorMessage);
        jwplayer().onBuffer(function() {
-         theTimeout = setTimeout(function() {
-           errorMessage();
+         theTimeout = setTimeout(function(e) {
+           errorMessage(e);
          }, 5000);
        });
       });</script>';
