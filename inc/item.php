@@ -175,7 +175,6 @@ function get_item_image(){
           $av_for_ext = 'mp4';
           $full_pid = urlencode("info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0");
         }
-        echo $av_for_ext . " : " . $full_pid;
         echo "<div id='drs-item-video'></div>";
         echo '<script type="text/javascript">
         jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc=";
@@ -192,7 +191,7 @@ function get_item_image(){
         [
         { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"},
         { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':'.$full_pid.'/playlist.m3u8", type:"'.$av_for_ext.'"},
-        { file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$full_pid.'", type:"'.$av_for_ext.'"}
+        { file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.urlencode($full_pid).'", type:"'.strtolower($av_for_ext).'"}
         ],
         image: "'.$av_poster.'",
         provider: "'.$av_provider.'",
