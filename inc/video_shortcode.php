@@ -108,8 +108,7 @@ function drstk_video_shortcode_scripts() {
     global $post;
     global $VERSION;
     if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_collection_playlist') ) {
-      // wp_register_script('drstk_jwplayer7',plugins_url('../assets/js/jwplayer/jwplayer.js', __FILE__), array(), $VERSION, false );
-      wp_register_script('drstk_jwplayer7', 'http://liblab.neu.edu/drstest/wp-content/plugins/drs-tk/assets/js/jwplayer/jwplayer.js');
+      wp_register_script('drstk_jwplayer7',plugins_url('../assets/js/jwplayer/jwplayer.js', __FILE__), array(), $VERSION, false );
       wp_enqueue_script('drstk_jwplayer7');
       wp_register_script('swfobject', '');
       wp_enqueue_script('swfobject');
