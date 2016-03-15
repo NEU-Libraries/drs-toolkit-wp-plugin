@@ -116,4 +116,4 @@ function drstk_video_shortcode_scripts() {
       wp_enqueue_script('swfobject');
     }
 }
-// add_action( 'wp_enqueue_scripts', 'drstk_video_shortcode_scripts');
+add_action( 'wp_enqueue_scripts', 'drstk_video_shortcode_scripts');
