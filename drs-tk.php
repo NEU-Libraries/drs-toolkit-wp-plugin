@@ -504,10 +504,8 @@ function drstk_item_script() {
         plugins_url('/assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__),
         array());
     wp_enqueue_script('drstk_elevatezoom');
-    wp_register_script('drstk_swf',
-        plugins_url('/assets/js/jwplayer/swfobject.js', __FILE__),
-        array(), $VERSION, false );
-    wp_enqueue_script('drstk_swf');
+    wp_register_script('swfobject');
+    wp_enqueue_script('swfobject');
     wp_register_script('drstk_item_gallery',
         plugins_url('/assets/js/item_gallery.js', __FILE__),
         array(), $VERSION, false );
