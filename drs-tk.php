@@ -584,3 +584,11 @@ function drstk_home_url($path = '', $scheme = null) {
 
   return $url;
 }
+
+/* This makes it so that the tinymce wysiwyg does not process shortcodes so the database saves the shortcode before it is processed - this allows the has_shortcode function to work as expected and thus enqueue javascript correctly*/
+add_action( 'init', 'remove_bstw_widget_text_filters' );
+function remove_bstw_widget_text_filters() {
+    if ( function_exists( 'bstw' ) ) {
+        remove_filter( 'widget_text', array( bstw()->text_filters(), 'do_shortcode' ), 10 );
+    }
+}
