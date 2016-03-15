@@ -21,7 +21,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/slider_shortcode.php' );
 
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
 
-$VERSION = '0.5.0';
+$VERSION = '0.5.1';
 
 // Set template names here so we don't have to go into the code.
 $TEMPLATE = array(
