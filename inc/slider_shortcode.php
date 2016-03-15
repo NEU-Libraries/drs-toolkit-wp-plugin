@@ -14,17 +14,18 @@ function drstk_gallery( $atts ){
     $height = $width = 0;
     $i = 0;
    foreach($images as $id){
-       $url = "https://repository.library.northeastern.edu/api/v1/files/" . $id;
+       $url = "https://repository.library.northeastern.edu/api/v1/files/" . $id . "?solr_only=true";
        $data = get_response($url);
        $data = json_decode($data);
+       $data = $data->_source;
        if (!isset($data->error)){
-         $pid = $data->pid;
+        $pid = $data->id;
          if (isset($atts['image-size'])){
            $num = $atts['image-size']-1;
          } else {
            $num = 4;
          }
-         $thumbnail = $data->thumbnails[$num];
+         $thumbnail = "http://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
          $this_height = getimagesize($thumbnail);
          $this_height = $this_height[1];
          if ($this_height > $height){
@@ -35,7 +36,7 @@ function drstk_gallery( $atts ){
          if ($this_width > $width){
            $width = $this_width;
          }
-         $title = $data->mods->Title[0];
+        $title = $data->full_title_ssi;
          $img_html .= "<div class='item";
          if ($i == 0){
            $img_html .= " active";
@@ -52,10 +53,16 @@ function drstk_gallery( $atts ){
            if (isset($atts['metadata'])){
              $metadata = explode(",",$atts['metadata']);
              foreach($metadata as $field){
-               if (isset($data->mods->$field)){
-                 $this_field = $data->mods->$field;
-                 if (isset($this_field[0])){
-                   $img_metadata .= $this_field[0] . "<br/>";
+                if (isset($data->$field)){
+                  $this_field = $data->$field;
+                 if (isset($this_field)){
+                   if (is_array($this_field)){
+                     foreach($this_field as $val){
+                       $img_metadata .= $val ."<br/>";
+                     }
+                   } else {
+                     $img_metadata .= $this_field . "<br/>";
+                   }
                  }
                }
              }
@@ -73,14 +80,13 @@ function drstk_gallery( $atts ){
            }
            $img_html .= "><a href='".drstk_home_url()."item/".$pid."'>".$img_metadata."</a></div>";
            $img_html .= "<div class=\"hidden\">";
-           $meta = $data->mods;
-           foreach($meta as $field){
+          foreach($data as $field){
              if (is_array($field)){
                foreach($field as $field_val){
                  $img_html .= $field_val . "<br/>";
                }
              } else {
-               $img_html .= $field[0] . "<br/>";
+               $img_html .= $field . "<br/>";
              }
            }
            $img_html .= "</div>";

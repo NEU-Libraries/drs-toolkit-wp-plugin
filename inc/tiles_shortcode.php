@@ -11,26 +11,33 @@ function drstk_tiles( $atts ){
   $imgs = explode(", ",$atts['id']);
   $img_html = "";
   foreach($imgs as $img){
-    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $img;
+    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $img . "?solr_only=true";
     $data = get_response($url);
     $data = json_decode($data);
+    $data = $data->_source;
     $type = $atts['type'];
     if (!isset($data->error)){
-      $pid = $data->pid;
+      $pid = $data->id;
       if (isset($atts['image-size'])){
         $num = $atts['image-size']-1;
       } else {
         $num = 4;
       }
-      $thumbnail = $data->thumbnails[$num];
+      $thumbnail = "http://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
       if (isset($atts['metadata'])){
         $img_metadata = '';
         $metadata = explode(",",$atts['metadata']);
         foreach($metadata as $field){
-          if (isset($data->mods->$field)){
-            $this_field = $data->mods->$field;
-            if (isset($this_field[0])){
-              $img_metadata .= $this_field[0] . "<br/>";
+           if (isset($data->$field)){
+             $this_field = $data->$field;
+            if (isset($this_field)){
+              if (is_array($this_field)){
+                foreach($this_field as $val){
+                  $img_metadata .= $val ."<br/>";
+                }
+              } else {
+                $img_metadata .= $this_field . "<br/>";
+              }
             }
           }
         }
@@ -45,16 +52,15 @@ function drstk_tiles( $atts ){
         $img_html .= "<div class='cell' data-thumbnail='".$thumbnail."'><div class='info wp-caption-text'><a href='".drstk_home_url()."item/".$pid."'>".$img_metadata."</a>";
       }
       $img_html .= "<div class=\"hidden\">";
-      $meta = $data->mods;
-      foreach($meta as $field){
-        if (is_array($field)){
-          foreach($field as $field_val){
-            $img_html .= $field_val . "<br/>";
-          }
-        } else {
-          $img_html .= $field[0] . "<br/>";
-        }
-      }
+      foreach($data as $field){
+         if (is_array($field)){
+           foreach($field as $field_val){
+             $img_html .= $field_val . "<br/>";
+           }
+         } else {
+           $img_html .= $field . "<br/>";
+         }
+       }
       $img_html .= "</div>";
       $img_html .= "</div></div>";
     } else {
