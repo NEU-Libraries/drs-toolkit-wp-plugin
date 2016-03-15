@@ -112,7 +112,7 @@ function drstk_video_shortcode_scripts() {
           plugins_url('../assets/js/jwplayer/jwplayer.js', __FILE__),
           array(), $VERSION, false );
       wp_enqueue_script('drstk_jwplayer7');
-      wp_register_script('swfobject');
+      wp_register_script('swfobject', '');
       wp_enqueue_script('swfobject');
     }
 }
