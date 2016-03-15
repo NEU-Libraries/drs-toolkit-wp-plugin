@@ -27,7 +27,7 @@ function drstk_tiles( $atts ){
         $img_metadata = '';
         $metadata = explode(",",$atts['metadata']);
         foreach($metadata as $field){
-          if (isset($this_field->$data->mods->$field)){
+          if (isset($data->mods->$field)){
             $this_field = $data->mods->$field;
             if (isset($this_field[0])){
               $img_metadata .= $this_field[0] . "<br/>";
