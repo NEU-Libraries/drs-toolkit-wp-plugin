@@ -497,7 +497,7 @@ function drstk_item_script() {
     global $errors;
     //this enqueues the JS file
     // wp_register_script('drstk_jwplayer', plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__), array(), $VERSION, false );
-    wp_register_script('drstk_jwplayer', 'http://liblab.neu.edu/ezp/jwplayer.js');
+    wp_register_script('drstk_jwplayer', 'http://latinohistory2.lib.neu.edu/wp-content/plugins/drs-tk/assets/js/jwplayer7/jwplayer.js');
     wp_enqueue_script('drstk_jwplayer');
     wp_register_script('drstk_elevatezoom',
         plugins_url('/assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__),
