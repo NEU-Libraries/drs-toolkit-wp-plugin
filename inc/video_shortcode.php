@@ -109,11 +109,11 @@ function drstk_video_shortcode_scripts() {
     global $VERSION;
     if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_collection_playlist') ) {
       wp_register_script('drstk_jwplayer7',
-          plugins_url('../assets/js/jwplayer7/jwplayer.js', __FILE__),
+          plugins_url('../assets/js/jwplayer/jwplayer.js', __FILE__),
           array(), $VERSION, false );
       wp_enqueue_script('drstk_jwplayer7');
       wp_register_script('drstk_swf7',
-          plugins_url('../assets/js/jwplayer7/swfobject.js', __FILE__),
+          plugins_url('../assets/js/jwplayer/swfobject.js', __FILE__),
           array(), $VERSION, false );
       wp_enqueue_script('drstk_swf7');
     }
