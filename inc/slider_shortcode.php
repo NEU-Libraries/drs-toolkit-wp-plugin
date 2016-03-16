@@ -76,7 +76,13 @@ function drstk_gallery( $atts ){
              if (isset($atts['caption-position'])){
                $img_html .= "; position:".$atts['caption-position'];
              }
+             if (isset($atts['caption-width']) && $atts['caption-width'] == "100%"){
+               $img_html .= "; width:".$atts['caption-width'];
+             }
              $img_html .= "'";
+           }
+           if (isset($atts['caption-width']) && $atts['caption-width'] != "100%"){
+             $img_html .= " data-caption-width='image'";
            }
            $img_html .= "><a href='".drstk_home_url()."item/".$pid."'>".$img_metadata."</a></div>";
            $img_html .= "<div class=\"hidden\">";
