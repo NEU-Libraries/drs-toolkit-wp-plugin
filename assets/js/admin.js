@@ -49,12 +49,15 @@
         $(this).parents("li").siblings("li").hide();
         $(".item-metadata").siblings(".drs-pagination").hide();
         var errors = $.parseJSON(item_admin_obj.errors);
-        $.ajax(item_admin_obj.ajax_url, {
-           _ajax_nonce: item_admin_obj.item_admin_nonce,
-            action: "get_item_admin",
-            method: "POST",
-            pid: pid,
-        }, function(data) {
+        $.ajax({
+            url: item_admin_obj.ajax_url,
+            type: "POST",
+            data: {
+              action: "get_item_admin",
+              _ajax_nonce: item_admin_obj.item_admin_nonce,
+              pid: pid,
+            },
+        success: function(data) {
             var data = $.parseJSON(data);
             if (data.error){
               $(".item-metadata").html(errors.admin.api_fail);
@@ -67,9 +70,10 @@
               });
               $(".item-metadata").html(data_html);
             }
-        }).fail(function() {
+        }, error: function() {
           $(".item-metadata").html(errors.admin.api_fail);
-        });
+        }
+      });
       } else {
         $(this).parents("li").siblings("li").show();
         $(".item-metadata").siblings(".drs-pagination").show();
