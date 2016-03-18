@@ -160,7 +160,11 @@ function drstk_get_assoc_meta_options(){
 function drstk_get_facets_to_display(){
   $facet_options = get_option('drstk_facets');
   if ($facet_options == NULL){
-    $facet_options = array("creator_sim","creation_year_sim","subject_sim","type_sim");
+    if (get_option('drstk_niec_metadata') == NULL) {
+      $facet_options = array("creator_sim","creation_year_sim","subject_sim","type_sim");
+    } else {
+      $facet_options = array();
+    }
   }
   return $facet_options;
 }
