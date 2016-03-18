@@ -133,10 +133,10 @@ jQuery(document).ready(function($) {
   //parses facet data
   function facetize(data){
     var facet_html = '';
-    if (niec_facets != null){
-      facet_html += parse_facets(data, niec_facets, facet_html);
-    }
     facet_html = parse_facets(data, facets_to_display, facet_html);
+    if (niec_facets != null){
+      facet_html = parse_facets(data, niec_facets, facet_html);
+    }
     $("#drs-facets").html(facet_html);
     $("#drs-facets").before("<button class='themebutton button btn visible-phone hidden-tablet hidden-desktop drs-facet-toggle hidden-md hidden-lg visible-sm visible-xs'>Show Facets</button>");
   }//end facetize
