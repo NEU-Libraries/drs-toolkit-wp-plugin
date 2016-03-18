@@ -86,15 +86,17 @@ function drstk_gallery( $atts ){
            }
            $img_html .= "><a href='".drstk_home_url()."item/".$pid."'>".$img_metadata."</a></div>";
            $img_html .= "<div class=\"hidden\">";
-          foreach($data as $field){
-             if (is_array($field)){
-               foreach($field as $field_val){
-                 $img_html .= $field_val . "<br/>";
-               }
-             } else {
-               $img_html .= $field . "<br/>";
-             }
-           }
+            foreach($data as $key=>$field){
+              if ($key != "all_text_timv" && $key != "object_profile_ssm"){
+                if (is_array($field)){
+                  foreach($field as $key=>$field_val){
+                    $img_html .= $field_val . "<br/>";
+                  }
+                } else {
+                  $img_html .= $field . "<br/>";
+                }
+              }
+            }
            $img_html .= "</div>";
          }
          $img_html .= "</div>";
