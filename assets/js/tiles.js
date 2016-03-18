@@ -6,6 +6,9 @@ jQuery(document).ready(function($) {
     var text_align = $(this).data("text-align");
     if (type == 'pinterest-below' || type == 'pinterest' || type == 'pinterest-hover'){
       var wall = new freewall(this);
+      if (cell_width == "100%"){
+        $(this).find(".brick").css("width", cell_width);
+      }
       wall.reset({
         selector: ".brick",
         animate: true,
