@@ -54,6 +54,9 @@ function drstk_item( $atts ){
   if (isset($atts['caption-align'])){
     $img_html .= " data-caption-align='".$atts['caption-align']."'";
   }
+  if (isset($atts['caption-position'])){
+    $img_html .= " data-caption-position='".$atts['caption-position']."'";
+  }
   $img_html .= ">".$img_metadata."</div>";
   $img_html .= "</a><div class=\"hidden\">";
   $meta = $data->mods;

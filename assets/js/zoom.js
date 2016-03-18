@@ -21,6 +21,10 @@ jQuery(document).ready(function($) {
     if($(this).data('caption-align')){
       $(this).css("text-align", $(this).data('caption-align'));
     }
+    if($(this).data('caption-position') == 'hover'){
+      $(this).parents(".drs-item").addClass("hover");
+      $(this).width($(this).siblings(".drs-item-img").innerWidth());
+    }
   });
   $(".hidden").each(function(){
     $(this).appendTo("body");
