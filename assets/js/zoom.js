@@ -24,12 +24,14 @@ jQuery(document).ready(function($) {
         $(this).elevateZoom();
       }
     }
-    if ($(this).parents(".drs-item").hasClass("hover")){
-      width = $(this).innerWidth() - 30;
-      height = $(this).innerHeight() - 30;
-      $(this).siblings(".drstk-caption").width(width);
-      $(this).siblings(".drstk-caption").height(height);
-    }
+    $(this).on("load", function(){
+      if ($(this).parents(".drs-item").hasClass("hover")){
+        width = $(this).innerWidth() - 30;
+        height = $(this).innerHeight() - 30;
+        $(this).siblings(".drstk-caption").width(width);
+        $(this).siblings(".drstk-caption").height(height);
+      }
+    });
   });
   $(".hidden").each(function(){
     $(this).appendTo("body");
