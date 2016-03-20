@@ -26,9 +26,9 @@ function drstk_item( $atts ){
 
   $jwplayer = false; // note: unneeded if there is only one canonical_object type
 
-  if (isset($data->canonical_object)){
+  if (isset($atts['display-video']) && isset($data->canonical_object)){
     foreach($data->canonical_object as $key=>$val){
-      if ($val == 'Video File' || $val == 'Audio File'){
+      if (($val == 'Video File' || $val == 'Audio File') && $atts['display-video'] == "true" ){
         $html .= insert_jwplayer($key, $val, $data, $thumbnail);
         $jwplayer = true;
       }
