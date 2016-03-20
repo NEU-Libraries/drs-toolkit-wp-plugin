@@ -22,18 +22,35 @@ function drstk_item( $atts ){
       $master = $key;
     }
   }
-  $html = "<div class='drs-item'><a href='".drstk_home_url()."item/".$atts['id']."'><img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
-  if (isset($atts['align'])){
-    $html .= " data-align='".$atts['align']."'";
-  }
+  $html = "<div class='drs-item'>";
 
-  if (isset($atts['zoom']) && $atts['zoom'] == 'on'){
-    $html .= " data-zoom-image='".$master."' data-zoom='on'";
-    if (isset($atts['zoom_position'])){
-      $html .= " data-zoom-position='".$atts['zoom_position']."'";
+  $jwplayer = false; // note: unneeded if there is only one canonical_object type
+
+  if (isset($data->canonical_object)){
+    foreach($data->canonical_object as $key=>$val){
+      if ($val == 'Video File' || $val == 'Audio File'){
+        $html .= insert_jwplayer($key, $val, $data, $thumbnail);
+        $jwplayer = true;
+      }
     }
   }
-  $html .= "/></a>";
+
+  if (!$jwplayer) {
+    $html .= "<a href='".drstk_home_url()."item/".$atts['id']."'><img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
+
+    if (isset($atts['align'])){
+      $html .= " data-align='".$atts['align']."'";
+    }
+
+    if (isset($atts['zoom']) && $atts['zoom'] == 'on'){
+      $html .= " data-zoom-image='".$master."' data-zoom='on'";
+      if (isset($atts['zoom_position'])){
+        $html .= " data-zoom-position='".$atts['zoom_position']."'";
+      }
+    }
+
+    $html .= "/></a>";
+  }
 
   // start item meta data
   $img_metadata = "";
@@ -100,6 +117,8 @@ function drstk_item_shortcode_scripts() {
     wp_enqueue_script('drstk_elevatezoom');
     wp_register_script( 'drstk_zoom', plugins_url( '../assets/js/zoom.js', __FILE__ ), array( 'jquery' ));
     wp_enqueue_script('drstk_zoom');
+    wp_register_script('drstk_jwplayer', plugins_url('../assets/js/jwplayer/jwplayer.js', __FILE__), array(), $VERSION, false );
+    wp_enqueue_script('drstk_jwplayer');
   }
 }
 add_action( 'wp_enqueue_scripts', 'drstk_item_shortcode_scripts');
