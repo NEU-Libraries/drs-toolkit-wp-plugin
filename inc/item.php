@@ -221,7 +221,6 @@ function check_for_bad_data($data){
 }
 
 function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) {
-  $html = '<img id="drs-item-img" src="'.$drs_item_img.'" />';
   $av_pid = explode("/", $av_pid);
   $av_pid = end($av_pid);
   $encoded_av_pid = str_replace(':','%3A', $av_pid);
@@ -249,7 +248,13 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
     $av_for_ext = strtolower($av_type);
     $full_pid = "info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0";
   }
-  $html .= "<div id='drs-item-video'></div>";
+
+  $numeric_pid = str_replace(":", "-", $av_pid);
+  $id_img = 'drs-item-img-'.$numeric_pid;
+  $id_video = 'drs-item-video-'.$numeric_pid;
+
+  $html = '<img id="'.$id_img.'" src="'.$drs_item_img.'" />';
+  $html .= '<div id="'.$id_video.'"></div>';
   $html .= '<script type="text/javascript">
   jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A==";
   var primary = "flash";
@@ -257,8 +262,8 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
     primary = "html5";
   }
   jQuery(document).ready(function($){
-  $("#drs-item-img").hide();
-  jwplayer("drs-item-video").setup({
+  $("#'.$id_img.'").hide();
+  jwplayer("'.$id_video.'").setup({
     sources:
     [
     { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"},
@@ -275,9 +280,9 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   });
 
   var errorMessage = function(e) {
-    $("#drs-item-img").before("<div class=\'alert alert-warning\'>'.$errors['item']['jwplayer_fail'].'<br /><strong>Error Message:</strong> "+e.message+"</div>");
-    $("#drs-item-img").show();
-    $("#drs-item-video").hide();
+    $("#'.$id_img.'").before("<div class=\'alert alert-warning\'>'.$errors['item']['jwplayer_fail'].'<br /><strong>Error Message:</strong> "+e.message+"</div>");
+    $("#'.$id_img.'").show();
+    $("#'.$id_video.'").hide();
   };
   jwplayer().onError(errorMessage);
   jwplayer().onSetupError(errorMessage);
