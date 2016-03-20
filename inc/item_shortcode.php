@@ -22,15 +22,15 @@ function drstk_item( $atts ){
       $master = $key;
     }
   }
-  $img_html = "<div class='drs-item'><a href='".drstk_home_url()."item/".$atts['id']."'><img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
+  $html = "<div class='drs-item'><a href='".drstk_home_url()."item/".$atts['id']."'><img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
   if (isset($atts['align'])){
-    $img_html .= " data-align='".$atts['align']."'";
+    $html .= " data-align='".$atts['align']."'";
   }
 
   if (isset($atts['zoom']) && $atts['zoom'] == 'on'){
-    $img_html .= " data-zoom-image='".$master."' data-zoom='on'";
+    $html .= " data-zoom-image='".$master."' data-zoom='on'";
     if (isset($atts['zoom_position'])){
-      $img_html .= " data-zoom-position='".$atts['zoom_position']."'";
+      $html .= " data-zoom-position='".$atts['zoom_position']."'";
     }
   }
   $img_metadata = "";
@@ -49,31 +49,31 @@ function drstk_item( $atts ){
       }
     }
   }
-  $img_html .= "/>";
-  $img_html .= "<div class='wp-caption-text drstk-caption'";
+  $html .= "/>";
+  $html .= "<div class='wp-caption-text drstk-caption'";
   if (isset($atts['caption-align'])){
-    $img_html .= " data-caption-align='".$atts['caption-align']."'";
+    $html .= " data-caption-align='".$atts['caption-align']."'";
   }
   if (isset($atts['caption-position'])){
-    $img_html .= " data-caption-position='".$atts['caption-position']."'";
+    $html .= " data-caption-position='".$atts['caption-position']."'";
   }
-  $img_html .= ">".$img_metadata."</div>";
-  $img_html .= "</a><div class=\"hidden\">";
+  $html .= ">".$img_metadata."</div>";
+  $html .= "</a><div class=\"hidden\">";
   $meta = $data->mods;
   foreach($meta as $field){
     if (is_array($field)){
       foreach($field as $field_val){
-        $img_html .= $field_val . "<br/>";
+        $html .= $field_val . "<br/>";
       }
     } else {
-      $img_html .= $field[0] . "<br/>";
+      $html .= $field[0] . "<br/>";
     }
   }
-  $img_html .= "</div></div>";
-  $cache_output = $img_html;
+  $html .= "</div></div>";
+  $cache_output = $html;
   $cache_time = 1000;
   set_transient(md5('DRSTK'.serialize($atts)) , $cache_output, $cache_time * 60);
-  return $img_html;
+  return $html;
 }
 
 add_action( 'wp_ajax_get_item_admin', 'item_admin_ajax_handler' ); //for auth users
