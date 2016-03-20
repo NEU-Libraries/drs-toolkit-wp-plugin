@@ -83,7 +83,7 @@
         $(".item-metadata").html("");
       }
     }
-    if(type == 'gallery' || type == 'tile' || type == 'video'){
+    if(type == 'gallery' || type == 'tile' || type == 'video' || type == 'map' || type == 'timeline'){
       var selected = $(".selected-"+type).val();
       if ( selected == ''){
         $(".selected-"+type).val(pid);
@@ -281,6 +281,11 @@
         shortcode += ' width="'+width+'"';
         var height = $(this).parent(".drs-items").siblings("div.video-options").find("input[name='drstk-video-height']").val();
         shortcode += ' height="'+height+'"';
+        shortcode += ']\n';
+     }
+     if(type == 'timeline'){
+        var timelineValue = $(".selected-"+type).val();
+        shortcode = '[drstk_timeline id="'+timelineValue+'"';
         shortcode += ']\n';
      }
     window.wp.media.editor.insert(shortcode);
