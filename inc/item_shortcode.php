@@ -33,6 +33,9 @@ function drstk_item( $atts ){
       $html .= " data-zoom-position='".$atts['zoom_position']."'";
     }
   }
+  $html .= "/></a>";
+
+  // start item meta data
   $img_metadata = "";
   if (isset($atts['metadata'])){
     $metadata = explode(",",$atts['metadata']);
@@ -48,17 +51,18 @@ function drstk_item( $atts ){
         }
       }
     }
+    $html .= "<div class='wp-caption-text drstk-caption'";
+    if (isset($atts['caption-align'])){
+      $html .= " data-caption-align='".$atts['caption-align']."'";
+    }
+    if (isset($atts['caption-position'])){
+      $html .= " data-caption-position='".$atts['caption-position']."'";
+    }
+    $html .= ">".$img_metadata."</div>";
   }
-  $html .= "/>";
-  $html .= "<div class='wp-caption-text drstk-caption'";
-  if (isset($atts['caption-align'])){
-    $html .= " data-caption-align='".$atts['caption-align']."'";
-  }
-  if (isset($atts['caption-position'])){
-    $html .= " data-caption-position='".$atts['caption-position']."'";
-  }
-  $html .= ">".$img_metadata."</div>";
-  $html .= "</a><div class=\"hidden\">";
+
+  // start hidden fields
+  $html .= "<div class=\"hidden\">";
   $meta = $data->mods;
   foreach($meta as $field){
     if (is_array($field)){
