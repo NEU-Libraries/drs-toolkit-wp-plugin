@@ -83,7 +83,7 @@
         $(".item-metadata").html("");
       }
     }
-    if(type == 'gallery' || type == 'tile' || type == 'video'){
+    if(type == 'gallery' || type == 'tile' || type == 'video' || type == 'map' || type == 'timeline'){
       var selected = $(".selected-"+type).val();
       if ( selected == ''){
         $(".selected-"+type).val(pid);
