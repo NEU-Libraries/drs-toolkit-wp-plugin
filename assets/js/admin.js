@@ -283,6 +283,11 @@
         shortcode += ' height="'+height+'"';
         shortcode += ']\n';
      }
+     if(type == 'timeline'){
+         var timelineValue = $(".selected-"+type).val();
+         shortcode = '[drstk_timeline id="'+timelineValue+'"';
+         shortcode += ']\n';
+     }
     window.wp.media.editor.insert(shortcode);
    })
 
