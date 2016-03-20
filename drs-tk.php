@@ -30,8 +30,8 @@ $TEMPLATE = array(
 );
 
 $TEMPLATE_THEME = array(
-    'browse_template' => 'drstk-browse.php',
-    'item_template' => 'drstk-item.php',
+    'browse_template' => 'overrides/drstk-browse.php',
+    'item_template' => 'overrides/drstk-item.php',
 );
 
  register_activation_hook( __FILE__, 'drstk_install' );
