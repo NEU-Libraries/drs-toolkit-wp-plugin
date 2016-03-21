@@ -170,7 +170,7 @@
      function get_item_geographic_handler(itemid) {
          return get_item_geographic(itemid)
      }
-     
+
      function get_item_geographic(item) {
          var geographicExisted = false;
          //AJAX call will be passed to internal WP AJAX
