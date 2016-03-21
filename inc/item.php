@@ -48,7 +48,7 @@ function parse_metadata($data, $meta_options, $html, $solr=false){
         $html .= $meta_options[$key];
       }
       $html .= "</b></div><div class='drs-field-value'>";
-      if (is_array($value) && count($value) > 0){
+      if (is_array($value)){
         for ($i =0; $i<count($value); $i++){
           if (substr($value[$i], 0, 4) == "http"){
             $html .= '<a href="'.$value[$i].'" target="_blank">'.$value[$i].'</a>';
@@ -129,28 +129,31 @@ function get_item_image(){
     $img = $data->thumbnails[count($data->thumbnails)-2];
   }
   if (isset($data->canonical_object)){
-    foreach($data->canonical_object as $key=>$val){
-      if ($val == 'Master Image'){
-        $zoom_img = $data->thumbnails[count($data->thumbnails)-1];
-        echo  '<img id="drs-item-img" src="'.$img.'" data-zoom-image="'.$zoom_img.'"/>';
-        echo '<script type="text/javascript"> jQuery("#drs-item-img").elevateZoom();</script>';
-      } else if ($val == 'PDF'){
-        if (isset($data->mods->Location) && strpos($data->mods->Location[0], "issuu") !== FALSE){
-          $location_href = explode("'", strval(htmlentities($data->mods->Location[0])));
-          if (count($location_href) == 1){
-            $location_href = explode('"', strval(htmlentities($data->mods->Location[0])));
-          }
-          $issu_id = explode('?',$location_href[1]);
-          $issu_id = explode('=',$issu_id[1]);
-          $issu_id = $issu_id[1];
-          echo '<div data-configid="'.$issu_id.'" style="width:100%; height:500px;" class="issuuembed"></div><script type="text/javascript" src="//e.issuu.com/embed.js" async="true"></script>';
-        } else {
-          echo  '<img id="drs-item-img" src="'.$img.'" />';
+    $val = current($data->canonical_object);
+    $key = key($data->canonical_object);
+    if ($val == 'Master Image'){
+      $zoom_img = $data->thumbnails[count($data->thumbnails)-1];
+      echo  '<img id="drs-item-img" src="'.$img.'" data-zoom-image="'.$zoom_img.'"/>';
+      echo '<script type="text/javascript"> jQuery("#drs-item-img").elevateZoom();</script>';
+    } else if ($val == 'PDF'){
+      if (isset($data->mods->Location) && strpos($data->mods->Location[0], "issuu") !== FALSE){
+        $location_href = explode("'", strval(htmlentities($data->mods->Location[0])));
+        if (count($location_href) == 1){
+          $location_href = explode('"', strval(htmlentities($data->mods->Location[0])));
         }
-      } else if ($val == 'Video File' || $val == 'Audio File'){
-        print(insert_jwplayer($key, $val, $data, $img));
+        $issu_id = explode('?',$location_href[1]);
+        $issu_id = explode('=',$issu_id[1]);
+        $issu_id = $issu_id[1];
+        echo '<div data-configid="'.$issu_id.'" style="width:100%; height:500px;" class="issuuembed"></div><script type="text/javascript" src="//e.issuu.com/embed.js" async="true"></script>';
+      } else {
+        echo  '<img id="drs-item-img" src="'.$img.'" />';
       }
+    } else if ($val == 'Video File' || $val == 'Audio File'){
+      print(insert_jwplayer($key, $val, $data, $img));
     }
+  } else {
+    //case where there is no canonical_objects set
+    echo  '<img id="drs-item-img" src="'.$img.'" />';
   }
   if (isset($data->page_objects)){
     $pages = $data->page_objects;
@@ -221,6 +224,7 @@ function check_for_bad_data($data){
 }
 
 function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) {
+  global $errors;
   $av_pid = explode("/", $av_pid);
   $av_pid = end($av_pid);
   $encoded_av_pid = str_replace(':','%3A', $av_pid);
