@@ -326,10 +326,16 @@ jQuery(document).ready(function($) {
   });
 
   function titleize(str){
-    str = str.replace("_tesim","").replace("_sim","").replace("_ssim","");
-    str = str.replace("_", " ");
-    str = str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-    return str;
+    if (facets_to_display[str]){
+      return facets_to_display[str];
+    } else if (niec_facets[str]){
+      return niec_facets[str];
+    } else{
+      str = str.replace("_tesim","").replace("_sim","").replace("_ssim","");
+      str = str.replace("_", " ");
+      str = str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+      return str;
+    }
   }
 
   function GetURLParameter(url, sParam){
@@ -344,7 +350,6 @@ jQuery(document).ready(function($) {
   }
 
   function get_wp_data(query, page){
-    //console.log(query);
     if (template == 'search'){
       if (!page){
         page = 1;
@@ -363,7 +368,6 @@ jQuery(document).ready(function($) {
   			},
   			success: function(data)
   			{
-          // console.log(data);
           $("#secondary").html("<div class='panel panel-default'><div class='panel-heading'><b>Related Content</b></div><div class='panel-body'>"+data+"</div></div>");
           $("#secondary").addClass('drs-sidebar');
           $("#primary").addClass('drs-main');
@@ -377,7 +381,7 @@ jQuery(document).ready(function($) {
   			}
   		});
     } else {
-      //console.log("we're in browse silly");
+      //we are in browse
     }
   }
 
