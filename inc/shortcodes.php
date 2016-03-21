@@ -74,7 +74,34 @@ function drstk_add_tile_gallery(){
     }
     wp_send_json($data);
 }
+
 add_action( 'wp_ajax_get_tile_code', 'drstk_add_tile_gallery' ); //for auth users
+
+/* POST for individual items*/
+function get_geographic_from_item(){
+	// The $_REQUEST contains all the data sent via ajax
+    if ( isset($_REQUEST) ) {
+        $item = $_REQUEST['item'];
+		//Setting the correct URL
+		$url = "https://repository.library.northeastern.edu/api/v1/files/".$item;
+		
+		//Adding response to data
+		$data = get_response($url);
+		$json = json_decode($data);
+		if (isset($json->error)) {
+			wp_send_json(json_encode( "There was an error: " . $json->error));
+			return;
+		}
+		//returning json
+        echo wp_send_json($json);
+         
+        // debugging purposes
+        // print_r($_REQUEST);
+    }
+   die();
+}
+
+add_action( 'wp_ajax_get_geographic_from_item', 'get_geographic_from_item' ); //Searching for Maps
 
 function thickbox_styles() {
    echo '<style type="text/css">

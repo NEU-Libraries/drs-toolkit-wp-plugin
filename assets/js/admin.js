@@ -144,7 +144,15 @@
                   media_count++;
                   data.pagination.table.num_pages = Math.ceil(media_count / 10);
                 }
-              } else {
+              } if (tab == 5){ //Maps
+                 if (get_item_geographic_handler(item.id)){
+                        $("#sortable-"+name+"-list").append('<li style="display:inline-block;padding:10px;"><label for="drstile-' + id + '"><img src="https://repository.library.northeastern.edu' + item.thumbnail_list_tesim[0] + '" width="150" /><br/><input id="drstile-' + id + '" type="checkbox" class="drstk-include-'+name+'" value="' + item.id + '" /><span style="width:100px;display:inline-block">' + item.full_title_ssi + '</span></label></li>');
+                        media_count++;
+                        data.pagination.table.num_pages = Math.ceil(media_count / 10);
+                    } else {
+                     //console.log("Was unable to find an item with geo!")
+                 }
+                } else {
                 $("#sortable-"+name+"-list").append('<li style="display:inline-block;padding:10px;"><label for="drstile-' + id + '"><img src="https://repository.library.northeastern.edu' + item.thumbnail_list_tesim[0] + '" width="150" /><br/><input id="drstile-' + id + '" type="checkbox" class="drstk-include-'+name+'" value="' + item.id + '" /><span style="width:100px;display:inline-block">' + item.full_title_ssi + '</span></label></li>');
               }
             }
@@ -158,6 +166,41 @@
       });
       $("#sortable-"+name+"-list").sortable();
    }
+
+     function get_item_geographic_handler(itemid) {
+         return get_item_geographic(itemid)
+     }
+     
+     function get_item_geographic(item) {
+         var geographicExisted = false;
+         //AJAX call will be passed to internal WP AJAX
+         $.ajax({
+             async: false,
+             url: ajaxurl,
+             data: {
+                 'action':'get_geographic_from_item',
+                 'item' : item
+             },
+             success:function(data) {
+                 //Parsing data is no longer needed, as get_geolocation_from_item returns parsed data
+                 //parseddata = JSON.parse(data)
+                 //This console.log  is just for debugging.
+                 //console.log(parseddata.pid + " " + parseddata.geographic)
+                 console.log(data.geographic)
+                 if (data && data.geographic && data.geographic.length) {
+                     //console.log(data.geographic)
+                     geographicExisted = true;
+                 } else {
+                     geographicExisted = false;
+                 }
+             },
+             error: function(errorThrown){
+                 console.log(errorThrown);
+             }
+         });
+
+         return geographicExisted;
+     }
 
    function update_pagination(tab, data){
      if (data.pagination.table.num_pages > 1){
