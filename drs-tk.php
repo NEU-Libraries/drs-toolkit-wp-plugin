@@ -16,6 +16,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/video_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/item_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/tiles_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/slider_shortcode.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'inc/timeline_shortcode.php' );
 
 
 
