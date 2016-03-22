@@ -78,7 +78,7 @@ function drstk_add_tile_gallery(){
 add_action( 'wp_ajax_get_tile_code', 'drstk_add_tile_gallery' ); //for auth users
 
 /* POST for individual items*/
-function get_geographic_from_item(){
+function get_json_data_from_neu_item(){
 	// The $_REQUEST contains all the data sent via ajax
     if ( isset($_REQUEST) ) {
         $item = $_REQUEST['item'];
@@ -101,7 +101,7 @@ function get_geographic_from_item(){
    die();
 }
 
-add_action( 'wp_ajax_get_geographic_from_item', 'get_geographic_from_item' ); //Searching for Maps
+add_action( 'wp_ajax_get_json_data_from_neu_item', 'get_json_data_from_neu_item' ); //Searching for Maps and Timeline
 
 function thickbox_styles() {
    echo '<style type="text/css">
