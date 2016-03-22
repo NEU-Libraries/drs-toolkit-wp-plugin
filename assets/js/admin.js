@@ -186,8 +186,8 @@
                  //parseddata = JSON.parse(data)
                  //This console.log  is just for debugging.
                  //console.log(parseddata.pid + " " + parseddata.geographic)
-                 console.log(data.geographic)
-                 if ((data && data.geographic && data.geographic.length && mapsBool) || (data && data.key_date && timelineBool))  {
+                 //console.log(data.geographic)
+                 if ((data && data.geographic && data.geographic.length && mapsBool) || (data && data.key_date && timelineBool) || data && data.coordinates && data.coordinates.length && mapsBool)  {
                      //console.log(data.geographic)
                      genericBoolState = true;
                  } else {
