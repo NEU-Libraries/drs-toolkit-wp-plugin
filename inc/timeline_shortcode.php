@@ -71,6 +71,8 @@ function drstk_timeline_shortcode_scripts() {
         plugins_url( '../assets/js/timeline.js', __FILE__ ),
         array( 'jquery' ));
     wp_enqueue_script('drstk_timeline');
+    wp_register_style( 'drstk_timeline', '../assets/css/timeline.css' );
+    wp_enqueue_style( 'drstk_timeline');
 	}
 }
 add_action( 'wp_enqueue_scripts', 'drstk_timeline_shortcode_scripts');
