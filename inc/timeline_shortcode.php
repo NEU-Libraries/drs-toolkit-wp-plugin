@@ -3,13 +3,13 @@
 add_shortcode( 'drstk_timeline', 'drstk_timeline' );
 function drstk_timeline( $atts ){
   global $errors;
-  $cache = get_transient(md5('PREFIX'.serialize($atts)));
+//   $cache = get_transient(md5('PREFIX'.serialize($atts)));
 
-  if($cache) {
-      return $cache;
-  }
+//   if($cache) {
+//       return $cache;
+//   }
   $neu_ids = explode(", ",$atts['id']);
-  $img_html = "";
+  
   $event_list = array();
   foreach($neu_ids as $neu_id){
     $url = "https://repository.library.northeastern.edu/api/v1/files/" . $neu_id;
@@ -73,6 +73,10 @@ function drstk_timeline_shortcode_scripts() {
     wp_enqueue_script('drstk_timelinejs');
     wp_register_style( 'drstk_timelinejs_css',plugins_url('../assets/css/timeline.css', __FILE__));
     wp_enqueue_style( 'drstk_timelinejs_css');
+    wp_register_script( 'drstk_timeline',
+        plugins_url( '../assets/js/timelinepage.js', __FILE__ ),
+        array( 'jquery' ));
+    wp_enqueue_script('drstk_timeline');
 	}
 }
 add_action( 'wp_enqueue_scripts', 'drstk_timeline_shortcode_scripts');
