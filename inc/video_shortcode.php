@@ -84,6 +84,11 @@ function drstk_collection_playlist($atts){
           fallback: "false",
           androidhls: "true",
           primary: primary,
+          listbar: {
+            position: "right",
+            size: 250,
+            layout: "basic"
+          },
           playlist: [ '. $playlists . ']
         });
         var errorMessage = function(e) {
