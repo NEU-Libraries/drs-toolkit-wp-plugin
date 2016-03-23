@@ -3,11 +3,11 @@
 add_shortcode( 'drstk_timeline', 'drstk_timeline' );
 function drstk_timeline( $atts ){
   global $errors;
-  $cache = get_transient(md5('PREFIX'.serialize($atts)));
+//   $cache = get_transient(md5('PREFIX'.serialize($atts)));
 
-  if($cache) {
-      return $cache;
-  }
+//   if($cache) {
+//       return $cache;
+//   }
   $neu_ids = explode(", ",$atts['id']);
   
   $event_list = array();
