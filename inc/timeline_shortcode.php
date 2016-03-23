@@ -15,7 +15,7 @@ function drstk_timeline( $atts ){
     $url = "https://repository.library.northeastern.edu/api/v1/files/" . $neu_id;
     $data = get_response($url);
     $data = json_decode($data);
-    $type = $atts['type'];
+    
     if (!isset($data->error)){
       $pid = $data->pid;
       $key_date = $data->key_date;
