@@ -67,12 +67,12 @@ function drstk_timeline( $atts ){
 function drstk_timeline_shortcode_scripts() {
 	global $post;
 	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_timeline') ) {
-    wp_register_script( 'drstk_timeline',
+    wp_register_script( 'drstk_timelinejs',
         plugins_url( '../assets/js/timeline.js', __FILE__ ),
         array( 'jquery' ));
-    wp_enqueue_script('drstk_timeline');
-    wp_register_style( 'drstk_timeline', '../assets/css/timeline.css' );
-    wp_enqueue_style( 'drstk_timeline');
+    wp_enqueue_script('drstk_timelinejs');
+    wp_register_style( 'drstk_timelinejs_css',plugins_url('../assets/css/timeline.css', __FILE__));
+    wp_enqueue_style( 'drstk_timelinejs_css');
 	}
 }
 add_action( 'wp_enqueue_scripts', 'drstk_timeline_shortcode_scripts');
