@@ -41,7 +41,7 @@ function drstk_timeline( $atts ){
       $media['credit'] = "";
       
      
-      $keys = key(($key_date)$object);
+      $keys = key($key_date);
       $key_date_explode = explode("/",$keys[0]);
       $start_date["year"] = $key_date_explode[0];  
       $start_date["month"] = $key_date_explode[1];
