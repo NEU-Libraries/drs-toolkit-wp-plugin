@@ -47,16 +47,32 @@ def close_driver_and_display():
 
 
 def wp_login():
-    create_driver() #creates the driver so we can use it
-    driver.get(wordpress_url)
-    driver.find_element_by_id("user_login").send_keys(username)
-    driver.find_element_by_id("user_pass").send_keys(password)
-    driver.find_element_by_id("wp-submit").click()
+    try:
+        create_driver() #creates the driver so we can use it
+        driver.get(wordpress_url)
+        driver.find_element_by_id("user_login").send_keys(username)
+        driver.find_element_by_id("user_pass").send_keys(password)
+        driver.find_element_by_id("wp-submit").click()
+        print("Login completed successfully")
+    except Exception,e:
+        print("Exception produced when logging into wp-admin. Error is: ")
+        print(e)
+
+
+def wp_add_page():
+    try:
+        wp_login()
+        driver.find_element_by_xpath("//*[@id='menu-pages']/a/div[3]").click()
+        driver.find_element_by_xpath("//*[@id='menu-pages']/ul/li[3]/a").click()
+        driver.find_element_by_id("insert-drs").click()
+    except Exception,e:
+        print("Exception produced when creating new page. Error is: ")
+        print(e)
+
 
 def test1(): #Login test
     try:
-        wp_login()
-        print("Login completed successfully")
+        wp_add_page()
         close_driver_and_display()
     except Exception,e:
         print inspect.stack()[0][3] + " Failed with the following message:"
