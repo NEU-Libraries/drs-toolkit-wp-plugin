@@ -19,13 +19,20 @@ function drstk_map( $atts ){
 
       if(isset($data->coordinates)) {
         $coordinates = $data->coordinates;
-        $title = $data->mods->Title[0];
-        //echo($coordinates);
-        $map_html .= "<div class='coordinates' data-coordinates='".$coordinates."' data-title='".$title."'>";
-        $map_html .= "</div>";
-      } else {
 
+      } else {
+        $location = $data->geographic[0];
+        $locationUrl = "http://maps.google.com/maps/api/geocode/json?address=" . $location;
+        $locationData = get_response($locationUrl);
+        $locationData = json_decode($locationData);
+        if (!isset($locationData->error)) {
+          $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
+        }
       }
+
+      $title = $data->mods->Title[0];
+      $map_html .= "<div class='coordinates' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."'>";
+      $map_html .= "</div>";
 
     } else {
       $map_html = $errors['shortcodes']['fail'];
