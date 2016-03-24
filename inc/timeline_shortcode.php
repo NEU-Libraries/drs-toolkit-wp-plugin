@@ -3,54 +3,54 @@
 add_shortcode( 'drstk_timeline', 'drstk_timeline' );
 function drstk_timeline( $atts ){
   global $errors;
-//   $cache = get_transient(md5('PREFIX'.serialize($atts)));
+  $cache = get_transient(md5('PREFIX'.serialize($atts)));
 
-//   if($cache) {
-//       return $cache;
-//   }
+  if($cache) {
+      return $cache;
+  }
   $neu_ids = explode(", ",$atts['id']);
   
   $event_list = array();
   foreach($neu_ids as $neu_id){
-    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $neu_id;
-    $data = get_response($url);
-    $data = json_decode($data);
+    // $url = "https://repository.library.northeastern.edu/api/v1/files/" . $neu_id;
+    // $data = get_response($url);
+    // $data = json_decode($data);
     
-    if (!isset($data->error)){
-      $pid = $data->pid;
-      $key_date = $data->key_date;
-      $current_array = array();
-      $breadcrumbs = $data->breadcrumbs;
+    // if (!isset($data->error)){
+    //   $pid = $data->pid;
+    //   $key_date = $data->key_date;
+    //   $current_array = array();
+    //   $breadcrumbs = $data->breadcrumbs;
       
-      $event_object = array();
+    //   $event_object = array();
       
-      $media = array();
-      $start_date = array();
-      $text_object = array();
+    //   $media = array();
+    //   $start_date = array();
+    //   $text_object = array();
       
-      $thumbnail_url = $data->thumbnails[2];
-      $caption = $breadcrumbs['neu:5m60qx652'];
+    //   $thumbnail_url = $data->thumbnails[2];
+    //   $caption = $breadcrumbs['neu:5m60qx652'];
       
-      $headline = $breadcrumbs['neu:5m60qx652'];      
-      $text = $breadcrumbs->[$pid];
+    //   $headline = $breadcrumbs['neu:5m60qx652'];      
+    //   $text = $breadcrumbs->[$pid];
             
-      $media['url'] = $thumbnail_url;
-      $media['caption'] = $caption;
-      $media['credit'] = "";
+    //   $media['url'] = $thumbnail_url;
+    //   $media['caption'] = $caption;
+    //   $media['credit'] = "";
       
-      $key_date_explode = explode("/",$key_date);
-      $start_date["year"] = $key_date_explode[0];  
-      $start_date["month"] = $key_date_explode[1];
-      $start_date["day"] = $key_date_explode[2];
+    //   $key_date_explode = explode("/",$key_date);
+    //   $start_date["year"] = $key_date_explode[0];  
+    //   $start_date["month"] = $key_date_explode[1];
+    //   $start_date["day"] = $key_date_explode[2];
       
-      $text_object["headline"] = $headline;
-      $text_object["text"] = $text;
+    //   $text_object["headline"] = $headline;
+    //   $text_object["text"] = $text;
       
-      $event_object["media"] = $media;
-      $event_object["start_date"] = $start_date;
-      $event_object["text"] = $text_object;
+    //   $event_object["media"] = $media;
+    //   $event_object["start_date"] = $start_date;
+    //   $event_object["text"] = $text_object;
       
-      array_push($event_list, $event_object);
+    //   array_push($event_list, $event_object);
     }
   }
   $shortcode = "<div id='timeline-embed' style=\"width: 100%; height: 600px\"></div>";
