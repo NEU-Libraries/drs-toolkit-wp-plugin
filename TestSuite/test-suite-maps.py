@@ -242,5 +242,4 @@ def testsuite_sprint2():
     test9()
     test10()
 
-#testsuite_sprint2()
-test8()
+testsuite_sprint2()
