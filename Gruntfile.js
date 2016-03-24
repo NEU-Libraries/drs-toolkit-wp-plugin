@@ -5,6 +5,10 @@ module.exports = function(grunt) {
         jasmine : {
             src : 'assets/**/*.js',
             options : {
+                vendor: [
+                    'node_modules/jquery/dist/jquery.js',
+                    'node_modules/jasmine-jquery/lib/jasmine-jquery.js'
+                ],
                 specs : 'specs/**/*.js'
             }
         }
