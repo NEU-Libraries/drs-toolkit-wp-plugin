@@ -5,21 +5,22 @@ import inspect
 import time
 
 #Packages Requirements for headless unix testing:
-#apt-get install xvfb
-#apt-get remove iceweasel
-#echo -e "\ndeb http://downloads.sourceforge.net/project/ubuntuzilla/mozilla/apt all main" | tee -a /etc/apt/sources.list > /dev/null
-#apt-key adv --recv-keys --keyserver keyserver.ubuntu.com C1289A29
-#apt-get update
-#apt-get install firefox-mozilla-build
-#apt-get install libdbus-glib-1-2
-#apt-get install libgtk2.0-0
-#apt-get install libasound2
+#sudo apt-get install libxss1 libappindicator1 libindicator7
+#wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 
-#Python library requirements
-#pip install pyvirtualdisplay
-#pip install selenium
-#NOTE: If pip is not installed, run apt-get install python-pip OR:
-#curl --silent --show-error --retry 5 https://raw.github.com/pypa/pip/master/contrib/get-pip.py | sudo python
+#sudo dpkg -i google-chrome*.deb
+#sudo apt-get install -f
+#sudo apt-get install xvfb
+#sudo apt-get install unzip
+
+#wget -N http://chromedriver.storage.googleapis.com/2.20/chromedriver_linux64.zip
+#unzip chromedriver_linux64.zip
+#chmod +x chromedriver
+
+#sudo mv -f chromedriver /usr/local/share/chromedriver
+#sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
+#sudo ln -s /usr/local/share/chromedriver /usr/bin/chromedriver
+
 
 #Login Credentials
 username = "team06"
@@ -35,10 +36,10 @@ def create_driver():
     try:
         #For headless Unix Testing, will not work on Windows as XVFB is not supported
         global display
-        display = Display(visible=0, size=(800,600))
+        display = Display(visible=0, size=(800, 600))
         display.start()
         global driver
-        driver = webdriver.Firefox()
+        driver = webdriver.Chrome()
     except Exception,e:
         print("Error produced when setting webdriver and/or XVFB display.")
         print(e)
