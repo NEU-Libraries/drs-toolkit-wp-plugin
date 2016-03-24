@@ -236,5 +236,4 @@ def testsuite_sprint2():
     test9()
     test10()
 
-#testsuite_sprint2()
-create_driver()
+testsuite_sprint2()
