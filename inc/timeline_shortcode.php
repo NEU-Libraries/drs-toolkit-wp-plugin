@@ -40,7 +40,8 @@ function drstk_timeline( $atts ){
       $media['caption'] = $caption;
       $media['credit'] = "";
       
-      $key_date_explode = explode("/",$key_date);
+      $keys = array_keys($key_date);
+      $key_date_explode = explode("/",$keys[0]);
       $start_date["year"] = $key_date_explode[0];  
       $start_date["month"] = $key_date_explode[1];
       $start_date["day"] = $key_date_explode[2];
