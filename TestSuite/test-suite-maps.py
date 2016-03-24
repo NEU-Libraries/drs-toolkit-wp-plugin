@@ -35,6 +35,7 @@ def create_driver():
     try:
         #For headless Unix Testing, will not work on Windows as XVFB is not supported
         global display
+        display = Display(visible=0, size=(800,600))
         display.start()
         global driver
         driver = webdriver.Firefox()
@@ -235,4 +236,5 @@ def testsuite_sprint2():
     test9()
     test10()
 
-testsuite_sprint2()
+#testsuite_sprint2()
+create_driver()
