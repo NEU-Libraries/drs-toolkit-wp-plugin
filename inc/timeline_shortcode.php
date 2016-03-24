@@ -52,6 +52,7 @@ function drstk_timeline( $atts ){
       
       array_push($event_list, $event_object);
     }
+  }
   $shortcode = "<div id='timeline-embed' style=\"width: 100%; height: 600px\"></div>";
   $shortcode .= "<script type=\"text/javascript\">";
   $shortcode .= "window.timeline = new TL.Timeline('timeline-embed',";
