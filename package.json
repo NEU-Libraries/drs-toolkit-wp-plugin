@@ -1,0 +1,22 @@
+{
+  "name": "drs-tk",
+  "version": "0.0.0",
+  "description": "Plugin that provides functionality and templates for bringing DRS data into WP for the DRS Toolkit.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dharammaniar/drs-toolkit-wp-plugin.git"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/dharammaniar/drs-toolkit-wp-plugin/issues"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-jasmine": "~1.0.0"
+  }
+}

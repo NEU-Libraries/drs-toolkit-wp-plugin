@@ -34,3 +34,8 @@ jQuery(document).ready(function($) {
         accessToken: 'pk.eyJ1IjoiZGhhcmFtbWFuaWFyIiwiYSI6ImNpbTN0cjJmMTAwYmtpY2tyNjlvZDUzdXMifQ.8sUclClJc2zSBNW0ckJLOg'
     }).addTo(mymap);
 });//end doc ready
+
+
+function mapTest() {
+    return 1;
+}
