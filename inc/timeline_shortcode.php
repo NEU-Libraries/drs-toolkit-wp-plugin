@@ -53,12 +53,13 @@ function drstk_timeline( $atts ){
     //   array_push($event_list, $event_object);
     }
   }
-  $shortcode = "<div id='timeline-embed' style=\"width: 100%; height: 600px\"></div>";
-  $shortcode .= "<script type=\"text/javascript\">";
-  $shortcode .= "window.timeline = new TL.Timeline('timeline-embed',";
-  $shortcode .= json_encode($event_list);
-  $shortcode .= ");";
-  $shortcode .= "</script>";
+//   $shortcode = "<div id='timeline-embed' style=\"width: 100%; height: 600px\"></div>";
+//   $shortcode .= "<script type=\"text/javascript\">";
+//   $shortcode .= "window.timeline = new TL.Timeline('timeline-embed',";
+//   $shortcode .= json_encode($event_list);
+//   $shortcode .= ");";
+//   $shortcode .= "</script>";
+        $shortcode = "";
   $cache_output = $shortcode;
   $cache_time = 1000;
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
