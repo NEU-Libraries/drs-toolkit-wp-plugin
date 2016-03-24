@@ -29,9 +29,11 @@ function drstk_timeline( $atts ){
       $text_object = array();
       
       $thumbnail_url = $data->thumbnails[2];
-      $caption = $breadcrumbs->{'neu:5m60qx652'};
       
-      $headline = $breadcrumbs->{'neu:5m60qx652'};
+      $caption_headline_tag = "neu:5m60qx652";
+      $caption = $breadcrumbs->$caption_headline_tag;      
+      
+      $headline = $breadcrumbs->$caption_headline_tag;
       $text = $breadcrumbs->$pid;
             
       $media['url'] = $thumbnail_url;
