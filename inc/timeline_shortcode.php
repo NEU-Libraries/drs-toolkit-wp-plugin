@@ -3,11 +3,11 @@
 add_shortcode( 'drstk_timeline', 'drstk_timeline' );
 function drstk_timeline( $atts ){
   global $errors;
-//   $cache = get_transient(md5('PREFIX'.serialize($atts)));
+  $cache = get_transient(md5('PREFIX'.serialize($atts)));
 
-//   if($cache) {
-//       return $cache;
-//   }
+  if($cache) {
+      return $cache;
+  }
   $neu_ids = explode(", ",$atts['id']);
   
   $event_list = array();
@@ -58,6 +58,7 @@ function drstk_timeline( $atts ){
   $shortcode .= "window.timeline = new TL.Timeline('timeline-embed',";
   $shortcode .= json_encode($event_list);
   $shortcode .= ");";
+  $shortcode .= "</script>";
   $cache_output = $shortcode;
   $cache_time = 1000;
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
