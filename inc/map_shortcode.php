@@ -22,7 +22,7 @@ function drstk_map( $atts ){
 
       } else {
         $location = $data->geographic[0];
-        $locationUrl = "http://maps.google.com/maps/api/geocode/json?address=" . $location;
+        $locationUrl = "http://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
         $locationData = get_response($locationUrl);
         $locationData = json_decode($locationData);
         if (!isset($locationData->error)) {
