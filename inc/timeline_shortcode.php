@@ -32,7 +32,7 @@ function drstk_timeline( $atts ){
       $caption = $breadcrumbs['neu:5m60qx652'];
       
       $headline = $breadcrumbs['neu:5m60qx652'];      
-      $text = $breadcrumbs->[$pid];
+      $text = $breadcrumbs[$pid];
             
       $media['url'] = $thumbnail_url;
       $media['caption'] = $caption;
