@@ -34,8 +34,8 @@ drs_page_load_wait = 14
 def create_driver():
     try:
         #For headless Unix Testing, will not work on Windows as XVFB is not supported
-        #global display
-        #display.start()
+        global display
+        display.start()
         global driver
         driver = webdriver.Firefox()
     except Exception,e:
@@ -45,7 +45,7 @@ def create_driver():
 def close_driver_and_display():
     try:
         driver.quit()
-        #display.stop()
+        display.stop()
     except Exception,e:
         print("Error produced when closing driver and display.")
         print(e)
