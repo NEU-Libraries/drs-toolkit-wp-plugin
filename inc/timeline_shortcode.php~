@@ -11,7 +11,6 @@ function drstk_timeline( $atts ){
   $neu_ids = explode(", ",$atts['id']);
   
   $event_list = array();
-  $timeline_html = "";
   foreach($neu_ids as $neu_id){
     $url = "https://repository.library.northeastern.edu/api/v1/files/" . $neu_id;
     $data = get_response($url);
@@ -21,28 +20,51 @@ function drstk_timeline( $atts ){
       $pid = $data->pid;
       $key_date = $data->key_date;
       $current_array = array();
-      $breadcrumbs = $data->breadcrumbs;      
+      $breadcrumbs = $data->breadcrumbs;
+      
+      $event_object = array();
+      
+      $media = array();
+      $start_date = array();
+      $text_object = array();
       
       $thumbnail_url = $data->thumbnails[2];
       
       $caption_headline_tag = "neu:5m60qx652";
-      $caption = $breadcrumbs->$caption_headline_tag;
+      $caption = $breadcrumbs->$caption_headline_tag;      
       
       $headline = $breadcrumbs->$caption_headline_tag;
       $text = $breadcrumbs->$pid;
+            
+      $media['url'] = $thumbnail_url;
+      $media['caption'] = $caption;
+      $media['credit'] = "";
+      
      
-      $keys = (array)$key_date;      
-      $key_date_explode = explode("/",array_keys($keys)[0]);
+      $keys = (array)$key_date;
+	echo $keys;
+      $key_date_explode = explode("/",$keys[0]);
+      $start_date["year"] = $key_date_explode[0];  
+      $start_date["month"] = $key_date_explode[1];
+      $start_date["day"] = $key_date_explode[2];
       
+      $text_object["headline"] = $headline;
+      $text_object["text"] = $text;
       
-      $timeline_html .= "<div class='timelineclass' data-url='".$thumbnail_url."' data-caption='".$caption."' data-credit=' ' data-year='".$key_date_explode[0]."' data-month='".$key_date_explode[1]."' data-day='".$key_date_explode[2]."' data-headline='".$headline."' data-text='".$text."'>";
-      $timeline_html .= "</div>";
-    }else {
-      $timeline_html = $errors['shortcodes']['fail'];
+      $event_object["media"] = $media;
+      $event_object["start_date"] = $start_date;
+      $event_object["text"] = $text_object;
+      
+      array_push($event_list, $event_object);
     }
   }
   $shortcode = "<div id='timeline-embed' style=\"width: 100%; height: 600px\"></div>";
-  $shortcode .= "<div id='timeline'>".$timeline_html."</div>";
+  $shortcode .= "<script type=\"text/javascript\">";
+  $shortcode .= "window.timeline = new TL.Timeline('timeline-embed',";
+  $shortcode .= json_encode($event_list);
+  $shortcode .= ");";
+  $shortcode .= "</script>";
+  $shortcode = "";
   $cache_output = $shortcode;
   $cache_time = 1000;
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
@@ -59,7 +81,7 @@ function drstk_timeline_shortcode_scripts() {
     wp_register_style( 'drstk_timelinejs_css',plugins_url('../assets/css/timeline.css', __FILE__));
     wp_enqueue_style( 'drstk_timelinejs_css');
     wp_register_script( 'drstk_timeline',
-        plugins_url( '../assets/js/timeline/timelinepage.js', __FILE__ ),
+        plugins_url( '../assets/js/timelinepage.js', __FILE__ ),
         array( 'jquery' ));
     wp_enqueue_script('drstk_timeline');
 	}
