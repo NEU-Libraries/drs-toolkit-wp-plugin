@@ -53,13 +53,13 @@ function drstk_timeline_shortcode_scripts() {
 	global $post;
 	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_timeline') ) {
     wp_register_script( 'drstk_timelinejs',
-        plugins_url( '../assets/js/timeline.js', __FILE__ ),
+        plugins_url( '../assets/js/timeline/timeline.js', __FILE__ ),
         array( 'jquery' ));
     wp_enqueue_script('drstk_timelinejs');
     wp_register_style( 'drstk_timelinejs_css',plugins_url('../assets/css/timeline.css', __FILE__));
     wp_enqueue_style( 'drstk_timelinejs_css');
     wp_register_script( 'drstk_timeline',
-        plugins_url( '../assets/js/timeline/timelinepage.js', __FILE__ ),
+        plugins_url( '../assets/js/timelinepage.js', __FILE__ ),
         array( 'jquery' ));
     wp_enqueue_script('drstk_timeline');
 	}
