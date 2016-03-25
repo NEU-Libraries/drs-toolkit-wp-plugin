@@ -22,6 +22,7 @@ function genericRetrieval(index, className, element){
 }
 
 function getItemsFromJqueryArrayTimelineArray(jqArray) {
+    var timelineClass = '.timelineclass';
     var items = [];
     jqArray.each(function(index) {
         items.push({
