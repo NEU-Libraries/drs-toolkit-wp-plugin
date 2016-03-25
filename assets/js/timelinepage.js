@@ -1,36 +1,17 @@
 jQuery(document).ready(function($) {
 
-    // var eventsList = getItemsFromJqueryArrayTimelineArray($('.timelineclass'));
     var eventsList = [];
+
     $('.timelineclass').each(function(index) {
-        var timelineClass = '.timelineclass';
+
         eventsList.push({
-            media: {url : genericRetrieval(index, timelineClass, 'url'), caption:genericRetrieval(index, timelineClass, 'caption'), credit:genericRetrieval(index, timelineClass, 'capiton')},
-			start_date: {year:genericRetrieval(index, timelineClass, 'year'), month:genericRetrieval(index, timelineClass, 'month'), day:genericRetrieval(index, timelineClass, 'day')},
-			text: {headline:genericRetrieval(index, timelineClass, 'headline'), text:genericRetrieval(index, timelineClass, 'text')}
+            media: {url : $($('.timelineclass')[index]).data('url'), caption:$($('.timelineclass')[index]).data('caption'), credit:$($('.timelineclass')[index]).data('credit')},
+			start_date: {year:$($('.timelineclass')[index]).data('year'), month:$($('.timelineclass')[index]).data('month'), day:$($('.timelineclass')[index]).data('day')},
+			text: {headline:$($('.timelineclass')[index]).data('headline'), text:$($('.timelineclass')[index]).data('text')}
         });
     });
     
     var finalTimelineJson = {events:eventsList};
-    // console.log(finalTimelineJson);
+    console.log(finalTimelineJson);
     window.timeline = new TL.Timeline('timeline-embed', finalTimelineJson);
 });
-
-function genericRetrieval(index, className, element){
-    
-    return $($(className)[index]).data(element);
-}
-
-function getItemsFromJqueryArrayTimelineArray(jqArray) {
-    var timelineClass = '.timelineclass';
-    var items = [];
-    jqArray.each(function(index) {
-        items.push({
-            media: {url : genericRetrieval(index, timelineClass, 'url'), caption:genericRetrieval(index, timelineClass, 'caption'), credit:genericRetrieval(index, timelineClass, 'capiton')},
-			start_date: {year:genericRetrieval(index, timelineClass, 'year'), month:genericRetrieval(index, timelineClass, 'month'), day:genericRetrieval(index, timelineClass, 'day')},
-			text: {headline:genericRetrieval(index, timelineClass, 'headline'), text:genericRetrieval(index, timelineClass, 'text')}
-        });
-    });
-
-    return items;
-}
