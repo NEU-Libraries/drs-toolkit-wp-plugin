@@ -104,6 +104,8 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_browse_page_title' );
   add_settings_field('drstk_browse_metadata', 'Metadata to Display', 'drstk_browse_metadata_callback', 'drstk_options', 'drstk_browse_settings');
   register_setting( 'drstk_options', 'drstk_browse_metadata' );
+  add_settings_field('drstk_default_sort', 'Default Sort', 'drstk_default_sort_callback', 'drstk_options', 'drstk_browse_settings');
+  register_setting( 'drstk_options', 'drstk_default_sort' );
 
   add_settings_section('drstk_facet_settings', 'Facets', null, 'drstk_options');
   add_settings_field('drstk_facets', 'Facets to Display<br/><small>Select which facets you would like to display on the search and browse pages. Once selected, you may enter custom names for these facets. Drag and drop the order of the facets to change the order of display.</small>', 'drstk_facets_callback', 'drstk_options', 'drstk_facet_settings');
@@ -250,6 +252,18 @@ function drstk_browse_metadata_callback(){
     if (is_array($options) && in_array($option, $options)){ echo 'checked="checked"';}
     echo '/> '.$option.'</label><br/>';
   }
+}
+
+function drstk_default_sort_callback(){
+  $sort_options = array("title_ssi%20asc"=>"Title A-Z","title_ssi%20desc"=>"Title Z-A", "score+desc%2C+system_create_dtsi+desc"=>"Relevance", "creator_tesim%20asc"=>"Creator A-Z","creator_tesim%20desc"=>"Creator Z-A","system_modified_dtsi%20asc"=>"Date (earliest to latest)","system_modified_dtsi%20desc"=>"Date (latest to earliest)");
+  $default_sort = get_option('drstk_default_sort');
+  echo '<select name="drstk_default_sort">';
+  foreach($sort_options as $val=>$option){
+    echo '<option value="'.$val.'"';
+    if ($default_sort == $val){ echo 'selected="true"';}
+    echo '/> '.$option.'</option>';
+  }
+  echo '</select><br/>';
 }
 
 function drstk_facets_callback(){
@@ -457,6 +471,7 @@ function drstk_browse_script() {
     wp_enqueue_script('drstk_browse');
     $search_options = get_option('drstk_search_metadata');
     $browse_options = get_option('drstk_browse_metadata');
+    $default_sort = get_option('drstk_default_sort');
     //this creates a unique nonce to pass back and forth from js/php to protect
     $browse_nonce = wp_create_nonce( 'browse_drs' );
     $facets = drstk_get_facets_to_display();
@@ -473,7 +488,7 @@ function drstk_browse_script() {
     }
     //this allows an ajax call from browse.js
     $browse_obj = array(
-      'ajax_url' => admin_url( 'admin-ajax.php' ),
+      'ajax_url' => admin_url('admin-ajax.php'),
       'nonce'    => $browse_nonce,
       'template' => $wp_query->query_vars['drstk_template_type'],
       'home_url' => drstk_home_url(),
@@ -482,6 +497,7 @@ function drstk_browse_script() {
       'browse_options' => json_encode($browse_options),
       'errors' => json_encode($errors),
       'facets_to_display' => $facets_to_display,
+      'default_sort' => $default_sort,
     );
     if (get_option('drstk_niec') == 'on' && count($niec_facets_to_display) > 0){
       $browse_obj['niec_facets_to_display'] = $niec_facets_to_display;

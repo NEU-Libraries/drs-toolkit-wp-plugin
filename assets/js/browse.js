@@ -28,6 +28,10 @@ jQuery(document).ready(function($) {
   if (template == 'search'){
     $("#primary").removeClass('col-md-12').addClass('col-md-9');
     $("#secondary").show();
+  } else if (template == 'browse') {
+    params.sort = browse_obj.default_sort;
+    $("#primary").addClass('col-md-12').removeClass('col-md-9');
+    $("#secondary").hide();
   } else {
     params.sort = "title_ssi+asc";
     $("#primary").addClass('col-md-12').removeClass('col-md-9');
@@ -85,6 +89,7 @@ jQuery(document).ready(function($) {
     $("#drs-item-count").html("<h6>Displaying " + data.start + " to " + data.end + " of " + data.total_count + "</h6>");
     $("#drs-per-page-div").html("<h6>Show <select id='drs-per-page'><option val='10'>10</option><option val='20'>20</option><option val='50'>50</option></select> per page</h6>");
     $("#drs-per-page").val(params.per_page);
+    $("#drs-sort-option").val(params.sort);
     if (data.num_pages > 1) {
       var pagination = "<li class='";
       if (data.current_page > 1){
@@ -312,7 +317,7 @@ jQuery(document).ready(function($) {
 
   }
 
-  $("#drs-sort").html("<h6>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance</option><option value='full_title_ssi%20asc'>Title A-Z</option><option value='full_title_ssi%20desc'>Title Z-A</option><option value='creator_tesim%20asc'>Creator A-Z</option><option value='creator_tesim%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></h6>");
+  $("#drs-sort").html("<h6>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance</option><option value='title_ssi%20asc'>Title A-Z</option><option value='title_ssi%20desc'>Title Z-A</option><option value='creator_tesim%20asc'>Creator A-Z</option><option value='creator_tesim%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></h6>");
 
   $("#drs-sort-option").on("change", function() {
     params.sort = $(this).val();
