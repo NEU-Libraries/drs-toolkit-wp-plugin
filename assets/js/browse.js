@@ -33,7 +33,7 @@ jQuery(document).ready(function($) {
     $("#primary").addClass('col-md-12').removeClass('col-md-9');
     $("#secondary").hide();
   } else {
-    params.sort = "title_ssi+asc";
+    params.sort = "title_ssi%20asc";
     $("#primary").addClass('col-md-12').removeClass('col-md-9');
     $("#secondary").hide();
   }
