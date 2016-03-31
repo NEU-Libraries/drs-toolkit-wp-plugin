@@ -4,9 +4,9 @@ add_shortcode( 'drstk_collection_playlist', 'drstk_collection_playlist' );
 function drstk_collection_playlist($atts){
   global $errors;
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
-  if($cache) {
-      return $cache;
-  }
+  // if($cache) {
+      // return $cache;
+  // }
     $collection = explode(', ', $atts['id']);
     $playlists = '';
     if (isset($atts['height']) && $atts['height'] != 0){
@@ -65,7 +65,7 @@ function drstk_collection_playlist($atts){
           return $errors['shortcodes']['fail'];
         }
       }
-    $cache_output = '<div id="drs-item-video">
+    $cache_output = '<div id="drs-item-video_'.$pid.'">
         <img style="width: 100%;" src="' . $poster[0] .'" />
       </div>
       <script type="text/javascript">
@@ -75,7 +75,7 @@ function drstk_collection_playlist($atts){
           primary = "html5";
         }
         jQuery(document).ready(function($){
-        jwplayer("drs-item-video").setup({
+        jwplayer("drs-item-video_'.$pid.'").setup({
           width: "'.$width.'",
           height: "'.$height.'",
           rtmp: { bufferlength: 5 } ,
