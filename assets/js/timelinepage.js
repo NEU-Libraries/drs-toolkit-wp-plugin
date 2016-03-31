@@ -26,6 +26,10 @@ jQuery(document).ready(function($) {
 	
 	
     function genericRetrieval(index, className, element){
+		
+		if(index == null || className == null || element == null){
+			return null;
+		}
      
      return $($(className)[index]).data(element);
      
