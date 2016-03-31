@@ -32,13 +32,13 @@ describe('main', function() {
             expect(getItemsFromJqueryArrayTimelineArray($('.timelineclass')))
                 .toEqual([
                     {
-                        media: {url:'https://repository.library.northeastern.edu/downloads/neu:180456?datastream_id=thumbnail_3",caption:"Boston Boys and Girls Club Photographs',credit:' '},
-                        start_date: {year:1961,month:01,day:01},
+                        media: {url:'https://repository.library.northeastern.edu/downloads/neu:180456?datastream_id=thumbnail_3',caption:'Boston Boys and Girls Club Photographs',credit:undefined},
+                        start_date: {year:1961,month:'01',day:'01'},
                         text: {headline:'Boston Boys and Girls Club Photographs',text:'"Mr. Ralph Hilton, V.P. of the Kiwanis Club of Roxbury, presents Kiwanis trophies to the captains of the winning teams in the Roxbury Clubhouse, Boys Clubs of Boston International Basketball Tournament."'}
                     },
                     {
-                        media: {url:'https://repository.library.northeastern.edu/downloads/neu:183765?datastream_id=thumbnail_3',caption:'Boston Boys and Girls Club Photographs',credit:' '},
-                        start_date: {year:1965,month:01,day:01},
+                        media: {url:'https://repository.library.northeastern.edu/downloads/neu:183765?datastream_id=thumbnail_3',caption:'Boston Boys and Girls Club Photographs',credit:undefined},
+                        start_date: {year:1965,month:'01',day:'01'},
                         text: {headline:'Boston Boys and Girls Club Photographs',text:'"Overseer, Walter Robb, III, Presents Trophies And Individual Awards" at a Boys Club basketball tournament.'}
                     }
                 ]);
