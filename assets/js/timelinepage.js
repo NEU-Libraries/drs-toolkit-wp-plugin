@@ -2,12 +2,11 @@ jQuery(document).ready(function($) {
     
     var eventsList = getItemsFromJqueryArrayTimelineArray($('.timelineclass'));
     
-    function genericRetrieval(index, className, element){
-     
-     return $($(className)[index]).data(element);
-     
-	}
- 
+    var finalTimelineJson = {events:eventsList};
+    
+    window.timeline = new TL.Timeline('timeline-embed', finalTimelineJson);
+});
+
 	 function getItemsFromJqueryArrayTimelineArray(jqArray) {
 		 
 		var items = [];
@@ -24,8 +23,11 @@ jQuery(document).ready(function($) {
 	 
 	 return items;
 	}
-    
-    var finalTimelineJson = {events:eventsList};
-    
-    window.timeline = new TL.Timeline('timeline-embed', finalTimelineJson);
-});
+	
+	
+    function genericRetrieval(index, className, element){
+     
+     return $($(className)[index]).data(element);
+     
+	}
+
