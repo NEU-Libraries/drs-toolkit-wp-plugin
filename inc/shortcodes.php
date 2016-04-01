@@ -35,6 +35,8 @@ function drstk_enqueue_page_scripts( $hook ) {
       'ajax_url' => admin_url( 'admin-ajax.php' ),
       'item_admin_nonce'    => $item_admin_nonce,
       'pid' => '',
+	  'leaflet_api_key' => get_option('leaflet_api_key'),
+	  'leaflet_project_key' => get_option('leaflet_project_key'),
       'errors' => json_encode($errors),
    ) );
 

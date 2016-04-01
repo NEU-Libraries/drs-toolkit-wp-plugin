@@ -94,6 +94,14 @@ function register_drs_settings() {
   add_settings_section('drstk_project', "Project Info", null, 'drstk_options');
   add_settings_field('drstk_collection', 'Project Collection or Set URL', 'drstk_collection_callback', 'drstk_options', 'drstk_project');
   register_setting( 'drstk_options', 'drstk_collection' );
+  
+  //Adding Map Leaflet API Field
+  add_settings_field('leaflet_api_key', 'Leaflet API Key', 'leaflet_api_key_callback', 'drstk_options', 'drstk_project');
+  register_setting( 'drstk_options', 'leaflet_api_key' );
+  
+   //Adding Map Leaflet Project Field
+  add_settings_field('leaflet_project_key', 'Leaflet Project Key', 'leaflet_project_key_callback', 'drstk_options', 'drstk_project');
+  register_setting( 'drstk_options', 'leaflet_project_key' );
 
   add_settings_section('drstk_search_settings', 'Search Settings', null, 'drstk_options');
   add_settings_field('drstk_search_page_title', 'Search Page Title', 'drstk_search_page_title_callback', 'drstk_options', 'drstk_search_settings');
@@ -177,6 +185,18 @@ function drstk_collection_callback(){
   $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'https://repository.library.northeastern.edu/collections/neu:1';
   echo '<input name="drstk_collection" type="text" value="'.$collection_pid.'" style="width:100%;"></input><br/>
      <small>Ie. <a href="https://repository.library.northeastern.edu/collections/neu:6012">https://repository.library.northeastern.edu/collections/neu:6012</a></small>';
+}
+
+function leaflet_api_key_callback(){
+  $leaflet_api_key = (get_option('leaflet_api_key') != '') ? get_option('leaflet_api_key') : 'pk.eyJ1IjoiZGhhcmFtbWFuaWFyIiwiYSI6ImNpbTN0cjJmMTAwYmtpY2tyNjlvZDUzdXMifQ.8sUclClJc2zSBNW0ckJLOg';
+  echo '<input name="leaflet_api_key" type="text" value="'.$leaflet_api_key.'" style="width:100%;"></input><br/>
+     <small>Ie. pk.eyJ1IjoiZGhhcmFtbWFuaWFyIiwiYSI6ImNpbTN0cjJmMTAwYmtpY2tyNjlvZDUzdXMifQ.8sUclClJc2zSBNW0ckJLOg</small>';
+}
+
+function leaflet_project_key_callback(){
+    $leaflet_project_key = (get_option('leaflet_project_key') != '') ? get_option('leaflet_project_key') : 'dharammaniar.pfnog3b9';
+    echo '<input name="leaflet_project_key" type="text" value="'.$leaflet_project_key.'" style="width:100%;"></input><br/>
+     <small>Ie. dharammaniar.pfnog3b9</small>';
 }
 
 function drstk_search_page_title_callback(){
@@ -345,8 +365,10 @@ function drstk_content_template( $template ) {
             global $sub_collection_pid;
             $sub_collection_pid = get_query_var( 'pid' );
             add_action('wp_enqueue_scripts', 'drstk_browse_script');
+            add_action('wp_enqueue_scripts', 'get_leaflet_api_keys_script');
             if ($template_type == 'collection') {
               add_action('wp_enqueue_scripts', 'drstk_breadcrumb_script');
+                add_action('wp_enqueue_scripts', 'get_leaflet_api_keys_script');
             }
 
             // look for theme template first, load plugin template as fallback
