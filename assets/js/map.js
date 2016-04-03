@@ -4,12 +4,12 @@ jQuery(document).ready(function($) {
 
     var mymap = createMap('map');
 
-    addPopupsToItems(items, mymap);
-
-    var bounds = getBoundsForMap(items);
-    mymap.fitBounds(bounds);
-
     addTileLayerToMap(mymap);
+
+    addPopupsToItems(items, mymap);
+    var bounds = getBoundsForMap(items);
+
+    mymap.fitBounds(bounds);
 });//end doc ready
 
 function getCordinatesFromString(input) {
@@ -50,13 +50,14 @@ function getBoundsForMap(items) {
 }
 
 function addPopupsToItems(items, map) {
+    var markers = L.markerClusterGroup();
 
     jQuery.each(items, function(index, item) {
-        L.marker(item.coordinates)
-            .addTo(map)
-            .bindPopup("<b>" + item.title + "</b>")
-            .openPopup();
+        var marker = L.marker(new L.LatLng(item.coordinates[0], item.coordinates[1]), { title: item.title });
+        marker.bindPopup(item.title);
+        markers.addLayer(marker);
     });
+    map.addLayer(markers);
 }
 
 function addTileLayerToMap(map) {

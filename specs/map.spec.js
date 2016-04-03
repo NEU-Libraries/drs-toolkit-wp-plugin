@@ -1,6 +1,6 @@
 jasmine.getFixtures().fixturesPath = 'specs/';
 
-describe('main', function() {
+describe('Maps Unit Tests', function() {
 
     describe('Function getCordinatesFromString', function () {
         it('returns null when there is no input', function () {

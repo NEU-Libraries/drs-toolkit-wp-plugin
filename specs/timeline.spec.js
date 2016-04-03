@@ -1,6 +1,6 @@
 jasmine.getFixtures().fixturesPath = 'specs/';
 
-describe('main', function() {
+describe('Timeline Unit Tests', function() {
 
     describe('Function to check the null statement of generic retrieval', function () {
         it('returns null when there is no input', function () {
