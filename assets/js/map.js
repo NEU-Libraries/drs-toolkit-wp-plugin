@@ -1,10 +1,12 @@
 jQuery(document).ready(function($) {
 
     var items = getItemsFromJqueryArray($('.coordinates'));
+    var apiKey = getApiKey($('#map'));
+    var projectKey = getProjectKey($('#map'));
 
     var mymap = createMap('map');
 
-    addTileLayerToMap(mymap);
+    addTileLayerToMap(mymap, apiKey, projectKey);
 
     addPopupsToItems(items, mymap);
     var bounds = getBoundsForMap(items);
@@ -34,6 +36,14 @@ function getItemsFromJqueryArray(jqArray) {
     return items;
 }
 
+function getApiKey(jqSelector) {
+    return jqSelector.data('map_api_key');
+}
+
+function getProjectKey(jqSelector) {
+    return jqSelector.data('map_project_key');
+}
+
 function createMap(mapID) {
     if (!mapID) {
         return null;
@@ -60,11 +70,11 @@ function addPopupsToItems(items, map) {
     map.addLayer(markers);
 }
 
-function addTileLayerToMap(map) {
+function addTileLayerToMap(map, apiKey, projectKey) {
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
         maxZoom: 18,
-        id: 'dharammaniar.pfnog3b9',
-        accessToken: 'pk.eyJ1IjoiZGhhcmFtbWFuaWFyIiwiYSI6ImNpbTN0cjJmMTAwYmtpY2tyNjlvZDUzdXMifQ.8sUclClJc2zSBNW0ckJLOg'
+        id: projectKey,
+        accessToken: apiKey
     }).addTo(map);
 }

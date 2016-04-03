@@ -9,6 +9,8 @@ function drstk_map( $atts ){
     return $cache;
   }*/
   $items = explode(", ",$atts['id']);
+  $map_api_key = $atts['map_api_key'];
+  $map_project_key = $atts['map_project_key'];
   $map_html = "";
   foreach($items as $item){
     $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item;
@@ -39,7 +41,7 @@ function drstk_map( $atts ){
     }
 
   }
-  $shortcode = "<div id='map'>".$map_html."</div>";
+  $shortcode = "<div id='map' data-map_api_key='".$map_api_key."' data-map_project_key='".$map_project_key."'>".$map_html."</div>";
   $cache_output = $shortcode;
   $cache_time = 1000;
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);

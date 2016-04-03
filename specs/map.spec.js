@@ -85,4 +85,28 @@ describe('Maps Unit Tests', function() {
                 ]);
         });
     });
+
+    describe('Function getApiKey', function () {
+        beforeEach(function() {
+            loadFixtures('map.html');
+        });
+        it('returns undefined if invalid jqSelector passed', function() {
+            expect(getApiKey($('#maps'))).toEqual(undefined);
+        });
+        it('returns api key if valid jqSelector passed', function() {
+            expect(getApiKey($('#map'))).toEqual('pk.eyJ1IjoiZGhhcmFtbWFuaWFyIiwiYSI6ImNpbTN0cjJmMTAwYmtpY2tyNjlvZDUzdXMifQ.8sUclClJc2zSBNW0ckJLOg');
+        });
+    });
+
+    describe('Function getProjectKey', function () {
+        beforeEach(function() {
+            loadFixtures('map.html');
+        });
+        it('returns undefined if invalid jqSelector passed', function() {
+            expect(getProjectKey($('#maps'))).toEqual(undefined);
+        });
+        it('returns project key if valid jqSelector passed', function() {
+            expect(getProjectKey($('#map'))).toEqual('dharammaniar.pfnog3b9');
+        });
+    });
 });
