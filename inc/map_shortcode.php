@@ -23,9 +23,11 @@ function drstk_map( $atts ){
         $map_metadata = '';
         $metadata = explode(",",$atts['metadata']);
         foreach($metadata as $field){
-          $this_field = $data->mods->$field;
-          if (isset($this_field[0])){
-            $map_metadata .= $this_field[0] . "<br/>";
+          if (isset($data->mods->$field)) {
+            $this_field = $data->mods->$field;
+            if (isset($this_field[0])) {
+              $map_metadata .= $this_field[0] . "<br/>";
+            }
           }
         }
       }
