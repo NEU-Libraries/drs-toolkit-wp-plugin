@@ -27,16 +27,38 @@ function getCordinatesFromString(input) {
 function getItemsFromJqueryArray(jqArray) {
     var items = [];
     jqArray.each(function(index) {
-        items.push({
-            pid: jQuery(jqArray[index]).data('pid'),
-            title: jQuery(jqArray[index]).data('title'),
-            coordinates: getCordinatesFromString(jQuery(jqArray[index]).data('coordinates')),
-            metadata: jQuery(jqArray[index]).data('metadata'),
-            url: jQuery(jqArray[index]).data('url')
-        });
+        if (dataExists(jqArray[index])) {
+            items.push({
+                pid: jQuery(jqArray[index]).data('pid'),
+                title: jQuery(jqArray[index]).data('title'),
+                coordinates: getCordinatesFromString(jQuery(jqArray[index]).data('coordinates')),
+                metadata: jQuery(jqArray[index]).data('metadata'),
+                url: jQuery(jqArray[index]).data('url')
+            });
+        }
     });
 
     return items;
+}
+
+function dataExists(input) {
+    return pidExists(input) && titleExists(input) && coordinatesExists(input) && metaDataExists(input) && urlExists(input);
+}
+
+function pidExists(input) {
+    return (jQuery(input).data('pid')) ? true : false;
+}
+function titleExists(input) {
+    return (jQuery(input).data('title')) ? true : false;
+}
+function coordinatesExists(input) {
+    return (jQuery(input).data('coordinates')) ? true : false;
+}
+function metaDataExists(input) {
+    return (jQuery(input).data('metadata')) ? true : false;
+}
+function urlExists(input) {
+    return (jQuery(input).data('url')) ? true : false;
 }
 
 function getApiKey(jqSelector) {
