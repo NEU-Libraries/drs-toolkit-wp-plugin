@@ -28,8 +28,11 @@ function getItemsFromJqueryArray(jqArray) {
     var items = [];
     jqArray.each(function(index) {
         items.push({
+            pid: jQuery(jqArray[index]).data('pid'),
             title: jQuery(jqArray[index]).data('title'),
-            coordinates: getCordinatesFromString(jQuery(jqArray[index]).data('coordinates'))
+            coordinates: getCordinatesFromString(jQuery(jqArray[index]).data('coordinates')),
+            metadata: jQuery(jqArray[index]).data('metadata'),
+            url: jQuery(jqArray[index]).data('url')
         });
     });
 
@@ -64,7 +67,8 @@ function addPopupsToItems(items, map) {
 
     jQuery.each(items, function(index, item) {
         var marker = L.marker(new L.LatLng(item.coordinates[0], item.coordinates[1]), { title: item.title });
-        marker.bindPopup(item.title);
+        var popupContent = "<a href='" + item.url + "' target='_blank'>" + item.title + "</a><br/>" + item.metadata;
+        marker.bindPopup(popupContent);
         markers.addLayer(marker);
     });
     map.addLayer(markers);

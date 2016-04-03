@@ -19,6 +19,17 @@ function drstk_map( $atts ){
     if (!isset($data->error)){
       $pid = $data->pid;
 
+      if (isset($atts['metadata'])){
+        $map_metadata = '';
+        $metadata = explode(",",$atts['metadata']);
+        foreach($metadata as $field){
+          $this_field = $data->mods->$field;
+          if (isset($this_field[0])){
+            $map_metadata .= $this_field[0] . "<br/>";
+          }
+        }
+      }
+
       if(isset($data->coordinates)) {
         $coordinates = $data->coordinates;
 
@@ -33,7 +44,9 @@ function drstk_map( $atts ){
       }
 
       $title = $data->mods->Title[0];
-      $map_html .= "<div class='coordinates' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."'>";
+      $permanentUrl = 'Permanent URL';
+      $permanentUrl = $data->mods->$permanentUrl;
+      $map_html .= "<div class='coordinates' data-pid='".$pid."' data-url='".$permanentUrl[0]."' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."' data-metadata='".$map_metadata."'>";
       $map_html .= "</div>";
 
     } else {
