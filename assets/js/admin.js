@@ -21,7 +21,7 @@
    search_params.q = '';
    search_params.page = 1;
    if (id == 6){
-     $("#TB_ajaxContent #tabs-6").html('<h4>Timeline</h4><br/><label for="search">Search for timeline item: </label><input type="text" name="search" id="search-timeline" /><button class="themebutton" id="search-button-timeline">Search</button><br/><button class="zoom-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden zoom-options"><label for="drstk-timeline-start-date-boundary">Start Date Boundary<input type="text" placeholder="year eg:1960" id="start-date-boundary"></label><br/><label for="drstk-timeline-end-date-boundary">End Date Boundary<input type="text" placeholder="year eg:2000" id="end-date-boundary"></label><br/><i>Configuration for Timeline Feature</i></div><hr/><div class="item-metadata"></div><div class="drs-items"></div><ol id="sortable-timeline-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-timeline" />');
+     $("#TB_ajaxContent #tabs-6").html('<h4>Timeline</h4><br/><label for="search">Search for timeline item: </label><input type="text" name="search" id="search-timeline" /><button class="themebutton" id="search-button-timeline">Search</button><br/><button class="zoom-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden zoom-options"><label for="drstk-timeline-start-date-boundary">Start Date Boundary<input type="text" placeholder="year eg:1960" id="start-date-boundary"></label><br/><label for="drstk-timeline-end-date-boundary">End Date Boundary<input type="text" placeholder="year eg:2000" id="end-date-boundary"></label><br/><label for="drstk-timeline-increments">Scale Increments</label><select name="drstk-timeline-increments" id="drstk-timeline-increments"><option value="0.5">0.5</option><option value="2">2</option><option value="5">5</option><option value="8">8</option><option value="13">13</option></select><br/><i>Note : Higher the Increment, more granular the dates</i><br/></div><hr/><div class="item-metadata"></div><div class="drs-items"></div><ol id="sortable-timeline-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-timeline" />');
      get_updated_items(search_params, 'timeline');
    }
    if (id == 5){
@@ -465,6 +465,7 @@
 			}
 		}
         shortcode = '[drstk_timeline id="'+timelineValue+'"';
+        shortcode += ' increments="'+$("#drstk-timeline-increments").val()+'"';
         shortcode += ']\n';
      
 	}

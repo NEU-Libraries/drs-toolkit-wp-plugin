@@ -2,9 +2,13 @@ jQuery(document).ready(function($) {
     
     var eventsList = getItemsFromJqueryArrayTimelineArray($('.timelineclass'));
     
+    var increments = $('#timeline-increments').data('increments');
+    
+    var options = {scale_factor:increments};
+    
     var finalTimelineJson = {events:eventsList};
     
-    window.timeline = new TL.Timeline('timeline-embed', finalTimelineJson);
+    window.timeline = new TL.Timeline('timeline-embed', finalTimelineJson, options);
 });
 
 	 function getItemsFromJqueryArrayTimelineArray(jqArray) {

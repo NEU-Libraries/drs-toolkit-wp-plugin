@@ -9,6 +9,7 @@ function drstk_timeline( $atts ){
       return $cache;
   }
   $neu_ids = explode(", ",$atts['id']);
+  $timeline_increments = $atts['increments'];
   
   $event_list = array();
   $timeline_html = "";
@@ -43,6 +44,7 @@ function drstk_timeline( $atts ){
   }
   $shortcode = "<div id='timeline-embed' style=\"width: 100%; height: 600px\"></div>";
   $shortcode .= "<div id='timeline'>".$timeline_html."</div>";
+  $shortcode .= "<div id='timeline-increments' data-increments='".$timeline_increments."'></div>";
   $cache_output = $shortcode;
   $cache_time = 1000;
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
