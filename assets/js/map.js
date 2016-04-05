@@ -18,6 +18,9 @@ jQuery(document).ready(function($) {
     var bounds = getBoundsForMap(items);
 
     mymap.fitBounds(bounds);
+
+    addLegendToMap(colorDescriptions, mymap);
+
 });
 
 function getApiKey(jqSelector) {
@@ -68,6 +71,33 @@ function getColorGroups(jqSelector) {
     }
 
     return colorGroups;
+}
+
+function addLegendToMap(colorDescriptions, mymap) {
+    var box = L.control.messagebox().addTo(mymap);
+    var legendHtml = '<table style="margin-top: 0px; margin-bottom: 0px">';
+
+    /*legendHtml += '<tr><td style="background: #F44336">' + colorDescriptions.red + '</td></tr>';
+    legendHtml += '<tr><td style="background: #2196F3">' + colorDescriptions.blue + '</td></tr>';
+    legendHtml += '<tr><td style="background: #4CAF50">' + colorDescriptions.green + '</td></tr>';
+    legendHtml += '<tr><td style="background: #FFEB3B">' + colorDescriptions.yellow + '</td></tr>';
+    legendHtml += '<tr><td style="background: #FF9800">' + colorDescriptions.orange + '</td></tr>';*/
+
+    legendHtml += '<tr><td style="background: #F44336">   </td><td>' + colorDescriptions.red + '</td></tr>';
+    legendHtml += '<tr><td style="background: #2196F3">   </td><td>' + colorDescriptions.blue + '</td></tr>';
+    legendHtml += '<tr><td style="background: #4CAF50">   </td><td>' + colorDescriptions.green + '</td></tr>';
+    legendHtml += '<tr><td style="background: #FFEB3B">   </td><td>' + colorDescriptions.yellow + '</td></tr>';
+    legendHtml += '<tr><td style="background: #FF9800">   </td><td>' + colorDescriptions.orange + '</td></tr>';
+
+    /*legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-red-icon.png"> </td><td>' + colorDescriptions.red + '</td></tr>';
+    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon.png"></td><td>' + colorDescriptions.blue + '</td></tr>';
+    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-green-icon.png"></td><td>' + colorDescriptions.green + '</td></tr>';
+    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-yellow-icon.png"></td><td>' + colorDescriptions.yellow + '</td></tr>';
+    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-orange-icon.png"></td><td>' + colorDescriptions.orange + '</td></tr>';*/
+
+    legendHtml += '</table>';
+
+    box.show(legendHtml);
 }
 
 function getCordinatesFromString(input) {

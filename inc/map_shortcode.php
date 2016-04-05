@@ -99,10 +99,17 @@ function drstk_map_shortcode_scripts() {
         plugins_url('../assets/js/leaflet/leaflet.js', __FILE__),
         array( 'jquery' ));
     wp_enqueue_script('drstk_leaflet');
+
     wp_register_script('drstk_leaflet_marker_cluster',
         plugins_url('../assets/js/leaflet/leaflet.markercluster-src.js', __FILE__),
         array('jquery', 'drstk_leaflet'));
     wp_enqueue_script('drstk_leaflet_marker_cluster');
+
+    wp_register_script('drstk_leaflet_message_box',
+        plugins_url('../assets/js/leaflet/leaflet.messagebox-src.js', __FILE__),
+        array('jquery', 'drstk_leaflet'));
+    wp_enqueue_script('drstk_leaflet_message_box');
+
     wp_register_style('drstk_leaflet_css',
         plugins_url('../assets/css/leaflet.css', __FILE__));
     wp_enqueue_style('drstk_leaflet_css');

@@ -1,7 +1,7 @@
 /* required styles */
 
 #map {
-    height: 400px;
+    height: 600px;
 }
 
 .leaflet-map-pane,
@@ -556,4 +556,9 @@
     -moz-transition: -moz-stroke-dashoffset 0.3s ease-out, -moz-stroke-opacity 0.3s ease-in;
     -o-transition: -o-stroke-dashoffset 0.3s ease-out, -o-stroke-opacity 0.3s ease-in;
     transition: stroke-dashoffset 0.3s ease-out, stroke-opacity 0.3s ease-in;
+}
+
+.leaflet-control-messagebox {
+    display: block;
+    background-color: white;
 }
