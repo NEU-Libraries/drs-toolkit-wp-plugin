@@ -12,6 +12,34 @@ function drstk_map( $atts ){
   $map_api_key = $atts['map_api_key'];
   $map_project_key = $atts['map_project_key'];
   $map_html = "";
+
+  $shortcode = "<div id='map' data-map_api_key='".$map_api_key."' data-map_project_key='".$map_project_key."'";
+
+  if (isset($atts['red_legend_desc']) && isset($atts['red'])) {
+    $shortcode .= " data-red='".$atts['red']."'";
+    $shortcode .= " data-red_legend_desc='".$atts['red_legend_desc']."'";
+  }
+
+  if (isset($atts['blue_legend_desc']) && isset($atts['blue'])) {
+    $shortcode .= " data-blue='".$atts['blue']."'";
+    $shortcode .= " data-blue_legend_desc='".$atts['blue_legend_desc']."'";
+  }
+
+  if (isset($atts['green_legend_desc']) && isset($atts['green'])) {
+    $shortcode .= " data-green='".$atts['green']."'";
+    $shortcode .= " data-green_legend_desc='".$atts['green_legend_desc']."'";
+  }
+
+  if (isset($atts['yellow_legend_desc']) && isset($atts['yellow'])) {
+    $shortcode .= " data-yellow='".$atts['yellow']."'";
+    $shortcode .= " data-yellow_legend_desc='".$atts['yellow_legend_desc']."'";
+  }
+
+  if (isset($atts['orange_legend_desc']) && isset($atts['orange'])) {
+    $shortcode .= " data-orange='".$atts['orange']."'";
+    $shortcode .= " data-orange_legend_desc='".$atts['orange_legend_desc']."'";
+  }
+
   foreach($items as $item){
     $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item;
     $data = get_response($url);
@@ -19,22 +47,9 @@ function drstk_map( $atts ){
     if (!isset($data->error)){
       $pid = $data->pid;
 
-      if (isset($atts['metadata'])){
-        $map_metadata = '';
-        $metadata = explode(",",$atts['metadata']);
-        foreach($metadata as $field){
-          if (isset($data->mods->$field)) {
-            $this_field = $data->mods->$field;
-            if (isset($this_field[0])) {
-              $map_metadata .= $this_field[0] . "<br/>";
-            }
-          }
-        }
-      }
-
+      $coordinates = "";
       if(isset($data->coordinates)) {
         $coordinates = $data->coordinates;
-
       } else {
         $location = $data->geographic[0];
         $locationUrl = "http://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
@@ -48,15 +63,29 @@ function drstk_map( $atts ){
       $title = $data->mods->Title[0];
       $permanentUrl = 'Permanent URL';
       $permanentUrl = $data->mods->$permanentUrl;
-      $map_html .= "<div class='coordinates' data-pid='".$pid."' data-url='".$permanentUrl[0]."' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."' data-metadata='".$map_metadata."'>";
-      $map_html .= "</div>";
+      $map_html .= "<div class='coordinates' data-pid='".$pid."' data-url='".$permanentUrl[0]."' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."'";
+
+      if (isset($atts['metadata'])){
+        $map_metadata = '';
+        $metadata = explode(",",$atts['metadata']);
+        foreach($metadata as $field){
+          if (isset($data->mods->$field)) {
+            $this_field = $data->mods->$field;
+            if (isset($this_field[0])) {
+              $map_metadata .= $this_field[0] . "<br/>";
+            }
+          }
+        }
+        $map_html .= " data-metadata='".$map_metadata."'";
+      }
+      
+      $map_html .= "></div>";
 
     } else {
       $map_html = $errors['shortcodes']['fail'];
     }
-
   }
-  $shortcode = "<div id='map' data-map_api_key='".$map_api_key."' data-map_project_key='".$map_project_key."'>".$map_html."</div>";
+  $shortcode .= ">".$map_html."</div>";
   $cache_output = $shortcode;
   $cache_time = 1000;
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
