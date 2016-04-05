@@ -25,7 +25,7 @@
      get_updated_items(search_params, 'timeline');
    }
    if (id == 5){
-     $("#TB_ajaxContent #tabs-5").html('<h4>Map</h4><br/><label for="search">Search for map item: </label><input type="text" name="search" id="search-map" /><button class="themebutton" id="search-button-map">Search</button><br/><button class="map-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden map-options"><label for="drstk-map-legend">Legend Description </br> Red <input type="text" id="redlegend"></br>Blue <input type="text" id="bluelegend"></br>Green <input type="text" id="greenlegend"></br>Yellow <input type="text" id="yellowlegend"></br>Orange <input type="text" id="orangelegend"></label></br><label for="drstk-map-align">Image Alignment<select id="drstk-map-align" name="drstk-map-align"><option value="left">Left</option><option value="right">Right</option><option value="center">Center</option></select></label><br/><label for="drstk-map-caption-align">Caption Alignment<select id="drstk-map-caption-align" name="drstk-map-caption-align"><option value="left">Left</option><option value="right">Right</option><option value="center" selected="selected">Center</option></select></label><br/><label for="drstk-map-image-size">Image Size<select name="drstk-map-image-size" id="drstk-map-image-size"><option value="1">Largest side is 85px</option><option value="2">Largest side is 170px</option><option value="3">Largest side is 340px</option><option value="4" selected="selected">Largest side is 500px</option><option value="5">Largest side is 1000px</option></select></label><br/><label for="drstk-item-zoom"><input id="drstk-map-zoom" name="drstk-map-zoom" value="yes" type="checkbox" />Enable zoom</label><br/><label for="drstk-map-zoom-inner"><input id="drstk-map-zoom-inner" name="drstk-map-zoom-inner" value="yes" type="checkbox" />Zoom inside image</label><br/><label for="drstk-map-zoom-window">Zoom position (outside image)<select name="drstk-map-zoom-window" id="drstk-map-zoom-window"><option value="0">Select Position</option><option value="1">Top Right</option><option value="2">Middle Right</option><option value="3">Bottom Right</option><option value="4">Bottom Corner Right</option><option value="5">Under Right</option><option value="6">Under Middle</option><option value="7">Under Left</option><option value="8">Bottom Corner Left </option><option value="9">Bottom Left</option><option value="10">Middle Left</option><option value="11">Top Left</option><option value="12">Top Corner Left</option><option value="12">Above Left</option><option value="14">Above Middle</option><option value="15">Above Right</option><option value="16">Top Right Corner</option></select><br><i>Recommended and Default position:Top Right</i><div class="drstk-map-metadata"><h5>Metadata for Maps</h5><label><input type="checkbox" name="Creator,Contributor"/>Creator,Contributor</label><br/><label><input type="checkbox" name="Date created"/>Date Created</label><br/><label><input type="checkbox" name="Abstract/Description"/>Abstract/Description</label></div></div><div class="drs-items"></div><hr/><ol id="sortable-map-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-map" />');
+     $("#TB_ajaxContent #tabs-5").html('<h4>Map</h4><br/><label for="search">Search for map item: </label><input type="text" name="search" id="search-map" /><button class="themebutton" id="search-button-map">Search</button><br/><button class="map-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden map-options"><label for="drstk-map-legend">Legend Description </br> Red <input type="text" id="redlegend"></br>Blue <input type="text" id="bluelegend"></br>Green <input type="text" id="greenlegend"></br>Yellow <input type="text" id="yellowlegend"></br>Orange <input type="text" id="orangelegend"></label></br><div class="drstk-map-metadata"><h5>Metadata for Maps</h5><label><input type="checkbox" name="Creator,Contributor"/>Creator,Contributor</label><br/><label><input type="checkbox" name="Date created"/>Date Created</label><br/><label><input type="checkbox" name="Abstract/Description"/>Abstract/Description</label></div></div><div class="drs-items"></div><hr/><ol id="sortable-map-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-map" />');
      get_updated_items(search_params, 'map');
    }
    if (id == 4){
@@ -95,13 +95,13 @@
           } else {
               $(".selected-"+type).val(selected + ", " + pid);
           } if (type === 'map') {
-              var map_color_options = "<p>Grouping:</p><select class='map_group_selection-"+divid+ "'><option value='please_select_option'>Please select a group</option><option value='red'>Red</option> <option value='blue'>Blue</option> <option value='green'>Green</option> <option value='yellow'>Yellow</option> <option value='Orange'>Orange</option></select>"
+              var map_color_options = "<p>Grouping:</p><select class='map_group_selection-"+divid+ "'><option value='please_select_option'>Please select a group</option><option value='red'>Red</option> <option value='blue'>Blue</option> <option value='green'>Green</option> <option value='yellow'>Yellow</option> <option value='orange'>Orange</option></select>"
               //alert(divid)
               //alert("Map is selected!")
               $("label[for='drstile-" + divid + "']").append(map_color_options);
           }
           //When a user changes map dropdown
-          $("body").on("change","[class^='map_group_selection-']", function() {
+          $("body").on("change","[class^='map_group_selection-" + divid + "']", function() {
               console.log("Change triggered!");
               var dropdown_value = $(this).val();
               console.log(dropdown_value);
@@ -110,17 +110,52 @@
               var green_group = $(".selected-map").attr("green_group");
               var yellow_group = $(".selected-map").attr("yellow_group");
               var orange_group = $(".selected-map").attr("orange_group");
+              //Red cases
               if(red_group == undefined && dropdown_value == 'red') {
-                  console.log("Creating first entry")
                   $(".selected-map").attr("red_group", pid);
                   dropdown_value = ''
-                  console.log("dropdown value cuirrent is " + dropdown_value)
-              } else if (red_group != undefined && dropdown_value == 'red' && dropdown_value != '') {
-                  console.log("2dropdown value cuirrent is " + dropdown_value)
-                  console.log("red_group right now = " + red_group);
+              } if (red_group != undefined && dropdown_value == 'red' && dropdown_value != '') {
                   $(".selected-map").attr("red_group", red_group + ", " + pid);
                   dropdown_value = ''
               }
+
+              //Blue cases
+              if(blue_group == undefined && dropdown_value == 'blue') {
+                  $(".selected-map").attr("blue_group", pid);
+                  dropdown_value = ''
+              } if (blue_group != undefined && dropdown_value == 'blue' && dropdown_value != '') {
+                  $(".selected-map").attr("blue_group", blue_group + ", " + pid);
+                  dropdown_value = ''
+              }
+
+              //Green cases
+              if(green_group == undefined && dropdown_value == 'green') {
+                  $(".selected-map").attr("green_group", pid);
+                  dropdown_value = ''
+              } if (green_group != undefined && dropdown_value == 'green' && dropdown_value != '') {
+                  $(".selected-map").attr("green_group", green_group + ", " + pid);
+                  dropdown_value = ''
+              }
+
+              //Yellow cases
+              if(yellow_group == undefined && dropdown_value == 'yellow') {
+                  $(".selected-map").attr("yellow_group", pid);
+                  dropdown_value = ''
+              } if (yellow_group != undefined && dropdown_value == 'yellow' && dropdown_value != '') {
+                  $(".selected-map").attr("yellow_group", yellow_group + ", " + pid);
+                  dropdown_value = ''
+              }
+
+              //Orange cases
+              if(orange_group == undefined && dropdown_value == 'orange') {
+                  $(".selected-map").attr("orange_group", pid);
+                  dropdown_value = ''
+              } if (orange_group != undefined && dropdown_value == 'orange' && dropdown_value != '') {
+                  $(".selected-map").attr("orange_group", orange_group + ", " + pid);
+                  dropdown_value = ''
+              }
+
+
           })
       }
 
