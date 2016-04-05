@@ -35,9 +35,9 @@ drs_page_load_wait = 14
 def create_driver():
     try:
         #For headless Unix Testing, will not work on Windows as XVFB is not supported
-        global display
-        display = Display(visible=0, size=(800, 600))
-        display.start()
+        #global display
+        #display = Display(visible=0, size=(800, 600))
+        #display.start()
         global driver
         driver = webdriver.Chrome()
         driver.set_window_size(1280,720)
@@ -48,7 +48,7 @@ def create_driver():
 def close_driver_and_display():
     try:
         driver.quit()
-        display.stop()
+        #display.stop()
     except Exception,e:
         print("Error produced when closing driver and display.")
         print(e)

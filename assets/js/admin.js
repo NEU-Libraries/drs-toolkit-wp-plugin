@@ -408,7 +408,7 @@
          $(".drstk-map-metadata input[type='checkbox']:checked").each(function(){
              metadata.push($(this).attr('name'));
          });
-         if (metadata.length > 0) {shortcode += ' metadata="'+metadata+'"';}
+         if (metadata.length > 0) {shortcode += ' metadata="'+metadata+'" ';}
          var red_group = $(".selected-"+type).attr('red_group')
          var blue_group = $(".selected-"+type).attr('blue_group')
          var green_group = $(".selected-"+type).attr('green_group')
