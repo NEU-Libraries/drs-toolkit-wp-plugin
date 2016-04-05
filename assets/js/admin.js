@@ -21,7 +21,7 @@
    search_params.q = '';
    search_params.page = 1;
    if (id == 6){
-     $("#TB_ajaxContent #tabs-6").html('<h4>Timeline</h4><br/><label for="search">Search for timeline item: </label><input type="text" name="search" id="search-timeline" /><button class="themebutton" id="search-button-timeline">Search</button><br/><button class="zoom-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden zoom-options"><label for="drstk-timeline-align">Image Alignment<select id="drstk-timeline-align" name="drstk-timeline-align"><option value="left">Left</option><option value="right">Right</option><option value="center">Center</option></select></label><br/><label for="drstk-timeline-caption-align">Caption Alignment<select id="drstk-timeline-caption-align" name="drstk-timeline-caption-align"><option value="left">Left</option><option value="right">Right</option><option value="center" selected="selected">Center</option></select></label><br/><label for="drstk-timeline-image-size">Image Size<select name="drstk-timeline-image-size" id="drstk-timeline-image-size"><option value="1">Largest side is 85px</option><option value="2">Largest side is 170px</option><option value="3">Largest side is 340px</option><option value="4" selected="selected">Largest side is 500px</option><option value="5">Largest side is 1000px</option></select></label><br/><label for="drstk-timeline-zoom"><input id="drstk-timeline-zoom" name="drstk-timeline-zoom" value="yes" type="checkbox" />Enable zoom</label><br/><label for="drstk-timeline-zoom-inner"><input id="drstk-timeline-zoom-inner" name="drstk-timeline-zoom-inner" value="yes" type="checkbox" />Zoom inside image</label><br/><label for="drstk-timeline-zoom-window">Zoom position (outside image)<select name="drstk-timeline-zoom-window" id="drstk-timeline-zoom-window"><option value="0">Select Position</option><option value="1">Top Right</option><option value="2">Middle Right</option><option value="3">Bottom Right</option><option value="4">Bottom Corner Right</option><option value="5">Under Right</option><option value="6">Under Middle</option><option value="7">Under Left</option><option value="8">Bottom Corner Left </option><option value="9">Bottom Left</option><option value="10">Middle Left</option><option value="11">Top Left</option><option value="12">Top Corner Left</option><option value="12">Above Left</option><option value="14">Above Middle</option><option value="15">Above Right</option><option value="16">Top Right Corner</option></select><br><i>Recommended and Default position:Top Right</i></div><hr/><div class="item-metadata"></div><div class="drs-items"></div><ol id="sortable-timeline-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-timeline" />');
+     $("#TB_ajaxContent #tabs-6").html('<h4>Timeline</h4><br/><label for="search">Search for timeline item: </label><input type="text" name="search" id="search-timeline" /><button class="themebutton" id="search-button-timeline">Search</button><br/><button class="zoom-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden zoom-options"><label for="drstk-timeline-start-date-boundary">Start Date Boundary<input type="text" placeholder="year eg:1960" id="start-date-boundary"></label><br/><label for="drstk-timeline-end-date-boundary">End Date Boundary<input type="text" placeholder="year eg:2000" id="end-date-boundary"></label><br/><i>Configuration for Timeline Feature</i></div><hr/><div class="item-metadata"></div><div class="drs-items"></div><ol id="sortable-timeline-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-timeline" />');
      get_updated_items(search_params, 'timeline');
    }
    if (id == 5){
@@ -300,6 +300,7 @@
      e.preventDefault();
      var type = $(this).attr("id").split("_")[2];
      var shortcode = '';
+     var timeline_bool = true;
      if(type == 'gallery'){
       var slides = $(".selected-"+type).val();
        shortcode = '[drstk_gallery id="'+slides+'"';
@@ -422,12 +423,59 @@
         shortcode += ']\n';
      }
      if(type == 'timeline'){
-        var timelineValue = $(".selected-"+type).val();
+		 var start_date = $("#start-date-boundary").val();
+		 var end_date = $("#end-date-boundary").val();		 
+		 var timelineValue = $(".selected-"+type).val();
+		 
+		 if((start_date != '') || (end_date != '')){
+			 
+			 console.log(isNumeric(start_date) )
+			 console.log(isNumeric(end_date))
+			 if((isNumeric(start_date) && isNumeric(end_date))){
+				 
+				var key_date_list = [];				
+				var itemList = timelineValue.split(",").forEach(function(neuid){
+					$.ajax({
+					 async: false,
+					 url: ajaxurl,
+					 data: {
+					 'action':'get_json_data_from_neu_item',
+					 'item' : neuid.trim()
+					 },
+					 success:function(data) {
+						 var itemName = Object.keys(data.breadcrumbs)[1];
+						 var key_date_year = Object.keys(data.key_date)[0].split("/")[0];
+						 key_date_list.push({year:key_date_year, name:data.breadcrumbs[itemName]});
+					 },
+					 error: function(errorThrown){
+						 console.log(errorThrown);
+					 }
+					});
+				});				
+				key_date_list.forEach(function(each_key){			
+					if(each_key.year < start_date || each_key.year > end_date){
+						timeline_bool = false;
+						alert("The corresponding item : '" + each_key.name + "' is out of the specified boundary dates");
+					}			
+				});
+			}
+			else{
+				timeline_bool = false;
+				alert("The Start Date or End Date is not numeric");
+			}
+		}
         shortcode = '[drstk_timeline id="'+timelineValue+'"';
         shortcode += ']\n';
-     }
-    window.wp.media.editor.insert(shortcode);
+     
+	}
+	 if(timeline_bool){
+		 window.wp.media.editor.insert(shortcode);
+	 }
    })
+   
+   function isNumeric(n) {
+	  return !isNaN(parseFloat(n)) && isFinite(n);
+	}
 
    //enables settings toggle
    $("body").on("click", "button[class*='-options']", function(e){
