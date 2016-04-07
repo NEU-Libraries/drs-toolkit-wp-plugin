@@ -1,6 +1,7 @@
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
 import inspect
 import time
 
@@ -31,6 +32,13 @@ wordpress_url = "http://52.33.56.123/wp-login.php"
 
 #DRS Wait tile for index to populate
 drs_page_load_wait = 14
+
+#Leaflet API Key
+leaflet_api_key = "pk.eyJ1IjoiZGhhcmFtbWFuaWFyIiwiYSI6ImNpbTN0cjJmMTAwYmtpY2tyNjlvZDUzdXMifQ.8sUclClJc2zSBNW0ckJLOg"
+
+
+#Leaflet Project Key
+leaflet_project_key = "dharammaniar.pfnog3b9"
 
 def create_driver():
     try:
@@ -229,6 +237,127 @@ def test10():
          print inspect.stack()[0][3] + " Failed with the following message:"
          print(e)
 
+#Tests for Sprint 3
+def test11():
+    try:
+        print("Testing to make sure legend descriptions are generated.")
+        wp_add_page()
+        driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='tabs-5']/button[2]").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='redlegend']").send_keys("red legend")
+        driver.find_element_by_xpath("//*[@id='bluelegend']").send_keys("blue legend")
+        driver.find_element_by_xpath("//*[@id='greenlegend']").send_keys("green legend")
+        driver.find_element_by_xpath("//*[@id='yellowlegend']").send_keys("yellow legend")
+        driver.find_element_by_xpath("//*[@id='orangelegend']").send_keys("orange legend")
+        driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
+        print("PASS")
+        close_driver_and_display()
+    except Exception, e:
+        print inspect.stack()[0][3] + " Failed with the following message:"
+        print(e)
+
+def test12():
+    try:
+        print("Testing to make sure you can set map display information.")
+        wp_add_page()
+        driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='tabs-5']/button[2]").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='tabs-5']/div[1]/div/label[1]/input").click()
+        driver.find_element_by_xpath("//*[@id='tabs-5']/div[1]/div/label[2]/input").click()
+        driver.find_element_by_xpath("//*[@id='tabs-5']/div[1]/div/label[3]/input").click()
+        driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
+        print("PASS")
+        close_driver_and_display()
+    except Exception, e:
+        print inspect.stack()[0][3] + " Failed with the following message:"
+        print(e)
+
+def test13():
+    try:
+        print("Testing to make sure you can set the color for selected items.")
+        wp_add_page()
+        driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").send_keys(Keys.ARROW_DOWN)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").send_keys(Keys.ENTER)
+        driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
+        print("PASS")
+        close_driver_and_display()
+    except Exception, e:
+        print inspect.stack()[0][3] + " Failed with the following message:"
+        print(e)
+
+def test14():
+    try:
+        print("Testing to make sure you can set the API Key.")
+        wp_login()
+        driver.get("http://52.33.56.123/wp-admin/options-general.php?page=drstk_admin_menu")
+        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[2]/td/input").clear()
+        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[2]/td/input").send_keys(leaflet_api_key)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='submit']").submit()
+        time.sleep(drs_page_load_wait)
+        print("PASS")
+        close_driver_and_display()
+    except Exception, e:
+        print inspect.stack()[0][3] + " Failed with the following message:"
+        print(e)
+
+        def test14():
+            try:
+                print("Testing to make sure you can set the Project Key.")
+                wp_login()
+                driver.get("http://52.33.56.123/wp-admin/options-general.php?page=drstk_admin_menu")
+                driver.find_element_by_xpath(
+                    "//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[2]/td/input").clear()
+                driver.find_element_by_xpath(
+                    "//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[3]/td/input").send_keys(leaflet_project_key)
+                time.sleep(drs_page_load_wait)
+                driver.find_element_by_xpath("//*[@id='submit']").submit()
+                time.sleep(drs_page_load_wait)
+                print("PASS")
+                close_driver_and_display()
+            except Exception, e:
+                print inspect.stack()[0][3] + " Failed with the following message:"
+                print(e)
+
+
+def test15():
+    try:
+        print("Testing to make sure you can select an item, legend, color and metadata and it will generate the shortcode.")
+        wp_add_page()
+        driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").send_keys(Keys.ARROW_DOWN)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").send_keys(Keys.ENTER)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='tabs-5']/button[2]").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='redlegend']").send_keys("red legend")
+        driver.find_element_by_xpath("//*[@id='tabs-5']/div[1]/div/label[1]/input").click()
+        driver.find_element_by_xpath("//*[@id='tabs-5']/div[1]/div/label[2]/input").click()
+        driver.find_element_by_xpath("//*[@id='tabs-5']/div[1]/div/label[3]/input").click()
+        driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
+        print("PASS")
+        close_driver_and_display()
+    except Exception, e:
+        print inspect.stack()[0][3] + " Failed with the following message:"
+        print(e)
+
 def testsuite_sprint2():
     print("Running Test Suite for Sprint 2...")
     test1()
@@ -242,4 +371,14 @@ def testsuite_sprint2():
     test9()
     test10()
 
-testsuite_sprint2()
+def testsuite_spring3():
+    print("Running Test Suite for Sprint 3...")
+    test11()
+    test12()
+    test13()
+    test14()
+    test15()
+
+#testsuite_sprint2()
+
+testsuite_spring3()
