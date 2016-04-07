@@ -1,6 +1,5 @@
 jQuery(document).ready(function($) {
 
-
     var apiKey = getApiKey($('#map'));
     var projectKey = getProjectKey($('#map'));
 
@@ -11,15 +10,17 @@ jQuery(document).ready(function($) {
 
     var mymap = createMap('map');
 
-    addTileLayerToMap(mymap, apiKey, projectKey);
-
-    addPopupsToItems(items, mymap, colorGroups);
-
     var bounds = getBoundsForMap(items);
 
     mymap.fitBounds(bounds);
 
+    addTileLayerToMap(mymap, apiKey, projectKey);
+
+    var markerCluster = addPopupsToItems(items, mymap, colorGroups);
+
     addLegendToMap(colorDescriptions, mymap);
+
+    addStoryModeToMap(items, mymap, markerCluster, bounds);
 
 });
 
@@ -77,23 +78,11 @@ function addLegendToMap(colorDescriptions, mymap) {
     var box = L.control.messagebox().addTo(mymap);
     var legendHtml = '<table style="margin-top: 0px; margin-bottom: 0px">';
 
-    /*legendHtml += '<tr><td style="background: #F44336">' + colorDescriptions.red + '</td></tr>';
-    legendHtml += '<tr><td style="background: #2196F3">' + colorDescriptions.blue + '</td></tr>';
-    legendHtml += '<tr><td style="background: #4CAF50">' + colorDescriptions.green + '</td></tr>';
-    legendHtml += '<tr><td style="background: #FFEB3B">' + colorDescriptions.yellow + '</td></tr>';
-    legendHtml += '<tr><td style="background: #FF9800">' + colorDescriptions.orange + '</td></tr>';*/
-
-    legendHtml += '<tr><td style="background: #F44336">   </td><td>' + colorDescriptions.red + '</td></tr>';
-    legendHtml += '<tr><td style="background: #2196F3">   </td><td>' + colorDescriptions.blue + '</td></tr>';
-    legendHtml += '<tr><td style="background: #4CAF50">   </td><td>' + colorDescriptions.green + '</td></tr>';
-    legendHtml += '<tr><td style="background: #FFEB3B">   </td><td>' + colorDescriptions.yellow + '</td></tr>';
-    legendHtml += '<tr><td style="background: #FF9800">   </td><td>' + colorDescriptions.orange + '</td></tr>';
-
-    /*legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-red-icon.png"> </td><td>' + colorDescriptions.red + '</td></tr>';
+    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-red-icon.png"> </td><td>' + colorDescriptions.red + '</td></tr>';
     legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon.png"></td><td>' + colorDescriptions.blue + '</td></tr>';
     legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-green-icon.png"></td><td>' + colorDescriptions.green + '</td></tr>';
     legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-yellow-icon.png"></td><td>' + colorDescriptions.yellow + '</td></tr>';
-    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-orange-icon.png"></td><td>' + colorDescriptions.orange + '</td></tr>';*/
+    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-orange-icon.png"></td><td>' + colorDescriptions.orange + '</td></tr>';
 
     legendHtml += '</table>';
 
@@ -164,7 +153,7 @@ function getBoundsForMap(items) {
 
 function addPopupsToItems(items, map, colorGroups) {
     var markers = L.markerClusterGroup();
-
+    var markerArray = [];
 
     jQuery.each(items, function(index, item) {
 
@@ -259,8 +248,42 @@ function addPopupsToItems(items, map, colorGroups) {
         var popupContent = "<a href='" + item.url + "' target='_blank'>" + item.title + "</a><br/>" + item.metadata;
         marker.bindPopup(popupContent);
         markers.addLayer(marker);
+        markerArray.push(marker)
     });
     map.addLayer(markers);
+
+    return {
+        cluster: markers,
+        markerArray: markerArray
+    };
+}
+
+function addStoryModeToMap(items, map, markerCluster, bounds) {
+
+    var itemIndex = 0;
+
+    L.easyButton('fa-play', function(btn, map){
+        jQuery.each(items, function(key) {
+            if (key === itemIndex) {
+                map.setView(items[key].coordinates);
+                markerCluster.cluster.zoomToShowLayer(markerCluster.markerArray[key], function() {
+                    markerCluster.markerArray[key].openPopup();
+                });
+
+                itemIndex++;
+                if (itemIndex === items.length) {
+                    itemIndex = 0;
+                }
+
+                return false;
+            }
+        });
+    }).addTo(map);
+
+    L.easyButton('fa-globe', function(btn, map){
+        itemIndex = 0;
+        map.fitBounds(bounds);
+    }).addTo(map);
 }
 
 function addTileLayerToMap(map, apiKey, projectKey) {
