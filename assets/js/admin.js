@@ -21,7 +21,7 @@
    search_params.q = '';
    search_params.page = 1;
    if (id == 6){
-     $("#TB_ajaxContent #tabs-6").html('<h4>Timeline</h4><br/><label for="search">Search for timeline item: </label><input type="text" name="search" id="search-timeline" /><button class="themebutton" id="search-button-timeline">Search</button><br/><button class="zoom-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden zoom-options"><label for="drstk-timeline-start-date-boundary">Start Date Boundary<input type="text" placeholder="year eg:1960" id="start-date-boundary"></label><br/><label for="drstk-timeline-end-date-boundary">End Date Boundary<input type="text" placeholder="year eg:2000" id="end-date-boundary"></label><br/><label for="drstk-timeline-increments">Scale Increments</label><select name="drstk-timeline-increments" id="drstk-timeline-increments"><option value="0.5">0.5</option><option value="2">2</option><option value="5">5</option><option value="8">8</option><option value="13">13</option></select><br/><i>Note : Higher the Increment, more granular the dates</i><br/></div><hr/><div class="item-metadata"></div><div class="drs-items"></div><ol id="sortable-timeline-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-timeline" />');
+     $("#TB_ajaxContent #tabs-6").html('<h4>Timeline</h4><br/><label for="search">Search for timeline item: </label><input type="text" name="search" id="search-timeline" /><button class="themebutton" id="search-button-timeline">Search</button><br/><button class="zoom-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden zoom-options"><label for="drstk-timeline-start-date-boundary">Start Date Boundary<input type="text" placeholder="year eg:1960" id="start-date-boundary"></label><br/><label for="drstk-timeline-end-date-boundary">End Date Boundary<input type="text" placeholder="year eg:2000" id="end-date-boundary"></label><br/><label for="drstk-timeline-increments">Scale Increments</label><select name="drstk-timeline-increments" id="drstk-timeline-increments"><option value="0.5">0.5</option><option value="2">2</option><option value="5">5</option><option value="8">8</option><option value="13">13</option></select><br/><i>Note : Higher the Increment, more granular the dates</i><br/><label for="drstk-timeline-legend">Legend Description </br> Red <input type="text" id="timeline_redlegend"></br>Blue <input type="text" id="timeline_bluelegend"></br>Green <input type="text" id="timeline_greenlegend"></br>Yellow <input type="text" id="timeline_yellowlegend"></br>Orange <input type="text" id="timeline_orangelegend"></label></br></div><hr/><div class="item-metadata"></div><div class="drs-items"></div><ol id="sortable-timeline-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-timeline" />');
      get_updated_items(search_params, 'timeline');
    }
    if (id == 5){
@@ -99,7 +99,28 @@
               //alert(divid)
               //alert("Map is selected!")
               $("label[for='drstile-" + divid + "']").append(map_color_options);
-          }
+          } if ('timeline') {
+			  var timeline_color_options = "<p>Grouping:</p><select class='timeline_group_selection-"+divid+ "'><option value='please_select_option'>Please select a group</option><option value='red'>Red</option> <option value='blue'>Blue</option> <option value='green'>Green</option> <option value='yellow'>Yellow</option> <option value='orange'>Orange</option></select>"
+              $("label[for='drstile-" + divid + "']").append(timeline_color_options);
+		  }
+		  
+		  $("body").on("change","[class^='timeline_group_selection-" + divid + "']", function() {
+			  var timeline_dropdown_value = $(this).val();
+			  console.log(timeline_dropdown_value)
+			  var color_codes = ['red', 'blue', 'green', 'yellow', 'orange'];
+			  color_codes.forEach(function(color_code){
+					var current_color_group_attribute = color_code + "_group";
+					var current_group_value = $(".selected-timeline").attr(current_color_group_attribute);
+					if(current_group_value == undefined && timeline_dropdown_value == color_code){
+						$(".selected-timeline").attr(current_color_group_attribute, pid);
+						timeline_dropdown_value = '';
+					}else if(current_group_value != undefined && timeline_dropdown_value == color_code){
+						$(".selected-timeline").attr(current_color_group_attribute, current_group_value + ", " + pid);
+						timeline_dropdown_value = '';
+					}
+			  });
+		  })
+		  
           //When a user changes map dropdown
           $("body").on("change","[class^='map_group_selection-" + divid + "']", function() {
               console.log("Change triggered!");
@@ -426,11 +447,8 @@
 		 var start_date = $("#start-date-boundary").val();
 		 var end_date = $("#end-date-boundary").val();		 
 		 var timelineValue = $(".selected-"+type).val();
-		 
+		 var color_codes = ['red', 'blue', 'green', 'yellow', 'orange'];
 		 if((start_date != '') || (end_date != '')){
-			 
-			 console.log(isNumeric(start_date) )
-			 console.log(isNumeric(end_date))
 			 if((isNumeric(start_date) && isNumeric(end_date))){
 				 
 				var key_date_list = [];				
@@ -464,9 +482,28 @@
 				alert("The Start Date or End Date is not numeric");
 			}
 		}
-        shortcode = '[drstk_timeline id="'+timelineValue+'"';
-        shortcode += ' increments="'+$("#drstk-timeline-increments").val()+'"';
-        shortcode += ']\n';
+		shortcode = '[drstk_timeline id="'+timelineValue+'"';
+		shortcode += ' increments="'+$("#drstk-timeline-increments").val()+'" ';
+		var color_code_values = '';
+		var color_code_description = '';
+		color_codes.forEach(function(color_code){
+			 var color_code_group_attribute = color_code + '_group';
+			 var current_color_code_value = $(".selected-"+type).attr(color_code_group_attribute);
+			 var color_code_legend_id = '#timeline_' + color_code + 'legend';
+			 var current_color_code_description = $(color_code_legend_id).val();
+			 
+			 if(current_color_code_value != undefined){
+				 color_code_values += color_code + '_id="' + current_color_code_value +'" ';
+			 }
+			 if(current_color_code_description != ''){
+				 color_code_description += color_code + '_desc="' + current_color_code_description +'" ';
+			 }
+		 });
+		 if(color_code_values != '' && color_code_description != ''){
+			 shortcode += color_code_values;
+			 shortcode += color_code_description;
+		 }
+		shortcode += ']\n';
      
 	}
 	 if(timeline_bool){
