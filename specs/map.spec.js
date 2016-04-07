@@ -181,4 +181,38 @@ describe('Maps Unit Tests', function() {
             expect(urlExists($($('.coordinates')[0]))).toEqual(true);
         });
     });
+    describe('Function getColorDescriptions', function() {
+        beforeEach(function() {
+            loadFixtures('map.html');
+        });
+        it('returns empty object when color descriptions don\'t exist', function() {
+            expect(getColorDescriptions($('#map1'))).toEqual({});
+        });
+        it('returns object with the color descriptions as properties', function() {
+            expect(getColorDescriptions($('#map'))).toEqual({
+                red: 'Red Description',
+                blue: 'Blue Description',
+                green: 'Green Description',
+                yellow: 'Yellow Description',
+                orange: 'Orange Description'
+            });
+        });
+    });
+    describe('Function getColorGroups', function() {
+        beforeEach(function() {
+            loadFixtures('map.html');
+        });
+        it('returns empty object when color groups don\'t exist', function() {
+            expect(getColorGroups($('#map1'))).toEqual({});
+        });
+        it('returns object with the color groups as properties', function() {
+            expect(getColorGroups($('#map'))).toEqual({
+                red: 'neu:180455, neu:125675',
+                blue: 'neu:183764, neu:132100',
+                green: 'neu:132175',
+                yellow: 'neu:131795',
+                orange: 'neu:212654'
+            });
+        });
+    });
 });
