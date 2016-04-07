@@ -15,7 +15,7 @@
 
 
  //enables the tabs to get their content dynamically
- $("[id^=ui-id-]").on("click", function(e){
+ $("[id^=ui-id-]").on("click", function(e){ 
    var id = $(this).attr('id');
    id = id.substr(id.length - 1);
    search_params.q = '';
