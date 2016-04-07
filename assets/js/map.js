@@ -78,11 +78,11 @@ function addLegendToMap(colorDescriptions, mymap) {
     var box = L.control.messagebox().addTo(mymap);
     var legendHtml = '<table style="margin-top: 0px; margin-bottom: 0px">';
 
-    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-red-icon.png"> </td><td>' + colorDescriptions.red + '</td></tr>';
-    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon.png"></td><td>' + colorDescriptions.blue + '</td></tr>';
-    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-green-icon.png"></td><td>' + colorDescriptions.green + '</td></tr>';
-    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-yellow-icon.png"></td><td>' + colorDescriptions.yellow + '</td></tr>';
-    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-orange-icon.png"></td><td>' + colorDescriptions.orange + '</td></tr>';
+    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-red-icon.png" style="height:20px"> </td><td>' + colorDescriptions.red + '</td></tr>';
+    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon.png" style="height:20px"></td><td>' + colorDescriptions.blue + '</td></tr>';
+    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-green-icon.png" style="height:20px"></td><td>' + colorDescriptions.green + '</td></tr>';
+    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-yellow-icon.png" style="height:20px"></td><td>' + colorDescriptions.yellow + '</td></tr>';
+    legendHtml += '<tr><td><img src="./wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-orange-icon.png" style="height:20px"></td><td>' + colorDescriptions.orange + '</td></tr>';
 
     legendHtml += '</table>';
 
