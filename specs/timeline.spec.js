@@ -44,4 +44,50 @@ describe('Timeline Unit Tests', function() {
                 ]);
         });
     });
+    
+    describe('Function to check the null statement of Color Id retrieval', function () {
+        it('returns null when there is no input', function () {
+            expect(getcolorIdsData()).toEqual(null);
+        });
+    });
+    
+    describe('Function to check the null statement of Color Desc retrieval', function () {
+        it('returns null when there is no input', function () {
+            expect(getcolorDescData()).toEqual(null);
+        });
+    });
+    
+    describe('Function to check the null statement of Sorted Color Id retrieval', function () {
+        it('returns null when there is no input', function () {
+            expect(getSortedColorIdsData()).toEqual(null);
+        });
+    });
+    
+    describe('Function Color Id Retrieval', function () {
+        beforeEach(function() {
+            loadFixtures('timeline.html');
+        });
+        
+        it('returns timeline specific color id data with appropriate data parameter is passed - negative scenario', function() {
+            expect(getcolorIdsData($('#timeline-color-ids'))).not.toEqual(1961);
+        });
+        
+        it('returns timeline specific color id data with appropriate data parameter is passed - positive scenario', function() {
+            expect(getcolorIdsData($('#timeline-color-ids'))).toEqual({1961:'red', 1958:'blue'});
+        });
+    });
+    
+    describe('Function Color Desc Retrieval', function () {
+        beforeEach(function() {
+            loadFixtures('timeline.html');
+        });
+        
+        it('returns timeline specific color desc data with appropriate data parameter is passed - negative scenario', function() {
+            expect(getcolorIdsData($('#timeline-color-desc'))).not.toEqual(1961);
+        });
+        
+        it('returns timeline specific color desc data with appropriate data parameter is passed - positive scenario', function() {
+            expect(getcolorIdsData($('#timeline-color-desc'))).toEqual({ blue: 'blue description', red: 'red description' });
+        });
+    });
 });

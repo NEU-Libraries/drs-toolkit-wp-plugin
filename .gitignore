@@ -2,3 +2,4 @@
 */.DS_Store
 deploy.sh
 .idea/
+node_modules/

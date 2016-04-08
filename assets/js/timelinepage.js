@@ -4,11 +4,17 @@ jQuery(document).ready(function($) {
     
     var increments = $('#timeline-increments').data('increments');
     
-    var colorDescriptions = $('#timeline-color-desc').data();
+    //var colorDescriptions = $('#timeline-color-desc').data();
     
-    var colorIds = $('#timeline-color-ids').data();
+    var colorDescriptions = getcolorDescData($('#timeline-color-desc'));
     
-    var sortedColorIds = Object.keys(colorIds).sort(function(a,b){return colorIds[a]-colorIds[b]})
+    //var colorIds = $('#timeline-color-ids').data();
+    
+    var colorIds = getcolorIdsData($('#timeline-color-ids'));
+    
+    //var sortedColorIds = Object.keys(colorIds).sort(function(a,b){return colorIds[a]-colorIds[b]})
+    
+    var sortedColorIds = getSortedColorIdsData(colorIds);
     
     var options = {scale_factor:increments};
     
@@ -36,7 +42,6 @@ jQuery(document).ready(function($) {
 	 return items;
 	}
 	
-	
     function genericRetrieval(index, className, element){
 		
 		if(index == null || className == null || element == null){
@@ -56,4 +61,19 @@ jQuery(document).ready(function($) {
 			counter++;
 		 });
 		
+	}
+	
+	function getcolorIdsData(colorIdElement){
+		if(colorIdElement == null){return null;}
+		return colorIdElement.data();
+	}
+	
+	function getcolorDescData(colorDescElement){		
+		if(colorDescElement == null){return null;}
+		return (colorDescElement).data();
+	}
+
+	function getSortedColorIdsData(colorIdsElement){
+		if(colorIdsElement == null){return null;}
+		return Object.keys(colorIdsElement).sort(function(a,b){return colorIdsElement[a]-colorIdsElement[b]});
 	}
