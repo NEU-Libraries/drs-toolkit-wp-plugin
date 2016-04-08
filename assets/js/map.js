@@ -13,6 +13,9 @@ jQuery(document).ready(function($) {
     var bounds = getBoundsForMap(items);
 
     mymap.fitBounds(bounds);
+    if (items.length === 1) {
+        mymap.setZoom(13);
+    }
 
     addTileLayerToMap(mymap, apiKey, projectKey);
 
