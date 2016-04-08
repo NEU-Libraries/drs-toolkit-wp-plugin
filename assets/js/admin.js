@@ -99,14 +99,22 @@
               //alert(divid)
               //alert("Map is selected!")
               $("label[for='drstile-" + divid + "']").append(map_color_options);
-          } if ('timeline') {
-			  var timeline_color_options = "<p>Grouping:</p><select class='timeline_group_selection-"+divid+ "'><option value='please_select_option'>Please select a group</option><option value='red'>Red</option> <option value='blue'>Blue</option> <option value='green'>Green</option> <option value='yellow'>Yellow</option> <option value='orange'>Orange</option></select>"
-              $("label[for='drstile-" + divid + "']").append(timeline_color_options);
+          } if (type === 'timeline') {
+				var timeline_color_options = "<div id='timeline_div-"+divid+"'><p>Grouping:</p><select class='timeline_group_selection-"+divid+ "'><option value='please_select_option'>Please select a group</option><option value='red'>Red</option> <option value='blue'>Blue</option> <option value='green'>Green</option> <option value='yellow'>Yellow</option> <option value='orange'>Orange</option></select></div>";
+				if(!$(".timeline_group_selection-"+divid).is(':visible')){
+					$("label[for='drstile-" + divid + "']").append(timeline_color_options);
+				}
+				
+				if($(".timeline_group_selection-"+divid).is(':visible') && !$(this).is(":checked")){
+					console.log("It is visible")
+					console.log($("#timeline_div-"+divid))
+					$("#timeline_div-"+divid).remove();
+					$("#timeline_div-"+divid).remove();
+				}
 		  }
 		  
 		  $("body").on("change","[class^='timeline_group_selection-" + divid + "']", function() {
 			  var timeline_dropdown_value = $(this).val();
-			  console.log(timeline_dropdown_value)
 			  var color_codes = ['red', 'blue', 'green', 'yellow', 'orange'];
 			  color_codes.forEach(function(color_code){
 					var current_color_group_attribute = color_code + "_group";
