@@ -94,19 +94,6 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
 If you would like breadcrumbs on single pages/posts (not drs items) that reflect hierarchy, simply drag and drop the pages in the wp-admin pages screen to nest.
 
 ---
-If you have trouble with the loading DRS content after initial install. Here are a few things to check:
-
-* Check to make sure you have mod_rewrite enable (enable (`a2enmod rewrite`) and apache2/httpd restart(`sudo service apache2 restart`)). If you aren't sure if mod_rewrite is enabled, check `phpinfo()`
-
-* Make sure the apache conf settings are correct. For your WP directory, you must have `Options FollowSymlinks` and `AllowOverride FileInfo` or `AllowOverride All`
-
-* Make sure php5-curl library is installed. `sudo apt-get install php5-curl` and `sudo service apache2 restart`
-
-* Check to make sure permalink settings are on and correct (ie. no index.php inside the path). If saving/resaving permalink settings does not work, make sure your .htaccess file in the root directory of your WP install is present and writable. For more on permalinks see [https://codex.wordpress.org/Using_Permalinks](https://codex.wordpress.org/Using_Permalinks).
-
-* Check File permissions. In general WP directories should be 775 and files should be 664, with the exception of wp-config.php which should be 660. See [https://www.smashingmagazine.com/2014/05/proper-wordpress-filesystem-permissions-ownerships/](https://www.smashingmagazine.com/2014/05/proper-wordpress-filesystem-permissions-ownerships/) for more info.
-
----
 Optional Steps for Updating
 
 1. Install [Composer](https://getcomposer.org) ([Install Directions](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx))
