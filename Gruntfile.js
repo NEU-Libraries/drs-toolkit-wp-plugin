@@ -10,7 +10,11 @@ module.exports = function(grunt) {
                     'assets/js/jwplayer/jwplayer.js',
                     'node_modules/jasmine-jquery/lib/jasmine-jquery.js'
                 ],
-                specs : 'specs/**/*.js'
+                specs : 'specs/**/*.js',
+                junit: {
+                    path: './specs/results/',
+                    consolidate: true
+                }
             }
         }
     });
