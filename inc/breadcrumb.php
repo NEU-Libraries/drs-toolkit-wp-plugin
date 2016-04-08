@@ -11,6 +11,7 @@ function breadcrumb_ajax_handler() {
     }
     $data = get_response($url);
     $data = json_decode($data, true);
-    $data['site_url'] = site_url();
+    $data['home_url'] = drstk_home_url();
     wp_send_json(json_encode($data));
+    wp_die();
 }

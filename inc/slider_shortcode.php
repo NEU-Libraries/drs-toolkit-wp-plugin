@@ -3,7 +3,7 @@
 add_shortcode( 'drstk_gallery', 'drstk_gallery' );
 function drstk_gallery( $atts ){
   global $errors;
-  $cache = get_transient(md5('PREFIX'.serialize($atts)));
+  $cache = get_transient(md5('DRSTK'.serialize($atts)));
 
   if($cache) {
       return $cache;
@@ -14,17 +14,18 @@ function drstk_gallery( $atts ){
     $height = $width = 0;
     $i = 0;
    foreach($images as $id){
-       $url = "https://repository.library.northeastern.edu/api/v1/files/" . $id;
+       $url = "https://repository.library.northeastern.edu/api/v1/files/" . $id . "?solr_only=true";
        $data = get_response($url);
        $data = json_decode($data);
+       $data = $data->_source;
        if (!isset($data->error)){
-         $pid = $data->pid;
+        $pid = $data->id;
          if (isset($atts['image-size'])){
            $num = $atts['image-size']-1;
          } else {
            $num = 4;
          }
-         $thumbnail = $data->thumbnails[$num];
+         $thumbnail = "http://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
          $this_height = getimagesize($thumbnail);
          $this_height = $this_height[1];
          if ($this_height > $height){
@@ -35,12 +36,12 @@ function drstk_gallery( $atts ){
          if ($this_width > $width){
            $width = $this_width;
          }
-         $title = $data->mods->Title[0];
+        $title = $data->full_title_ssi;
          $img_html .= "<div class='item";
          if ($i == 0){
            $img_html .= " active";
          }
-         $img_html .= "'><a href='".site_url()."/item/".$pid."'><img";
+         $img_html .= "'><a href='".drstk_home_url()."item/".$pid."'><img";
          if ($i == 0){
            $img_html .= " src='".$thumbnail."'";
          } else {
@@ -52,10 +53,16 @@ function drstk_gallery( $atts ){
            if (isset($atts['metadata'])){
              $metadata = explode(",",$atts['metadata']);
              foreach($metadata as $field){
-               if (isset($data->mods->$field)){
-                 $this_field = $data->mods->$field;
-                 if (isset($this_field[0])){
-                   $img_metadata .= $this_field[0] . "<br/>";
+                if (isset($data->$field)){
+                  $this_field = $data->$field;
+                 if (isset($this_field)){
+                   if (is_array($this_field)){
+                     foreach($this_field as $val){
+                       $img_metadata .= $val ."<br/>";
+                     }
+                   } else {
+                     $img_metadata .= $this_field . "<br/>";
+                   }
                  }
                }
              }
@@ -69,20 +76,27 @@ function drstk_gallery( $atts ){
              if (isset($atts['caption-position'])){
                $img_html .= "; position:".$atts['caption-position'];
              }
+             if (isset($atts['caption-width']) && $atts['caption-width'] == "100%"){
+               $img_html .= "; width:".$atts['caption-width'];
+             }
              $img_html .= "'";
            }
-           $img_html .= "><a href='".site_url()."/item/".$pid."'>".$img_metadata."</a></div>";
-           $img_html .= "<div class=\"hidden\">";
-           $meta = $data->mods;
-           foreach($meta as $field){
-             if (is_array($field)){
-               foreach($field as $field_val){
-                 $img_html .= $field_val . "<br/>";
-               }
-             } else {
-               $img_html .= $field[0] . "<br/>";
-             }
+           if (isset($atts['caption-width']) && $atts['caption-width'] != "100%"){
+             $img_html .= " data-caption-width='image'";
            }
+           $img_html .= "><a href='".drstk_home_url()."item/".$pid."'>".$img_metadata."</a></div>";
+           $img_html .= "<div class=\"hidden\">";
+            foreach($data as $key=>$field){
+              if ($key != "all_text_timv" && $key != "object_profile_ssm"){
+                if (is_array($field)){
+                  foreach($field as $key=>$field_val){
+                    $img_html .= $field_val . "<br/>";
+                  }
+                } else {
+                  $img_html .= $field . "<br/>";
+                }
+              }
+            }
            $img_html .= "</div>";
          }
          $img_html .= "</div>";
@@ -128,7 +142,7 @@ function drstk_gallery( $atts ){
    $gallery_html .= '</div>';
    $cache_output = $gallery_html;
    $cache_time = 1000;
-   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
+   set_transient(md5('DRSTK'.serialize($atts)) , $cache_output, $cache_time * 60);
    return $gallery_html;
   }
 }

@@ -11,6 +11,7 @@ jQuery(document).ready(function($) {
   var search_options = browse_obj.search_options;
   var browse_options = browse_obj.browse_options;
   var facets_to_display = browse_obj.facets_to_display;
+  var niec_facets = 'niec_facets_to_display' in browse_obj ? browse_obj.niec_facets_to_display : null;
   if ((q) && (q != '')){
     $("#drs-selection").show();
     $("#drs-selection a[data-type='q']").remove();
@@ -27,8 +28,12 @@ jQuery(document).ready(function($) {
   if (template == 'search'){
     $("#primary").removeClass('col-md-12').addClass('col-md-9');
     $("#secondary").show();
+  } else if (template == 'browse') {
+    params.sort = browse_obj.default_sort;
+    $("#primary").addClass('col-md-12').removeClass('col-md-9');
+    $("#secondary").hide();
   } else {
-    params.sort = "title_ssi+asc";
+    params.sort = "title_ssi%20asc";
     $("#primary").addClass('col-md-12').removeClass('col-md-9');
     $("#secondary").hide();
   }
@@ -39,17 +44,18 @@ jQuery(document).ready(function($) {
   function get_data(params){
     var errors = $.parseJSON(browse_obj.errors);
     $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-spin'></span></h2>").show();
-    $.post(browse_obj.ajax_url, {
-       _ajax_nonce: browse_obj.nonce,
-        action: "get_browse",
-        params: params,
-
-    }, function(data) {
-      // console.log(params)
+    $.ajax({
+        type: 'POST',
+        url: browse_obj.ajax_url,
+        data: {
+          _ajax_nonce: browse_obj.nonce,
+           action: "get_browse",
+           params: params,
+        },
+    success: function(data)
+     {
       $("#drs-loading").hide();
-      // console.log(data);
         var data = $.parseJSON(data);
-        // console.log(data);
         if (data == null) {
           $("#drs-content").html(errors.search.fail_null);
         } else if (data == -1){
@@ -71,9 +77,11 @@ jQuery(document).ready(function($) {
         } else {
           $("#drs-content").html(errors.search.no_results);
         }
-    }).fail(function() {
+    }, error: function()
+    {
       $("#drs-content").html("<div class='alert error alert-error'>"+errors.search.fail_null+"</div>");
-    });
+    }
+  });
   }
 
   //parses pagination data
@@ -81,6 +89,7 @@ jQuery(document).ready(function($) {
     $("#drs-item-count").html("<h6>Displaying " + data.start + " to " + data.end + " of " + data.total_count + "</h6>");
     $("#drs-per-page-div").html("<h6>Show <select id='drs-per-page'><option val='10'>10</option><option val='20'>20</option><option val='50'>50</option></select> per page</h6>");
     $("#drs-per-page").val(params.per_page);
+    $("#drs-sort-option").val(params.sort);
     if (data.num_pages > 1) {
       var pagination = "<li class='";
       if (data.current_page > 1){
@@ -129,7 +138,16 @@ jQuery(document).ready(function($) {
   //parses facet data
   function facetize(data){
     var facet_html = '';
-    $.each(facets_to_display, function(facet, title){
+    facet_html = parse_facets(data, facets_to_display, facet_html);
+    if (niec_facets != null){
+      facet_html = parse_facets(data, niec_facets, facet_html);
+    }
+    $("#drs-facets").html(facet_html);
+    $("#drs-facets").before("<button class='themebutton button btn visible-phone hidden-tablet hidden-desktop drs-facet-toggle hidden-md hidden-lg visible-sm visible-xs'>Show Facets</button>");
+  }//end facetize
+
+  function parse_facets(data, object, facet_html){
+    $.each(object, function(facet, title){
       var facet_name = title;
       var facet_values = '';
       if (Object.keys(data.facet_fields[facet]).length > 0) {
@@ -165,9 +183,8 @@ jQuery(document).ready(function($) {
         facet_html += "</div></div></div>";
       }
     });
-    $("#drs-facets").html(facet_html);
-    $("#drs-facets").before("<button class='themebutton button btn visible-phone hidden-tablet hidden-desktop drs-facet-toggle hidden-md hidden-lg visible-sm visible-xs'>Show Facets</button>");
-  }//end facetize
+    return facet_html;
+  }
 
   //parses actual results
   function resultize(data){
@@ -176,6 +193,8 @@ jQuery(document).ready(function($) {
     $.each(data.docs, function(doc, doc_vals){
       var title, abstract, creator, date, klass = '';
       var thumbnail = [];
+      var home_url = browse_obj.home_url;
+      var this_doc_url;
       doc_vals.full_title_ssi? title = doc_vals.full_title_ssi : "";
       doc_vals.abstract_tesim? abstract = doc_vals.abstract_tesim : "";
       doc_vals.creator_tesim? creator = doc_vals.creator_tesim : "";
@@ -184,14 +203,14 @@ jQuery(document).ready(function($) {
       doc_vals.active_fedora_model_ssi? klass = doc_vals.active_fedora_model_ssi : "";
       if (klass == 'CoreFile'){klass = get_short_name(doc_vals.canonical_class_tesim);}
       if (doc_vals.active_fedora_model_ssi == 'Collection') {
-        this_doc_url = '/collection/' + doc_vals.id;
+        this_doc_url = home_url + 'collection/' + doc_vals.id;
       } else if (doc_vals.active_fedora_model_ssi == 'CoreFile') {
-        this_doc_url = '/item/' + doc_vals.id;
+        this_doc_url = home_url + 'item/' + doc_vals.id;
       }
       var this_doc = '';
       if (template == 'search'){
         //search = grid
-        this_doc += "<div class='drs-item search panel panel-default'><div class='panel-body'><div class='one_fourth col-sm-3'><figure><a href='"+browse_obj.site_url+this_doc_url+"'>";
+        this_doc += "<div class='drs-item search panel panel-default'><div class='panel-body'><div class='one_fourth col-sm-3'><figure><a href='"+this_doc_url+"'>";
         if (thumbnail[1]) {
           this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
         } else {
@@ -199,10 +218,10 @@ jQuery(document).ready(function($) {
         }
         this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure></div><div class='three_fourth col-sm-9 last'>";
         if (search_options.indexOf('Title') > -1){
-          this_doc += "<h4 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>" + title + "</a></h4>";
+          this_doc += "<h4 class='drs-item-title'><a href='"+this_doc_url+"'>" + title + "</a></h4>";
         }
         if (creator && search_options.indexOf('Creator') > -1){
-          this_doc += "<h6>"+ creator + "</h6>";
+          this_doc += "<h6 class='drs-item-creator'>"+ creator + "</h6>";
         }
         if (abstract  && search_options.indexOf('Abstract') > -1){
           this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
@@ -210,7 +229,7 @@ jQuery(document).ready(function($) {
         if (date  && search_options.indexOf('Date') > -1){
           this_doc += "<p class='drs-item-date'>" + date + "</p>";
         }
-        this_doc += "<div class=''><a href='"+browse_obj.site_url+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";
+        this_doc += "<div class=''><a href='"+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";
       } else {
         //browse = tile
         this_doc += "<div class='drs-item browse one_third ";
@@ -219,29 +238,26 @@ jQuery(document).ready(function($) {
         } else {
           this_doc += "col-sm-4";
         }
-        this_doc += "'><div class='thumbnail'><figure><a href='"+browse_obj.site_url+this_doc_url+"'>";
+        this_doc += "'><div class='thumbnail'><figure><a href='"+this_doc_url+"'>";
         if (thumbnail[1]) {
           this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
         } else {
           this_doc += "<div class='fa fa-folder-open-o'></div>";
         }
-        this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure><div class='caption text-center'><h5 class='drs-item-title'><a href='"+browse_obj.site_url+this_doc_url+"'>";
+        this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure><div class='caption text-center'>";
         if (browse_options.indexOf('Title') > -1){
-          this_doc += title;
+          this_doc += "<h5 class='drs-item-title'><a href='"+this_doc_url+"'>"+title+"</a></h5>";
         }
-        this_doc += "</a></h5><h6 class='drs-item-creator'>";
         if (creator && browse_options.indexOf('Creator') > -1){
-          this_doc += creator;
+          this_doc += "<h6 class='drs-item-creator'>"+creator+"</h6>";
         }
-        this_doc += "</h6><p class='drs-item-abstract'>";
         if (abstract  && browse_options.indexOf('Abstract') > -1){
-          this_doc += abstract;
+          this_doc += "<p class='drs-item-abstract'>"+abstract+"</p>";
         }
-        this_doc += "</p><p class='drs-item-date'>";
         if (date  && browse_options.indexOf('Date') > -1){
-          this_doc += date;
+          this_doc += "<p class='drs-item-date'>"+date+"</p>";
         }
-        this_doc += "</p></div></div></div>";
+        this_doc += "</div></div></div>";
       }
       docs_html += this_doc;
     });
@@ -301,7 +317,7 @@ jQuery(document).ready(function($) {
 
   }
 
-  $("#drs-sort").html("<h6>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance</option><option value='full_title_ssi%20asc'>Title A-Z</option><option value='full_title_ssi%20desc'>Title Z-A</option><option value='creator_tesim%20asc'>Creator A-Z</option><option value='creator_tesim%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></h6>");
+  $("#drs-sort").html("<h6>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance</option><option value='title_ssi%20asc'>Title A-Z</option><option value='title_ssi%20desc'>Title Z-A</option><option value='creator_tesim%20asc'>Creator A-Z</option><option value='creator_tesim%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></h6>");
 
   $("#drs-sort-option").on("change", function() {
     params.sort = $(this).val();
@@ -315,10 +331,16 @@ jQuery(document).ready(function($) {
   });
 
   function titleize(str){
-    str = str.replace("_tesim","").replace("_sim","").replace("_ssim","");
-    str = str.replace("_", " ");
-    str = str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-    return str;
+    if (facets_to_display[str]){
+      return facets_to_display[str];
+    } else if (niec_facets[str]){
+      return niec_facets[str];
+    } else{
+      str = str.replace("_tesim","").replace("_sim","").replace("_ssim","");
+      str = str.replace("_", " ");
+      str = str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+      return str;
+    }
   }
 
   function GetURLParameter(url, sParam){
@@ -333,7 +355,6 @@ jQuery(document).ready(function($) {
   }
 
   function get_wp_data(query, page){
-    //console.log(query);
     if (template == 'search'){
       if (!page){
         page = 1;
@@ -352,7 +373,6 @@ jQuery(document).ready(function($) {
   			},
   			success: function(data)
   			{
-          // console.log(data);
           $("#secondary").html("<div class='panel panel-default'><div class='panel-heading'><b>Related Content</b></div><div class='panel-body'>"+data+"</div></div>");
           $("#secondary").addClass('drs-sidebar');
           $("#primary").addClass('drs-main');
@@ -366,7 +386,7 @@ jQuery(document).ready(function($) {
   			}
   		});
     } else {
-      //console.log("we're in browse silly");
+      //we are in browse
     }
   }
 

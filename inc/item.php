@@ -11,10 +11,44 @@ function get_item_details($data, $meta_options){
     return false;
   }
   $html = '';
-  foreach($data->mods as $key => $value){
-    if (($meta_options == NULL) || in_array($key, $meta_options)){
-      $html .= "<div class='drs-field-label'><b>".$key."</b></div><div class='drs-field-value'>";
-      if (count($value) > 0){
+  if (isset($data->mods)){ //mods
+    $html .= parse_metadata($data->mods, $meta_options, $html);
+  } else if (isset($data->_source)){//solr_only = true
+    $html .= parse_metadata($data->_source, $meta_options, $html, true);
+  }
+  $niec_facets = get_option('drstk_niec_metadata');
+  $niec_facets_to_display = array();
+  if (is_array($niec_facets)){
+    foreach($niec_facets as $facet){
+      $niec_facets_to_display[$facet] = drstk_get_facet_name($facet, true);
+    }
+  }
+  if (get_option('drstk_niec') == 'on' && count($niec_facets_to_display) > 0 && isset($data->niec)){
+    $html = parse_metadata($data->niec, $niec_facets_to_display, $html);
+  }
+  return $html;
+}
+
+function parse_metadata($data, $meta_options, $html, $solr=false){
+  if ($solr){//this is necessary to not use default solr ordering
+    $arr1 = (array) $data;
+    $arr2 = $meta_options;
+    $data = array();
+    foreach ($arr2 as $key=>$val) {
+      $data[$val] = $arr1[$val];
+    }
+  }
+
+  foreach($data as $key => $value){
+    if (($meta_options == NULL) || in_array($key, $meta_options) || array_key_exists($key, $meta_options)){
+      $html .= "<div class='drs-field-label'><b>";
+      if (!isset($meta_options[$key])){
+        $html .= titleize($key);
+      } else {
+        $html .= $meta_options[$key];
+      }
+      $html .= "</b></div><div class='drs-field-value'>";
+      if (is_array($value)){
         for ($i =0; $i<count($value); $i++){
           if (substr($value[$i], 0, 4) == "http"){
             $html .= '<a href="'.$value[$i].'" target="_blank">'.$value[$i].'</a>';
@@ -25,8 +59,6 @@ function get_item_details($data, $meta_options){
             $html .= "<br/> ";
           }
         }
-      } else if (is_array($value)) {
-        $html .= "";
       } else {
         $html .= $value;
       }
@@ -71,18 +103,18 @@ function get_item_breadcrumbs(){
   if (array_key_exists($collection,$breadcrumbs)){
     foreach($breadcrumbs as $pid=>$title){
       if ($pid == $item_pid){
-        $breadcrumb_html[]= "<a href='".site_url()."/item/".$pid."'> ".$title."</a>";
+        $breadcrumb_html[]= "<a href='".drstk_home_url()."item/".$pid."'> ".$title."</a>";
       } else if ($pid == $collection){
-        $breadcrumb_html[]= "<a href='".site_url()."/browse'>Browse</a>";
+        $breadcrumb_html[]= "<a href='".drstk_home_url()."browse'>Browse</a>";
         $end = true;
       } else if ($end == true) {
       } else {
-        $breadcrumb_html[]= "<a href='".site_url()."/collection/".$pid."'> ".$title."</a>";
+        $breadcrumb_html[]= "<a href='".drstk_home_url()."collection/".$pid."'> ".$title."</a>";
       }
     }
   } else {
-    $breadcrumb_html[]= "<a href='".site_url()."/item/".$item_pid."'> ".$data->mods->Title[0]."</a>";
-    $breadcrumb_html[] = "<a href='".site_url()."/browse'>Browse</a>";
+    $breadcrumb_html[]= "<a href='".drstk_home_url()."item/".$item_pid."'> ".$data->mods->Title[0]."</a>";
+    $breadcrumb_html[] = "<a href='".drstk_home_url()."browse'>Browse</a>";
   }
   echo implode(" > ", array_reverse($breadcrumb_html));
 }
@@ -97,78 +129,31 @@ function get_item_image(){
     $img = $data->thumbnails[count($data->thumbnails)-2];
   }
   if (isset($data->canonical_object)){
-    foreach($data->canonical_object as $key=>$val){
-      if ($val == 'Master Image'){
-        $zoom_img = $data->thumbnails[count($data->thumbnails)-1];
-        echo  '<img id="drs-item-img" src="'.$img.'" data-zoom-image="'.$zoom_img.'"/>';
-        echo '<script type="text/javascript"> jQuery("#drs-item-img").elevateZoom();</script>';
-      } else if ($val == 'PDF'){
-        if (isset($data->mods->Location) && strpos($data->mods->Location[0], "issuu") !== FALSE){
-          $location_href = explode("'", strval(htmlentities($data->mods->Location[0])));
-          if (count($location_href) == 1){
-            $location_href = explode('"', strval(htmlentities($data->mods->Location[0])));
-          }
-          $issu_id = explode('?',$location_href[1]);
-          $issu_id = explode('=',$issu_id[1]);
-          $issu_id = $issu_id[1];
-          echo '<div data-configid="'.$issu_id.'" style="width:100%; height:500px;" class="issuuembed"></div><script type="text/javascript" src="//e.issuu.com/embed.js" async="true"></script>';
-        } else {
-          echo  '<img id="drs-item-img" src="'.$img.'" />';
+    $val = current($data->canonical_object);
+    $key = key($data->canonical_object);
+    if ($val == 'Master Image'){
+      $zoom_img = $data->thumbnails[count($data->thumbnails)-1];
+      echo  '<img id="drs-item-img" src="'.$img.'" data-zoom-image="'.$zoom_img.'"/>';
+      echo '<script type="text/javascript"> jQuery("#drs-item-img").elevateZoom();</script>';
+    } else if ($val == 'PDF'){
+      if (isset($data->mods->Location) && strpos($data->mods->Location[0], "issuu") !== FALSE){
+        $location_href = explode("'", strval(htmlentities($data->mods->Location[0])));
+        if (count($location_href) == 1){
+          $location_href = explode('"', strval(htmlentities($data->mods->Location[0])));
         }
-      } else if ($val == 'Video File' || $val == 'Audio File'){
-        $av_pid = $key;
-        $av_pid = explode("/", $av_pid);
-        $av_pid = end($av_pid);
-        $encoded_av_pid = str_replace(':','%3A', $av_pid);
-        $av_dir = substr(md5("info:fedora/".$av_pid."/content/content.0"), 0, 2);
-        $av_type = "";
-        if ($data->thumbnails){
-          $av_poster = $data->thumbnails[3];
-        }
-        if ($val == 'Video File'){
-          $av_provider = 'video';
-          $av_type = "MP4";
-        }
-        if ($val == 'Audio File'){
-          $av_provider = 'sound';
-          $av_type = "MP3";
-        }
-        echo "<div id='drs-item-video'></div>";
-        echo '<script type="text/javascript">
-        jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A=="
-        var primary = "flash"
-        if (typeof swfobject == "undefined" || swfobject.getFlashPlayerVersion().major == 0) {
-          primary == "html5"
-        }
-        jwplayer("drs-item-video").setup({
-        sources:
-        [
-        { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"},
-        { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':" + "info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0" + "/playlist.m3u8", type:"'.$av_type.'"}
-        ],
-        image: "'.$av_poster.'",
-        provider: "'.$av_provider.'",
-        fallback: "true",
-        androidhls: "true",
-        primary: primary,
-        width: "100%",
-        height: 400,
-        })
-
-        var errorMessage = function() {
-          $("#drs-item-img").before("<div class=\'alert alert-warning\'>'.$errors['item']['jwplayer_fail'].'</div>");
-          $("#drs-item-img").show();
-          $("#drs-item-video").hide();
-        };
-       jwplayer().onError(errorMessage);
-       jwplayer().onSetupError(errorMessage);
-       jwplayer().onBuffer(function() {
-         theTimeout = setTimeout(function() {
-           errorMessage;
-         }, 5000);
-       });</script>';
+        $issu_id = explode('?',$location_href[1]);
+        $issu_id = explode('=',$issu_id[1]);
+        $issu_id = $issu_id[1];
+        echo '<div data-configid="'.$issu_id.'" style="width:100%; height:500px;" class="issuuembed"></div><script type="text/javascript" src="//e.issuu.com/embed.js" async="true"></script>';
+      } else {
+        echo  '<img id="drs-item-img" src="'.$img.'" />';
       }
+    } else if ($val == 'Video File' || $val == 'Audio File'){
+      print(insert_jwplayer($key, $val, $data, $img));
     }
+  } else {
+    //case where there is no canonical_objects set
+    echo  '<img id="drs-item-img" src="'.$img.'" />';
   }
   if (isset($data->page_objects)){
     $pages = $data->page_objects;
@@ -212,14 +197,14 @@ function get_associated_files(){
     // foreach($data->associated as $assoc_pid => $assoc_title){ //disabling multivalued associated files until a new less resource intensive api call for associated files exists
       $assoc_pid = key(get_object_vars($data->associated)); //using this just to get the first title
       $assoc_title = $data->associated->$assoc_pid; //using this just to get the first title
-      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $assoc_pid;
+      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $assoc_pid . "?solr_only=true";
       $assoc_data = get_response($url);
       $assoc_data = json_decode($assoc_data);
       if (check_for_bad_data($assoc_data)){
         return false;
       } else {
-        if (isset($assoc_data->thumbnails)){
-          $associated_html .= "<a href='".site_url()."/item/".$assoc_data->pid."'><img src='".$assoc_data->thumbnails[1]."'/></a>";
+        if (isset($assoc_data->_source->fields_thumbnail_list_tesim)){
+          $associated_html .= "<a href='".drstk_home_url()."item/".$assoc_data->_source->id."'><img src='https://repository.library.northeastern.edu".$assoc_data->_source->fields_thumbnail_list_tesim[1]."'/></a>";
         }
         $associated_html .= get_item_details($assoc_data, $assoc_meta_options);
       }
@@ -236,4 +221,81 @@ function check_for_bad_data($data){
   } else if (isset($data->error)) {
     return $errors['item']['no_results'];
   }
+}
+
+function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) {
+  global $errors;
+  $av_pid = explode("/", $av_pid);
+  $av_pid = end($av_pid);
+  $encoded_av_pid = str_replace(':','%3A', $av_pid);
+  $av_dir = substr(md5("info:fedora/".$av_pid."/content/content.0"), 0, 2);
+  $av_type = "";
+  if ($data->thumbnails){
+    $av_poster = $data->thumbnails[3];
+  }
+  if ($canonical_object_type == 'Video File'){
+    $av_provider = 'video';
+    $av_type = "MP4";
+  }
+  if ($canonical_object_type == 'Audio File'){
+    $av_provider = 'sound';
+    $av_type = "MP3";
+  }
+  $user_agent = $_SERVER['HTTP_USER_AGENT'];
+  if (stripos( $user_agent, 'Chrome') !== false){
+    $av_for_ext = $av_type;
+    $full_pid = "info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0";
+  } elseif (stripos( $user_agent, 'Safari') !== false) {
+    $av_for_ext = strtolower($av_type);
+    $full_pid = urlencode("info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0");
+  } else {
+    $av_for_ext = strtolower($av_type);
+    $full_pid = "info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0";
+  }
+
+  $numeric_pid = str_replace(":", "-", $av_pid);
+  $id_img = 'drs-item-img-'.$numeric_pid;
+  $id_video = 'drs-item-video-'.$numeric_pid;
+
+  $html = '<img id="'.$id_img.'" src="'.$drs_item_img.'" />';
+  $html .= '<div id="'.$id_video.'"></div>';
+  $html .= '<script type="text/javascript">
+  jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A==";
+  var primary = "flash";
+  if (typeof swfobject == "undefined" || swfobject.getFlashPlayerVersion().major == 0) {
+    primary = "html5";
+  }
+  jQuery(document).ready(function($){
+  $("#'.$id_img.'").hide();
+  jwplayer("'.$id_video.'").setup({
+    sources:
+    [
+    { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"},
+    { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':'.$full_pid.'/playlist.m3u8", type:"'.$av_for_ext.'"},
+    { file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.urlencode($full_pid).'", type:"'.strtolower($av_for_ext).'"}
+    ],
+    image: "'.$av_poster.'",
+    provider: "'.$av_provider.'",
+    fallback: "false",
+    androidhls: "true",
+    primary: primary,
+    width: "100%",
+    height: 400,
+  });
+
+  var errorMessage = function(e) {
+    $("#'.$id_img.'").before("<div class=\'alert alert-warning\'>'.$errors['item']['jwplayer_fail'].'<br /><strong>Error Message:</strong> "+e.message+"</div>");
+    $("#'.$id_img.'").show();
+    $("#'.$id_video.'").hide();
+  };
+  jwplayer().onError(errorMessage);
+  jwplayer().onSetupError(errorMessage);
+  jwplayer().onBuffer(function() {
+    theTimeout = setTimeout(function(e) {
+      errorMessage(e);
+    }, 5000);
+  });
+  });</script>';
+
+  return $html;
 }

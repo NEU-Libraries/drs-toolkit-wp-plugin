@@ -6,6 +6,7 @@ jQuery(document).ready(function($) {
 
 	$(window).on('load', function(){
 		fix_dimensions($('.carousel'));
+		fix_caption($('.carousel .item:first-of-type img'));
 	});
 
 	var cHeight = 0;
@@ -25,6 +26,9 @@ jQuery(document).ready(function($) {
 		if (typeof src !== "undefined" && src != "") {
 			$nextImage.attr('src', src)
 			$nextImage.data('src', '');
+			$nextImage.on('load', function(){
+				fix_caption($nextImage);
+			});
 		}
 	});
 
@@ -56,6 +60,13 @@ jQuery(document).ready(function($) {
 		if (carousel.data("max-width") > 0){
 			carousel.css("max-width", carousel.data("max-width"));
 			carousel.find(".carousel-inner, img").css("max-width", carousel.data("max-width"));
+		}
+	}
+
+	function fix_caption(image){
+		var caption = image.parents(".item").find(".carousel-caption");
+		if (typeof caption.attr('data-caption-width') !== typeof undefined && caption.attr('data-caption-width') !== false && caption.attr('data-caption-width') == 'image'){
+			caption.css("width", image.innerWidth());
 		}
 	}
 

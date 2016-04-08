@@ -4,7 +4,7 @@ jQuery(document).ready(function($) {
   var collection_pid = breadcrumb_obj.collection_pid;
   var params = {};
   var template = breadcrumb_obj.template;
-  var site_url = '';
+  var home_url = '';
   if (template == 'collection'){
     params = {pid:sub_collection_pid};
   }
@@ -19,7 +19,7 @@ jQuery(document).ready(function($) {
 
     }, function(data) {
         var data = $.parseJSON(data);
-        site_url = data.site_url;
+        home_url = data.home_url;
         if (data.error){
           $(".breadcrumbs").hide();
         }
@@ -36,8 +36,8 @@ jQuery(document).ready(function($) {
     var parent = '';
     var object_type = doc_vals.active_fedora_model_ssi;
     if (object_type == 'Collection'){
-      var object_url = '/collection/'+doc_vals.id;
-      $(".breadcrumbs").prepend(" / " + "<a href='"+site_url+object_url+"'>" + title + "</a>");
+      var object_url = 'collection/'+doc_vals.id;
+      $(".breadcrumbs").prepend(" / " + "<a href='"+home_url+object_url+"'>" + title + "</a>");
     }
 
     if (doc_vals.fields_parent_id_tesim) {
@@ -46,7 +46,7 @@ jQuery(document).ready(function($) {
         params.pid = parent;
         get_data(params);
       } else {
-        $(".breadcrumbs").prepend("<a href='"+site_url+"/browse'>Browse</a>");
+        $(".breadcrumbs").prepend("<a href='"+home_url+"browse/'>Browse</a>");
       }
     }
     if ((template == 'collection') && (doc_vals.id == sub_collection_pid)){
