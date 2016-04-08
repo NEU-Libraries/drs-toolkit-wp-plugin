@@ -1,6 +1,5 @@
 import inspect
 import time
-import webbrowser
 from pyvirtualdisplay import Display
 from selenium import webdriver
 
@@ -44,9 +43,7 @@ def create_driver():
         display = Display(visible=0, size=(800, 600))
         display.start()
         global driver
-        options = webdriver.ChromeOptions()
-        options.add_argument("--start-maximized")
-        driver = webdriver.Chrome(chrome_options=options)
+        driver = webdriver.Chrome()
     except Exception as e:
         print("Error produced when setting webdriver and/or XVFB display.")
         print(e)
@@ -68,7 +65,7 @@ def wp_login():
         driver.find_element_by_id("user_login").send_keys(username)
         driver.find_element_by_id("user_pass").send_keys(password)
         driver.find_element_by_id("wp-submit").click()
-        print("Login completed successfully")
+        #print("Login completed successfully")
     except Exception as e:
         print("Exception produced when logging into wp-admin. Error is: ")
         print(e)
@@ -80,7 +77,7 @@ def wp_add_page():
         driver.find_element_by_xpath("//*[@id='menu-pages']/a/div[3]").click()
         driver.find_element_by_xpath("//*[@id='menu-pages']/ul/li[3]/a").click()
         driver.find_element_by_id("insert-drs").click()
-        print "Add page is successful"
+        #print "Add page is successful"
     except Exception as e:
         print("Exception produced when creating new page. Error is: ")
         print(e)
