@@ -106,8 +106,6 @@
 				}
 				
 				if($(".timeline_group_selection-"+divid).is(':visible') && !$(this).is(":checked")){
-					console.log("It is visible")
-					console.log($("#timeline_div-"+divid))
 					$("#timeline_div-"+divid).remove();
 					$("#timeline_div-"+divid).remove();
 				}

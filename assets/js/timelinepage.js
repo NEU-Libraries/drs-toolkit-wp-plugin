@@ -4,6 +4,10 @@ jQuery(document).ready(function($) {
     
     var increments = $('#timeline-increments').data('increments');
     
+    var descriptions = $('#timeline-color-desc').data('red');
+    
+    var ids = $('#timeline-color-ids').data('1');
+    
     var options = {scale_factor:increments};
     
     var finalTimelineJson = {events:eventsList};

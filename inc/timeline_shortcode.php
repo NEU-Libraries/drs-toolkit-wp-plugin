@@ -10,10 +10,28 @@ function drstk_timeline( $atts ){
   }
   $neu_ids = explode(", ",$atts['id']);
   $timeline_increments = $atts['increments'];
+  $color_codes = array("red", "green", "blue", "yellow", "orange");
+  $current_color_code_id_values = array();
+  $current_color_legend_desc_values = array();
+  $index_color_pair = array();
+  foreach($color_codes as $color_code){
+	  $current_color_code_id_string = $color_code . "_id";
+	  $current_color_legend_desc_string = $color_code . "_desc";
+	  $current_color_code_id_value = $atts[$current_color_code_id_string];
+	  $current_color_legend_desc_value = $atts[$current_color_legend_desc_string];
+	  if(!is_null($current_color_code_id_value) && !is_null($current_color_legend_desc_value)){
+		  $current_color_code_ids = explode(",", $current_color_code_id_value);
+		  foreach($current_color_code_ids as $current_color_code_id){
+			  $current_color_code_id_values[$current_color_code_id] = $color_code;
+		  }
+		  $current_color_legend_desc_values[$color_code] = $current_color_legend_desc_value;
+	  }
+  }
   
   $event_list = array();
   $timeline_html = "";
-  foreach($neu_ids as $neu_id){
+  $counter = 1;
+  foreach($neu_ids as $current_key => $neu_id){
     $url = "https://repository.library.northeastern.edu/api/v1/files/" . $neu_id;
     $data = get_response($url);
     $data = json_decode($data);
@@ -41,10 +59,28 @@ function drstk_timeline( $atts ){
     }else {
       $timeline_html = $errors['shortcodes']['fail'];
     }
+    $present_id_color = $current_color_code_id_values[$neu_id];
+    if(!is_null($present_id_color)){
+		$index_color_pair[$counter] = $present_id_color;
+	}
+	$counter = $counter + 1;
+  }
+  $color_ids_html_data = '';
+  $color_desc_html_data = '';
+  forEach($current_color_legend_desc_values as $key => $value){
+	  $color_desc_html_data .= " data-" . $key . "='" . $value . "' ";
+  }
+  forEach($index_color_pair as $key_index => $color_value){
+	  $color_ids_html_data .= " data-" . $key_index . "='" . $color_value . "' ";
   }
   $shortcode = "<div id='timeline-embed' style=\"width: 100%; height: 600px\"></div>";
   $shortcode .= "<div id='timeline'>".$timeline_html."</div>";
   $shortcode .= "<div id='timeline-increments' data-increments='".$timeline_increments."'></div>";
+  
+	if($color_ids_html_data != '' || $color_desc_html_data != ''){
+	  $shortcode .= "<div id='timeline-color-ids'" . $color_ids_html_data . "></div>";
+	  $shortcode .= "<div id='timeline-color-desc'" . $color_desc_html_data . "></div>";
+	}
   $cache_output = $shortcode;
   $cache_time = 1000;
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
