@@ -13,6 +13,9 @@ jQuery(document).ready(function($) {
     var bounds = getBoundsForMap(items);
 
     mymap.fitBounds(bounds);
+    if (items.length === 1) {
+        mymap.setZoom(13);
+    }
 
     addTileLayerToMap(mymap, apiKey, projectKey);
 
@@ -114,9 +117,11 @@ function getItemsFromJqueryArray(jqArray) {
                 pid: jQuery(jqArray[index]).data('pid'),
                 title: jQuery(jqArray[index]).data('title'),
                 coordinates: getCordinatesFromString(jQuery(jqArray[index]).data('coordinates')),
-                metadata: jQuery(jqArray[index]).data('metadata'),
                 url: jQuery(jqArray[index]).data('url')
             });
+        }
+        if (metaDataExists(jqArray[index])) {
+            items[index].metadata = jQuery(jqArray[index]).data('metadata');
         }
     });
 
@@ -124,7 +129,7 @@ function getItemsFromJqueryArray(jqArray) {
 }
 
 function dataExists(input) {
-    return pidExists(input) && titleExists(input) && coordinatesExists(input) && metaDataExists(input) && urlExists(input);
+    return pidExists(input) && titleExists(input) && coordinatesExists(input) && urlExists(input);
 }
 
 function pidExists(input) {
@@ -252,7 +257,12 @@ function addPopupsToItems(items, map, colorGroups) {
                 title: item.title,
                 icon: icon
             });
-        var popupContent = "<a href='" + item.url + "' target='_blank'>" + item.title + "</a><br/>" + item.metadata;
+        var popupContent = "<a href='" + item.url + "' target='_blank'>" + item.title + "</a><br/>";
+
+        if (item.metadata) {
+            popupContent += item.metadata
+        }
+
         marker.bindPopup(popupContent);
         markers.addLayer(marker);
         markerArray.push(marker)

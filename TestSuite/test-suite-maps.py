@@ -157,10 +157,9 @@ def test5():
     try:
         print("Testing to see if map elements where coordinates are specified are populated and clickable.")
         create_driver()
-        driver.get("http://52.33.56.123/map-tests-old-1")
+        driver.get("http://52.33.56.123/maps-test-old-1")
         time.sleep(drs_page_load_wait)
-
-        driver.find_elements_by_xpath("//img[@src='http://52.33.56.123/wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png']")[0].click()
+        driver.find_elements_by_xpath("//*[@id='map']/div[3]/div[2]/div[3]/img[1]")[0].click()
         time.sleep(drs_page_load_wait)
         print("PASS")
         close_driver_and_display()
@@ -172,7 +171,7 @@ def test6():
     try:
         print("Testing to see if map elements where coordinates are specified can be zoomed in.")
         create_driver()
-        driver.get("http://52.33.56.123/map-tests-old-1")
+        driver.get("http://52.33.56.123/maps-test-old-1")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@title='Zoom in']").click()
         time.sleep(drs_page_load_wait)
@@ -186,7 +185,7 @@ def test7():
     try:
         print("Testing to see if map elements where coordinates are specified can be zoomed out.")
         create_driver()
-        driver.get("http://52.33.56.123/map-tests-old-1")
+        driver.get("http://52.33.56.123/maps-test-old-1")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@title='Zoom out']").click()
         time.sleep(drs_page_load_wait)
@@ -201,9 +200,9 @@ def test8():
     try:
         print("Testing to see if map elements where geographic locations are specified are populated and clickable.")
         create_driver()
-        driver.get("http://52.33.56.123/map-tests-old-2")
+        driver.get("http://52.33.56.123/maps-test-old-2")
         time.sleep(drs_page_load_wait)
-        driver.find_elements_by_xpath("//img[@src='http://52.33.56.123/wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-icon-2x.png']")[2].click()
+        driver.find_elements_by_xpath("//*[@id='map']/div[2]/div[2]/div[3]/img")[0].click()
         time.sleep(drs_page_load_wait)
         print("PASS")
         close_driver_and_display()
@@ -215,7 +214,7 @@ def test9():
     try:
         print("Testing to see if map elements where geographic locations are specified can be zoomed in.")
         create_driver()
-        driver.get("http://52.33.56.123/map-tests-old-2")
+        driver.get("http://52.33.56.123/maps-test-old-2")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@title='Zoom in']").click()
         time.sleep(drs_page_load_wait)
@@ -229,7 +228,7 @@ def test10():
     try:
         print("Testing to see if map elements where geographic locations are specified can be zoomed out.")
         create_driver()
-        driver.get("http://52.33.56.123/map-tests-old-2")
+        driver.get("http://52.33.56.123/maps-test-old-2")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@title='Zoom out']").click()
         time.sleep(drs_page_load_wait)
@@ -360,6 +359,43 @@ def test15():
         print inspect.stack()[0][3] + " Failed with the following message:"
         print(e)
 
+def test16():
+    try:
+        print("Testing to see if multiple map elements where coordinates are specified are populated and clickable.")
+        create_driver()
+        driver.get("http://52.33.56.123/maps-test")
+        time.sleep(drs_page_load_wait)
+        driver.find_elements_by_xpath("//*[@id='map']/div[9]/div[1]/div[2]/button/span")[0].click()
+        time.sleep(2)
+        driver.find_elements_by_xpath("//*[@id='map']/div[9]/div[1]/div[2]/button/span")[0].click()
+        time.sleep(2)
+        driver.find_elements_by_xpath("//*[@id='map']/div[9]/div[1]/div[2]/button/span")[0].click()
+        time.sleep(drs_page_load_wait)
+        print("PASS")
+        close_driver_and_display()
+    except Exception,e:
+         print inspect.stack()[0][3] + " Failed with the following message:"
+         print(e)
+
+def test17():
+    try:
+        print("Testing to see if multiple map elements where geolocations are specified are populated and clickable.")
+        create_driver()
+        driver.get("http://52.33.56.123/maps-test-2")
+        time.sleep(drs_page_load_wait)
+        driver.find_elements_by_xpath("//*[@id='map']/div[10]/div[1]/div[2]/button/span")[0].click()
+        time.sleep(2)
+        driver.find_elements_by_xpath("//*[@id='map']/div[10]/div[1]/div[2]/button/span")[0].click()
+        time.sleep(2)
+        driver.find_elements_by_xpath("//*[@id='map']/div[10]/div[1]/div[2]/button/span")[0].click()
+        time.sleep(drs_page_load_wait)
+        print("PASS")
+        close_driver_and_display()
+    except Exception,e:
+         print inspect.stack()[0][3] + " Failed with the following message:"
+         print(e)
+
+
 def testsuite_sprint2():
     print("Running Test Suite for Sprint 2...")
     test1()
@@ -380,7 +416,8 @@ def testsuite_spring3():
     test13()
     test14()
     test15()
+    test16()
+    test17()
 
 testsuite_sprint2()
-
 testsuite_spring3()
