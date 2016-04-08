@@ -2,6 +2,7 @@ from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.action_chains import ActionChains
 import inspect
 import time
 
@@ -156,9 +157,10 @@ def test5():
     try:
         print("Testing to see if map elements where coordinates are specified are populated and clickable.")
         create_driver()
-        driver.get("http://52.33.56.123/maps-test-co-ordinates")
+        driver.get("http://52.33.56.123/map-tests-old-1")
         time.sleep(drs_page_load_wait)
-        driver.find_elements_by_xpath("//img[@src='http://52.33.56.123/wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-icon-2x.png']")[0].click()
+
+        driver.find_elements_by_xpath("//img[@src='http://52.33.56.123/wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png']")[0].click()
         time.sleep(drs_page_load_wait)
         print("PASS")
         close_driver_and_display()
@@ -170,7 +172,7 @@ def test6():
     try:
         print("Testing to see if map elements where coordinates are specified can be zoomed in.")
         create_driver()
-        driver.get("http://52.33.56.123/maps-test-co-ordinates")
+        driver.get("http://52.33.56.123/map-tests-old-1")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@title='Zoom in']").click()
         time.sleep(drs_page_load_wait)
@@ -184,7 +186,7 @@ def test7():
     try:
         print("Testing to see if map elements where coordinates are specified can be zoomed out.")
         create_driver()
-        driver.get("http://52.33.56.123/maps-test-co-ordinates")
+        driver.get("http://52.33.56.123/map-tests-old-1")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@title='Zoom out']").click()
         time.sleep(drs_page_load_wait)
@@ -199,7 +201,7 @@ def test8():
     try:
         print("Testing to see if map elements where geographic locations are specified are populated and clickable.")
         create_driver()
-        driver.get("http://52.33.56.123/maps-test-geographic")
+        driver.get("http://52.33.56.123/map-tests-old-2")
         time.sleep(drs_page_load_wait)
         driver.find_elements_by_xpath("//img[@src='http://52.33.56.123/wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-icon-2x.png']")[2].click()
         time.sleep(drs_page_load_wait)
@@ -213,7 +215,7 @@ def test9():
     try:
         print("Testing to see if map elements where geographic locations are specified can be zoomed in.")
         create_driver()
-        driver.get("http://52.33.56.123/maps-test-geographic")
+        driver.get("http://52.33.56.123/map-tests-old-2")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@title='Zoom in']").click()
         time.sleep(drs_page_load_wait)
@@ -227,7 +229,7 @@ def test10():
     try:
         print("Testing to see if map elements where geographic locations are specified can be zoomed out.")
         create_driver()
-        driver.get("http://52.33.56.123/maps-test-geographic")
+        driver.get("http://52.33.56.123/map-tests-old-2")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@title='Zoom out']").click()
         time.sleep(drs_page_load_wait)
