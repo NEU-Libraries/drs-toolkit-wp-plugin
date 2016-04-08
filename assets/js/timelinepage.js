@@ -8,13 +8,15 @@ jQuery(document).ready(function($) {
     
     var colorIds = $('#timeline-color-ids').data();
     
+    var sortedColorIds = Object.keys(colorIds).sort(function(a,b){return colorIds[a]-colorIds[b]})
+    
     var options = {scale_factor:increments};
     
     var finalTimelineJson = {events:eventsList};
     
     window.timeline = new TL.Timeline('timeline-embed', finalTimelineJson, options);
     
-    itemBackgroundModifier($('.tl-timemarker-content-container'), colorIds);
+    itemBackgroundModifier($('.tl-timemarker-content-container'), sortedColorIds, colorIds);
 });
 
 	 function getItemsFromJqueryArrayTimelineArray(jqArray) {
@@ -45,12 +47,12 @@ jQuery(document).ready(function($) {
      
 	}
 	
-	function itemBackgroundModifier(jqArray, colorIdsObject){
+	function itemBackgroundModifier(jqArray, sortedColorIds, colorIds){
 		
 		var itemMarkerClass = '.tl-timemarker-content-container';
-		var counter = 1;
+		var counter = 0;
 		jqArray.each(function(index) {
-			$($(itemMarkerClass)[index]).css('background-color', colorIdsObject[counter]);
+			$($(itemMarkerClass)[index]).css('background-color', colorIds[$(sortedColorIds).get(counter)]);
 			counter++;
 		 });
 		

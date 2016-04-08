@@ -60,10 +60,9 @@ function drstk_timeline( $atts ){
       $timeline_html = $errors['shortcodes']['fail'];
     }
     $present_id_color = $current_color_code_id_values[$neu_id];
-    if(!is_null($present_id_color)){
-		$index_color_pair[$counter] = $present_id_color;
-	}
-	$counter = $counter + 1;
+    //if(!is_null($present_id_color)){
+		$index_color_pair[$key_date_explode[0]] = $present_id_color;
+	//}
   }
   $color_ids_html_data = '';
   $color_desc_html_data = '';
