@@ -379,6 +379,6 @@ def testsuite_spring3():
     test14()
     test15()
 
-#testsuite_sprint2()
+testsuite_sprint2()
 
 testsuite_spring3()
