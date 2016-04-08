@@ -4,15 +4,17 @@ jQuery(document).ready(function($) {
     
     var increments = $('#timeline-increments').data('increments');
     
-    var descriptions = $('#timeline-color-desc').data('red');
+    var colorDescriptions = $('#timeline-color-desc').data();
     
-    var ids = $('#timeline-color-ids').data('1');
+    var colorIds = $('#timeline-color-ids').data();
     
     var options = {scale_factor:increments};
     
     var finalTimelineJson = {events:eventsList};
     
     window.timeline = new TL.Timeline('timeline-embed', finalTimelineJson, options);
+    
+    itemBackgroundModifier($('.tl-timemarker-content-container'), colorIds);
 });
 
 	 function getItemsFromJqueryArrayTimelineArray(jqArray) {
@@ -41,4 +43,15 @@ jQuery(document).ready(function($) {
      
      return $($(className)[index]).data(element);
      
+	}
+	
+	function itemBackgroundModifier(jqArray, colorIdsObject){
+		
+		var itemMarkerClass = '.tl-timemarker-content-container';
+		var counter = 1;
+		jqArray.each(function(index) {
+			$($(itemMarkerClass)[index]).css('background-color', colorIdsObject[counter]);
+			counter++;
+		 });
+		
 	}
