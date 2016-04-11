@@ -76,7 +76,13 @@ function get_download_links(){
   echo "<br/><h4>Downloads</h4>";
   foreach($data->content_objects as $key=>$val){
     if ($val != "Thumbnail Image"){
-      echo " <a href='".$key."' target='_blank' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
+      if ($val == 'Video File'){
+        $av_pid = explode("/", $key);
+        $av_pid = end($av_pid);
+        echo " <a href='http://localhost/~beekerz/wordpress/download/".$av_pid."' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
+      } else {
+        echo " <a href='".$key."' target='_blank' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
+      }
     }
   }
 }

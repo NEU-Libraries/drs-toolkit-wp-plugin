@@ -27,11 +27,13 @@ $VERSION = '1.0.1';
 $TEMPLATE = array(
     'browse_template' => dirname(__FILE__) . '/templates/browse.php',
     'item_template' => dirname(__FILE__) . '/templates/item.php',
+    'download_template' => dirname(__FILE__) . '/templates/download.php',
 );
 
 $TEMPLATE_THEME = array(
     'browse_template' => 'overrides/drstk-browse.php',
     'item_template' => 'overrides/drstk-item.php',
+    'download_template' => 'overrides/drstk-download.php',
 );
 
  register_activation_hook( __FILE__, 'drstk_install' );
@@ -52,6 +54,7 @@ $TEMPLATE_THEME = array(
     add_rewrite_rule('^'.$home_url.'browse/?$', 'index.php?post_type=drs&drstk_template_type=browse', 'top');
     add_rewrite_rule('^'.$home_url.'search/?$', 'index.php?post_type=drs&drstk_template_type=search', 'top');
     add_rewrite_rule('^'.$home_url.'item/([^/]*)/?([^/]*)*', 'index.php?post_type=drs&drstk_template_type=item&pid=$matches[1]&js=$matches[2]', 'top');
+    add_rewrite_rule('^'.$home_url.'download/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=download&pid=$matches[1]', 'top');
     add_rewrite_rule('^'.$home_url.'collections/?$', 'index.php?post_type=drs&drstk_template_type=collections', 'top');
     add_rewrite_rule('^'.$home_url.'collection/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=collection&pid=$matches[1]', 'top');
  }
@@ -447,6 +450,15 @@ function drstk_content_template( $template ) {
             // look for theme template first, load plugin template as fallback
             $theme_template = locate_template( array( $TEMPLATE_THEME['item_template'] ) );
             return ($theme_template ? $theme_template : $TEMPLATE['item_template']);
+        }
+
+        if ($template_type == 'download') {
+          global $item_pid;
+          $item_pid = get_query_var('pid');
+
+          // look for theme template first, load plugin template as fallback
+          $theme_template = locate_template( array( $TEMPLATE_THEME['download_template'] ) );
+          return ($theme_template ? $theme_template : $TEMPLATE['download_template']);
         }
 
     } else {
