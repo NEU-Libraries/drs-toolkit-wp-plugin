@@ -4,15 +4,9 @@ jQuery(document).ready(function($) {
     
     var increments = $('#timeline-increments').data('increments');
     
-    //var colorDescriptions = $('#timeline-color-desc').data();
-    
     var colorDescriptions = getcolorDescData($('#timeline-color-desc'));
     
-    //var colorIds = $('#timeline-color-ids').data();
-    
     var colorIds = getcolorIdsData($('#timeline-color-ids'));
-    
-    //var sortedColorIds = Object.keys(colorIds).sort(function(a,b){return colorIds[a]-colorIds[b]})
     
     var sortedColorIds = getSortedColorIdsData(colorIds);
     
@@ -25,7 +19,7 @@ jQuery(document).ready(function($) {
     itemBackgroundModifier($('.tl-timemarker-content-container'), sortedColorIds, colorIds);
 });
 
-	 function getItemsFromJqueryArrayTimelineArray(jqArray) {
+	function getItemsFromJqueryArrayTimelineArray(jqArray) {
 		 
 		var items = [];
 		

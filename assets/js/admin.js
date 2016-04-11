@@ -240,10 +240,17 @@
                   data.pagination.table.num_pages = Math.ceil(media_count / 10);
                 }
               } if (tab == 5 || tab == 6){ //Maps and Timeline
-                 if ((tab == 5 && get_item_geographic_or_date_handler(item.id, true, false)) || (tab == 6 && get_item_geographic_or_date_handler(item.id, false, true))){
-                        $("#sortable-"+name+"-list").append('<li style="display:inline-block;padding:10px;"><label for="drstile-' + id + '"><img src="https://repository.library.northeastern.edu' + item.thumbnail_list_tesim[0] + '" width="150" /><br/><input id="drstile-' + id + '" type="checkbox" class="drstk-include-'+name+'" value="' + item.id + '" /><span style="width:100px;display:inline-block">' + item.full_title_ssi + '</span></label></li>');
+				  var key_date = {};
+                 if ((tab == 5 && get_item_geographic_or_date_handler(item.id, true, false, key_date)) || (tab == 6 && get_item_geographic_or_date_handler(item.id, false, true, key_date))){
+					 if(tab == 6){
+						$("#sortable-"+name+"-list").append('<li style="display:inline-block;padding:10px;"><label for="drstile-' + id + '"><img src="https://repository.library.northeastern.edu' + item.thumbnail_list_tesim[0] + '" width="150" /><br/><input id="drstile-' + id + '" type="checkbox" class="drstk-include-'+name+'" value="' + item.id + '" /><span style="width:100px;display:inline-block">' + item.full_title_ssi + '</span><p>Date : ' + key_date[key_date] + '</p></label></li>');
                         media_count++;
                         data.pagination.table.num_pages = Math.ceil(media_count / 10);
+					 }else{
+						$("#sortable-"+name+"-list").append('<li style="display:inline-block;padding:10px;"><label for="drstile-' + id + '"><img src="https://repository.library.northeastern.edu' + item.thumbnail_list_tesim[0] + '" width="150" /><br/><input id="drstile-' + id + '" type="checkbox" class="drstk-include-'+name+'" value="' + item.id + '" /><span style="width:100px;display:inline-block">' + item.full_title_ssi + '</span></label></li>');
+                        media_count++;
+                        data.pagination.table.num_pages = Math.ceil(media_count / 10);
+					 }
                     } else {
                      //console.log("Was unable to find an item with geo!")
                  }
@@ -262,11 +269,11 @@
       $("#sortable-"+name+"-list").sortable();
    }
 
-     function get_item_geographic_or_date_handler(itemid, mapsBool, timelineBool) {
-         return get_item_geographic_or_date(itemid, mapsBool, timelineBool)
+     function get_item_geographic_or_date_handler(itemid, mapsBool, timelineBool, key_date) {
+         return get_item_geographic_or_date(itemid, mapsBool, timelineBool, key_date)
      }
 
-     function get_item_geographic_or_date(item, mapsBool, timelineBool) {
+     function get_item_geographic_or_date(item, mapsBool, timelineBool, key_date) {
          var genericBoolState = false;
          //AJAX call will be passed to internal WP AJAX
          $.ajax({
@@ -282,6 +289,7 @@
                  //This console.log  is just for debugging.
                  //console.log(parseddata.pid + " " + parseddata.geographic)
                  //console.log(data.geographic)
+                 key_date[key_date] = Object.keys(data.key_date)[0];
                  if ((data && data.geographic && data.geographic.length && mapsBool) || (data && data.key_date && timelineBool) || data && data.coordinates && data.coordinates.length && mapsBool)  {
                      //console.log(data.geographic)
                      genericBoolState = true;

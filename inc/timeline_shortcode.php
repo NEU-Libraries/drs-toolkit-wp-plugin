@@ -22,7 +22,7 @@ function drstk_timeline( $atts ){
 	  if(!is_null($current_color_code_id_value) && !is_null($current_color_legend_desc_value)){
 		  $current_color_code_ids = explode(",", $current_color_code_id_value);
 		  foreach($current_color_code_ids as $current_color_code_id){
-			  $current_color_code_id_values[$current_color_code_id] = $color_code;
+			  $current_color_code_id_values[str_replace(' ', '', $current_color_code_id)] = $color_code;
 		  }
 		  $current_color_legend_desc_values[$color_code] = $current_color_legend_desc_value;
 	  }
@@ -59,26 +59,26 @@ function drstk_timeline( $atts ){
     }else {
       $timeline_html = $errors['shortcodes']['fail'];
     }
-    $present_id_color = $current_color_code_id_values[$neu_id];
-    //if(!is_null($present_id_color)){
-		$index_color_pair[$key_date_explode[0]] = $present_id_color;
-	//}
+    $present_id_color = $current_color_code_id_values[str_replace(' ', '', $neu_id)];
+	$index_color_pair[array_keys($keys)[0]] = $present_id_color;
   }
   $color_ids_html_data = '';
   $color_desc_html_data = '';
+  $sample_id_html_data = '';
   forEach($current_color_legend_desc_values as $key => $value){
-	  $color_desc_html_data .= " data-" . $key . "='" . $value . "' ";
+	  $color_desc_html_data .= "<tr><td width=\"1%\" bgcolor=\"". $key ."\"></td><td>" . $value ."</td></tr>";
   }
   forEach($index_color_pair as $key_index => $color_value){
-	  $color_ids_html_data .= " data-" . $key_index . "='" . $color_value . "' ";
+	  $color_ids_html_data .= " data-" . str_replace('/', '', $key_index) . "='" . $color_value . "' ";
   }
-  $shortcode = "<div id='timeline-embed' style=\"width: 100%; height: 600px\"></div>";
+  
+  $shortcode = "<div id='timeline-embed' style=\"width: 100%; height: 500px\"></div>";
+  $shortcode .= "<div id='timeline-table'><table style=\" float: right; width: 200px;\">". $color_desc_html_data ."</table></div>";
   $shortcode .= "<div id='timeline'>".$timeline_html."</div>";
   $shortcode .= "<div id='timeline-increments' data-increments='".$timeline_increments."'></div>";
   
 	if($color_ids_html_data != '' || $color_desc_html_data != ''){
 	  $shortcode .= "<div id='timeline-color-ids'" . $color_ids_html_data . "></div>";
-	  $shortcode .= "<div id='timeline-color-desc'" . $color_desc_html_data . "></div>";
 	}
   $cache_output = $shortcode;
   $cache_time = 1000;
