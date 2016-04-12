@@ -79,7 +79,7 @@ function get_download_links(){
       if ($val == 'Video File'){
         $av_pid = explode("/", $key);
         $av_pid = end($av_pid);
-        echo " <a href='".drstk_home_url()."/download/".$av_pid."' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
+        echo " <a href='".drstk_home_url()."download/".$av_pid."' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
       } else {
         echo " <a href='".$key."' target='_blank' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
       }
