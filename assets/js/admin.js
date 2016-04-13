@@ -25,7 +25,7 @@
      get_updated_items(search_params, 'timeline');
    }
    if (id == 5){
-     $("#TB_ajaxContent #tabs-5").html('<h4>Map</h4><br/><label for="search">Search for map item: </label><input type="text" name="search" id="search-map" /><button class="themebutton" id="search-button-map">Search</button><br/><button class="map-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden map-options"><label for="drstk-map-legend">Legend Description </br> Red <input type="text" id="redlegend"></br>Blue <input type="text" id="bluelegend"></br>Green <input type="text" id="greenlegend"></br>Yellow <input type="text" id="yellowlegend"></br>Orange <input type="text" id="orangelegend"></label></br><div class="drstk-map-story"><label><input type="checkbox" name="Story"/>Story</label></div><br/><label><div class="drstk-map-metadata"><h5>Metadata for Maps</h5><label><input type="checkbox" name="Creator,Contributor"/>Creator,Contributor</label><br/><label><input type="checkbox" name="Date created"/>Date Created</label><br/><label><input type="checkbox" name="Abstract/Description"/>Abstract/Description</label></div></div><div class="drs-items"></div><hr/><ol id="sortable-map-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-map" />');
+     $("#TB_ajaxContent #tabs-5").html('<h4>Map</h4><br/><label for="search">Search for map item: </label><input type="text" name="search" id="search-map" /><button class="themebutton" id="search-button-map">Search</button><br/> <div id="add_custom_item"> <h1>Please Enter Custom Map Item</h1> <form action=""> Image URL:<br> <input type="url" id="custom_item_image_url" value="url"> <br> Title:<br> <input type="text" id="custom_item_title" value="title"> <br> Description:<br> <input type="text" id="custom_item_description" value ="description"> <br> <a href="#" type="button" id="submit_custom_item">Add</a> <a href="#" type="button" id="close_add_custom_item">Close</a> </form> </div> <a href="#add_custom_item" id="open_add_custom_item"><img src="../wp-content/plugins/drs-tk/assets/js/leaflet/images/add_small.png"></a><button class="map-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden map-options"><label for="drstk-map-legend">Legend Description </br> Red <input type="text" id="redlegend"></br>Blue <input type="text" id="bluelegend"></br>Green <input type="text" id="greenlegend"></br>Yellow <input type="text" id="yellowlegend"></br>Orange <input type="text" id="orangelegend"></label></br><div class="drstk-map-story"><label><input type="checkbox" name="Story"/>Story</label></div><br/><label><div class="drstk-map-metadata"><h5>Metadata for Maps</h5><label><input type="checkbox" name="Creator,Contributor"/>Creator,Contributor</label><br/><label><input type="checkbox" name="Date created"/>Date Created</label><br/><label><input type="checkbox" name="Abstract/Description"/>Abstract/Description</label></div></div><div class="drs-items"></div><hr/><ol id="sortable-map-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-map" />');
      get_updated_items(search_params, 'map');
    }
    if (id == 4){
@@ -330,6 +330,36 @@
      }
    }
 
+  //jQuery for Custom item Popup
+     //$("#open_add_custom_item").click(function(){
+     $("body").on("click", "[id^=open_add_custom_item]", function(){
+         $("#add_custom_item").css("display", "block");
+     });
+
+     //$("#close_add_custom_item").click(function(){
+     $("body").on("click", "[id^=close_add_custom_item]", function(){
+         $("#add_custom_item").css("display", "none");
+     });
+
+     var custom_item_object = {}; //Object
+     var custom_items = [] //Array of Objects
+     //$("#submit_custom_item").click(function(){
+     $("body").on("click", "[id^=submit_custom_item]", function(){
+         $("#add_custom_item").css("display", "none");
+         var custom_item_url = $("#custom_item_image_url").val();
+         var custom_item_title = $("#custom_item_title").val();
+         var custom_item_description = $("#custom_item_description").val();
+
+         custom_item_object = {
+             url: custom_item_url,
+             title: custom_item_title,
+             description: custom_item_description
+         }
+
+         custom_items.push(custom_item_object);
+         console.log(custom_items)
+     });
+
    //inserting the shortcodes
    $("body").on("click", "[id^=drstk_insert_]", function(e){
      e.preventDefault();
@@ -463,6 +493,22 @@
              shortcode += 'story="no" ';
          }
         shortcode += ']\n';
+
+
+         //Custom item shortcode
+         $.each(custom_items, function(key, value) {
+             shortcode += '[custom_drstk_map_item ';
+             shortcode += 'image_url="' + value.url + '" ';
+             shortcode += 'title="' + value.title + '" ';
+             shortcode += 'description="' + value.description + '" \n';
+             console.log(value.url)
+             console.log(value.title)
+             console.log(value.description)
+             console.log("done")
+         });
+
+
+
      }
      if(type == 'timeline'){
 		 var start_date = $("#start-date-boundary").val();

@@ -167,6 +167,55 @@ function thickbox_styles() {
             .drstk-slider-metadata h5{
               margin:5px;
             }
+			#add_custom_item{
+				position: fixed;
+				background: #808080;
+				display: none;
+				top: 20px;
+				left: 50px;
+				width: 300px;
+				height: 300px;
+				border: 1px solid #000;
+				border-radius: 5px;
+				padding: 5px;
+				color: #fff;
+			} 
+
+			#submit_custom_item {
+			  font: bold 11px Arial;
+			  text-decoration: none;
+			  background-color: #EEEEEE;
+			  color: #333333;
+			  padding: 2px 6px 2px 6px;
+			  border-top: 1px solid #CCCCCC;
+			  border-right: 1px solid #333333;
+			  border-bottom: 1px solid #333333;
+			  border-left: 1px solid #CCCCCC;
+			}
+
+			#close_add_custom_item {
+			  font: bold 11px Arial;
+			  text-decoration: none;
+			  background-color: #EEEEEE;
+			  color: #333333;
+			  padding: 2px 6px 2px 6px;
+			  border-top: 1px solid #CCCCCC;
+			  border-right: 1px solid #333333;
+			  border-bottom: 1px solid #333333;
+			  border-left: 1px solid #CCCCCC;
+			}
+
+			#custom_item_submit {
+			  font: bold 11px Arial;
+			  text-decoration: none;
+			  background-color: #EEEEEE;
+			  color: #333333;
+			  padding: 2px 6px 2px 6px;
+			  border-top: 1px solid #CCCCCC;
+			  border-right: 1px solid #333333;
+			  border-bottom: 1px solid #333333;
+			  border-left: 1px solid #CCCCCC;
+			}
          </style>';
 }
 
