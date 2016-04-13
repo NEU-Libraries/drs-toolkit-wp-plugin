@@ -25,7 +25,7 @@
      get_updated_items(search_params, 'timeline');
    }
    if (id == 5){
-     $("#TB_ajaxContent #tabs-5").html('<h4>Map</h4><br/><label for="search">Search for map item: </label><input type="text" name="search" id="search-map" /><button class="themebutton" id="search-button-map">Search</button><br/><button class="map-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden map-options"><label for="drstk-map-legend">Legend Description </br> Red <input type="text" id="redlegend"></br>Blue <input type="text" id="bluelegend"></br>Green <input type="text" id="greenlegend"></br>Yellow <input type="text" id="yellowlegend"></br>Orange <input type="text" id="orangelegend"></label></br><div class="drstk-map-metadata"><h5>Metadata for Maps</h5><label><input type="checkbox" name="Creator,Contributor"/>Creator,Contributor</label><br/><label><input type="checkbox" name="Date created"/>Date Created</label><br/><label><input type="checkbox" name="Abstract/Description"/>Abstract/Description</label></div></div><div class="drs-items"></div><hr/><ol id="sortable-map-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-map" />');
+     $("#TB_ajaxContent #tabs-5").html('<h4>Map</h4><br/><label for="search">Search for map item: </label><input type="text" name="search" id="search-map" /><button class="themebutton" id="search-button-map">Search</button><br/><button class="map-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden map-options"><label for="drstk-map-legend">Legend Description </br> Red <input type="text" id="redlegend"></br>Blue <input type="text" id="bluelegend"></br>Green <input type="text" id="greenlegend"></br>Yellow <input type="text" id="yellowlegend"></br>Orange <input type="text" id="orangelegend"></label></br><div class="drstk-map-story"><label><input type="checkbox" name="Story"/>Story</label></div><br/><label><div class="drstk-map-metadata"><h5>Metadata for Maps</h5><label><input type="checkbox" name="Creator,Contributor"/>Creator,Contributor</label><br/><label><input type="checkbox" name="Date created"/>Date Created</label><br/><label><input type="checkbox" name="Abstract/Description"/>Abstract/Description</label></div></div><div class="drs-items"></div><hr/><ol id="sortable-map-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-map" />');
      get_updated_items(search_params, 'map');
    }
    if (id == 4){
@@ -430,31 +430,38 @@
         shortcode += ' height="'+height+'"';
         shortcode += ']\n';
      }
-	 if(type == 'map'){
-        var mapValue = $(".selected-"+type).val();
-        shortcode = '[drstk_map id="'+mapValue+'" ';
-		shortcode += 'map_api_key="'+item_admin_obj.leaflet_api_key+'" ';
-         shortcode += 'map_project_key="'+item_admin_obj.leaflet_project_key+'" ';
-         shortcode += 'red_legend_desc="'+$("#redlegend").val()+'" ';
-         shortcode += 'blue_legend_desc="'+$("#bluelegend").val()+'" ';
-         shortcode += 'green_legend_desc="'+$("#greenlegend").val()+'" ';
-         shortcode += 'yellow_legend_desc="'+$("#yellowlegend").val()+'" ';
-         shortcode += 'orange_legend_desc="'+$("#orangelegend").val()+'" ';
+	 if(type == 'map') {
+         var mapValue = $(".selected-" + type).val();
+         shortcode = '[drstk_map id="' + mapValue + '" ';
+         shortcode += 'map_api_key="' + item_admin_obj.leaflet_api_key + '" ';
+         shortcode += 'map_project_key="' + item_admin_obj.leaflet_project_key + '" ';
+         shortcode += 'red_legend_desc="' + $("#redlegend").val() + '" ';
+         shortcode += 'blue_legend_desc="' + $("#bluelegend").val() + '" ';
+         shortcode += 'green_legend_desc="' + $("#greenlegend").val() + '" ';
+         shortcode += 'yellow_legend_desc="' + $("#yellowlegend").val() + '" ';
+         shortcode += 'orange_legend_desc="' + $("#orangelegend").val() + '" ';
          var metadata = [];
-         $(".drstk-map-metadata input[type='checkbox']:checked").each(function(){
+         $(".drstk-map-metadata input[type='checkbox']:checked").each(function () {
              metadata.push($(this).attr('name'));
          });
-         if (metadata.length > 0) {shortcode += ' metadata="'+metadata+'" ';}
-         var red_group = $(".selected-"+type).attr('red_group')
-         var blue_group = $(".selected-"+type).attr('blue_group')
-         var green_group = $(".selected-"+type).attr('green_group')
-         var yellow_group = $(".selected-"+type).attr('yellow_group')
-         var orange_group = $(".selected-"+type).attr('orange_group')
-         shortcode += 'red="'+ red_group +'" ';
-         shortcode += 'blue="'+ blue_group +'" ';
-         shortcode += 'green="'+ green_group +'" ';
-         shortcode += 'yellow="'+ yellow_group +'" ';
-         shortcode += 'orange="'+ orange_group +'" ';
+         if (metadata.length > 0) {
+             shortcode += ' metadata="' + metadata + '" ';
+         }
+         var red_group = $(".selected-" + type).attr('red_group')
+         var blue_group = $(".selected-" + type).attr('blue_group')
+         var green_group = $(".selected-" + type).attr('green_group')
+         var yellow_group = $(".selected-" + type).attr('yellow_group')
+         var orange_group = $(".selected-" + type).attr('orange_group')
+         shortcode += 'red="' + red_group + '" ';
+         shortcode += 'blue="' + blue_group + '" ';
+         shortcode += 'green="' + green_group + '" ';
+         shortcode += 'yellow="' + yellow_group + '" ';
+         shortcode += 'orange="' + orange_group + '" ';
+         if ($(".drstk-map-story input[type='checkbox']").is(":checked")){
+             shortcode += 'story="yes" ';
+         } else {
+             shortcode += 'story="no" ';
+         }
         shortcode += ']\n';
      }
      if(type == 'timeline'){
