@@ -499,22 +499,27 @@
          } else {
              shortcode += 'story="no" ';
          }
-        shortcode += ']\n';
-
-
+         var custom_map_urls = [];
+         var custom_map_titles = [];
+         var custom_map_descriptions = [];
+         var custom_map_locations = [];
          //Custom item shortcode
          $.each(custom_items, function(key, value) {
-             shortcode += '[custom_drstk_map_item ';
-             shortcode += 'image_url="' + value.url + '" ';
-             shortcode += 'title="' + value.title + '" ';
-             shortcode += 'description="' + value.description + '" ';
-             shortcode += 'location="' + value.location + '" ';
-             shortcode += ']\n';
-             console.log(value.url)
-             console.log(value.title)
-             console.log(value.description)
+             custom_map_urls.push(value.url);
+             custom_map_titles.push(value.title);
+             custom_map_descriptions.push(value.description);
+             custom_map_locations.push(value.location.replace(/,/g , " "));
+             console.log(value.url);
+             console.log(value.title);
+             console.log(value.description);
              console.log("done")
          });
+         shortcode += 'custom_map_urls="' + custom_map_urls + '" ';
+         shortcode += 'custom_map_titles="' + custom_map_titles + '" ';
+         shortcode += 'custom_map_descriptions="' + custom_map_descriptions + '" ';
+         shortcode += 'custom_map_locations="' + custom_map_locations + '" ';
+        shortcode += ']\n';
+
      }
      if(type == 'timeline'){
 		 var start_date = $("#start-date-boundary").val();
