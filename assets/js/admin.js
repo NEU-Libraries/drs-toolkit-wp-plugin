@@ -363,6 +363,7 @@
      e.preventDefault();
      var type = $(this).attr("id").split("_")[2];
      var shortcode = '';
+     var insertShortcodeToWindow = true;
      if(type == 'gallery'){
       var slides = $(".selected-"+type).val();
        shortcode = '[drstk_gallery id="'+slides+'"';
@@ -540,12 +541,14 @@
 				});				
 				key_date_list.forEach(function(each_key){			
 					if(each_key.year < start_date || each_key.year > end_date){
-						alert("The corresponding item : '" + each_key.name + "' is out of the specified boundary dates");
-					}			
+                        insertShortcodeToWindow = false;
+                        alert("The corresponding item : '" + each_key.name + "' is out of the specified boundary dates");
+					}
 				});
 			}
 			else{
-				alert("The Start Date or End Date is not numeric");
+                 insertShortcodeToWindow = false;
+                 alert("The Start Date or End Date is not numeric");
 			}
         }
         shortcode = '[drstk_timeline id="'+timelineValue+'"';
@@ -571,7 +574,9 @@
          }
         shortcode += ']\n';
     }
-    window.wp.media.editor.insert(shortcode);
+    if (insertShortcodeToWindow) {
+        window.wp.media.editor.insert(shortcode);
+    }
    });
 
    //enables settings toggle
