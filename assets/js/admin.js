@@ -101,10 +101,15 @@
           } else {
               $(".selected-"+type).val(selected + ", " + pid);
           } if (type === 'map') {
-              var map_color_options = "<p>Grouping:</p><select id='map_selection_option' class='map_group_selection-"+divid+ "'><option value='please_select_option'>Please select a group</option><option data-class='ui-icon-script' value='red'>Red</option> <option value='blue'>Blue</option> <option value='green'>Green</option> <option value='yellow'>Yellow</option> <option value='orange'>Orange</option></select>"
-              //alert(divid)
-              //alert("Map is selected!")
-              $("label[for='drstile-" + divid + "']").append(map_color_options);
+              var map_color_options = "<div id='map_div-"+divid+"'><p>Grouping:</p><select class='map_group_selection-"+divid+ "'><option value='please_select_option'>Please select a group</option><option data-class='ui-icon-script' value='red'>Red</option> <option value='blue'>Blue</option> <option value='green'>Green</option> <option value='yellow'>Yellow</option> <option value='orange'>Orange</option></select></div>";
+              if(!$(".map_group_selection-"+divid).is(':visible')){
+                  $("label[for='drstile-" + divid + "']").append(map_color_options);
+              }
+
+              if($(".map_group_selection-"+divid).is(':visible') && !$(this).is(":checked")){
+                  $("#map_div-"+divid).remove();
+                  $("#map_div-"+divid).remove();
+              }
           } if (type === 'timeline') {
 				var timeline_color_options = "<div id='timeline_div-"+divid+"'><p>Grouping:</p><select class='timeline_group_selection-"+divid+ "'><option value='please_select_option'>Please select a group</option><option value='red'>Red</option> <option value='blue'>Blue</option> <option value='green'>Green</option> <option value='yellow'>Yellow</option> <option value='orange'>Orange</option></select></div>";
 				if(!$(".timeline_group_selection-"+divid).is(':visible')){
@@ -443,7 +448,7 @@
        }
        shortcode += ' align="'+$("#drstk-item-align").val()+'"';
        shortcode += ' caption-align="'+$("#drstk-item-caption-align").val()+'"';
-       shortcode += ' caption-position="'+$("#drstk-item-caption-position").val()+'"';
+       shortcode +=   ' caption-position="'+$("#drstk-item-caption-position").val()+'"';
        if ($("#drstk-item-jwplayer").is(":checked")){
          shortcode += ' display-video="true"';
        }
