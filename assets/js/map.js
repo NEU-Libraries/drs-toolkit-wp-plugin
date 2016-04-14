@@ -304,10 +304,36 @@ function addStoryModeToMap(items, map, markerCluster, bounds) {
 }
 
 function addTileLayerToMap(map, apiKey, projectKey) {
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        maxZoom: 18,
-        id: projectKey,
-        accessToken: apiKey
-    }).addTo(map);
+
+    var baseLayers = {};
+
+    var openStreetMap = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+        maxZoom: 18
+    });
+    baseLayers['OpenStreetMap'] = openStreetMap;
+
+    var mapnikLayer = L.tileLayer('http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+        maxZoom: 18
+    });
+    baseLayers['Mapnik'] = mapnikLayer;
+
+    if (apiKey !=='' && projectKey !== '') {
+        var mapBox = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+            maxZoom: 18,
+            id: projectKey,
+            accessToken: apiKey
+        });
+
+        baseLayers['Mapbox'] = mapBox;
+        mapBox.addTo(map);
+    } else {
+        openStreetMap.addTo(map);
+    }
+
+
+    L.control.layers(baseLayers).addTo(map);
+
 }
