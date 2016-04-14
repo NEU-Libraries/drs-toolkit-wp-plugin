@@ -365,10 +365,8 @@ function drstk_content_template( $template ) {
             global $sub_collection_pid;
             $sub_collection_pid = get_query_var( 'pid' );
             add_action('wp_enqueue_scripts', 'drstk_browse_script');
-            add_action('wp_enqueue_scripts', 'get_leaflet_api_keys_script');
             if ($template_type == 'collection') {
               add_action('wp_enqueue_scripts', 'drstk_breadcrumb_script');
-                add_action('wp_enqueue_scripts', 'get_leaflet_api_keys_script');
             }
 
             // look for theme template first, load plugin template as fallback
