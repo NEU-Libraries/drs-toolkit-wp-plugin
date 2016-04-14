@@ -1,7 +1,6 @@
 /**
  * JavaScript for the registration page.
  **/
-
  jQuery( document ).ready(function( $ ) {
   //variables for generating the lists of items
   var search_q = '';
@@ -102,7 +101,7 @@
           } else {
               $(".selected-"+type).val(selected + ", " + pid);
           } if (type === 'map') {
-              var map_color_options = "<p>Grouping:</p><select class='map_group_selection-"+divid+ "'><option value='please_select_option'>Please select a group</option><option value='red'>Red</option> <option value='blue'>Blue</option> <option value='green'>Green</option> <option value='yellow'>Yellow</option> <option value='orange'>Orange</option></select>"
+              var map_color_options = "<p>Grouping:</p><select id='map_selection_options' class='map_group_selection-"+divid+ "'><option value='please_select_option'>Please select a group</option><option data-class='ui-icon-script' value='red'>Red</option> <option value='blue'>Blue</option> <option value='green'>Green</option> <option value='yellow'>Yellow</option> <option value='orange'>Orange</option></select>"
               //alert(divid)
               //alert("Map is selected!")
               $("label[for='drstile-" + divid + "']").append(map_color_options);
