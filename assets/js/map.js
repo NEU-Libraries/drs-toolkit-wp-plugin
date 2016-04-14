@@ -295,12 +295,12 @@ function addStoryModeToMap(items, map, markerCluster, bounds) {
                 return false;
             }
         });
-    }).addTo(map);
+    }, 'Play').addTo(map);
 
-    L.easyButton('fa-globe', function(btn, map){
+    L.easyButton('fa-arrows-alt', function(btn, map){
         itemIndex = 0;
         map.fitBounds(bounds);
-    }).addTo(map);
+    }, 'Reset').addTo(map);
 }
 
 function addTileLayerToMap(map, apiKey, projectKey) {
