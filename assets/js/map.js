@@ -257,7 +257,7 @@ function addPopupsToItems(items, map, colorGroups) {
                 title: item.title,
                 icon: icon
             });
-        var popupContent = "<a href='" + item.url + "' target='_blank'>" + item.title + "</a><br/>";
+        var popupContent = "<a href='./item/" + item.pid + "' target='_blank'>" + item.title + "</a><br/>";
 
         if (item.metadata) {
             popupContent += item.metadata
