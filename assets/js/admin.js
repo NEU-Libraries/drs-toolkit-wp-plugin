@@ -17,6 +17,9 @@
     6: 'timeline'
   };
 
+
+     //Injecting FontAwesome
+     $('head').append('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">');
   //enables tabs
  $("#tabs").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
  $("#tabs-1").html('<h4>Tile Gallery</h4><br/><label for="search">Search for an item: </label><input type="text" name="search" id="search-tile" /><button class="themebutton" id="search-button-tile">Search</button><br/><button class="tile-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden tile-options"><label for="tile-type">Type Layout Type</label><select name="tile-type" id="drstk-tile-type"><option value="pinterest-below">Pinterest style with caption below</option><option value="pinterest-hover">Pinterest style with caption on hover</option><option value="even-row">Even rows with caption on hover</option><option value="square">Even Squares with caption on hover</option></select><br/><label for="caption-align">Caption Text Alignment</label><select name="caption-align" id="drstk-tile-caption-align"><option value="center">Center</option><option value="left">Left</option><option value="right">Right</option></select><br/><label for="cell-height">Cell Height (auto for Pinterest style)</label><input type="number" value="200" name="cell-height"/></label><br/><label for="cell-width">Cell Width</label><input type="number" value="200" name="cell-width"/></label><p>Make the height and width the same for squares</p><br/><label for="drstk-tile-image-size">Image Size<select name="drstk-tile-image-size" id="drstk-tile-image-size"><option value="1">Largest side is 85px</option><option value="2">Largest side is 170px</option><option value="3">Largest side is 340px</option><option value="4" selected="selected">Largest side is 500px</option><option value="5">Largest side is 1000px</option></select></label><br/><div class="drstk-tile-metadata"><h5>Metadata for Captions</h5><label><input type="checkbox" name="full_title_ssi" checked="checked"/>Title</label><br/><label><input type="checkbox" name="creator_tesim"/>Creator,Contributor</label><br/><label><input type="checkbox" name="date_ssi"/>Date Created</label><br/><label><input type="checkbox" name="abstract_tesim"/>Abstract/Description</label></div></div><div class="drs-items">Loading...</div><ol id="sortable-tile-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-tile" />');
@@ -101,7 +104,8 @@
           } else {
               $(".selected-"+type).val(selected + ", " + pid);
           } if (type === 'map') {
-              var map_color_options = "<div id='map_div-"+divid+"'><p>Grouping:</p><select class='map_group_selection-"+divid+ "'><option value='please_select_option'>Please select a group</option><option data-class='ui-icon-script' value='red'>Red</option> <option value='blue'>Blue</option> <option value='green'>Green</option> <option value='yellow'>Yellow</option> <option value='orange'>Orange</option></select></div>";
+              var FontAwesome = "FontAwesome";
+              var map_color_options = "<div id='map_div-"+divid+"'><p>Grouping:</p><select style=font-family:'FontAwesome',Arial; class='map_group_selection-"+divid+ "'><option value='please_select_option'>Please select a group</option><option value='red'>&#xf041; Red</option> <option value='blue'>&#xf041; Blue</option> <option value='green'>&#xf041; Green</option> <option value='yellow'>&#xf041; Yellow</option> <option value='orange'>&#xf041; Orange</option></select></div>";
               if(!$(".map_group_selection-"+divid).is(':visible')){
                   $("label[for='drstile-" + divid + "']").append(map_color_options);
               }

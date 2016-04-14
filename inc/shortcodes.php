@@ -217,6 +217,26 @@ function thickbox_styles() {
 			  border-bottom: 1px solid #333333;
 			  border-left: 1px solid #CCCCCC;
 			}
+			
+			option[value="red"] {
+				color: red;
+			} 
+			
+			option[value="blue"] {
+				color: blue;
+			} 
+			
+			option[value="green"] {
+				color: green;
+			} 
+			
+			option[value="yellow"] {
+				color: gold;
+			} 
+			
+			option[value="orange"] {
+				color: orange;
+			} 			
          </style>';
 }
 
