@@ -8,8 +8,8 @@ function add_drs_button() {
     echo '</div><div id="tabs-2">';
     echo '</div><div id="tabs-3">';
     echo '</div><div id="tabs-4">';
-	echo '</div><div id="tabs-5">';
-	echo '</div><div id="tabs-6">';
+    echo '</div><div id="tabs-5">';
+    echo '</div><div id="tabs-6">';
     echo '</div>';
     echo '</div>';
     echo '</div>';
@@ -35,8 +35,8 @@ function drstk_enqueue_page_scripts( $hook ) {
       'ajax_url' => admin_url( 'admin-ajax.php' ),
       'item_admin_nonce'    => $item_admin_nonce,
       'pid' => '',
-	  'leaflet_api_key' => get_option('leaflet_api_key'),
-	  'leaflet_project_key' => get_option('leaflet_project_key'),
+      'leaflet_api_key' => get_option('leaflet_api_key'),
+      'leaflet_project_key' => get_option('leaflet_project_key'),
       'errors' => json_encode($errors),
    ) );
 
@@ -56,6 +56,7 @@ function drstk_enqueue_page_scripts( $hook ) {
  }
 }
 add_action('admin_enqueue_scripts', 'drstk_enqueue_page_scripts');
+add_action( 'wp_ajax_get_tile_code', 'drstk_add_tile_gallery' ); //for auth users
 
 /* side box content for tile gallery shortcode */
 function drstk_add_tile_gallery(){
@@ -72,12 +73,12 @@ function drstk_add_tile_gallery(){
     $json = json_decode($data);
     if (isset($json->error)) {
       wp_send_json(json_encode( "There was an error: " . $json->error));
+      wp_die();
       return;
     }
     wp_send_json($data);
+    wp_die();
 }
-
-add_action( 'wp_ajax_get_tile_code', 'drstk_add_tile_gallery' ); //for auth users
 
 /* POST for individual items*/
 function get_json_data_from_neu_item(){
