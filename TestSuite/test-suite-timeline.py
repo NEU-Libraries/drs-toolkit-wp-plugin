@@ -392,6 +392,70 @@ def test17():
         print(inspect.stack()[0][3] + " Failed with the following message:")
         print(e)
 
+# Sprint 4
+def test18():
+    try:
+        print("Testing to make sure specific legends are generated.")
+        wp_add_page()
+        driver.find_element_by_xpath("//*[@id='ui-id-6']").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='tabs-6']/button[2]").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='timeline_redlegend']").send_keys("red legend")
+        time.sleep(4)
+        driver.find_element_by_xpath("//*[@id='drstk_insert_timeline']").click()
+        print("PASS")
+        close_driver_and_display()
+    except Exception, e:
+        print inspect.stack()[0][3] + " Failed with the following message:"
+        print(e)
+
+def test19():
+
+    URL = 'http://52.33.56.123/timeline_sprint4_demopage'
+    try:
+        print("Testing to see if Timeline item is present.")
+        create_driver()
+        driver.get(URL)
+        time.sleep(4)
+        driver.find_element_by_xpath("//*[@id='boston-boys-and-girls-club-photographs-3-marker']/div/div").is_displayed()
+        time.sleep(4)
+        print("PASS")
+        close_driver_and_display()
+    except Exception as e:
+        print(inspect.stack()[0][3] + " Failed with the following message:")
+        print(e)
+
+def test20():
+
+    URL = 'http://52.33.56.123/timeline_sprint4_demopage'
+    try:
+        print("Testing to see if the Legend descriptions are displayed on the page")
+        create_driver()
+        driver.get(URL)
+        time.sleep(4)
+        driver.find_element_by_id("timeline-table").is_displayed()
+        time.sleep(4)
+        print("PASS")
+        close_driver_and_display()
+    except Exception as e:
+        print(inspect.stack()[0][3] + " Failed with the following message:")
+        print(e)
+
+def test21():
+    try:
+        print("Testing to make sure if Date is displayed")
+        wp_add_page()
+        time.sleep(4)
+        driver.find_element_by_id("ui-id-6").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='sortable-timeline-list']/li[1]/label/p").is_displayed()
+        print("PASS")
+        close_driver_and_display()
+    except Exception as e:
+        print(inspect.stack()[0][3] + " Failed with the following message:")
+        print(e)
+        
 def testsuite_sprint2_timeline():
     print("Running Test Suite for Sprint 2...")
     test1()
@@ -410,11 +474,16 @@ def testsuite_sprint3_timeline():
     test11()
     test12()
     test13()
-    test14()
     test15()
     test16()
     test17()
 
-
+def testsuite_sprint4_timeline():
+    print("Running Test Suite for Sprint 4...")
+    test19()
+    test20()
+    test21()
+    
 testsuite_sprint2_timeline()
 testsuite_sprint3_timeline()
+testsuite_sprint4_timeline()
