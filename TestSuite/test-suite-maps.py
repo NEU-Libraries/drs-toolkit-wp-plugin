@@ -396,6 +396,27 @@ def test17():
          print(e)
 
 
+#Tests for Sprint 4
+def test18():
+    try:
+        print("Testing to make sure you can set the color for selected items which now have icons.")
+        wp_add_page()
+        driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").send_keys(Keys.ARROW_DOWN)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").send_keys(Keys.ENTER)
+        driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
+        print("PASS")
+        close_driver_and_display()
+    except Exception, e:
+        print inspect.stack()[0][3] + " Failed with the following message:"
+        print(e)
+
 def testsuite_sprint2():
     print("Running Test Suite for Sprint 2...")
     test1()
@@ -419,5 +440,12 @@ def testsuite_spring3():
     test16()
     test17()
 
-testsuite_sprint2()
-testsuite_spring3()
+def testsuite_spring4():
+    print("Running Test Suite for Sprint 4...")
+
+
+#testsuite_sprint2()
+#testsuite_spring3()
+#testsuite_spring4()
+
+test18()
