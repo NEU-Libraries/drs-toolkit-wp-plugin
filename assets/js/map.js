@@ -471,7 +471,11 @@ function addCustomItemsToMap(items, markerCluster) {
                 title: item.title,
                 icon: icon
             });
-        var popupContent = "<a href='" + item.url + "' target='_blank'>" + item.title + "</a><br/>";
+        var url = item.url;
+        if (url.indexOf('http') == -1) {
+            url = "http://" + item.url;
+        }
+        var popupContent = "<a href='" + url + "' target='_blank'>" + item.title + "</a><br/>";
 
         popupContent += item.description;
 
