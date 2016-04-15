@@ -285,11 +285,11 @@ def test13():
         time.sleep(drs_page_load_wait)
         driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
         time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").click()
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").click()
         time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").send_keys(Keys.ARROW_DOWN)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").send_keys(Keys.ARROW_DOWN)
         time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").send_keys(Keys.ENTER)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").send_keys(Keys.ENTER)
         driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
         print("PASS")
         close_driver_and_display()
@@ -340,11 +340,11 @@ def test15():
         time.sleep(drs_page_load_wait)
         driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
         time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").click()
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").click()
         time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").send_keys(Keys.ARROW_DOWN)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").send_keys(Keys.ARROW_DOWN)
         time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").send_keys(Keys.ENTER)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").send_keys(Keys.ENTER)
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='tabs-5']/button[2]").click()
         time.sleep(drs_page_load_wait)
@@ -405,17 +405,33 @@ def test18():
         time.sleep(drs_page_load_wait)
         driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
         time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").click()
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label//div/select").click()
         time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").send_keys(Keys.ARROW_DOWN)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").send_keys(Keys.ARROW_DOWN)
         time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/select").send_keys(Keys.ENTER)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").send_keys(Keys.ENTER)
         driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
         print("PASS")
         close_driver_and_display()
     except Exception, e:
         print inspect.stack()[0][3] + " Failed with the following message:"
         print(e)
+
+def test19():
+    try:
+        print("Testing to make sure you can ad a custom item.")
+        wp_add_page()
+        driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_elements_by_xpath("//*[@id='open_add_custom_item'']").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_id("custom_item_url")
+        print("PASS")
+        close_driver_and_display()
+    except Exception, e:
+        print inspect.stack()[0][3] + " Failed with the following message:"
+        print(e)
+
 
 def testsuite_sprint2():
     print("Running Test Suite for Sprint 2...")
@@ -442,6 +458,7 @@ def testsuite_spring3():
 
 def testsuite_spring4():
     print("Running Test Suite for Sprint 4...")
+    test18()
 
 
 #testsuite_sprint2()
