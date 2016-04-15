@@ -77,13 +77,13 @@ describe('Maps Unit Tests', function() {
         });
     });
 
-    describe('Function getBoundsForMap', function () {
+    describe('Function fitToBounds', function () {
         it('returns empty array if no items are passed', function() {
-            expect(getBoundsForMap()).toEqual([]);
+            expect(fitToBounds()).toEqual([]);
         });
 
         it('returns bounds if for all items that are passed', function() {
-            expect(getBoundsForMap(
+            expect(fitToBounds(
                 [
                     {
                         coordinates: ['10.10', '20.20'],
@@ -93,7 +93,7 @@ describe('Maps Unit Tests', function() {
                         coordinates: ['30.10', '40.20'],
                         title: 'Test Item 2'
                     }
-                ]
+                ], [], null
             ))
                 .toEqual([
                     ['10.10', '20.20'],
@@ -213,6 +213,51 @@ describe('Maps Unit Tests', function() {
                 yellow: 'neu:131795',
                 orange: 'neu:212654'
             });
+        });
+    });
+
+    describe('Function getCustomItems', function () {
+
+        beforeEach(function() {
+            loadFixtures('map.html');
+        });
+        it('returns empty item array when there is no input', function() {
+            expect(getCustomItems($('.custom-coodinate')))
+                .toEqual([]);
+        });
+
+        it('returns item array when there is correct input', function() {
+            expect(getCustomItems($('.custom-coordinates')))
+                .toEqual([
+                    {
+                        title: 'Custom Item 1 Title',
+                        coordinates: [ '42.3600825','-71.0588801' ],
+                        description: 'Custom Item 1 Description',
+                        url: 'www.google.com',
+                        colorgroup: 'red'
+                    },
+                    {
+                        title: 'Custom Item 2 Title',
+                        coordinates: [ '42.40843','-71.0536625' ],
+                        description: 'Custom Item 2 Description',
+                        url: 'www.google.com',
+                        colorgroup: 'blue'
+                    }
+                ]);
+        });
+    });
+
+    describe('Function isStoryModeEnabled', function () {
+
+        beforeEach(function() {
+            loadFixtures('map.html');
+        });
+        it('returns false when there is no story mode or it is disabled', function() {
+            expect(isStoryModeEnabled($('#map1'))).toEqual(false);
+        });
+
+        it('returns true when the story mode is enabled', function() {
+            expect(isStoryModeEnabled($('#map'))).toEqual(true);
         });
     });
 });

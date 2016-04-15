@@ -10,20 +10,22 @@ jQuery(document).ready(function($) {
 
     var mymap = createMap('map');
 
-    var bounds = getBoundsForMap(items);
-
-    mymap.fitBounds(bounds);
-    if (items.length === 1) {
-        mymap.setZoom(13);
-    }
-
     addTileLayerToMap(mymap, apiKey, projectKey);
 
     var markerCluster = addPopupsToItems(items, mymap, colorGroups);
 
+    var customItems = getCustomItems($('.custom-coordinates'));
+
+    var markerCluster = addCustomItemsToMap(customItems, markerCluster);
+
+    fitToBounds(items, customItems, mymap);
+
     addLegendToMap(colorDescriptions, mymap);
 
-    addStoryModeToMap(items, mymap, markerCluster, bounds);
+    if (isStoryModeEnabled($('#map'))) {
+        addStoryModeToMap(items, mymap, markerCluster, customItems);
+    }
+
 
 });
 
@@ -155,11 +157,29 @@ function createMap(mapID) {
     return L.map(mapID);
 }
 
-function getBoundsForMap(items) {
+function fitToBounds(items, customItems, map) {
     var bounds = [];
     jQuery.each(items, function(index, item) {
         bounds.push(item.coordinates);
     });
+    jQuery.each(customItems, function(index, item) {
+        bounds.push(item.coordinates);
+    });
+    if (map) {
+        map.fitBounds(bounds);
+    }
+
+    var isSameCoordinates = true;
+    for(var i = 1; i < bounds.length; i++)
+    {
+        if(bounds[i] !== bounds[0]) {
+            isSameCoordinates = false;
+        }
+    }
+
+    if (isSameCoordinates && map) {
+        map.setZoom(13);
+    }
     return bounds;
 }
 
@@ -275,7 +295,12 @@ function addPopupsToItems(items, map, colorGroups) {
     };
 }
 
-function addStoryModeToMap(items, map, markerCluster, bounds) {
+function isStoryModeEnabled(jqSelector) {
+    return (jqSelector.data('story') === 'yes');
+}
+
+function addStoryModeToMap(drsitems, map, markerCluster, customItems) {
+    var items = drsitems.concat(customItems);
 
     var itemIndex = 0;
 
@@ -299,7 +324,7 @@ function addStoryModeToMap(items, map, markerCluster, bounds) {
 
     L.easyButton('fa-arrows-alt', function(btn, map){
         itemIndex = 0;
-        map.fitBounds(bounds);
+        fitToBounds(drsitems, customItems, map);
     }, 'Reset').addTo(map);
 }
 
@@ -336,4 +361,124 @@ function addTileLayerToMap(map, apiKey, projectKey) {
 
     L.control.layers(baseLayers).addTo(map);
 
+}
+
+function getCustomItems(jqArray) {
+    var items = [];
+    jqArray.each(function(index) {
+        items.push({
+            url: jQuery(jqArray[index]).data('url'),
+            title: jQuery(jqArray[index]).data('title'),
+            coordinates: getCordinatesFromString(jQuery(jqArray[index]).data('coordinates')),
+            description: jQuery(jqArray[index]).data('description'),
+            colorgroup: jQuery(jqArray[index]).data('colorgroup')
+        });
+    });
+
+    return items;
+}
+
+function addCustomItemsToMap(items, markerCluster) {
+
+
+    jQuery.each(items, function(index, item) {
+
+        var icon = L.icon({
+            iconUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon.png',
+            iconRetinalUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon-2x.png',
+            iconSize: [29, 41],
+            iconAnchor: [14, 41],
+            popupAnchor: [0, -41],
+            shadowUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
+            shadowRetinaUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
+            shadowSize: [41, 41],
+            shadowAnchor: [13, 41]
+        });
+
+        if (item.colorgroup === 'red') {
+            icon = L.icon({
+                iconUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-red-icon.png',
+                iconRetinalUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-red-icon-2x.png',
+                iconSize: [29, 41],
+                iconAnchor: [14, 41],
+                popupAnchor: [0, -41],
+                shadowUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
+                shadowRetinaUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
+                shadowSize: [41, 41],
+                shadowAnchor: [13, 41]
+            });
+        }
+
+        if (item.colorgroup === 'blue') {
+            icon = L.icon({
+                iconUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon.png',
+                iconRetinalUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon-2x.png',
+                iconSize: [29, 41],
+                iconAnchor: [14, 41],
+                popupAnchor: [0, -41],
+                shadowUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
+                shadowRetinaUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
+                shadowSize: [41, 41],
+                shadowAnchor: [13, 41]
+            });
+        }
+
+        if (item.colorgroup === 'green') {
+            icon = L.icon({
+                iconUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-green-icon.png',
+                iconRetinalUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-green-icon-2x.png',
+                iconSize: [29, 41],
+                iconAnchor: [14, 41],
+                popupAnchor: [0, -41],
+                shadowUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
+                shadowRetinaUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
+                shadowSize: [41, 41],
+                shadowAnchor: [13, 41]
+            });
+        }
+
+        if (item.colorgroup === 'yellow') {
+            icon = L.icon({
+                iconUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-yellow-icon.png',
+                iconRetinalUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-yellow-icon-2x.png',
+                iconSize: [29, 41],
+                iconAnchor: [14, 41],
+                popupAnchor: [0, -41],
+                shadowUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
+                shadowRetinaUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
+                shadowSize: [41, 41],
+                shadowAnchor: [13, 41]
+            });
+        }
+
+        if (item.colorgroup === 'orange') {
+            icon = L.icon({
+                iconUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-orange-icon.png',
+                iconRetinalUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-orange-icon-2x.png',
+                iconSize: [29, 41],
+                iconAnchor: [14, 41],
+                popupAnchor: [0, -41],
+                shadowUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
+                shadowRetinaUrl: './wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
+                shadowSize: [41, 41],
+                shadowAnchor: [13, 41]
+            });
+        }
+
+        var marker = L.marker(
+            new L.LatLng(item.coordinates[0], item.coordinates[1]),
+            {
+                title: item.title,
+                icon: icon
+            });
+        var popupContent = "<a href='" + item.url + "' target='_blank'>" + item.title + "</a><br/>";
+
+        popupContent += item.description;
+
+        marker.bindPopup(popupContent);
+        markerCluster.cluster.addLayer(marker);
+        markerCluster.markerArray.push(marker);
+    });
+
+    return markerCluster;
 }
