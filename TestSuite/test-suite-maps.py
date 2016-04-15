@@ -423,9 +423,20 @@ def test19():
         wp_add_page()
         driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
         time.sleep(drs_page_load_wait)
-        driver.find_elements_by_xpath("//*[@id='open_add_custom_item'']").click()
+        driver.find_element_by_xpath("//*[@id='open_add_custom_item']").click()
         time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("custom_item_url")
+        driver.find_element_by_id("custom_item_url").send_keys("https://urlhere.com")
+        driver.find_element_by_id("custom_item_title").send_keys("This is a cool title")
+        driver.find_element_by_id("custom_item_description").send_keys("This is a cool description")
+        driver.find_element_by_id("custom_item_location").send_keys("Boston,MA")
+        driver.find_elements_by_xpath("//*[@id='custom_item_color_grouping']").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='custom_item_color_grouping']").send_keys(Keys.ARROW_DOWN)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='custom_item_color_grouping']").send_keys(Keys.ENTER)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='submit_custom_item']").click()
+        time.sleep(drs_page_load_wait)
         print("PASS")
         close_driver_and_display()
     except Exception, e:
@@ -459,10 +470,11 @@ def testsuite_spring3():
 def testsuite_spring4():
     print("Running Test Suite for Sprint 4...")
     test18()
+    test19()
 
 
 #testsuite_sprint2()
 #testsuite_spring3()
 #testsuite_spring4()
 
-test18()
+test19()
