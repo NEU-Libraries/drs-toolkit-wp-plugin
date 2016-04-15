@@ -175,7 +175,7 @@ function thickbox_styles() {
 				top: 20px;
 				left: 50px;
 				width: 300px;
-				height: 300px;
+				height: 350px;
 				border: 1px solid #000;
 				border-radius: 5px;
 				padding: 5px;
