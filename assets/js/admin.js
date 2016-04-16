@@ -50,14 +50,14 @@
     get_updated_items(search_params);
  });
 
- //click the main add drs button
- $("body").on('click', "#insert-drs",  function(){
+	//click the main add drs button
+	$("body").on('click', "#insert-drs",  function(){
   //  $("#TB_ajaxContent #tabs-1 .drs-items").html("Loading...");
    get_updated_items(search_params);
  });
 
-   //when an item is selected
-  $("body").on("change", "[class^='drstk-include-']", function(e){
+	//when an item is selected
+	$("body").on("change", "[class^='drstk-include-']", function(e){
     var pid = $(this).val();
     var type = $(this).attr("class").split("-")[2];
     var divid = $(this).attr("id").split("-")[1];
@@ -200,16 +200,16 @@
       }
   });
 
-  //enables the search button
-   $("body").on("click", "button[id^=search-button-]", function(){
+	//enables the search button
+	$("body").on("click", "button[id^=search-button-]", function(){
      var id = jQuery(this).attr('id');
      id = id.split('-')[2];
      search_params.q = $("#TB_ajaxContent #search-"+id).val();
      get_updated_items(search_params);
    });
 
-   //enables the pagination
-   $("body").on("click", ".tablenav-pages a", function(){
+	//enables the pagination
+	$("body").on("click", ".tablenav-pages a", function(){
      val = $(this).html();
      if (val == '&lt;&lt;'){
        val = 1
@@ -223,7 +223,7 @@
      }
    });
 
-   function get_updated_items(search_params){
+	function get_updated_items(search_params){
      var tab_name = tabs[current_tab];
      $("#TB_ajaxContent #tabs-"+current_tab+" .drs-items").html("Loading...");
      $.post(tile_ajax_obj.ajax_url, {
@@ -273,11 +273,11 @@
       $("#sortable-"+tab_name+"-list").sortable();
    }
 
-     function get_item_geographic_or_date_handler(itemid, mapsBool, timelineBool, key_date) {
+	function get_item_geographic_or_date_handler(itemid, mapsBool, timelineBool, key_date) {
          return get_item_geographic_or_date(itemid, mapsBool, timelineBool, key_date)
      }
 
-     function get_item_geographic_or_date(item, mapsBool, timelineBool, key_date) {
+	function get_item_geographic_or_date(item, mapsBool, timelineBool, key_date) {
          var genericBoolState = false;
          //AJAX call will be passed to internal WP AJAX
          $.ajax({
@@ -309,7 +309,7 @@
          return genericBoolState;
      }
 
-   function update_pagination(tab, data){
+	function update_pagination(tab, data){
      if (data.pagination.table.num_pages > 1){
          var pagination = "";
          if (data.pagination.table.current_page > 1){
@@ -337,7 +337,8 @@
   //jQuery for Custom item Popup
      //$("#open_add_custom_item").click(function(){
      $("body").on("click", "[id^=open_add_custom_item]", function(){
-         $("#add_custom_item").css("display", "block");
+			$("#add_custom_item").css("display", "block");
+			$(this).closest('form').find("input[type=text], textarea").val("");
      });
 
      //$("#close_add_custom_item").click(function(){
@@ -378,16 +379,22 @@
          var timeline_custom_item_description = $("#timeline_custom_item_description").val();
          var timeline_custom_item_date = $("#timeline_custom_item_keydate").val();
          var timeline_custom_item_color_grouping = $('#timeline_custom_item_color_grouping').val();
+         
+         if(timeline_custom_item_date instanceof Date){
+				timeline_custom_item_object = {
+					 url: timeline_custom_item_url,
+					 title: timeline_custom_item_title,
+					 description: timeline_custom_item_description,
+					 date: timeline_custom_item_date,
+					 colorGroup: timeline_custom_item_color_grouping
+				 };
 
-         timeline_custom_item_object = {
-             url: timeline_custom_item_url,
-             title: timeline_custom_item_title,
-             description: timeline_custom_item_description,
-             date: timeline_custom_item_date,
-             colorGroup: timeline_custom_item_color_grouping
-         };
+				 timeline_custom_items.push(timeline_custom_item_object);
+		 }else{
+			alert("Please enter a valid date");
+		 }
 
-         timeline_custom_items.push(timeline_custom_item_object);
+         
          console.log(timeline_custom_items)
      });
 
