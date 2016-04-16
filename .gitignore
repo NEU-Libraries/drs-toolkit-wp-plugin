@@ -3,3 +3,4 @@
 deploy.sh
 .idea/
 node_modules/
+specs/results/

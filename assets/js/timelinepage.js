@@ -6,7 +6,7 @@ jQuery(document).ready(function($) {
     
     var options = {scale_factor:increments};
     
-    var finalEventsListAfterCustomData = getCustomItems($('.custom-timeline'), eventsList);
+    var finalEventsListAfterCustomData = getTimelineCustomItems($('.custom-timeline'), eventsList);
     
     var colorIds = getcolorIdsData($('#timeline-color-ids'));
     
@@ -49,7 +49,7 @@ jQuery(document).ready(function($) {
      
 	}
 	
-	function getCustomItems(jqArray, eventsList){
+	function getTimelineCustomItems(jqArray, eventsList){
 		
 		var finalDictionary = {};
 		

@@ -380,19 +380,17 @@
          var timeline_custom_item_date = $("#timeline_custom_item_keydate").val();
          var timeline_custom_item_color_grouping = $('#timeline_custom_item_color_grouping').val();
          
-         if(timeline_custom_item_date instanceof Date){
-				timeline_custom_item_object = {
-					 url: timeline_custom_item_url,
-					 title: timeline_custom_item_title,
-					 description: timeline_custom_item_description,
-					 date: timeline_custom_item_date,
-					 colorGroup: timeline_custom_item_color_grouping
-				 };
+         
+		timeline_custom_item_object = {
+			 url: timeline_custom_item_url,
+			 title: timeline_custom_item_title,
+			 description: timeline_custom_item_description,
+			 date: timeline_custom_item_date,
+			 colorGroup: timeline_custom_item_color_grouping
+		 };
 
-				 timeline_custom_items.push(timeline_custom_item_object);
-		 }else{
-			alert("Please enter a valid date");
-		 }
+		 timeline_custom_items.push(timeline_custom_item_object);
+		 
 
          
          console.log(timeline_custom_items)
