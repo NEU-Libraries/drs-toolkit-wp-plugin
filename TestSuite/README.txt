@@ -19,7 +19,6 @@ These are: pyvirtualdisplay, selenium, inspect and time.
 Here is how you would install pip on different Operating Systems: https://pip.pypa.io/en/stable/installing/
 
 -- Installing dependencies --
-
 Once you have pip installed and open, just run the following commands:
 
 pip install selenium
