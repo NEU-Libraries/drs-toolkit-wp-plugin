@@ -243,6 +243,7 @@ def test11():
     try:
         print("Testing to make sure legend descriptions are generated.")
         wp_add_page()
+        time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='tabs-5']/button[2]").click()
@@ -263,13 +264,14 @@ def test12():
     try:
         print("Testing to make sure you can set map display information.")
         wp_add_page()
+        time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='tabs-5']/button[2]").click()
         time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='tabs-5']/div[1]/div/label[1]/input").click()
-        driver.find_element_by_xpath("//*[@id='tabs-5']/div[1]/div/label[2]/input").click()
-        driver.find_element_by_xpath("//*[@id='tabs-5']/div[1]/div/label[3]/input").click()
+        driver.find_element_by_xpath("//*[@id='tabs-5']/div[2]/label[2]/div/label[1]/input").click()
+        driver.find_element_by_xpath("//*[@id='tabs-5']/div[2]/label[2]/div/label[2]/input").click()
+        driver.find_element_by_xpath("//*[@id='tabs-5']/div[2]/label[2]/div/label[3]/input").click()
         driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
         print("PASS")
         close_driver_and_display()
@@ -281,6 +283,7 @@ def test13():
     try:
         print("Testing to make sure you can set the color for selected items.")
         wp_add_page()
+        time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
         time.sleep(drs_page_load_wait)
         driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
@@ -302,8 +305,9 @@ def test14():
         print("Testing to make sure you can set the API Key.")
         wp_login()
         driver.get("http://52.33.56.123/wp-admin/options-general.php?page=drstk_admin_menu")
-        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[2]/td/input").clear()
-        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[2]/td/input").send_keys(leaflet_api_key)
+        time.sleep(2)
+        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[3]/form/table[1]/tbody/tr[3]/td/input").clear()
+        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[3]/form/table[1]/tbody/tr[3]/td/input").send_keys(leaflet_api_key)
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='submit']").submit()
         time.sleep(drs_page_load_wait)
@@ -313,21 +317,20 @@ def test14():
         print inspect.stack()[0][3] + " Failed with the following message:"
         print(e)
 
-        def test14():
-            try:
-                print("Testing to make sure you can set the Project Key.")
-                wp_login()
-                driver.get("http://52.33.56.123/wp-admin/options-general.php?page=drstk_admin_menu")
-                driver.find_element_by_xpath(
-                    "//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[2]/td/input").clear()
-                driver.find_element_by_xpath(
-                    "//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[3]/td/input").send_keys(leaflet_project_key)
-                time.sleep(drs_page_load_wait)
-                driver.find_element_by_xpath("//*[@id='submit']").submit()
-                time.sleep(drs_page_load_wait)
-                print("PASS")
-                close_driver_and_display()
-            except Exception, e:
+def test21():
+    try:
+        print("Testing to make sure you can set the Project Key.")
+        wp_login()
+        driver.get("http://52.33.56.123/wp-admin/options-general.php?page=drstk_admin_menu")
+        time.sleep(2)
+        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[3]/form/table[1]/tbody/tr[4]/td/input").clear()
+        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[3]/form/table[1]/tbody/tr[4]/td/input").send_keys(leaflet_project_key)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='submit']").submit()
+        time.sleep(drs_page_load_wait)
+        print("PASS")
+        close_driver_and_display()
+    except Exception, e:
                 print inspect.stack()[0][3] + " Failed with the following message:"
                 print(e)
 
@@ -336,22 +339,23 @@ def test15():
     try:
         print("Testing to make sure you can select an item, legend, color and metadata and it will generate the shortcode.")
         wp_add_page()
+        time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
         time.sleep(drs_page_load_wait)
         driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
         time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").click()
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label//div/select").click()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").send_keys(Keys.ARROW_DOWN)
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").send_keys(Keys.ENTER)
-        time.sleep(drs_page_load_wait)
+
         driver.find_element_by_xpath("//*[@id='tabs-5']/button[2]").click()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='redlegend']").send_keys("red legend")
-        driver.find_element_by_xpath("//*[@id='tabs-5']/div[1]/div/label[1]/input").click()
-        driver.find_element_by_xpath("//*[@id='tabs-5']/div[1]/div/label[2]/input").click()
-        driver.find_element_by_xpath("//*[@id='tabs-5']/div[1]/div/label[3]/input").click()
+        driver.find_element_by_xpath("//*[@id='tabs-5']/div[2]/label[2]/div/label[1]/input").click()
+        driver.find_element_by_xpath("//*[@id='tabs-5']/div[2]/label[2]/div/label[2]/input").click()
+        driver.find_element_by_xpath("//*[@id='tabs-5']/div[2]/label[2]/div/label[3]/input").click()
         driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
         print("PASS")
         close_driver_and_display()
@@ -365,11 +369,11 @@ def test16():
         create_driver()
         driver.get("http://52.33.56.123/maps-test")
         time.sleep(drs_page_load_wait)
-        driver.find_elements_by_xpath("//*[@id='map']/div[9]/div[1]/div[2]/button/span")[0].click()
+        driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button/span/span").click()
         time.sleep(2)
-        driver.find_elements_by_xpath("//*[@id='map']/div[9]/div[1]/div[2]/button/span")[0].click()
+        driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button/span/span").click()
         time.sleep(2)
-        driver.find_elements_by_xpath("//*[@id='map']/div[9]/div[1]/div[2]/button/span")[0].click()
+        driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button/span/span").click()
         time.sleep(drs_page_load_wait)
         print("PASS")
         close_driver_and_display()
@@ -383,11 +387,11 @@ def test17():
         create_driver()
         driver.get("http://52.33.56.123/maps-test-2")
         time.sleep(drs_page_load_wait)
-        driver.find_elements_by_xpath("//*[@id='map']/div[10]/div[1]/div[2]/button/span")[0].click()
+        driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button/span/span").click()
         time.sleep(2)
-        driver.find_elements_by_xpath("//*[@id='map']/div[10]/div[1]/div[2]/button/span")[0].click()
+        driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button/span/span").click()
         time.sleep(2)
-        driver.find_elements_by_xpath("//*[@id='map']/div[10]/div[1]/div[2]/button/span")[0].click()
+        driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button/span/span").click()
         time.sleep(drs_page_load_wait)
         print("PASS")
         close_driver_and_display()
@@ -419,7 +423,7 @@ def test18():
 
 def test19():
     try:
-        print("Testing to make sure you can ad a custom item.")
+        print("Testing to make sure you can add a custom map item.")
         wp_add_page()
         driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
         time.sleep(drs_page_load_wait)
@@ -429,7 +433,7 @@ def test19():
         driver.find_element_by_id("custom_item_title").send_keys("This is a cool title")
         driver.find_element_by_id("custom_item_description").send_keys("This is a cool description")
         driver.find_element_by_id("custom_item_location").send_keys("Boston,MA")
-        driver.find_elements_by_xpath("//*[@id='custom_item_color_grouping']").click()
+        driver.find_element_by_xpath("//*[@id='custom_item_color_grouping']").click()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='custom_item_color_grouping']").send_keys(Keys.ARROW_DOWN)
         time.sleep(drs_page_load_wait)
@@ -437,12 +441,72 @@ def test19():
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='submit_custom_item']").click()
         time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
+        time.sleep(drs_page_load_wait)
         print("PASS")
         close_driver_and_display()
     except Exception, e:
         print inspect.stack()[0][3] + " Failed with the following message:"
         print(e)
 
+def test22():
+    try:
+        print("Testing to make sure you can select an item, legend, color and metadata and it will generate the shortcode for both custom and exiting items.")
+        wp_add_page()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label//div/select").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").send_keys(Keys.ARROW_DOWN)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").send_keys(Keys.ENTER)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='open_add_custom_item']").click()
+        driver.find_element_by_id("custom_item_url").send_keys("https://urlhere.com")
+        driver.find_element_by_id("custom_item_title").send_keys("This is a cool title")
+        driver.find_element_by_id("custom_item_description").send_keys("This is a cool description")
+        driver.find_element_by_id("custom_item_location").send_keys("Boston,MA")
+        driver.find_element_by_xpath("//*[@id='custom_item_color_grouping']").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='custom_item_color_grouping']").send_keys(Keys.ARROW_DOWN)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='custom_item_color_grouping']").send_keys(Keys.ENTER)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='submit_custom_item']").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='tabs-5']/button[2]").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='redlegend']").send_keys("red legend")
+        driver.find_element_by_xpath("//*[@id='tabs-5']/div[2]/label[2]/div/label[1]/input").click()
+        driver.find_element_by_xpath("//*[@id='tabs-5']/div[2]/label[2]/div/label[2]/input").click()
+        driver.find_element_by_xpath("//*[@id='tabs-5']/div[2]/label[2]/div/label[3]/input").click()
+        driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
+        print("PASS")
+        close_driver_and_display()
+    except Exception, e:
+        print inspect.stack()[0][3] + " Failed with the following message:"
+        print(e)
+
+def test20():
+    try:
+        print("Testing to see if multiple map elements where some items are custom, and some are not,  are populated and clickable.")
+        create_driver()
+        driver.get("http://52.33.56.123/maps-test-2")
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button").click()
+        time.sleep(2)
+        driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button").click()
+        time.sleep(2)
+        driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button").click()
+        time.sleep(drs_page_load_wait)
+        print("PASS")
+        close_driver_and_display()
+    except Exception,e:
+         print inspect.stack()[0][3] + " Failed with the following message:"
+         print(e)
 
 def testsuite_sprint2():
     print("Running Test Suite for Sprint 2...")
@@ -466,15 +530,16 @@ def testsuite_spring3():
     test15()
     test16()
     test17()
+    test21()
 
 def testsuite_spring4():
     print("Running Test Suite for Sprint 4...")
     test18()
     test19()
+    test22()
+    test20()
 
 
-#testsuite_sprint2()
-#testsuite_spring3()
-#testsuite_spring4()
-
-test19()
+testsuite_sprint2()
+testsuite_spring3()
+testsuite_spring4()

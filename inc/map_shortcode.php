@@ -87,7 +87,7 @@ function drstk_map( $atts ){
     }
   }
 
-  if (isset($atts['custom_map_urls'])) {
+  if (isset($atts['custom_map_urls']) && ($atts['custom_map_urls'] != '')) {
     $custom_map_urls = explode(",",$atts['custom_map_urls']);
     $custom_map_titles = explode(",",$atts['custom_map_titles']);
     $custom_map_descriptions = explode(",",$atts['custom_map_descriptions']);

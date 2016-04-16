@@ -380,7 +380,6 @@ function getCustomItems(jqArray) {
 
 function addCustomItemsToMap(items, markerCluster) {
 
-
     jQuery.each(items, function(index, item) {
 
         var icon = L.icon({
