@@ -32,7 +32,7 @@
    search_params.q = '';
    search_params.page = 1;
    if (current_tab == 6){
-     $("#TB_ajaxContent #tabs-6").html('<h4>Timeline</h4><br/><label for="search">Search for timeline item: </label><input type="text" name="search" id="search-timeline" /><button class="themebutton" id="search-button-timeline">Search</button><br/><button class="zoom-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden zoom-options"><label for="drstk-timeline-start-date-boundary">Start Date Boundary<input type="text" placeholder="year eg:1960" id="start-date-boundary"></label><br/><label for="drstk-timeline-end-date-boundary">End Date Boundary<input type="text" placeholder="year eg:2000" id="end-date-boundary"></label><br/><label for="drstk-timeline-increments">Scale Increments</label><select name="drstk-timeline-increments" id="drstk-timeline-increments"><option value="0.5">Very Low</option><option value="2">Low</option><option value="5">Medium</option><option value="8">High</option><option value="13">Very High</option></select><br/><i>Note : Specifies the granularity to represent items on the timeline</i><br/><label for="drstk-timeline-legend">Legend Description </br> Red <input type="text" id="timeline_redlegend"></br>Blue <input type="text" id="timeline_bluelegend"></br>Green <input type="text" id="timeline_greenlegend"></br>Yellow <input type="text" id="timeline_yellowlegend"></br>Orange <input type="text" id="timeline_orangelegend"></label></br></div><hr/><div class="item-metadata"></div><div class="drs-items"></div><ol id="sortable-timeline-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-timeline" />');
+     $("#TB_ajaxContent #tabs-6").html('<h4>Timeline</h4><br/><label for="search">Search for timeline item: </label><input type="text" name="search" id="search-timeline" /><button class="themebutton" id="search-button-timeline">Search</button><br/><div id="add_custom_item"> <h1>Please Enter Custom Timeline Item</h1> <form action=""> Item URL:<br> <input type="url" id="timeline_custom_item_url" placeholder="url"> <br> Title:<br> <input type="text" id="timeline_custom_item_title" placeholder="title"> <br> Description:<br> <input type="text" id="timeline_custom_item_description" placeholder ="description"> <br> Date:<br> <input type="text" id="timeline_custom_item_keydate" placeholder="yyyy/mm/dd"> <br> Color Grouping: <br><select id="timeline_custom_item_color_grouping" style=font-family:\'FontAwesome\',Arial; "\'><option value=\'please_select_option\'>Please select a group</option><option value=\'red\'>&#xf041; Red</option> <option value=\'blue\'>&#xf041; Blue</option> <option value=\'green\'>&#xf041; Green</option> <option value=\'yellow\'>&#xf041; Yellow</option> <option value=\'orange\'>&#xf041; Orange</option></select> <br> <a href="#" type="button" id="timeline_submit_custom_item">Add</a> <a href="#" type="button" id="close_add_custom_item">Close</a> </form> </div> <a href="#add_custom_item" ><button id="open_add_custom_item"><span class="dashicons dashicons-plus"></span></button></a><button class="zoom-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden zoom-options"><label for="drstk-timeline-start-date-boundary">Start Date Boundary<input type="text" placeholder="year eg:1960" id="start-date-boundary"></label><br/><label for="drstk-timeline-end-date-boundary">End Date Boundary<input type="text" placeholder="year eg:2000" id="end-date-boundary"></label><br/><label for="drstk-timeline-increments">Scale Increments</label><select name="drstk-timeline-increments" id="drstk-timeline-increments"><option value="0.5">Very Low</option><option value="2">Low</option><option value="5">Medium</option><option value="8">High</option><option value="13">Very High</option></select><br/><i>Note : Specifies the granularity to represent items on the timeline</i><br/><label for="drstk-timeline-legend">Legend Description </br> Red <input type="text" id="timeline_redlegend"></br>Blue <input type="text" id="timeline_bluelegend"></br>Green <input type="text" id="timeline_greenlegend"></br>Yellow <input type="text" id="timeline_yellowlegend"></br>Orange <input type="text" id="timeline_orangelegend"></label></br></div><hr/><div class="item-metadata"></div><div class="drs-items"></div><ol id="sortable-timeline-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-timeline" />');
    }
    if (current_tab == 5){
      $("#TB_ajaxContent #tabs-5").html('<h4>Map</h4><br/><label for="search">Search for map item: </label><input type="text" name="search" id="search-map" /><button class="themebutton" id="search-button-map">Search</button><br/> <div id="add_custom_item"> <h1>Please Enter Custom Map Item</h1> <form action=""> Item URL:<br> <input type="url" id="custom_item_url" placeholder="url"> <br> Title:<br> <input type="text" id="custom_item_title" placeholder="title"> <br> Description:<br> <input type="text" id="custom_item_description" placeholder ="description"> <br> Location:<br> <input type="text" id="custom_item_location" placeholder="location"> <br> Color Grouping: <br><select id="custom_item_color_grouping" style=font-family:\'FontAwesome\',Arial; "\'><option value=\'please_select_option\'>Please select a group</option><option value=\'red\'>&#xf041; Red</option> <option value=\'blue\'>&#xf041; Blue</option> <option value=\'green\'>&#xf041; Green</option> <option value=\'yellow\'>&#xf041; Yellow</option> <option value=\'orange\'>&#xf041; Orange</option></select> <br> <a href="#" type="button" id="submit_custom_item">Add</a> <a href="#" type="button" id="close_add_custom_item">Close</a> </form> </div> <a href="#add_custom_item" ><button id="open_add_custom_item"><span class="dashicons dashicons-plus"></span></button></a><button class="map-options button"><span class="dashicons dashicons-admin-generic"></span></button><div class="hidden map-options"><label for="drstk-map-legend">Legend Description </br> Red <input type="text" id="redlegend"></br>Blue <input type="text" id="bluelegend"></br>Green <input type="text" id="greenlegend"></br>Yellow <input type="text" id="yellowlegend"></br>Orange <input type="text" id="orangelegend"></label></br><div class="drstk-map-story"><label><input type="checkbox" name="Story"/>Story</label></div><br/><label><div class="drstk-map-metadata"><h5>Metadata for Maps</h5><label><input type="checkbox" name="Creator,Contributor"/>Creator,Contributor</label><br/><label><input type="checkbox" name="Date created"/>Date Created</label><br/><label><input type="checkbox" name="Abstract/Description"/>Abstract/Description</label></div></div><div class="drs-items"></div><hr/><ol id="sortable-map-list"></ol><div class="drs-pagination"></div><input type="hidden" class="selected-map" />');
@@ -367,6 +367,29 @@
          custom_items.push(custom_item_object);
          console.log(custom_items)
      });
+     
+     var timeline_custom_item_object = {}; //Object
+     var timeline_custom_items = [] //Array of Objects
+     //$("#submit_custom_item").click(function(){
+     $("body").on("click", "[id^=timeline_submit_custom_item]", function(){
+         $("#add_custom_item").css("display", "none");
+         var timeline_custom_item_url = $("#timeline_custom_item_url").val();
+         var timeline_custom_item_title = $("#timeline_custom_item_title").val();
+         var timeline_custom_item_description = $("#timeline_custom_item_description").val();
+         var timeline_custom_item_date = $("#timeline_custom_item_keydate").val();
+         var timeline_custom_item_color_grouping = $('#timeline_custom_item_color_grouping').val();
+
+         timeline_custom_item_object = {
+             url: timeline_custom_item_url,
+             title: timeline_custom_item_title,
+             description: timeline_custom_item_description,
+             date: timeline_custom_item_date,
+             colorGroup: timeline_custom_item_color_grouping
+         };
+
+         timeline_custom_items.push(timeline_custom_item_object);
+         console.log(timeline_custom_items)
+     });
 
    //inserting the shortcodes
    $("body").on("click", "[id^=drstk_insert_]", function(e){
@@ -590,7 +613,29 @@
              shortcode += color_code_values;
              shortcode += color_code_description;
          }
-        shortcode += ']\n';
+			var custom_timeline_urls = [];
+			var custom_timeline_titles = [];
+			var custom_timeline_descriptions = [];
+			var custom_timeline_date = [];
+			var custom_timeline_color_groups = [];
+			//Custom item shortcode
+			$.each(timeline_custom_items, function(key, value) {
+				custom_timeline_urls.push("'" + value.url + "'");
+				custom_timeline_titles.push("'" + value.title + "'");
+				custom_timeline_descriptions.push("'" + value.description + "'");
+				custom_timeline_date.push("'" + value.date + "'");
+				custom_timeline_color_groups.push("'" + value.colorGroup + "'");
+				//console.log(value.url);
+				//console.log(value.title);
+				//console.log(value.description);
+				//console.log("done")
+			});
+			shortcode += 'custom_timeline_urls="' + custom_timeline_urls + '" ';
+			shortcode += 'custom_timeline_titles="' + custom_timeline_titles + '" ';
+			shortcode += 'custom_timeline_descriptions="' + custom_timeline_descriptions + '" ';
+			shortcode += 'custom_timeline_date="' + custom_timeline_date + '" ';
+			shortcode += 'custom_timeline_color_groups="' + custom_timeline_color_groups + '" ';
+			shortcode += ']\n';
     }
     if (insertShortcodeToWindow) {
         window.wp.media.editor.insert(shortcode);

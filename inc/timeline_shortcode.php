@@ -19,13 +19,14 @@ function drstk_timeline( $atts ){
 	  $current_color_legend_desc_string = $color_code . "_desc";
 	  $current_color_code_id_value = $atts[$current_color_code_id_string];
 	  $current_color_legend_desc_value = $atts[$current_color_legend_desc_string];
-	  if(!is_null($current_color_code_id_value) && !is_null($current_color_legend_desc_value)){
+	  
+	  if(!is_null($current_color_code_id_value)){
 		  $current_color_code_ids = explode(",", $current_color_code_id_value);
 		  foreach($current_color_code_ids as $current_color_code_id){
 			  $current_color_code_id_values[str_replace(' ', '', $current_color_code_id)] = $color_code;
 		  }
-		  $current_color_legend_desc_values[$color_code] = $current_color_legend_desc_value;
 	  }
+	  if(!is_null($current_color_legend_desc_value)){$current_color_legend_desc_values[$color_code] = $current_color_legend_desc_value;}
   }
   
   $event_list = array();
@@ -72,10 +73,35 @@ function drstk_timeline( $atts ){
 	  $color_ids_html_data .= " data-" . str_replace('/', '', $key_index) . "='" . $color_value . "' ";
   }
   
+  if (isset($atts['custom_timeline_urls']) && ($atts['custom_timeline_urls'] != '')) {
+    $custom_timeline_urls = explode(",",$atts['custom_timeline_urls']);
+    $custom_timeline_titles = explode(",",$atts['custom_timeline_titles']);
+    $custom_timeline_descriptions = explode(",",$atts['custom_timeline_descriptions']);
+    $custom_timeline_date = explode(",",$atts['custom_timeline_date']);
+    $custom_timeline_color_groups = explode(",",$atts['custom_timeline_color_groups']);
+
+    foreach($custom_timeline_urls as $key=>$value) {
+      $url = $value;
+      $title = $custom_timeline_titles[$key];
+      $title = trim($title,'\'');
+      $description = $custom_timeline_descriptions[$key];
+      $description = trim($description,'\'');
+      $date = explode('/',$custom_timeline_date[$key]);
+      $year = trim($date[0], '\'');
+      $month = $date[1];
+      $day = trim($date[2], '\'');
+      $colorGroup = $custom_timeline_color_groups[$key];
+
+      $timeline_custom_html .= "<div class='custom-timeline' data-url=".$url." data-year='".$year."' data-month='".$month."' data-day='".$day."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."' data-description='".htmlspecialchars($description, ENT_QUOTES, 'UTF-8')."' data-colorGroup=".$colorGroup."";
+      $timeline_custom_html .= "></div>";
+    }
+  }
+  
   $shortcode = "<div id='timeline-embed' style=\"width: 100%; height: 500px\"></div>";
-  $shortcode .= "<div id='timeline-table'><table style=\" float: right; width: 200px;\">". $color_desc_html_data ."</table></div>";
+  $shortcode .= "<div id='timeline-table'><table id='timeline-table-id' style=\" float: right; width: 200px;\">". $color_desc_html_data ."</table></div>";
   $shortcode .= "<div id='timeline'>".$timeline_html."</div>";
   $shortcode .= "<div id='timeline-increments' data-increments='".$timeline_increments."'></div>";
+  $shortcode .= "<div id='timeline-custom-data'>".$timeline_custom_html."</div>";
   
 	if($color_ids_html_data != '' || $color_desc_html_data != ''){
 	  $shortcode .= "<div id='timeline-color-ids'" . $color_ids_html_data . "></div>";

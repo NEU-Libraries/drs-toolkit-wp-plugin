@@ -182,7 +182,7 @@ function thickbox_styles() {
 				color: #fff;
 			} 
 
-			#submit_custom_item {
+			#submit_custom_item , #timeline_submit_custom_item {
 			  font: bold 11px Arial;
 			  text-decoration: none;
 			  background-color: #EEEEEE;
