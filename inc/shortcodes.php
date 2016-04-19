@@ -4,10 +4,12 @@
 function add_drs_button() {
     echo '<a href="#TB_inline?width=750&height=675&inlineId=drs-tile-modal" id="insert-drs" class="button thickbox" title="Add DRS Item(s)">Add DRS Item(s)</a>';
     echo '<div id="drs-tile-modal" style="display:none;padding:10px;">';
-    echo '<div id="tabs"><ul><li><a href="#tabs-1">Tile Gallery</a></li><li><a href="#tabs-2">Gallery Slider</a></li><li><a href="#tabs-3">Single Item</a></li><li><a href="#tabs-4">Media Playlist</a></li></ul><div id="tabs-1">';
+    echo '<div id="tabs"><ul><li><a href="#tabs-1">Tile Gallery</a></li><li><a href="#tabs-2">Gallery Slider</a></li><li><a href="#tabs-3">Single Item</a></li><li><a href="#tabs-4">Media Playlist</a></li><li><a href="#tabs-5">Map</a></li><li><a href="#tabs-6">Timeline</a></li></ul><div id="tabs-1">';
     echo '</div><div id="tabs-2">';
     echo '</div><div id="tabs-3">';
     echo '</div><div id="tabs-4">';
+    echo '</div><div id="tabs-5">';
+    echo '</div><div id="tabs-6">';
     echo '</div>';
     echo '</div>';
     echo '</div>';
@@ -33,6 +35,8 @@ function drstk_enqueue_page_scripts( $hook ) {
       'ajax_url' => admin_url( 'admin-ajax.php' ),
       'item_admin_nonce'    => $item_admin_nonce,
       'pid' => '',
+      'leaflet_api_key' => get_option('leaflet_api_key'),
+      'leaflet_project_key' => get_option('leaflet_project_key'),
       'errors' => json_encode($errors),
    ) );
 
@@ -75,6 +79,32 @@ function drstk_add_tile_gallery(){
     wp_send_json($data);
     wp_die();
 }
+
+/* POST for individual items*/
+function get_json_data_from_neu_item(){
+	// The $_REQUEST contains all the data sent via ajax
+    if ( isset($_REQUEST) ) {
+        $item = $_REQUEST['item'];
+		//Setting the correct URL
+		$url = "https://repository.library.northeastern.edu/api/v1/files/".$item;
+		
+		//Adding response to data
+		$data = get_response($url);
+		$json = json_decode($data);
+		if (isset($json->error)) {
+			wp_send_json(json_encode( "There was an error: " . $json->error));
+			return;
+		}
+		//returning json
+        echo wp_send_json($json);
+         
+        // debugging purposes
+        // print_r($_REQUEST);
+    }
+   die();
+}
+
+add_action( 'wp_ajax_get_json_data_from_neu_item', 'get_json_data_from_neu_item' ); //Searching for Maps and Timeline
 
 function thickbox_styles() {
    echo '<style type="text/css">
@@ -138,6 +168,75 @@ function thickbox_styles() {
             .drstk-slider-metadata h5{
               margin:5px;
             }
+			#add_custom_item{
+				position: fixed;
+				background: #808080;
+				display: none;
+				top: 20px;
+				left: 50px;
+				width: 300px;
+				height: 350px;
+				border: 1px solid #000;
+				border-radius: 5px;
+				padding: 5px;
+				color: #fff;
+			} 
+
+			#submit_custom_item , #timeline_submit_custom_item {
+			  font: bold 11px Arial;
+			  text-decoration: none;
+			  background-color: #EEEEEE;
+			  color: #333333;
+			  padding: 2px 6px 2px 6px;
+			  border-top: 1px solid #CCCCCC;
+			  border-right: 1px solid #333333;
+			  border-bottom: 1px solid #333333;
+			  border-left: 1px solid #CCCCCC;
+			}
+
+			#close_add_custom_item {
+			  font: bold 11px Arial;
+			  text-decoration: none;
+			  background-color: #EEEEEE;
+			  color: #333333;
+			  padding: 2px 6px 2px 6px;
+			  border-top: 1px solid #CCCCCC;
+			  border-right: 1px solid #333333;
+			  border-bottom: 1px solid #333333;
+			  border-left: 1px solid #CCCCCC;
+			}
+
+			#custom_item_submit {
+			  font: bold 11px Arial;
+			  text-decoration: none;
+			  background-color: #EEEEEE;
+			  color: #333333;
+			  padding: 2px 6px 2px 6px;
+			  border-top: 1px solid #CCCCCC;
+			  border-right: 1px solid #333333;
+			  border-bottom: 1px solid #333333;
+			  border-left: 1px solid #CCCCCC;
+			}
+			
+			option[value="red"] {
+				color: red;
+			} 
+			
+			option[value="blue"] {
+				color: blue;
+			} 
+			
+			option[value="green"] {
+				color: green;
+			} 
+			
+			option[value="yellow"] {
+				color: gold;
+			} 
+			
+			option[value="orange"] {
+				color: orange;
+			} 			
          </style>';
 }
 
