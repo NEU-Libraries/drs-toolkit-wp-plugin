@@ -16,6 +16,8 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/video_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/item_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/tiles_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/slider_shortcode.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'inc/map_shortcode.php');
+require_once( plugin_dir_path( __FILE__ ) . 'inc/timeline_shortcode.php' );
 
 
 
@@ -95,6 +97,14 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_collection' );
   add_settings_field('drstk_home_url', 'Permalink/URL Base', 'drstk_home_url_callback', 'drstk_options', 'drstk_project');
   register_setting( 'drstk_options', 'drstk_home_url', 'drstk_home_url_validation' );
+
+    //Adding Map Leaflet API Field
+  add_settings_field('leaflet_api_key', 'Leaflet API Key', 'leaflet_api_key_callback', 'drstk_options', 'drstk_project');
+  register_setting( 'drstk_options', 'leaflet_api_key' );
+  
+   //Adding Map Leaflet Project Field
+  add_settings_field('leaflet_project_key', 'Leaflet Project Key', 'leaflet_project_key_callback', 'drstk_options', 'drstk_project');
+  register_setting( 'drstk_options', 'leaflet_project_key' );
 
   add_settings_section('drstk_search_settings', 'Search Settings', null, 'drstk_options');
   add_settings_field('drstk_search_page_title', 'Search Page Title', 'drstk_search_page_title_callback', 'drstk_options', 'drstk_search_settings');
@@ -223,6 +233,18 @@ function drstk_home_url_validation($input){
     }
   }
   return $url_base;
+}
+
+function leaflet_api_key_callback(){
+  $leaflet_api_key = (get_option('leaflet_api_key') != '') ? get_option('leaflet_api_key') : '';
+  echo '<input name="leaflet_api_key" type="text" value="'.$leaflet_api_key.'" style="width:100%;"></input><br/>
+     <small>Ie. pk.eyJ1IjoiZGhhcmFtbWFuaWFyIiwiYSI6ImNpbTN0cjJmMTAwYmtpY2tyNjlvZDUzdXMifQ.8sUclClJc2zSBNW0ckJLOg</small>';
+}
+
+function leaflet_project_key_callback(){
+    $leaflet_project_key = (get_option('leaflet_project_key') != '') ? get_option('leaflet_project_key') : '';
+    echo '<input name="leaflet_project_key" type="text" value="'.$leaflet_project_key.'" style="width:100%;"></input><br/>
+     <small>Ie. dharammaniar.pfnog3b9</small>';
 }
 
 function drstk_search_page_title_callback(){
