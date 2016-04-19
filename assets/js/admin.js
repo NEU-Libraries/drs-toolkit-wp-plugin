@@ -152,7 +152,9 @@
         $("#TB_ajaxContent #tabs-"+current_tab+" .drs-items").html('<a href="#" id="drstk_insert_'+tab_name+'" class="button" title="Insert shortcode">Insert shortcode</a><p>Drag and drop the thumbnails in the order you want them to appear in the playlist. You can un-check the images you wish to exclude entirely.</p>');
 
       });
-      $("#sortable-"+tab_name+"-list").sortable();
+      $("#sortable-"+tab_name+"-list").sortable({
+        update: update_order
+      });
    }
 
    function update_pagination(tab, data){
@@ -179,6 +181,18 @@
          $("#TB_ajaxContent #tabs-"+tab+" .drs-pagination").html("<span class='tablenav'><span class='tablenav-pages'>" + pagination + "</span></span>");
      }
    }
+
+  function update_order(){
+    var tab_name = tabs[current_tab];
+    var $hidden_json = $(".selected-"+tab_name);
+    var newHiddenData = [];
+      $("#sortable-"+tab_name+"-list").find("li").each(function(){
+        if ($(this).find('input').prop('checked')){
+          newHiddenData.push($(this).find('input').val());
+        }
+      });
+    $hidden_json.val( newHiddenData.toString() );
+  }
 
    //inserting the shortcodes
    $("body").on("click", "[id^=drstk_insert_]", function(e){
