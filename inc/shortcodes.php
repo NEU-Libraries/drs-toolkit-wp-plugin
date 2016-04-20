@@ -51,6 +51,13 @@ function drstk_enqueue_page_scripts( $hook ) {
      'tile_ajax_nonce' => $tile_ajax_nonce,
    ));
 
+   $map_ajax_nonce = wp_create_nonce( 'map_ajax_nonce');
+   wp_localize_script( 'drstk_admin_js', 'map_ajax_obj', array(
+     'ajax_url' => admin_url('admin-ajax.php'),
+     'map_ajax_nonce' => $map_ajax_nonce,
+   ));
+
+
  } else {
    return;
  }
@@ -82,12 +89,13 @@ function drstk_add_tile_gallery(){
 
 /* POST for individual items*/
 function get_json_data_from_neu_item(){
+  check_ajax_referer( 'item_admin_nonce' );
 	// The $_REQUEST contains all the data sent via ajax
     if ( isset($_REQUEST) ) {
         $item = $_REQUEST['item'];
 		//Setting the correct URL
 		$url = "https://repository.library.northeastern.edu/api/v1/files/".$item;
-		
+
 		//Adding response to data
 		$data = get_response($url);
 		$json = json_decode($data);
@@ -97,7 +105,7 @@ function get_json_data_from_neu_item(){
 		}
 		//returning json
         echo wp_send_json($json);
-         
+
         // debugging purposes
         // print_r($_REQUEST);
     }
@@ -180,7 +188,7 @@ function thickbox_styles() {
 				border-radius: 5px;
 				padding: 5px;
 				color: #fff;
-			} 
+			}
 
 			#submit_custom_item , #timeline_submit_custom_item {
 			  font: bold 11px Arial;
@@ -217,26 +225,26 @@ function thickbox_styles() {
 			  border-bottom: 1px solid #333333;
 			  border-left: 1px solid #CCCCCC;
 			}
-			
+
 			option[value="red"] {
 				color: red;
-			} 
-			
+			}
+
 			option[value="blue"] {
 				color: blue;
-			} 
-			
+			}
+
 			option[value="green"] {
 				color: green;
-			} 
-			
+			}
+
 			option[value="yellow"] {
 				color: gold;
-			} 
-			
+			}
+
 			option[value="orange"] {
 				color: orange;
-			} 			
+			}
          </style>';
 }
 
