@@ -1,3 +1,4 @@
+import os
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -48,7 +49,8 @@ def create_driver():
         #display = Display(visible=0, size=(800, 600))
         #display.start()
         global driver
-        driver = webdriver.Chrome()
+        os.environ["webdriver.chrome.driver"] = "/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver"
+        driver = webdriver.Chrome("/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver")
         driver.set_window_size(1280,720)
     except Exception,e:
         print("Error produced when setting webdriver and/or XVFB display.")

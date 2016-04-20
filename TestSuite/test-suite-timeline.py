@@ -1,3 +1,4 @@
+import os
 import inspect
 import time
 from pyvirtualdisplay import Display
@@ -43,6 +44,8 @@ def create_driver():
         display = Display(visible=0, size=(800, 600))
         display.start()
         global driver
+        os.environ["webdriver.chrome.driver"] = "/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver"
+        driver = webdriver.Chrome("/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver")
         driver = webdriver.Chrome()
     except Exception as e:
         print("Error produced when setting webdriver and/or XVFB display.")
@@ -455,7 +458,7 @@ def test21():
     except Exception as e:
         print(inspect.stack()[0][3] + " Failed with the following message:")
         print(e)
-        
+
 def testsuite_sprint2_timeline():
     print("Running Test Suite for Sprint 2...")
     test1()
@@ -483,7 +486,7 @@ def testsuite_sprint4_timeline():
     test19()
     test20()
     test21()
-    
+
 testsuite_sprint2_timeline()
 testsuite_sprint3_timeline()
 testsuite_sprint4_timeline()

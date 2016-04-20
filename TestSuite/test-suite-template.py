@@ -1,3 +1,4 @@
+import os
 from pyvirtualdisplay import Display
 from selenium import webdriver
 import inspect
@@ -38,7 +39,8 @@ def create_driver():
         global display
         display.start()
         global driver
-        driver = webdriver.Chrome()
+        os.environ["webdriver.chrome.driver"] = "/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver"
+        driver = webdriver.Chrome("/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver")
     except Exception,e:
         print("Error produced when setting webdriver and/or XVFB display.")
         print(e)
