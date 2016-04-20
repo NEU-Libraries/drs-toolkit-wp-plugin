@@ -52,7 +52,8 @@ function drstk_timeline( $atts ){
       $text = $breadcrumbs->$pid;
 
       $keys = (array)$key_date;
-      $key_date_explode = explode("/",array_keys($keys)[0]);
+      $just_keys = array_keys($keys);
+      $key_date_explode = explode("/",$just_keys[0]);
 
 
       $timeline_html .= "<div class='timelineclass' data-url='".$thumbnail_url."' data-caption='".$caption."' data-credit=' ' data-year='".$key_date_explode[0]."' data-month='".$key_date_explode[1]."' data-day='".$key_date_explode[2]."' data-headline='".$headline."' data-text='".$text."'>";
