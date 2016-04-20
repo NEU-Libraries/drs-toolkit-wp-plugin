@@ -62,7 +62,8 @@ function drstk_timeline( $atts ){
       $timeline_html = $errors['shortcodes']['fail'];
     }
     $present_id_color = $current_color_code_id_values[str_replace(' ', '', $neu_id)];
-	$index_color_pair[array_keys($keys)[0]] = $present_id_color;
+    $just_keys = array_keys($keys);
+	  $index_color_pair[$just_keys[0]] = $present_id_color;
   }
   $color_ids_html_data = '';
   $color_desc_html_data = '';
