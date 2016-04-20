@@ -8,7 +8,7 @@ function drstk_tiles( $atts ){
   if($cache) {
       return $cache;
   }
-  $imgs = explode(", ",$atts['id']);
+  $imgs = array_map('trim', explode(',', $atts['id']));
   $img_html = "";
   foreach($imgs as $img){
     $url = "https://repository.library.northeastern.edu/api/v1/files/" . $img . "?solr_only=true";

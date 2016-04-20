@@ -339,7 +339,7 @@
           newHiddenData.push($(this).find('input').val());
         }
       });
-    $hidden_json.val( newHiddenData.toString() );
+    $hidden_json.val( newHiddenData.join(", ") );
   }
 
   //jQuery for Custom item Popup

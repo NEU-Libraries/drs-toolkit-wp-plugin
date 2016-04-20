@@ -8,7 +8,7 @@ function drstk_map( $atts ){
   /*if($cache) {
     return $cache;
   }*/
-  $items = explode(", ",$atts['id']);
+  $items = array_map('trim', explode(',', $atts['id']));
   $map_api_key = $atts['map_api_key'];
   $map_project_key = $atts['map_project_key'];
   $story = $atts['story'];
@@ -79,7 +79,7 @@ function drstk_map( $atts ){
         }
         $map_html .= " data-metadata='".$map_metadata."'";
       }
-      
+
       $map_html .= "></div>";
 
     } else {
@@ -115,7 +115,7 @@ function drstk_map( $atts ){
       $map_html .= "></div>";
     }
   }
-    
+
   $shortcode .= ">".$map_html."</div>";
   $cache_output = $shortcode;
   $cache_time = 1000;

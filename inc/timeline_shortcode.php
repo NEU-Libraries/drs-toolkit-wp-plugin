@@ -8,7 +8,7 @@ function drstk_timeline( $atts ){
   if($cache) {
       return $cache;
   }
-  $neu_ids = explode(", ",$atts['id']);
+  $neu_ids = array_map('trim', explode(',', $atts['id']));
   $timeline_increments = $atts['increments'];
   $color_codes = array("red", "green", "blue", "yellow", "orange");
   $current_color_code_id_values = array();
@@ -19,7 +19,7 @@ function drstk_timeline( $atts ){
 	  $current_color_legend_desc_string = $color_code . "_desc";
 	  $current_color_code_id_value = $atts[$current_color_code_id_string];
 	  $current_color_legend_desc_value = $atts[$current_color_legend_desc_string];
-	  
+
 	  if(!is_null($current_color_code_id_value)){
 		  $current_color_code_ids = explode(",", $current_color_code_id_value);
 		  foreach($current_color_code_ids as $current_color_code_id){
@@ -28,7 +28,7 @@ function drstk_timeline( $atts ){
 	  }
 	  if(!is_null($current_color_legend_desc_value)){$current_color_legend_desc_values[$color_code] = $current_color_legend_desc_value;}
   }
-  
+
   $event_list = array();
   $timeline_html = "";
   $counter = 1;
@@ -36,25 +36,25 @@ function drstk_timeline( $atts ){
     $url = "https://repository.library.northeastern.edu/api/v1/files/" . $neu_id;
     $data = get_response($url);
     $data = json_decode($data);
-    
+
     if (!isset($data->error)){
       $pid = $data->pid;
       $key_date = $data->key_date;
       $current_array = array();
-      $breadcrumbs = $data->breadcrumbs;      
-      
+      $breadcrumbs = $data->breadcrumbs;
+
       $thumbnail_url = $data->thumbnails[2];
-      
+
       $caption_headline_tag = "neu:5m60qx652";
       $caption = $breadcrumbs->$caption_headline_tag;
-      
+
       $headline = $breadcrumbs->$caption_headline_tag;
       $text = $breadcrumbs->$pid;
-     
-      $keys = (array)$key_date;      
+
+      $keys = (array)$key_date;
       $key_date_explode = explode("/",array_keys($keys)[0]);
-      
-      
+
+
       $timeline_html .= "<div class='timelineclass' data-url='".$thumbnail_url."' data-caption='".$caption."' data-credit=' ' data-year='".$key_date_explode[0]."' data-month='".$key_date_explode[1]."' data-day='".$key_date_explode[2]."' data-headline='".$headline."' data-text='".$text."'>";
       $timeline_html .= "</div>";
     }else {
@@ -72,7 +72,7 @@ function drstk_timeline( $atts ){
   forEach($index_color_pair as $key_index => $color_value){
 	  $color_ids_html_data .= " data-" . str_replace('/', '', $key_index) . "='" . $color_value . "' ";
   }
-  
+
   if (isset($atts['custom_timeline_urls']) && ($atts['custom_timeline_urls'] != '')) {
     $custom_timeline_urls = explode(",",$atts['custom_timeline_urls']);
     $custom_timeline_titles = explode(",",$atts['custom_timeline_titles']);
@@ -96,13 +96,13 @@ function drstk_timeline( $atts ){
       $timeline_custom_html .= "></div>";
     }
   }
-  
+
   $shortcode = "<div id='timeline-embed' style=\"width: 100%; height: 500px\"></div>";
   $shortcode .= "<div id='timeline-table'><table id='timeline-table-id' style=\" float: right; width: 200px;\">". $color_desc_html_data ."</table></div>";
   $shortcode .= "<div id='timeline'>".$timeline_html."</div>";
   $shortcode .= "<div id='timeline-increments' data-increments='".$timeline_increments."'></div>";
   $shortcode .= "<div id='timeline-custom-data'>".$timeline_custom_html."</div>";
-  
+
 	if($color_ids_html_data != '' || $color_desc_html_data != ''){
 	  $shortcode .= "<div id='timeline-color-ids'" . $color_ids_html_data . "></div>";
 	}

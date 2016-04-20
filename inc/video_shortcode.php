@@ -7,7 +7,7 @@ function drstk_collection_playlist($atts){
   if($cache) {
     return $cache;
   }
-    $collection = explode(', ', $atts['id']);
+    $collection = array_map('trim', explode(',', $atts['id']));
     $playlists = '';
     if (isset($atts['height']) && $atts['height'] != 0){
       $height = $atts['height'];

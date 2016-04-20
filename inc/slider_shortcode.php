@@ -9,7 +9,7 @@ function drstk_gallery( $atts ){
       return $cache;
   }
   if (isset($atts['id'])){
-    $images = explode(", ",$atts['id']);
+    $images = array_map('trim', explode(',', $atts['id']));
     $img_html = '';
     $height = $width = 0;
     $i = 0;
