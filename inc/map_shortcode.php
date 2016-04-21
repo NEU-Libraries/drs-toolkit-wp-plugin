@@ -153,6 +153,16 @@ function drstk_map_shortcode_scripts() {
         plugins_url( '../assets/js/map.js', __FILE__ ),
         array( 'jquery' ));
     wp_enqueue_script('drstk_map');
+
+    $map_nonce = wp_create_nonce( 'map_nonce' );
+
+    $map_obj = array(
+      'ajax_url' => admin_url('admin-ajax.php'),
+      'nonce'    => $map_nonce,
+      'home_url' => drstk_home_url(),
+    );
+    wp_localize_script( 'drstk_map', 'map_obj', $map_obj );
+
   }
 }
 add_action( 'wp_enqueue_scripts', 'drstk_map_shortcode_scripts');
