@@ -196,7 +196,7 @@ function get_item_image(){
 
 function get_associated_files(){
   global $data, $errors, $assoc_meta_options;
-  if (($data->associated != NULL) && (get_option('drstk_assoc') == 'on')){
+  if (isset($data->associated) && ($data->associated != NULL) && (get_option('drstk_assoc') == 'on')){
     $associated_html = '';
     $title = (get_option('drstk_assoc_title') != '') ? get_option('drstk_assoc_title') : 'Associated Files';
     $associated_html .= "<div class='panel panel-default assoc_files'><div class='panel-heading'>".$title."</div><div class='panel-body'>";
