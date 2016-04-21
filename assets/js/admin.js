@@ -345,13 +345,13 @@
   //jQuery for Custom item Popup
      //$("#open_add_custom_item").click(function(){
      $("body").on("click", "[id^=open_add_custom_item]", function(){
-			$("#add_custom_item").css("display", "block");
+      $(this).parents("a").parent("div").find("#add_custom_item").css("display", "block");
 			$(this).closest('form').find("input[type=text], textarea").val("");
      });
 
      //$("#close_add_custom_item").click(function(){
      $("body").on("click", "[id^=close_add_custom_item]", function(){
-         $("#add_custom_item").css("display", "none");
+      $(this).parents("#add_custom_item").css("display", "none");
      });
 
      var custom_item_object = {}; //Object
