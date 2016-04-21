@@ -258,7 +258,10 @@
         } else {
           $("#TB_ajaxContent #tabs-"+current_tab+" .drs-items").html("No results were retrieved for your query. Please try a different query.");
         }
-        $("#TB_ajaxContent #tabs-"+current_tab+" .drs-items").html('<a href="#" id="drstk_insert_'+tab_name+'" class="button" title="Insert shortcode">Insert shortcode</a><p>Drag and drop the thumbnails in the order you want them to appear in the playlist. You can un-check the images you wish to exclude entirely.</p>');
+        $("#TB_ajaxContent #tabs-"+current_tab+" .drs-items").html('<a href="#" id="drstk_insert_'+tab_name+'" class="button" title="Insert shortcode">Insert shortcode</a>');
+        if (current_tab != 3 && current_tab != 6){//don't need ordering for single item or timeline
+          $("#TB_ajaxContent #tabs-"+current_tab+" .drs-items").append('<p>Drag and drop the thumbnails in the order you want them to appear in the playlist. You can un-check the images you wish to exclude entirely.</p>');
+        }
       });
       $("#sortable-"+tab_name+"-list").sortable({
         update: update_order
