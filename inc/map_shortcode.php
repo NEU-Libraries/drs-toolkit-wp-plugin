@@ -3,11 +3,11 @@
 add_shortcode( 'drstk_map', 'drstk_map' );
 function drstk_map( $atts ){
   global $errors;
-  //$cache = get_transient(md5('PREFIX'.serialize($atts)));
+  $cache = get_transient(md5('PREFIX'.serialize($atts)));
 
-  /*if($cache) {
+  if($cache) {
     return $cache;
-  }*/
+  }
   $items = array_map('trim', explode(',', $atts['id']));
   $map_api_key = $atts['map_api_key'];
   $map_project_key = $atts['map_project_key'];
