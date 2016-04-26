@@ -17,7 +17,11 @@ function drstk_timeline( $atts ){
   foreach($color_codes as $color_code){
 	  $current_color_code_id_string = $color_code . "_id";
 	  $current_color_legend_desc_string = $color_code . "_desc";
-	  $current_color_code_id_value = $atts[$current_color_code_id_string];
+    if (isset($atts[$current_color_code_id_string])){
+      $current_color_code_id_value = $atts[$current_color_code_id_string];
+    } else {
+      $current_color_code_id_value = NULL;
+    }
 	  $current_color_legend_desc_value = $atts[$current_color_legend_desc_string];
 
 	  if(!is_null($current_color_code_id_value)){
