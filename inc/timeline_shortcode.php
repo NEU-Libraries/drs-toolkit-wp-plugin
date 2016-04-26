@@ -22,7 +22,11 @@ function drstk_timeline( $atts ){
     } else {
       $current_color_code_id_value = NULL;
     }
-	  $current_color_legend_desc_value = $atts[$current_color_legend_desc_string];
+    if (isset($atts[$current_color_legend_desc_string])){
+      $current_color_legend_desc_value = $atts[$current_color_legend_desc_string];
+    } else {
+      $current_color_legend_desc_value = NULL;
+    }
 
 	  if(!is_null($current_color_code_id_value)){
 		  $current_color_code_ids = explode(",", $current_color_code_id_value);
@@ -49,23 +53,42 @@ function drstk_timeline( $atts ){
 
       $thumbnail_url = $data->thumbnails[2];
 
-      $caption_headline_tag = "neu:5m60qx652";
-      $caption = $breadcrumbs->$caption_headline_tag;
-
-      $headline = $breadcrumbs->$caption_headline_tag;
-      $text = $breadcrumbs->$pid;
+      if (isset($atts['metadata'])){
+        $timeline_metadata = '';
+        $metadata = explode(",",$atts['metadata']);
+        foreach($metadata as $field){
+          if (isset($data->mods->$field)) {
+            $this_field = $data->mods->$field;
+            if (isset($this_field[0])) {
+              $timeline_metadata .= $this_field[0] . "<br/>";
+            }
+          }
+        }
+        $text = htmlentities($timeline_metadata);
+      } else {
+        $text = "<p>&nbsp;</p>";
+      }
+      if ($text == NULL || $text == ""){
+        $text = "<p>&nbsp;</p>";
+      }
+      $caption = htmlentities($data->mods->Title[0]);
+      $headline = htmlentities($data->mods->Title[0]);
 
       $keys = (array)$key_date;
       $just_keys = array_keys($keys);
       $key_date_explode = explode("/",$just_keys[0]);
 
 
-      $timeline_html .= "<div class='timelineclass' data-url='".$thumbnail_url."' data-caption='".$caption."' data-credit=' ' data-year='".$key_date_explode[0]."' data-month='".$key_date_explode[1]."' data-day='".$key_date_explode[2]."' data-headline='".$headline."' data-text='".$text."'>";
+      $timeline_html .= "<div class=\"timelineclass\" data-url=\"".$thumbnail_url."\" data-caption=\"".$caption."\" data-credit=\" \" data-year=\"".$key_date_explode[0]."\" data-month=\"".$key_date_explode[1]."\" data-day=\"".$key_date_explode[2]."\" data-headline=\"".$headline."\" data-text=\"".$text."\">";
       $timeline_html .= "</div>";
     }else {
       $timeline_html = $errors['shortcodes']['fail'];
     }
-    $present_id_color = $current_color_code_id_values[str_replace(' ', '', $neu_id)];
+    if (isset($current_color_code_id_values[str_replace(' ', '', $neu_id)])) {
+      $present_id_color = $current_color_code_id_values[str_replace(' ', '', $neu_id)];
+    } else {
+      $present_id_color = NULL;
+    }
     $just_keys = array_keys($keys);
 	  $index_color_pair[$just_keys[0]] = $present_id_color;
   }
@@ -80,6 +103,7 @@ function drstk_timeline( $atts ){
   }
 
   if (isset($atts['custom_timeline_urls']) && ($atts['custom_timeline_urls'] != '')) {
+    $timeline_custom_html = "";
     $custom_timeline_urls = explode(",",$atts['custom_timeline_urls']);
     $custom_timeline_titles = explode(",",$atts['custom_timeline_titles']);
     $custom_timeline_descriptions = explode(",",$atts['custom_timeline_descriptions']);
@@ -107,7 +131,9 @@ function drstk_timeline( $atts ){
   $shortcode .= "<div id='timeline-table'><table id='timeline-table-id' style=\" float: right; width: 200px;\">". $color_desc_html_data ."</table></div>";
   $shortcode .= "<div id='timeline'>".$timeline_html."</div>";
   $shortcode .= "<div id='timeline-increments' data-increments='".$timeline_increments."'></div>";
-  $shortcode .= "<div id='timeline-custom-data'>".$timeline_custom_html."</div>";
+  if (isset($timeline_custom_html)){
+    $shortcode .= "<div id='timeline-custom-data'>".$timeline_custom_html."</div>";
+  }
 
 	if($color_ids_html_data != '' || $color_desc_html_data != ''){
 	  $shortcode .= "<div id='timeline-color-ids'" . $color_ids_html_data . "></div>";
