@@ -125,6 +125,9 @@ function getItemsFromJqueryArray(jqArray) {
         if (metaDataExists(jqArray[index])) {
             items[index].metadata = jQuery(jqArray[index]).data('metadata');
         }
+        if (mediaContentExists(jqArray[index])) {
+            items[index].media_content = jQuery(jqArray[index]).data('media-content');
+        }
     });
 
     return items;
@@ -145,6 +148,9 @@ function coordinatesExists(input) {
 }
 function metaDataExists(input) {
     return (jQuery(input).data('metadata')) ? true : false;
+}
+function mediaContentExists(input) {
+    return (jQuery(input).data('media-content')) ? true : false;
 }
 function urlExists(input) {
     return (jQuery(input).data('url')) ? true : false;
@@ -281,6 +287,9 @@ function addPopupsToItems(items, map, colorGroups, home_url) {
 
         if (item.metadata) {
             popupContent += item.metadata
+        }
+        if (item.media_content){
+            popupContent = item.media_content + popupContent
         }
 
         marker.bindPopup(popupContent);

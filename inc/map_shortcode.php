@@ -79,6 +79,17 @@ function drstk_map( $atts ){
         }
         $map_html .= " data-metadata='".$map_metadata."'";
       }
+      $canonical_object = "";
+      if (isset($data->canonical_object)){
+        foreach($data->canonical_object as $key=>$val){
+          if ($val == 'Video File' || $val == 'Audio File'){
+            $canonical_object = insert_jwplayer($key, $val, $data, $data->thumbnails[2]);
+          } else {
+            $canonical_object = '<img src="'.$data->thumbnails[2].'"/>';
+          }
+        }
+      }
+      $map_html .= " data-media-content='".$canonical_object."'";
 
       $map_html .= "></div>";
 
