@@ -5,6 +5,7 @@ install:
   - pip install selenium
   - pip install pyvirtualdisplay
 script:
+  - pwd
   - cd TestSuite
   - python test-suite-maps.py
   - python test-suite-timeline.py
