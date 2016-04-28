@@ -41,7 +41,7 @@ def create_driver():
         global driver
         os.environ["webdriver.chrome.driver"] = "/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver"
         if os.environ.get("TRAVIS"):
-            driver = webdriver.Chrome()
+            driver = webdriver.Chrome("/home/travis/build/NEU-Libraries/drs-toolkit-wp-plugin/TestSuite/chromedriver")
         else:
             driver = webdriver.Chrome("/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver")
     except Exception,e:
