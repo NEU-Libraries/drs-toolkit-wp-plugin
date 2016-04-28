@@ -40,12 +40,10 @@ drs_page_load_wait = 14
 
 def wp_login():
     try:
-        # create_driver()  # creates the driver so we can use it
         driver.get(wordpress_url)
         driver.find_element_by_id("user_login").send_keys(username)
         driver.find_element_by_id("user_pass").send_keys(password)
         driver.find_element_by_id("wp-submit").click()
-        #print("Login completed successfully")
     except Exception as e:
         print("Exception produced when logging into wp-admin. Error is: ")
         print(e)
@@ -57,9 +55,7 @@ def wp_add_page():
         driver.find_element_by_xpath("//*[@id='menu-pages']/a/div[3]").click()
         driver.find_element_by_xpath("//*[@id='menu-pages']/ul/li[3]/a").click()
         time.sleep(drs_page_load_wait)
-        print "ABOUT TO CLICK INSERT DRS ITEM"
         driver.find_element_by_id("insert-drs").click()
-        #print "Add page is successful"
     except Exception as e:
         print("Exception produced when creating new page. Error is: ")
         print(e)
@@ -69,12 +65,7 @@ class TestTimelineFunctions(unittest.TestCase):
     def setUp(self):
         try:
             # For headless Unix Testing, will not work on Windows as XVFB is not supported
-            # global display
-            # display = Display(visible=0, size=(800, 600))
-            # display.start()
             global driver
-            # os.environ["webdriver.chrome.driver"] = "/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver"
-            # driver = webdriver.Chrome(current_dir + "/chromedriver")
             driver = webdriver.Firefox()
         except Exception as e:
             print("Error produced when setting webdriver and/or XVFB display.")
@@ -84,7 +75,6 @@ class TestTimelineFunctions(unittest.TestCase):
     def tearDown(self):
         try:
             driver.quit()
-            display.stop()
         except Exception as e:
             print("Error produced when closing driver and display.")
             print(e)
@@ -92,18 +82,15 @@ class TestTimelineFunctions(unittest.TestCase):
 
     # DRS Timeline index test
     def test1(self):
-        # try:
-            # print("Testing to make sure index for DRS Timeline items is generated.")
-        wp_add_page()
-        driver.find_element_by_xpath("//*[@id='ui-id-6']").click()
-        time.sleep(drs_page_load_wait)
-        self.assertTrue(driver.find_element_by_xpath(
+        try:
+            wp_add_page()
+            driver.find_element_by_xpath("//*[@id='ui-id-6']").click()
+            time.sleep(drs_page_load_wait)
+            self.assertTrue(driver.find_element_by_xpath(
             "//img[@src='https://repository.library.northeastern.edu/downloads/neu:180456?datastream_id=thumbnail_1']"))
-            # print("PASS")
-            # close_driver_and_display()
-        # except Exception as e:
-            # print(inspect.stack()[0][3] + " Failed with the following message:")
-            # print(e)
+        except Exception as e:
+            print(inspect.stack()[0][3] + " Failed with the following message:")
+            print(e)
 
 
     # DRS Timeline search functionality test
