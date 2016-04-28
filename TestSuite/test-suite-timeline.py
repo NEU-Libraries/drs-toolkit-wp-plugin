@@ -56,6 +56,8 @@ def wp_add_page():
         wp_login()
         driver.find_element_by_xpath("//*[@id='menu-pages']/a/div[3]").click()
         driver.find_element_by_xpath("//*[@id='menu-pages']/ul/li[3]/a").click()
+        time.sleep(drs_page_load_wait)
+        print "ABOUT TO CLICK INSERT DRS ITEM"
         driver.find_element_by_id("insert-drs").click()
         #print "Add page is successful"
     except Exception as e:
