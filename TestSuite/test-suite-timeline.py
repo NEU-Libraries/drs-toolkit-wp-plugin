@@ -94,43 +94,41 @@ class TestTimelineFunctions(unittest.TestCase):
 
 
     # DRS Timeline search functionality test
-    # def test2():
-    #     try:
+    def test2(self):
+        try:
     #         print(
     #             "Testing to make sure search functionality is working and limiting results by keyword and if the item is a timeline item.")
-    #         wp_add_page()
-    #         search_keyword = "ralph"
-    #         driver.find_element_by_id("ui-id-6").click()
-    #         time.sleep(drs_page_load_wait)
-    #         driver.find_element_by_id("search-timeline").send_keys(search_keyword)
-    #         driver.find_element_by_id("search-button-timeline").click()
-    #         time.sleep(4)
-    #         driver.find_element_by_xpath(
-    #             "//img[@src='https://repository.library.northeastern.edu/downloads/neu:180456?datastream_id=thumbnail_1']")
-    #         print("PASS")
-    #         close_driver_and_display()
-    #     except Exception as e:
-    #         print(inspect.stack()[0][3] + " Failed with the following message:")
-    #         print(e)
-    #
-    #
-    # # DRS Timeline inserting 1 timeline shortcode test
-    # def test3():
-    #     try:
-    #         print("Testing to make sure 1 timeline's shortcode is enabled for selected DRS map items.")
-    #         wp_add_page()
-    #         time.sleep(4)
-    #         driver.find_element_by_id("ui-id-6").click()
-    #         time.sleep(drs_page_load_wait)
-    #         driver.find_elements_by_css_selector(".drstk-include-timeline")[0].send_keys(Keys.SPACE)
-    #         time.sleep(4)
-    #         print("PASS")
-    #         close_driver_and_display()
-    #     except Exception as e:
-    #         print(inspect.stack()[0][3] + " Failed with the following message:")
-    #         print(e)
-    #
-    #
+            wp_add_page()
+            search_keyword = "ralph"
+            driver.find_element_by_id("ui-id-6").click()
+            time.sleep(drs_page_load_wait)
+            driver.find_element_by_id("search-timeline").send_keys(search_keyword)
+            driver.find_element_by_id("search-button-timeline").click()
+            time.sleep(4)
+            self.assertTrue(driver.find_element_by_xpath(
+                "//img[@src='https://repository.library.northeastern.edu/downloads/neu:180456?datastream_id=thumbnail_1']"))
+        except Exception as e:
+            print(inspect.stack()[0][3] + " Failed with the following message:")
+            print(e)
+
+
+    # DRS Timeline inserting 1 timeline shortcode test
+    def test3():
+        try:
+            # print("Testing to make sure 1 timeline's shortcode is enabled for selected DRS map items.")
+            wp_add_page()
+            time.sleep(4)
+            driver.find_element_by_id("ui-id-6").click()
+            time.sleep(drs_page_load_wait)
+            self.assertTrue(driver.find_elements_by_css_selector(".drstk-include-timeline")[0].send_keys(Keys.SPACE))
+            time.sleep(4)
+            # print("PASS")
+            # close_driver_and_display()
+        except Exception as e:
+            print(inspect.stack()[0][3] + " Failed with the following message:")
+            print(e)
+
+
     # def test4():
     #     try:
     #         print("Testing to make sure several timeline's shortcode is enabled for selected DRS timeline items.")

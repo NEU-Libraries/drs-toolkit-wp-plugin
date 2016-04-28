@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/NEU-Libraries/drs-toolkit-wp-plugin.svg?branch=develop)](https://travis-ci.org/NEU-Libraries/drs-toolkit-wp-plugin)
+
 Plugin that provides functionality and templates for bringing DRS data into WP for the DRS Toolkit.
 
 Should be cloned into wp-content/plugins with
