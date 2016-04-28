@@ -28,6 +28,7 @@ import time
 #Login Credentials
 username = "testuser"
 password = "P@$$W0rd"
+current_dir = os.getcwd()
 
 #Wordpress wp-admin URL
 wordpress_url = "http://liblab.neu.edu/drstest/wp-login.php"
@@ -50,10 +51,7 @@ def create_driver():
         #display.start()
         global driver
         os.environ["webdriver.chrome.driver"] = "/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver"
-        if os.environ.get("TRAVIS"):
-            driver = webdriver.Chrome("/home/travis/build/NEU-Libraries/drs-toolkit-wp-plugin/TestSuite/chromedriver")
-        else:
-            driver = webdriver.Chrome("/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver")
+        driver = webdriver.Chrome(current_dir + "/chromedriver")
         driver.set_window_size(1280,720)
     except Exception,e:
         print("Error produced when setting webdriver and/or XVFB display.")

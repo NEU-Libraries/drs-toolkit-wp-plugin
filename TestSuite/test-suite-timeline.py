@@ -32,6 +32,7 @@ url = "http://liblab.neu.edu/drstest/timeline-test-colorcode/"
 
 # Wordpress wp-admin URL
 wordpress_url = "http://liblab.neu.edu/drstest/wp-login.php"
+current_dir = os.getcwd()
 
 # DRS Wait tile for index to populate
 drs_page_load_wait = 14
@@ -45,10 +46,7 @@ def create_driver():
         display.start()
         global driver
         os.environ["webdriver.chrome.driver"] = "/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver"
-        if os.environ.get("TRAVIS"):
-            driver = webdriver.Chrome("/home/travis/build/NEU-Libraries/drs-toolkit-wp-plugin/TestSuite/chromedriver")
-        else:
-            driver = webdriver.Chrome("/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver")
+        driver = webdriver.Chrome(current_dir + "/chromedriver")
     except Exception as e:
         print("Error produced when setting webdriver and/or XVFB display.")
         print(e)
