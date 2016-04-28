@@ -113,7 +113,7 @@ class TestTimelineFunctions(unittest.TestCase):
 
 
     # DRS Timeline inserting 1 timeline shortcode test
-    def test3():
+    def test3(self):
         try:
             # print("Testing to make sure 1 timeline's shortcode is enabled for selected DRS map items.")
             wp_add_page()
