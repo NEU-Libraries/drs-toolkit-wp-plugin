@@ -1,3 +1,4 @@
+import unittest
 import os
 from pyvirtualdisplay import Display
 from selenium import webdriver
