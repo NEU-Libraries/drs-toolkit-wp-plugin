@@ -45,8 +45,9 @@ def create_driver():
         display = Display(visible=0, size=(800, 600))
         display.start()
         global driver
-        os.environ["webdriver.chrome.driver"] = "/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver"
-        driver = webdriver.Chrome(current_dir + "/chromedriver")
+        # os.environ["webdriver.chrome.driver"] = "/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver"
+        # driver = webdriver.Chrome(current_dir + "/chromedriver")
+        driver = webdriver.Firefox()
     except Exception as e:
         print("Error produced when setting webdriver and/or XVFB display.")
         print(e)
