@@ -75,7 +75,7 @@ function drstk_item( $atts ){
     if (isset($atts['caption-position'])){
       $html .= " data-caption-position='".$atts['caption-position']."'";
     }
-    $html .= ">".$img_metadata."</div>";
+    $html .= "><a href='".drstk_home_url()."item/".$atts['id']."'>".$img_metadata."</a></div>";
   }
 
   // start hidden fields
