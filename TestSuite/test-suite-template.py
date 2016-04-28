@@ -27,11 +27,11 @@ import inspect
 #curl --silent --show-error --retry 5 https://raw.github.com/pypa/pip/master/contrib/get-pip.py | sudo python
 
 #Login Credentials
-username = "team06"
+username = "testuser"
 password = "P@$$W0rd"
 
 #Wordpress wp-admin URL
-wordpress_url = "http://52.33.56.123/wp-login.php"
+wordpress_url = "http://liblab.neu.edu/drstest/wp-login.php"
 
 def create_driver():
     try:
@@ -40,7 +40,10 @@ def create_driver():
         display.start()
         global driver
         os.environ["webdriver.chrome.driver"] = "/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver"
-        driver = webdriver.Chrome("/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver")
+        if os.environ.get("TRAVIS"):
+            driver = webdriver.Chrome()
+        else:
+            driver = webdriver.Chrome("/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver")
     except Exception,e:
         print("Error produced when setting webdriver and/or XVFB display.")
         print(e)

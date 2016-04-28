@@ -26,12 +26,12 @@ from selenium import webdriver
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 
-username = "team06"
+username = "testuser"
 password = "P@$$W0rd"
-url = "http://52.33.56.123/timeline-colorcode-demo"
+url = "http://liblab.neu.edu/drstest/timeline-test-colorcode/"
 
 # Wordpress wp-admin URL
-wordpress_url = "http://52.33.56.123/wp-login.php"
+wordpress_url = "http://liblab.neu.edu/drstest/wp-login.php"
 
 # DRS Wait tile for index to populate
 drs_page_load_wait = 14
@@ -45,8 +45,10 @@ def create_driver():
         display.start()
         global driver
         os.environ["webdriver.chrome.driver"] = "/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver"
-        driver = webdriver.Chrome("/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver")
-        driver = webdriver.Chrome()
+        if os.environ.get("TRAVIS"):
+            driver = webdriver.Chrome()
+        else:
+            driver = webdriver.Chrome("/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver")
     except Exception as e:
         print("Error produced when setting webdriver and/or XVFB display.")
         print(e)
@@ -164,7 +166,7 @@ def test5():
     try:
         print("Testing to see if timeline elements are populated and navigable to next timeline.")
         create_driver()
-        #driver.get("http://52.33.56.123/timeline-feature-page")
+        #driver.get("http://liblab.neu.edu/drstest/timeline-test/")
         driver.get(url)
         time.sleep(7)
         driver.find_element_by_css_selector(".tl-slidenav-content-container").click()
@@ -180,7 +182,7 @@ def test6():
     try:
         print("Testing to see if timeline date elements is obtained.")
         create_driver()
-        #driver.get("http://52.33.56.123/timeline-feature-page")
+        #driver.get("http://liblab.neu.edu/drstest/timeline-test/")
         driver.get(url)
         time.sleep(4)
         driver.find_element_by_xpath("//*[@id=\"boston-boys-and-girls-club-photographs-marker\"]/div[2]/div").is_displayed()
@@ -196,7 +198,7 @@ def test7():
     try:
         print("Testing to see if timeline bar can be zoomed in.")
         create_driver()
-        #driver.get("http://52.33.56.123/timeline-feature-page")
+        #driver.get("http://liblab.neu.edu/drstest/timeline-test/")
         driver.get(url)
         time.sleep(4)
         driver.find_element_by_xpath("//*[@id=\"timeline-embed\"]/div[3]/span[1]").click()
@@ -212,7 +214,7 @@ def test8():
     try:
         print("Testing to see if timeline bar can be zoomed out.")
         create_driver()
-        #driver.get("http://52.33.56.123/timeline-feature-page")
+        #driver.get("http://liblab.neu.edu/drstest/timeline-test/")
         driver.get(url)
         time.sleep(4)
         driver.find_element_by_xpath("//*[@id=\"timeline-embed\"]/div[3]/span[2]").click()
@@ -228,7 +230,7 @@ def test9():
     try:
         print("Testing to see if timeline item image is present.")
         create_driver()
-        #driver.get("http://52.33.56.123/timeline-feature-page")
+        #driver.get("http://liblab.neu.edu/drstest/timeline-test/")
         driver.get(url)
         time.sleep(4)
         driver.find_element_by_xpath("//*[@id=\"boston-boys-and-girls-club-photographs\"]/div[1]/div/div/div[1]/div[2]/div[1]/img").is_displayed()
@@ -415,7 +417,7 @@ def test18():
 
 def test19():
 
-    URL = 'http://52.33.56.123/timeline_sprint4_demopage'
+    URL = 'http://liblab.neu.edu/drstest/timeline-test-sprint-4/'
     try:
         print("Testing to see if Timeline item is present.")
         create_driver()
@@ -431,7 +433,7 @@ def test19():
 
 def test20():
 
-    URL = 'http://52.33.56.123/timeline_sprint4_demopage'
+    URL = 'http://liblab.neu.edu/drstest/timeline-test-sprint-4/'
     try:
         print("Testing to see if the Legend descriptions are displayed on the page")
         create_driver()

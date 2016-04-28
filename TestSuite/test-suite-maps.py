@@ -26,11 +26,11 @@ import time
 
 
 #Login Credentials
-username = "team06"
+username = "testuser"
 password = "P@$$W0rd"
 
 #Wordpress wp-admin URL
-wordpress_url = "http://52.33.56.123/wp-login.php"
+wordpress_url = "http://liblab.neu.edu/drstest/wp-login.php"
 
 #DRS Wait tile for index to populate
 drs_page_load_wait = 14
@@ -50,7 +50,10 @@ def create_driver():
         #display.start()
         global driver
         os.environ["webdriver.chrome.driver"] = "/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver"
-        driver = webdriver.Chrome("/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver")
+        if os.environ.get("TRAVIS"):
+            driver = webdriver.Chrome()
+        else:
+            driver = webdriver.Chrome("/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver")
         driver.set_window_size(1280,720)
     except Exception,e:
         print("Error produced when setting webdriver and/or XVFB display.")
@@ -159,7 +162,7 @@ def test5():
     try:
         print("Testing to see if map elements where coordinates are specified are populated and clickable.")
         create_driver()
-        driver.get("http://52.33.56.123/maps-test-old-1")
+        driver.get("http://liblab.neu.edu/drstest/maps-test-coord")
         time.sleep(drs_page_load_wait)
         driver.find_elements_by_xpath("//*[@id='map']/div[3]/div[2]/div[3]/img[1]")[0].click()
         time.sleep(drs_page_load_wait)
@@ -173,7 +176,7 @@ def test6():
     try:
         print("Testing to see if map elements where coordinates are specified can be zoomed in.")
         create_driver()
-        driver.get("http://52.33.56.123/maps-test-old-1")
+        driver.get("http://liblab.neu.edu/drstest/maps-test-coord")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@title='Zoom in']").click()
         time.sleep(drs_page_load_wait)
@@ -187,7 +190,7 @@ def test7():
     try:
         print("Testing to see if map elements where coordinates are specified can be zoomed out.")
         create_driver()
-        driver.get("http://52.33.56.123/maps-test-old-1")
+        driver.get("http://liblab.neu.edu/drstest/maps-test-coord")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@title='Zoom out']").click()
         time.sleep(drs_page_load_wait)
@@ -202,7 +205,7 @@ def test8():
     try:
         print("Testing to see if map elements where geographic locations are specified are populated and clickable.")
         create_driver()
-        driver.get("http://52.33.56.123/maps-test-old-2")
+        driver.get("http://liblab.neu.edu/drstest/maps-test-geo/")
         time.sleep(drs_page_load_wait)
         driver.find_elements_by_xpath("//*[@id='map']/div[2]/div[2]/div[3]/img")[0].click()
         time.sleep(drs_page_load_wait)
@@ -216,7 +219,7 @@ def test9():
     try:
         print("Testing to see if map elements where geographic locations are specified can be zoomed in.")
         create_driver()
-        driver.get("http://52.33.56.123/maps-test-old-2")
+        driver.get("http://liblab.neu.edu/drstest/maps-test-geo/")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@title='Zoom in']").click()
         time.sleep(drs_page_load_wait)
@@ -230,7 +233,7 @@ def test10():
     try:
         print("Testing to see if map elements where geographic locations are specified can be zoomed out.")
         create_driver()
-        driver.get("http://52.33.56.123/maps-test-old-2")
+        driver.get("http://liblab.neu.edu/drstest/maps-test-geo/")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@title='Zoom out']").click()
         time.sleep(drs_page_load_wait)
@@ -306,10 +309,10 @@ def test14():
     try:
         print("Testing to make sure you can set the API Key.")
         wp_login()
-        driver.get("http://52.33.56.123/wp-admin/options-general.php?page=drstk_admin_menu")
+        driver.get("http://liblab.neu.edu/drstest/wp-admin/options-general.php?page=drstk_admin_menu")
         time.sleep(2)
-        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[3]/form/table[1]/tbody/tr[3]/td/input").clear()
-        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[3]/form/table[1]/tbody/tr[3]/td/input").send_keys(leaflet_api_key)
+        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[3]/td/input").clear()
+        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[3]/td/input").send_keys(leaflet_api_key)
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='submit']").submit()
         time.sleep(drs_page_load_wait)
@@ -323,10 +326,10 @@ def test21():
     try:
         print("Testing to make sure you can set the Project Key.")
         wp_login()
-        driver.get("http://52.33.56.123/wp-admin/options-general.php?page=drstk_admin_menu")
+        driver.get("http://liblab.neu.edu/drstest/wp-admin/options-general.php?page=drstk_admin_menu")
         time.sleep(2)
-        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[3]/form/table[1]/tbody/tr[4]/td/input").clear()
-        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[3]/form/table[1]/tbody/tr[4]/td/input").send_keys(leaflet_project_key)
+        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[4]/td/input").clear()
+        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[4]/td/input").send_keys(leaflet_project_key)
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='submit']").submit()
         time.sleep(drs_page_load_wait)
@@ -369,7 +372,7 @@ def test16():
     try:
         print("Testing to see if multiple map elements where coordinates are specified are populated and clickable.")
         create_driver()
-        driver.get("http://52.33.56.123/maps-test")
+        driver.get("http://liblab.neu.edu/drstest/maps-test/")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button/span/span").click()
         time.sleep(2)
@@ -387,7 +390,7 @@ def test17():
     try:
         print("Testing to see if multiple map elements where geolocations are specified are populated and clickable.")
         create_driver()
-        driver.get("http://52.33.56.123/maps-test-2")
+        driver.get("http://liblab.neu.edu/drstest/maps-test-2")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button/span/span").click()
         time.sleep(2)
@@ -496,7 +499,7 @@ def test20():
     try:
         print("Testing to see if multiple map elements where some items are custom, and some are not,  are populated and clickable.")
         create_driver()
-        driver.get("http://52.33.56.123/maps-test-2")
+        driver.get("http://liblab.neu.edu/drstest/maps-test-2")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button").click()
         time.sleep(2)
