@@ -89,6 +89,7 @@ class TestTimelineFunctions(unittest.TestCase):
             self.assertTrue(driver.find_element_by_xpath(
             "//img[@src='https://repository.library.northeastern.edu/downloads/neu:180456?datastream_id=thumbnail_1']"))
         except Exception as e:
+            self.assertFalse(False)
             print(inspect.stack()[0][3] + " Failed with the following message:")
             print(e)
 
@@ -96,8 +97,7 @@ class TestTimelineFunctions(unittest.TestCase):
     # DRS Timeline search functionality test
     def test2(self):
         try:
-    #         print(
-    #             "Testing to make sure search functionality is working and limiting results by keyword and if the item is a timeline item.")
+            # print("Testing to make sure search functionality is working and limiting results by keyword and if the item is a timeline item.")
             wp_add_page()
             search_keyword = "ralph"
             driver.find_element_by_id("ui-id-6").click()
@@ -108,197 +108,202 @@ class TestTimelineFunctions(unittest.TestCase):
             self.assertTrue(driver.find_element_by_xpath(
                 "//img[@src='https://repository.library.northeastern.edu/downloads/neu:180456?datastream_id=thumbnail_1']"))
         except Exception as e:
+            self.assertFalse(False)
             print(inspect.stack()[0][3] + " Failed with the following message:")
             print(e)
 
 
+
     # DRS Timeline inserting 1 timeline shortcode test
-    def test3(self):
+    # def test3(self):
+    #     try:
+    #         # print("Testing to make sure 1 timeline's shortcode is enabled for selected DRS map items.")
+    #         wp_add_page()
+    #         time.sleep(4)
+    #         driver.find_element_by_id("ui-id-6").click()
+    #         time.sleep(drs_page_load_wait)
+    #         time.sleep(drs_page_load_wait)
+    #         first_elem = driver.find_elements_by_css_selector(".drstk-include-timeline")[0]
+    #         first_elem.send_keys(Keys.SPACE)
+    #         pid = first_elem.get_attribute("value")
+    #         time.sleep(drs_page_load_wait)
+    #         time.sleep(drs_page_load_wait)
+    #         driver.find_element_by_id("drstk_insert_timeline").click()
+    #         time.sleep(drs_page_load_wait)
+    #         driver.find_element_by_id("content-html").click()
+    #         time.sleep(drs_page_load_wait)
+    #         content = driver.find_element_by_css_selector("#wp-content-editor-container textarea.wp-editor-area").get_attribute("value")
+    #         self.assertIn(pid, content)
+    #     except Exception as e:
+    #         self.assertFalse(False)
+    #         print(inspect.stack()[0][3] + " Failed with the following message:")
+    #         print(e)
+
+
+    def test4(self):
         try:
-            # print("Testing to make sure 1 timeline's shortcode is enabled for selected DRS map items.")
+            # print("Testing to make sure several timeline's shortcode is enabled for selected DRS timeline items.")
             wp_add_page()
             time.sleep(4)
             driver.find_element_by_id("ui-id-6").click()
             time.sleep(drs_page_load_wait)
-            self.assertTrue(driver.find_elements_by_css_selector(".drstk-include-timeline")[0].send_keys(Keys.SPACE))
-            time.sleep(4)
-            # print("PASS")
-            # close_driver_and_display()
+            time.sleep(drs_page_load_wait)
+            driver.find_elements_by_css_selector(".drstk-include-timeline")[0].send_keys(Keys.SPACE)
+            time.sleep(drs_page_load_wait)
+            elem2 = driver.find_elements_by_css_selector(".drstk-include-timeline")[1]
+            elem2.send_keys(Keys.SPACE)
+            pid2 = elem2.get_attribute("value")
+            time.sleep(drs_page_load_wait)
+            driver.find_element_by_id("drstk_insert_timeline").click()
+            time.sleep(drs_page_load_wait)
+            driver.find_element_by_id("content-html").click()
+            time.sleep(drs_page_load_wait)
+            this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
+            self.assertIn(pid2, this_content)
         except Exception as e:
+            self.assertFalse(False)
             print(inspect.stack()[0][3] + " Failed with the following message:")
             print(e)
 
 
-    # def test4():
+    def test5(self):
+        try:
+            # print("Testing to see if timeline elements are populated and navigable to next timeline.")
+            driver.get(url)
+            time.sleep(7)
+            old_style = driver.find_element_by_css_selector(".tl-slider-container.tlanimate").get_attribute("style")
+            driver.find_element_by_css_selector(".tl-slidenav-content-container").click()
+            time.sleep(4)
+            new_style = driver.find_element_by_css_selector(".tl-slider-container.tlanimate").get_attribute("style")
+            self.assertNotEqual(old_style, new_style)
+        except Exception as e:
+            self.assertFalse(False)
+            print(inspect.stack()[0][3] + " Failed with the following message:")
+            print(e)
+
+
+    def test6(self):
+        try:
+            # print("Testing to see if timeline date elements is obtained.")
+            driver.get(url)
+            time.sleep(4)
+            self.assertTrue(driver.find_element_by_xpath("//*[@id=\"_1949-1950-roxbury-clubhouse-basketball-team-posing-with-their-trophy\"]/div/div/div").is_displayed())
+        except Exception as e:
+            self.assertFalse(False)
+            print(inspect.stack()[0][3] + " Failed with the following message:")
+            print(e)
+
+
+    def test7(self):
+        try:
+            # print("Testing to see if timeline bar can be zoomed in.")
+            driver.get(url)
+            time.sleep(4)
+            style_before = driver.find_element_by_css_selector(".tl-timenav-slider").get_attribute("style")
+            driver.find_element_by_xpath("//*[@id=\"timeline-embed\"]/div[3]/span[1]").click()
+            style_after = driver.find_element_by_css_selector(".tl-timenav-slider").get_attribute("style")
+            self.assertNotEqual(style_before, style_after)
+        except Exception as e:
+            self.assertFalse(False)
+            print(inspect.stack()[0][3] + " Failed with the following message:")
+            print(e)
+
+
+    def test8(self):
+        try:
+            # print("Testing to see if timeline bar can be zoomed out.")
+            driver.get(url)
+            time.sleep(4)
+            style_before = driver.find_element_by_css_selector(".tl-timenav-slider").get_attribute("style")
+            driver.find_element_by_xpath("//*[@id=\"timeline-embed\"]/div[3]/span[1]").click()
+            style_after = driver.find_element_by_css_selector(".tl-timenav-slider").get_attribute("style")
+            self.assertNotEqual(style_before, style_after)
+        except Exception as e:
+            self.assertFalse(False)
+            print(inspect.stack()[0][3] + " Failed with the following message:")
+            print(e)
+
+
+    def test9(self):
+        try:
+            # print("Testing to see if timeline item image is present.")
+            driver.get(url)
+            time.sleep(4)
+            self.assertTrue(driver.find_element_by_xpath("//*[@id=\"_1949-1950-roxbury-clubhouse-basketball-team-posing-with-their-trophy\"]/div[1]/div/div/div[1]/div[2]/div[1]/img").is_displayed())
+        except Exception as e:
+            self.assertFalse(False)
+            print(inspect.stack()[0][3] + " Failed with the following message:")
+            print(e)
+
+    # Sprint 3
+
+    # def test10(self):
     #     try:
-    #         print("Testing to make sure several timeline's shortcode is enabled for selected DRS timeline items.")
+    #         # print("Testing to make sure if Grouping checkbox is available")
     #         wp_add_page()
-    #         time.sleep(4)
+    #         time.sleep(drs_page_load_wait)
     #         driver.find_element_by_id("ui-id-6").click()
+    #         time.sleep(drs_page_load_wait)
     #         time.sleep(drs_page_load_wait)
     #         driver.find_elements_by_css_selector(".drstk-include-timeline")[0].send_keys(Keys.SPACE)
-    #         time.sleep(4)
-    #         driver.find_elements_by_css_selector(".drstk-include-timeline")[1].send_keys(Keys.SPACE)
-    #         time.sleep(4)
-    #         driver.find_element_by_id("drstk_insert_timeline").click()
-    #         time.sleep(4)
-    #         print("PASS")
-    #         close_driver_and_display()
-    #     except Exception as e:
-    #         print(inspect.stack()[0][3] + " Failed with the following message:")
-    #         print(e)
-    #
-    #
-    # def test5():
-    #     try:
-    #         print("Testing to see if timeline elements are populated and navigable to next timeline.")
-    #         create_driver()
-    #         #driver.get("http://liblab.neu.edu/drstest/timeline-test/")
-    #         driver.get(url)
-    #         time.sleep(7)
-    #         driver.find_element_by_css_selector(".tl-slidenav-content-container").click()
-    #         time.sleep(4)
-    #         print("PASS")
-    #         close_driver_and_display()
-    #     except Exception as e:
-    #         print(inspect.stack()[0][3] + " Failed with the following message:")
-    #         print(e)
-    #
-    #
-    # def test6():
-    #     try:
-    #         print("Testing to see if timeline date elements is obtained.")
-    #         create_driver()
-    #         #driver.get("http://liblab.neu.edu/drstest/timeline-test/")
-    #         driver.get(url)
-    #         time.sleep(4)
-    #         driver.find_element_by_xpath("//*[@id=\"boston-boys-and-girls-club-photographs-marker\"]/div[2]/div").is_displayed()
-    #         time.sleep(4)
-    #         print("PASS")
-    #         close_driver_and_display()
-    #     except Exception as e:
-    #         print(inspect.stack()[0][3] + " Failed with the following message:")
-    #         print(e)
-    #
-    #
-    # def test7():
-    #     try:
-    #         print("Testing to see if timeline bar can be zoomed in.")
-    #         create_driver()
-    #         #driver.get("http://liblab.neu.edu/drstest/timeline-test/")
-    #         driver.get(url)
-    #         time.sleep(4)
-    #         driver.find_element_by_xpath("//*[@id=\"timeline-embed\"]/div[3]/span[1]").click()
-    #         time.sleep(4)
-    #         print("PASS")
-    #         close_driver_and_display()
-    #     except Exception as e:
-    #         print(inspect.stack()[0][3] + " Failed with the following message:")
-    #         print(e)
-    #
-    #
-    # def test8():
-    #     try:
-    #         print("Testing to see if timeline bar can be zoomed out.")
-    #         create_driver()
-    #         #driver.get("http://liblab.neu.edu/drstest/timeline-test/")
-    #         driver.get(url)
-    #         time.sleep(4)
-    #         driver.find_element_by_xpath("//*[@id=\"timeline-embed\"]/div[3]/span[2]").click()
-    #         time.sleep(4)
-    #         print("PASS")
-    #         close_driver_and_display()
-    #     except Exception as e:
-    #         print(inspect.stack()[0][3] + " Failed with the following message:")
-    #         print(e)
-    #
-    #
-    # def test9():
-    #     try:
-    #         print("Testing to see if timeline item image is present.")
-    #         create_driver()
-    #         #driver.get("http://liblab.neu.edu/drstest/timeline-test/")
-    #         driver.get(url)
-    #         time.sleep(4)
-    #         driver.find_element_by_xpath("//*[@id=\"boston-boys-and-girls-club-photographs\"]/div[1]/div/div/div[1]/div[2]/div[1]/img").is_displayed()
-    #         time.sleep(4)
-    #         print("PASS")
-    #         close_driver_and_display()
-    #     except Exception as e:
-    #         print(inspect.stack()[0][3] + " Failed with the following message:")
-    #         print(e)
-    #
-    # # Sprint 3
-    #
-    # def test10():
-    #     try:
-    #         print("Testing to make sure if Grouping checkbox is available")
-    #         wp_add_page()
-    #         time.sleep(4)
-    #         driver.find_element_by_id("ui-id-6").click()
     #         time.sleep(drs_page_load_wait)
-    #         driver.find_elements_by_css_selector(".drstk-include-timeline")[0].send_keys(Keys.SPACE)
-    #         time.sleep(4)
-    #         driver.find_element_by_id("timeline_div-0")
-    #         print("PASS")
-    #         close_driver_and_display()
+    #         self.assertTrue(driver.find_element_by_id("timeline_div-1").is_displayed())
     #     except Exception as e:
+    #         self.assertFalse(False)
     #         print(inspect.stack()[0][3] + " Failed with the following message:")
     #         print(e)
-    #
-    # def test11():
-    #     try:
-    #         print("Testing to make sure if Start Boundary Textbox is displayed")
-    #         wp_add_page()
-    #         time.sleep(4)
-    #         driver.find_element_by_id("ui-id-6").click()
-    #         time.sleep(drs_page_load_wait)
-    #         driver.find_element_by_xpath("//*[@id='tabs-6']/button[2]").click()
-    #         time.sleep(4)
-    #         if driver.find_element_by_id("start-date-boundary").is_displayed() :
-    #             print("PASS")
-    #         close_driver_and_display()
-    #     except Exception as e:
-    #         print(inspect.stack()[0][3] + " Failed with the following message:")
-    #         print(e)
-    #
-    # def test12():
-    #     try:
-    #         print("Testing to make sure if Start Boundary Textbox is displayed")
-    #         wp_add_page()
-    #         time.sleep(4)
-    #         driver.find_element_by_id("ui-id-6").click()
-    #         time.sleep(drs_page_load_wait)
-    #         driver.find_element_by_xpath("//*[@id='tabs-6']/button[2]").click()
-    #         time.sleep(4)
-    #         if driver.find_element_by_id("end-date-boundary").is_displayed() :
-    #             print("PASS")
-    #         close_driver_and_display()
-    #     except Exception as e:
-    #         print(inspect.stack()[0][3] + " Failed with the following message:")
-    #         print(e)
-    #
-    # def test13():
-    #     try:
-    #         print("Testing to make sure if Boundary values are generated")
-    #         wp_add_page()
-    #         time.sleep(4)
-    #         start_date = 1910
-    #         end_date = 2000
-    #         driver.find_element_by_id("ui-id-6").click()
-    #         time.sleep(drs_page_load_wait)
-    #         driver.find_element_by_xpath("//*[@id='tabs-6']/button[2]").click()
-    #         time.sleep(4)
-    #         driver.find_element_by_id("start-date-boundary").send_keys(start_date)
-    #         driver.find_element_by_id("end-date-boundary").send_keys(end_date)
-    #         time.sleep(4)
-    #         driver.find_element_by_xpath("//*[@id='drstk_insert_timeline']").click()
-    #         print("PASS")
-    #         close_driver_and_display()
-    #     except Exception as e:
-    #         print(inspect.stack()[0][3] + " Failed with the following message:")
-    #         print(e)
-    #
+
+    def test11(self):
+        try:
+            # print("Testing to make sure if Start Boundary Textbox is displayed")
+            wp_add_page()
+            time.sleep(4)
+            driver.find_element_by_id("ui-id-6").click()
+            time.sleep(drs_page_load_wait)
+            driver.find_element_by_xpath("//*[@id='tabs-6']/button[2]").click()
+            time.sleep(4)
+            self.assertTrue(driver.find_element_by_id("start-date-boundary").is_displayed())
+        except Exception as e:
+            self.assertFalse(False)
+            print(inspect.stack()[0][3] + " Failed with the following message:")
+            print(e)
+
+    def test12(self):
+        try:
+            # print("Testing to make sure if Start Boundary Textbox is displayed")
+            wp_add_page()
+            time.sleep(4)
+            driver.find_element_by_id("ui-id-6").click()
+            time.sleep(drs_page_load_wait)
+            driver.find_element_by_xpath("//*[@id='tabs-6']/button[2]").click()
+            time.sleep(4)
+            self.assertTrue(driver.find_element_by_id("end-date-boundary").is_displayed())
+        except Exception as e:
+            self.assertFalse(False)
+            print(inspect.stack()[0][3] + " Failed with the following message:")
+            print(e)
+
+    def test13(self):
+        try:
+            # print("Testing to make sure if Boundary values are generated")
+            wp_add_page()
+            time.sleep(4)
+            start_date = 1910
+            end_date = 2000
+            driver.find_element_by_id("ui-id-6").click()
+            time.sleep(drs_page_load_wait)
+            driver.find_element_by_xpath("//*[@id='tabs-6']/button[2]").click()
+            time.sleep(drs_page_load_wait)
+            driver.find_element_by_id("start-date-boundary").send_keys(start_date)
+            driver.find_element_by_id("end-date-boundary").send_keys(end_date)
+            time.sleep(drs_page_load_wait)
+            driver.find_element_by_id("drstk_insert_timeline").click()
+
+        except Exception as e:
+            self.assertFalse(False)
+            print(inspect.stack()[0][3] + " Failed with the following message:")
+            print(e)
+
     # def test14():
     #     try:
     #         print("Testing to make sure legend descriptions are generated.")
@@ -407,13 +412,11 @@ class TestTimelineFunctions(unittest.TestCase):
     #     URL = 'http://liblab.neu.edu/drstest/timeline-test-sprint-4/'
     #     try:
     #         print("Testing to see if Timeline item is present.")
-    #         create_driver()
     #         driver.get(URL)
     #         time.sleep(4)
     #         driver.find_element_by_xpath("//*[@id='boston-boys-and-girls-club-photographs-3-marker']/div/div").is_displayed()
     #         time.sleep(4)
     #         print("PASS")
-    #         close_driver_and_display()
     #     except Exception as e:
     #         print(inspect.stack()[0][3] + " Failed with the following message:")
     #         print(e)
@@ -423,13 +426,11 @@ class TestTimelineFunctions(unittest.TestCase):
     #     URL = 'http://liblab.neu.edu/drstest/timeline-test-sprint-4/'
     #     try:
     #         print("Testing to see if the Legend descriptions are displayed on the page")
-    #         create_driver()
     #         driver.get(URL)
     #         time.sleep(4)
     #         driver.find_element_by_id("timeline-table").is_displayed()
     #         time.sleep(4)
     #         print("PASS")
-    #         close_driver_and_display()
     #     except Exception as e:
     #         print(inspect.stack()[0][3] + " Failed with the following message:")
     #         print(e)
