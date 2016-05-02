@@ -17,7 +17,7 @@ jQuery(document).ready(function($) {
 
     var customItems = getCustomItems($('.custom-coordinates'));
 
-    var markerCluster = addCustomItemsToMap(customItems, markerCluster);
+    var markerCluster = addCustomItemsToMap(customItems, markerCluster, home_url);
 
     fitToBounds(items, customItems, mymap);
 
@@ -378,7 +378,7 @@ function getCustomItems(jqArray) {
     return items;
 }
 
-function addCustomItemsToMap(items, markerCluster) {
+function addCustomItemsToMap(items, markerCluster, home_url) {
 
     jQuery.each(items, function(index, item) {
 
