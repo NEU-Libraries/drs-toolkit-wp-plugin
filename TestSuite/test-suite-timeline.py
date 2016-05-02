@@ -57,7 +57,7 @@ def wp_add_page():
         driver.find_element_by_xpath("//*[@id='menu-pages']/ul/li[3]/a").click()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_id("insert-drs").click()
-        attempt++
+        attempt = attempt + 1
     except Exception as e:
         if attempt < 3:
             wp_add_page()
@@ -318,7 +318,7 @@ class TestTimelineFunctions(unittest.TestCase):
         this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
         self.assertIn("increments=", this_content)
 
-    def test17(self):
+    def test16(self):
         # print("Testing to make sure if the element is selected if it is inside the Boundary values")
         wp_add_page()
         time.sleep(drs_page_load_wait)
@@ -344,7 +344,7 @@ class TestTimelineFunctions(unittest.TestCase):
 
     # Sprint 4
 
-    def test18(self):
+    def test17(self):
         URL = 'http://liblab.neu.edu/drstest/timeline-test-sprint-4/'
         # print("Testing to see if Timeline item is present.")
         driver.get(URL)
@@ -352,7 +352,7 @@ class TestTimelineFunctions(unittest.TestCase):
         self.assertTrue(driver.find_element_by_xpath("//*[@id='_1949-1950-roxbury-clubhouse-basketball-team-posing-with-their-trophy']/div/div").is_displayed())
 
 
-    def test19(self):
+    def test18(self):
         URL = 'http://liblab.neu.edu/drstest/timeline-test-sprint-4/'
         # print("Testing to see if the Legend descriptions are displayed on the page")
         driver.get(URL)
@@ -360,7 +360,7 @@ class TestTimelineFunctions(unittest.TestCase):
         self.assertTrue(driver.find_element_by_id("timeline-table").is_displayed())
 
 
-    def test20(self):
+    def test19(self):
         # print("Testing to make sure if Date is displayed")
         wp_add_page()
         time.sleep(drs_page_load_wait)

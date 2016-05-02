@@ -174,7 +174,8 @@ class TestMapFunctions(unittest.TestCase):
         # print("Testing to see if map elements where geographic locations are specified are populated and clickable.")
         driver.get("http://liblab.neu.edu/drstest/maps-test-geo/")
         time.sleep(drs_page_load_wait)
-        self.assertTrue(driver.find_elements_by_xpath("//*[@id='map']/div[2]/div[2]/div[3]/img")[0].click())
+        driver.find_elements_by_xpath("//*[@id='map']/div[2]/div[2]/div[3]/img")[0].click()
+        self.assertTrue(driver.find_elements_by_xpath("//*[@id='map']/div[2]/div[2]/div[3]/img")[0])
 
     def test9(self):
         # print("Testing to see if map elements where geographic locations are specified can be zoomed in.")
@@ -220,7 +221,7 @@ class TestMapFunctions(unittest.TestCase):
         driver.find_element_by_id("content-html").click()
         time.sleep(drs_page_load_wait)
         this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
-        self.assertIn('red_desc="red legend"', this_content)
+        self.assertIn('red_legend_desc="red legend"', this_content)
         self.assertIn('red_id="'+pid+'"', this_content)
 
     def test12(self):
@@ -242,7 +243,7 @@ class TestMapFunctions(unittest.TestCase):
         self.assertIn('metadata="Creator,Contributor,Date created,Abstract/Description"', this_content)
 
 
-    def test14(self):
+    def test13(self):
         # print("Testing to make sure you can set the API Key.")
         wp_login()
         driver.get("http://liblab.neu.edu/drstest/wp-admin/options-general.php?page=drstk_admin_menu")
@@ -255,7 +256,7 @@ class TestMapFunctions(unittest.TestCase):
         driver.get("http://liblab.neu.edu/drstest/wp-admin/options-general.php?page=drstk_admin_menu")
         self.assertEqual(driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[3]/td/input").get_attribute("value"), leaflet_api_key)
 
-    def test21(self):
+    def test14(self):
         # print("Testing to make sure you can set the Project Key.")
         wp_login()
         driver.get("http://liblab.neu.edu/drstest/wp-admin/options-general.php?page=drstk_admin_menu")
@@ -269,7 +270,7 @@ class TestMapFunctions(unittest.TestCase):
         self.assertEqual(driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[4]/td/input").get_attribute("value"), leaflet_project_key)
 
 
-    def test16(self):
+    def test15(self):
         # print("Testing to see if multiple map elements where coordinates are specified are populated and clickable.")
         driver.get("http://liblab.neu.edu/drstest/maps-test/")
         time.sleep(drs_page_load_wait)
@@ -285,7 +286,7 @@ class TestMapFunctions(unittest.TestCase):
         popup = driver.find_element_by_css_selector(".leaflet_popup_pane")
         self.assertTrue(popup.is_displayed())
 
-    def test17(self):
+    def test16(self):
         # print("Testing to see if multiple map elements where geolocations are specified are populated and clickable.")
         driver.get("http://liblab.neu.edu/drstest/maps-test-2")
         time.sleep(drs_page_load_wait)
@@ -304,7 +305,7 @@ class TestMapFunctions(unittest.TestCase):
 
 
     #Tests for Sprint 4
-    def test19(self):
+    def test17(self):
         # print("Testing to make sure you can add a custom map item.")
         wp_add_page()
         driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
@@ -333,7 +334,7 @@ class TestMapFunctions(unittest.TestCase):
         self.assertIn("This is a cool description", this_content)
         self.assertIn("Boston,MA", this_content)
 
-    def test22(self):
+    def test18(self):
         # print("Testing to make sure you can select an item, legend, color and metadata and it will generate the shortcode for both custom and exiting items.")
         wp_add_page()
         time.sleep(drs_page_load_wait)
@@ -375,11 +376,11 @@ class TestMapFunctions(unittest.TestCase):
         self.assertIn("https://urlhere.com", this_content)
         self.assertIn("This is a cool description", this_content)
         self.assertIn("Boston,MA", this_content)
-        self.assertIn("red legened", this_content)
+        self.assertIn("red legend", this_content)
         self.assertIn("metadata=", this_content)
 
 
-    def test20(self):
+    def test19(self):
         # print("Testing to see if multiple map elements where some items are custom, and some are not,  are populated and clickable.")
         driver.get("http://liblab.neu.edu/drstest/maps-test-2")
         time.sleep(drs_page_load_wait)
