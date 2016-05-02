@@ -200,7 +200,7 @@ class TestTimelineFunctions(unittest.TestCase):
         time.sleep(drs_page_load_wait)
         driver.find_element_by_id("ui-id-6").click()
         time.sleep(drs_page_load_wait)
-        driver.find_element_by_css_selector("#sortable-timeline-list .drstk-include-timeline[0]").click()
+        driver.find_elements_by_css_selector("#sortable-timeline-list .drstk-include-timeline")[0].click()
         time.sleep(drs_page_load_wait)
         self.assertTrue(driver.find_element_by_css_selector("#sortable-timeline-list .timeline_group_selection-0"))
 
@@ -238,6 +238,7 @@ class TestTimelineFunctions(unittest.TestCase):
         time.sleep(drs_page_load_wait)
         driver.find_elements_by_css_selector("#sortable-timeline-list .drstk-include-timeline")[0].click()
         pid = driver.find_elements_by_css_selector("#sortable-timeline-list .drstk-include-timeline")[0].get_attribute("value")
+        time.sleep(drs_page_load_wait)
         driver.find_element_by_id("start-date-boundary").send_keys(start_date)
         driver.find_element_by_id("end-date-boundary").send_keys(end_date)
         time.sleep(drs_page_load_wait)
@@ -246,6 +247,7 @@ class TestTimelineFunctions(unittest.TestCase):
         self.assertIn("out of the specified boundary dates", alert.text)
         alert.accept()
         start_date = "start"
+        time.sleep(drs_page_load_wait)
         driver.find_element_by_id("start-date-boundary").send_keys(start_date)
         driver.find_element_by_id("drstk_insert_timeline").click()
         alert = driver.switch_to_alert()
@@ -261,6 +263,7 @@ class TestTimelineFunctions(unittest.TestCase):
         driver.find_element_by_xpath("//*[@id='timeline_redlegend']").send_keys("red legend")
         driver.find_element_by_xpath("//*[@id='timeline_bluelegend']").send_keys("blue legend")
         driver.find_element_by_xpath("//*[@id='timeline_greenlegend']").send_keys("green legend")
+        time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='timeline_yellowlegend']").send_keys("yellow legend")
         driver.find_element_by_xpath("//*[@id='timeline_orangelegend']").send_keys("orange legend")
         driver.find_element_by_css_selector("#sortable-timeline-list #drstile-0").click()
@@ -282,6 +285,7 @@ class TestTimelineFunctions(unittest.TestCase):
     def test15(self):
         # print("Testing to make sure you can set the scale increments")
         wp_add_page()
+        time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='ui-id-6']").click()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='tabs-6']/button[2]").click()
