@@ -289,7 +289,7 @@ class TestTimelineFunctions(unittest.TestCase):
         time.sleep(drs_page_load_wait)
         this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
         self.assertIn('red_desc="red legend"', this_content)
-        self.assertIn('red_id="'+pid+'"', this_content)
+        self.assertIn('red_id="'+pid, this_content)
 
     def test15(self):
         # print("Testing to make sure you can set the scale increments")

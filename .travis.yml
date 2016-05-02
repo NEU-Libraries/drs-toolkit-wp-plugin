@@ -4,6 +4,7 @@ python:
 install:
   - pip install selenium
   - pip install pyvirtualdisplay
+  - pip install coverage
   - npm install -g grunt-cli
 before_script:
   - "export DISPLAY=:99.0"
@@ -15,3 +16,5 @@ script:
   - cd TestSuite
   # - python test-suite-maps.py
   - python test-suite-timeline.py
+after_success:
+  - coveralls
