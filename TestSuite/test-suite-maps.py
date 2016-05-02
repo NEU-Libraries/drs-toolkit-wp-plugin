@@ -1,11 +1,12 @@
+import unittest
 import os
+import inspect
+import time
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.action_chains import ActionChains
-import inspect
-import time
 
 #Packages Requirements for headless unix testing:
 #sudo apt-get install libxss1 libappindicator1 libindicator7
@@ -28,7 +29,6 @@ import time
 #Login Credentials
 username = "testuser"
 password = "P@$$W0rd"
-current_dir = os.getcwd()
 
 #Wordpress wp-admin URL
 wordpress_url = "http://liblab.neu.edu/drstest/wp-login.php"
@@ -43,38 +43,12 @@ leaflet_api_key = "pk.eyJ1IjoiZGhhcmFtbWFuaWFyIiwiYSI6ImNpbTN0cjJmMTAwYmtpY2tyNj
 #Leaflet Project Key
 leaflet_project_key = "dharammaniar.pfnog3b9"
 
-def create_driver():
-    try:
-        #For headless Unix Testing, will not work on Windows as XVFB is not supported
-        #global display
-        #display = Display(visible=0, size=(800, 600))
-        #display.start()
-        global driver
-        # os.environ["webdriver.chrome.driver"] = "/Users/beekerz/Sites/wordpress/wp-content/plugins/drs-tk/TestSuite/chromedriver"
-        # driver = webdriver.Chrome(current_dir + "/chromedriver")
-        driver = webdriver.Firefox()
-        driver.set_window_size(1280,720)
-    except Exception,e:
-        print("Error produced when setting webdriver and/or XVFB display.")
-        print(e)
-
-def close_driver_and_display():
-    try:
-        driver.quit()
-        #display.stop()
-    except Exception,e:
-        print("Error produced when closing driver and display.")
-        print(e)
-
-
 def wp_login():
     try:
-        create_driver() #creates the driver so we can use it
         driver.get(wordpress_url)
         driver.find_element_by_id("user_login").send_keys(username)
         driver.find_element_by_id("user_pass").send_keys(password)
         driver.find_element_by_id("wp-submit").click()
-        #print("Login completed successfully")
     except Exception,e:
         print("Exception produced when logging into wp-admin. Error is: ")
         print(e)
@@ -83,6 +57,7 @@ def wp_login():
 def wp_add_page():
     try:
         wp_login()
+        time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='menu-pages']/a/div[3]").click()
         driver.find_element_by_xpath("//*[@id='menu-pages']/ul/li[3]/a").click()
         driver.find_element_by_id("insert-drs").click()
@@ -90,162 +65,136 @@ def wp_add_page():
         print("Exception produced when creating new page. Error is: ")
         print(e)
 
-#DRS Map index test
-def test1():
-    try:
-        print("Testing to make sure index for DRS Map items is generated.")
+class TestMapFunctions(unittest.TestCase):
+    def setUp(self):
+        try:
+            # For headless Unix Testing, will not work on Windows as XVFB is not supported
+            global driver
+            driver = webdriver.Firefox()
+            driver.set_window_size(1280,720)
+        except Exception as e:
+            print("Error produced when setting webdriver and/or XVFB display.")
+            print(e)
+
+
+    def tearDown(self):
+        try:
+            driver.quit()
+        except Exception as e:
+            print("Error produced when closing driver and display.")
+            print(e)
+
+
+
+    #DRS Map index test
+    def test1(self):
+        # print("Testing to make sure index for DRS Map items is generated.")
         wp_add_page()
         driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
         time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//img[@src='https://repository.library.northeastern.edu/downloads/neu:180456?datastream_id=thumbnail_1']")
-        print("PASS")
-        close_driver_and_display()
-    except Exception,e:
-        print inspect.stack()[0][3] + " Failed with the following message:"
-        print(e)
+        self.assertTrue(driver.find_element_by_xpath("//img[@src='https://repository.library.northeastern.edu/downloads/neu:180456?datastream_id=thumbnail_1']"))
 
-#DRS Map search functionality test
-def test2():
-    try:
-        print("Testing to make sure search functionality is working and limiting results by keyword and if the item is a map item.")
+    #DRS Map search functionality test
+    def test2(self):
+        # print("Testing to make sure search functionality is working and limiting results by keyword and if the item is a map item.")
         wp_add_page()
         search_keyword = "ralph"
         driver.find_element_by_id("ui-id-5").click()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_id("search-map").send_keys(search_keyword)
         driver.find_element_by_id("search-button-map").click()
-        time.sleep(4)
-        driver.find_element_by_xpath("//img[@src='https://repository.library.northeastern.edu/downloads/neu:180456?datastream_id=thumbnail_1']")
-        print("PASS")
-        close_driver_and_display()
-    except Exception,e:
-        print inspect.stack()[0][3] + " Failed with the following message:"
-        print(e)
-#DRS Map inserting 1 map shortcode test
-def test3():
-    try:
-        print("Testing to make sure 1 map's shortcode is enabled for selected DRS map items.")
+        time.sleep(drs_page_load_wait)
+        self.assertTrue(driver.find_element_by_xpath("//img[@src='https://repository.library.northeastern.edu/downloads/neu:180456?datastream_id=thumbnail_1']"))
+
+    #DRS Map inserting 1 map shortcode test
+    def test3(self):
+        # print("Testing to make sure 1 map's shortcode is enabled for selected DRS map items.")
         wp_add_page()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_id("ui-id-5").click()
         time.sleep(drs_page_load_wait)
-        driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
+        # driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
+        elem = driver.find_elements_by_css_selector("#sortable-map-list .drstk-include-map")[0]
+        elem.click()
+        pid = elem.get_attribute("value")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_id("drstk_insert_map").click()
-        print("PASS")
-        close_driver_and_display()
-    except Exception,e:
-        print inspect.stack()[0][3] + " Failed with the following message:"
-        print(e)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_id("content-html").click()
+        time.sleep(drs_page_load_wait)
+        this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
+        self.assertIn(pid, this_content)
 
-def test4():
-    try:
-        print("Testing to make sure several map's shortcode is enabled for selected DRS map items.")
+    def test4(self):
+        # print("Testing to make sure several map's shortcode is enabled for selected DRS map items.")
         wp_add_page()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_id("ui-id-5").click()
         time.sleep(drs_page_load_wait)
-        driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
+        elem1 = driver.find_elements_by_css_selector(".drstk-include-map")[0]
+        elem1.click()
+        pid1 = elem1.get_attribute("value")
         time.sleep(drs_page_load_wait)
-        driver.find_elements_by_css_selector(".drstk-include-map")[1].send_keys(Keys.SPACE)
+        elem2 = driver.find_elements_by_css_selector(".drstk-include-map")[1]
+        elem2.click()
+        pid2 = elem2.get_attribute("value")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_id("drstk_insert_map").click()
-        time.sleep(4)
-        print("PASS")
-        close_driver_and_display()
-    except Exception,e:
-        print inspect.stack()[0][3] + " Failed with the following message:"
-        print(e)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_id("content-html").click()
+        time.sleep(drs_page_load_wait)
+        this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
+        self.assertIn(pid1, this_content)
+        self.assertIn(pid2, this_content)
 
-def test5():
-    try:
-        print("Testing to see if map elements where coordinates are specified are populated and clickable.")
-        create_driver()
+    def test5(self):
+        # print("Testing to see if map elements where coordinates are specified are populated and clickable.")
         driver.get("http://liblab.neu.edu/drstest/maps-test-coord")
         time.sleep(drs_page_load_wait)
         driver.find_elements_by_xpath("//*[@id='map']/div[3]/div[2]/div[3]/img[1]")[0].click()
-        time.sleep(drs_page_load_wait)
-        print("PASS")
-        close_driver_and_display()
-    except Exception,e:
-         print inspect.stack()[0][3] + " Failed with the following message:"
-         print(e)
+        self.assertTrue(driver.find_elements_by_xpath("//*[@id='map']/div[3]/div[2]/div[3]/img[1]")[0])
 
-def test6():
-    try:
-        print("Testing to see if map elements where coordinates are specified can be zoomed in.")
-        create_driver()
+    def test6(self):
+        # print("Testing to see if map elements where coordinates are specified can be zoomed in.")
         driver.get("http://liblab.neu.edu/drstest/maps-test-coord")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@title='Zoom in']").click()
         time.sleep(drs_page_load_wait)
-        print("PASS")
-        close_driver_and_display()
-    except Exception,e:
-         print inspect.stack()[0][3] + " Failed with the following message:"
-         print(e)
+        #leaflet tests the functionality of the zoom buttons
 
-def test7():
-    try:
-        print("Testing to see if map elements where coordinates are specified can be zoomed out.")
-        create_driver()
+    def test7(self):
+        # print("Testing to see if map elements where coordinates are specified can be zoomed out.")
         driver.get("http://liblab.neu.edu/drstest/maps-test-coord")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@title='Zoom out']").click()
         time.sleep(drs_page_load_wait)
-        print("PASS")
-        close_driver_and_display()
-    except Exception,e:
-         print inspect.stack()[0][3] + " Failed with the following message:"
-         print(e)
+        #leaflet tests the functionality of the zoom buttons
 
-
-def test8():
-    try:
-        print("Testing to see if map elements where geographic locations are specified are populated and clickable.")
-        create_driver()
+    def test8(self):
+        # print("Testing to see if map elements where geographic locations are specified are populated and clickable.")
         driver.get("http://liblab.neu.edu/drstest/maps-test-geo/")
         time.sleep(drs_page_load_wait)
-        driver.find_elements_by_xpath("//*[@id='map']/div[2]/div[2]/div[3]/img")[0].click()
-        time.sleep(drs_page_load_wait)
-        print("PASS")
-        close_driver_and_display()
-    except Exception,e:
-         print inspect.stack()[0][3] + " Failed with the following message:"
-         print(e)
+        self.assertTrue(driver.find_elements_by_xpath("//*[@id='map']/div[2]/div[2]/div[3]/img")[0].click())
 
-def test9():
-    try:
-        print("Testing to see if map elements where geographic locations are specified can be zoomed in.")
-        create_driver()
+    def test9(self):
+        # print("Testing to see if map elements where geographic locations are specified can be zoomed in.")
         driver.get("http://liblab.neu.edu/drstest/maps-test-geo/")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@title='Zoom in']").click()
         time.sleep(drs_page_load_wait)
-        print("PASS")
-        close_driver_and_display()
-    except Exception,e:
-         print inspect.stack()[0][3] + " Failed with the following message:"
-         print(e)
+        #leaflet tests the functionality of the zoom buttons
 
-def test10():
-    try:
-        print("Testing to see if map elements where geographic locations are specified can be zoomed out.")
-        create_driver()
+    def test10(self):
+        # print("Testing to see if map elements where geographic locations are specified can be zoomed out.")
         driver.get("http://liblab.neu.edu/drstest/maps-test-geo/")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@title='Zoom out']").click()
         time.sleep(drs_page_load_wait)
-        print("PASS")
-        close_driver_and_display()
-    except Exception,e:
-         print inspect.stack()[0][3] + " Failed with the following message:"
-         print(e)
+        #leaflet tests the functionality of the zoom buttons
 
-#Tests for Sprint 3
-def test11():
-    try:
-        print("Testing to make sure legend descriptions are generated.")
+    #Tests for Sprint 3
+    def test11(self):
+        # print("Testing to make sure legend descriptions are generated.")
         wp_add_page()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
@@ -255,18 +204,27 @@ def test11():
         driver.find_element_by_xpath("//*[@id='redlegend']").send_keys("red legend")
         driver.find_element_by_xpath("//*[@id='bluelegend']").send_keys("blue legend")
         driver.find_element_by_xpath("//*[@id='greenlegend']").send_keys("green legend")
+        time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='yellowlegend']").send_keys("yellow legend")
         driver.find_element_by_xpath("//*[@id='orangelegend']").send_keys("orange legend")
-        driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
-        print("PASS")
-        close_driver_and_display()
-    except Exception, e:
-        print inspect.stack()[0][3] + " Failed with the following message:"
-        print(e)
+        driver.find_element_by_css_selector("#sortable-map-list #drstile-0").click()
+        pid = driver.find_element_by_css_selector("#sortable-map-list #drstile-0").get_attribute("value")
+        el = driver.find_element_by_css_selector("#sortable-map-list #map_div-0 .map_group_selection-0")
+        for option in el.find_elements_by_tag_name('option'):
+            if option.text == 'Red':
+                option.click() # select() in earlier versions of webdriver
+                break
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_id("drstk_insert_map").click()
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_id("content-html").click()
+        time.sleep(drs_page_load_wait)
+        this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
+        self.assertIn('red_desc="red legend"', this_content)
+        self.assertIn('red_id="'+pid+'"', this_content)
 
-def test12():
-    try:
-        print("Testing to make sure you can set map display information.")
+    def test12(self):
+        # print("Testing to make sure you can set map display information.")
         wp_add_page()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
@@ -277,36 +235,15 @@ def test12():
         driver.find_element_by_xpath("//*[@id='tabs-5']/div[2]/label[2]/div/label[2]/input").click()
         driver.find_element_by_xpath("//*[@id='tabs-5']/div[2]/label[2]/div/label[3]/input").click()
         driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
-        print("PASS")
-        close_driver_and_display()
-    except Exception, e:
-        print inspect.stack()[0][3] + " Failed with the following message:"
-        print(e)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_id("content-html").click()
+        time.sleep(drs_page_load_wait)
+        this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
+        self.assertIn('metadata="Creator,Contributor,Date created,Abstract/Description"', this_content)
 
-def test13():
-    try:
-        print("Testing to make sure you can set the color for selected items.")
-        wp_add_page()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
-        time.sleep(drs_page_load_wait)
-        driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").click()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").send_keys(Keys.ARROW_DOWN)
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").send_keys(Keys.ENTER)
-        driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
-        print("PASS")
-        close_driver_and_display()
-    except Exception, e:
-        print inspect.stack()[0][3] + " Failed with the following message:"
-        print(e)
 
-def test14():
-    try:
-        print("Testing to make sure you can set the API Key.")
+    def test14(self):
+        # print("Testing to make sure you can set the API Key.")
         wp_login()
         driver.get("http://liblab.neu.edu/drstest/wp-admin/options-general.php?page=drstk_admin_menu")
         time.sleep(2)
@@ -315,15 +252,11 @@ def test14():
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='submit']").submit()
         time.sleep(drs_page_load_wait)
-        print("PASS")
-        close_driver_and_display()
-    except Exception, e:
-        print inspect.stack()[0][3] + " Failed with the following message:"
-        print(e)
+        driver.get("http://liblab.neu.edu/drstest/wp-admin/options-general.php?page=drstk_admin_menu")
+        self.assertEqual(driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[3]/td/input").get_attribute("value"), leaflet_api_key)
 
-def test21():
-    try:
-        print("Testing to make sure you can set the Project Key.")
+    def test21(self):
+        # print("Testing to make sure you can set the Project Key.")
         wp_login()
         driver.get("http://liblab.neu.edu/drstest/wp-admin/options-general.php?page=drstk_admin_menu")
         time.sleep(2)
@@ -332,102 +265,47 @@ def test21():
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='submit']").submit()
         time.sleep(drs_page_load_wait)
-        print("PASS")
-        close_driver_and_display()
-    except Exception, e:
-                print inspect.stack()[0][3] + " Failed with the following message:"
-                print(e)
+        driver.get("http://liblab.neu.edu/drstest/wp-admin/options-general.php?page=drstk_admin_menu")
+        self.assertEqual(driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[4]/td/input").get_attribute("value"), leaflet_project_key)
 
 
-def test15():
-    try:
-        print("Testing to make sure you can select an item, legend, color and metadata and it will generate the shortcode.")
-        wp_add_page()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
-        time.sleep(drs_page_load_wait)
-        driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label//div/select").click()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").send_keys(Keys.ARROW_DOWN)
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").send_keys(Keys.ENTER)
-
-        driver.find_element_by_xpath("//*[@id='tabs-5']/button[2]").click()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='redlegend']").send_keys("red legend")
-        driver.find_element_by_xpath("//*[@id='tabs-5']/div[2]/label[2]/div/label[1]/input").click()
-        driver.find_element_by_xpath("//*[@id='tabs-5']/div[2]/label[2]/div/label[2]/input").click()
-        driver.find_element_by_xpath("//*[@id='tabs-5']/div[2]/label[2]/div/label[3]/input").click()
-        driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
-        print("PASS")
-        close_driver_and_display()
-    except Exception, e:
-        print inspect.stack()[0][3] + " Failed with the following message:"
-        print(e)
-
-def test16():
-    try:
-        print("Testing to see if multiple map elements where coordinates are specified are populated and clickable.")
-        create_driver()
+    def test16(self):
+        # print("Testing to see if multiple map elements where coordinates are specified are populated and clickable.")
         driver.get("http://liblab.neu.edu/drstest/maps-test/")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button/span/span").click()
+        popup = driver.find_element_by_css_selector(".leaflet_popup_pane")
+        self.assertTrue(popup.is_displayed())
         time.sleep(2)
         driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button/span/span").click()
+        popup = driver.find_element_by_css_selector(".leaflet_popup_pane")
+        self.assertTrue(popup.is_displayed())
         time.sleep(2)
         driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button/span/span").click()
-        time.sleep(drs_page_load_wait)
-        print("PASS")
-        close_driver_and_display()
-    except Exception,e:
-         print inspect.stack()[0][3] + " Failed with the following message:"
-         print(e)
+        popup = driver.find_element_by_css_selector(".leaflet_popup_pane")
+        self.assertTrue(popup.is_displayed())
 
-def test17():
-    try:
-        print("Testing to see if multiple map elements where geolocations are specified are populated and clickable.")
-        create_driver()
+    def test17(self):
+        # print("Testing to see if multiple map elements where geolocations are specified are populated and clickable.")
         driver.get("http://liblab.neu.edu/drstest/maps-test-2")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button/span/span").click()
+        popup = driver.find_element_by_css_selector(".leaflet_popup_pane")
+        self.assertTrue(popup.is_displayed())
         time.sleep(2)
         driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button/span/span").click()
+        popup = driver.find_element_by_css_selector(".leaflet_popup_pane")
+        self.assertTrue(popup.is_displayed())
         time.sleep(2)
         driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button/span/span").click()
+        popup = driver.find_element_by_css_selector(".leaflet_popup_pane")
+        self.assertTrue(popup.is_displayed())
         time.sleep(drs_page_load_wait)
-        print("PASS")
-        close_driver_and_display()
-    except Exception,e:
-         print inspect.stack()[0][3] + " Failed with the following message:"
-         print(e)
 
 
-#Tests for Sprint 4
-def test18():
-    try:
-        print("Testing to make sure you can set the color for selected items which now have icons.")
-        wp_add_page()
-        driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
-        time.sleep(drs_page_load_wait)
-        driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label//div/select").click()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").send_keys(Keys.ARROW_DOWN)
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='sortable-map-list']/li[1]/label/div/select").send_keys(Keys.ENTER)
-        driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
-        print("PASS")
-        close_driver_and_display()
-    except Exception, e:
-        print inspect.stack()[0][3] + " Failed with the following message:"
-        print(e)
-
-def test19():
-    try:
-        print("Testing to make sure you can add a custom map item.")
+    #Tests for Sprint 4
+    def test19(self):
+        # print("Testing to make sure you can add a custom map item.")
         wp_add_page()
         driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
         time.sleep(drs_page_load_wait)
@@ -447,15 +325,16 @@ def test19():
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
         time.sleep(drs_page_load_wait)
-        print("PASS")
-        close_driver_and_display()
-    except Exception, e:
-        print inspect.stack()[0][3] + " Failed with the following message:"
-        print(e)
+        driver.find_element_by_id("content-html").click()
+        time.sleep(drs_page_load_wait)
+        this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
+        self.assertIn("This is a cool title", this_content)
+        self.assertIn("https://urlhere.com", this_content)
+        self.assertIn("This is a cool description", this_content)
+        self.assertIn("Boston,MA", this_content)
 
-def test22():
-    try:
-        print("Testing to make sure you can select an item, legend, color and metadata and it will generate the shortcode for both custom and exiting items.")
+    def test22(self):
+        # print("Testing to make sure you can select an item, legend, color and metadata and it will generate the shortcode for both custom and exiting items.")
         wp_add_page()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
@@ -488,62 +367,35 @@ def test22():
         driver.find_element_by_xpath("//*[@id='tabs-5']/div[2]/label[2]/div/label[2]/input").click()
         driver.find_element_by_xpath("//*[@id='tabs-5']/div[2]/label[2]/div/label[3]/input").click()
         driver.find_element_by_xpath("//*[@id='drstk_insert_map']").click()
-        print("PASS")
-        close_driver_and_display()
-    except Exception, e:
-        print inspect.stack()[0][3] + " Failed with the following message:"
-        print(e)
+        time.sleep(drs_page_load_wait)
+        driver.find_element_by_id("content-html").click()
+        time.sleep(drs_page_load_wait)
+        this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
+        self.assertIn("This is a cool title", this_content)
+        self.assertIn("https://urlhere.com", this_content)
+        self.assertIn("This is a cool description", this_content)
+        self.assertIn("Boston,MA", this_content)
+        self.assertIn("red legened", this_content)
+        self.assertIn("metadata=", this_content)
 
-def test20():
-    try:
-        print("Testing to see if multiple map elements where some items are custom, and some are not,  are populated and clickable.")
-        create_driver()
+
+    def test20(self):
+        # print("Testing to see if multiple map elements where some items are custom, and some are not,  are populated and clickable.")
         driver.get("http://liblab.neu.edu/drstest/maps-test-2")
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button").click()
+        popup = driver.find_element_by_css_selector(".leaflet_popup_pane")
+        self.assertTrue(popup.is_displayed())
         time.sleep(2)
         driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button").click()
+        popup = driver.find_element_by_css_selector(".leaflet_popup_pane")
+        self.assertTrue(popup.is_displayed())
         time.sleep(2)
         driver.find_element_by_xpath("//*[@id='map']/div[12]/div[1]/div[2]/button").click()
-        time.sleep(drs_page_load_wait)
-        print("PASS")
-        close_driver_and_display()
-    except Exception,e:
-         print inspect.stack()[0][3] + " Failed with the following message:"
-         print(e)
-
-def testsuite_sprint2():
-    print("Running Test Suite for Sprint 2...")
-    test1()
-    test2()
-    test3()
-    test4()
-    test5()
-    test6()
-    test7()
-    test8()
-    test9()
-    test10()
-
-def testsuite_spring3():
-    print("Running Test Suite for Sprint 3...")
-    test11()
-    test12()
-    test13()
-    test14()
-    test15()
-    test16()
-    test17()
-    test21()
-
-def testsuite_spring4():
-    print("Running Test Suite for Sprint 4...")
-    test18()
-    test19()
-    test22()
-    test20()
+        popup = driver.find_element_by_css_selector(".leaflet_popup_pane")
+        self.assertTrue(popup.is_displayed())
 
 
-testsuite_sprint2()
-testsuite_spring3()
-testsuite_spring4()
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2)

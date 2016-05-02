@@ -49,6 +49,7 @@ def wp_login():
 
 
 def wp_add_page():
+    attempt = 0
     try:
         wp_login()
         time.sleep(drs_page_load_wait)
@@ -56,7 +57,10 @@ def wp_add_page():
         driver.find_element_by_xpath("//*[@id='menu-pages']/ul/li[3]/a").click()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_id("insert-drs").click()
+        attempt++
     except Exception as e:
+        if attempt < 3:
+            wp_add_page()
         print("Exception produced when creating new page. Error is: ")
         print(e)
 
