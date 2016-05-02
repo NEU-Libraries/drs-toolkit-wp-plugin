@@ -51,7 +51,7 @@ def wp_login():
 def wp_add_page():
     try:
         wp_login()
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='menu-pages']/a/div[3]").click()
         driver.find_element_by_xpath("//*[@id='menu-pages']/ul/li[3]/a").click()
         time.sleep(drs_page_load_wait)
@@ -99,7 +99,7 @@ class TestTimelineFunctions(unittest.TestCase):
         time.sleep(drs_page_load_wait)
         driver.find_element_by_id("search-timeline").send_keys(search_keyword)
         driver.find_element_by_id("search-button-timeline").click()
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         self.assertTrue(driver.find_element_by_xpath(
                 "//img[@src='https://repository.library.northeastern.edu/downloads/neu:180456?datastream_id=thumbnail_1']"))
 
@@ -108,7 +108,7 @@ class TestTimelineFunctions(unittest.TestCase):
     def test3(self):
         # print("Testing to make sure 1 timeline's shortcode is enabled for selected DRS map items.")
         wp_add_page()
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         driver.find_element_by_id("ui-id-6").click()
         time.sleep(drs_page_load_wait)
         time.sleep(drs_page_load_wait)
@@ -129,7 +129,7 @@ class TestTimelineFunctions(unittest.TestCase):
     def test4(self):
         # print("Testing to make sure several timeline's shortcode is enabled for selected DRS timeline items.")
         wp_add_page()
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         driver.find_element_by_id("ui-id-6").click()
         time.sleep(drs_page_load_wait)
         time.sleep(drs_page_load_wait)
@@ -153,7 +153,7 @@ class TestTimelineFunctions(unittest.TestCase):
         time.sleep(7)
         old_style = driver.find_element_by_css_selector(".tl-slider-container.tlanimate").get_attribute("style")
         driver.find_element_by_css_selector(".tl-slidenav-content-container").click()
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         new_style = driver.find_element_by_css_selector(".tl-slider-container.tlanimate").get_attribute("style")
         self.assertNotEqual(old_style, new_style)
 
@@ -161,14 +161,14 @@ class TestTimelineFunctions(unittest.TestCase):
     def test6(self):
         # print("Testing to see if timeline date elements is obtained.")
         driver.get(url)
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         self.assertTrue(driver.find_element_by_xpath("//*[@id=\"_1949-1950-roxbury-clubhouse-basketball-team-posing-with-their-trophy\"]/div/div/div").is_displayed())
 
 
     def test7(self):
         # print("Testing to see if timeline bar can be zoomed in.")
         driver.get(url)
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         style_before = driver.find_element_by_css_selector(".tl-timenav-slider").get_attribute("style")
         driver.find_element_by_xpath("//*[@id=\"timeline-embed\"]/div[3]/span[1]").click()
         style_after = driver.find_element_by_css_selector(".tl-timenav-slider").get_attribute("style")
@@ -178,7 +178,7 @@ class TestTimelineFunctions(unittest.TestCase):
     def test8(self):
         # print("Testing to see if timeline bar can be zoomed out.")
         driver.get(url)
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         style_before = driver.find_element_by_css_selector(".tl-timenav-slider").get_attribute("style")
         driver.find_element_by_xpath("//*[@id=\"timeline-embed\"]/div[3]/span[1]").click()
         style_after = driver.find_element_by_css_selector(".tl-timenav-slider").get_attribute("style")
@@ -189,7 +189,7 @@ class TestTimelineFunctions(unittest.TestCase):
     def test9(self):
         # print("Testing to see if timeline item image is present.")
         driver.get(url)
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         self.assertTrue(driver.find_element_by_xpath("//*[@id=\"_1949-1950-roxbury-clubhouse-basketball-team-posing-with-their-trophy\"]/div[1]/div/div/div[1]/div[2]/div[1]/img").is_displayed())
 
 
@@ -208,27 +208,27 @@ class TestTimelineFunctions(unittest.TestCase):
     def test11(self):
         # print("Testing to make sure if Start Boundary Textbox is displayed")
         wp_add_page()
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         driver.find_element_by_id("ui-id-6").click()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='tabs-6']/button[2]").click()
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         self.assertTrue(driver.find_element_by_id("start-date-boundary").is_displayed())
 
     def test12(self):
         # print("Testing to make sure if Start Boundary Textbox is displayed")
         wp_add_page()
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         driver.find_element_by_id("ui-id-6").click()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='tabs-6']/button[2]").click()
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         self.assertTrue(driver.find_element_by_id("end-date-boundary").is_displayed())
 
     def test13(self):
         # print("Testing to make sure if item is outside boundary dates or non-numeric, it triggers alert")
         wp_add_page()
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         start_date = 2000
         end_date = 2010
         driver.find_element_by_id("ui-id-6").click()
@@ -304,7 +304,7 @@ class TestTimelineFunctions(unittest.TestCase):
     def test17(self):
         # print("Testing to make sure if the element is selected if it is inside the Boundary values")
         wp_add_page()
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         start_date = 1910
         end_date = 2000
         driver.find_element_by_id("ui-id-6").click()
@@ -331,7 +331,7 @@ class TestTimelineFunctions(unittest.TestCase):
         URL = 'http://liblab.neu.edu/drstest/timeline-test-sprint-4/'
         # print("Testing to see if Timeline item is present.")
         driver.get(URL)
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         self.assertTrue(driver.find_element_by_xpath("//*[@id='_1949-1950-roxbury-clubhouse-basketball-team-posing-with-their-trophy']/div/div").is_displayed())
 
 
@@ -339,14 +339,14 @@ class TestTimelineFunctions(unittest.TestCase):
         URL = 'http://liblab.neu.edu/drstest/timeline-test-sprint-4/'
         # print("Testing to see if the Legend descriptions are displayed on the page")
         driver.get(URL)
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         self.assertTrue(driver.find_element_by_id("timeline-table").is_displayed())
 
 
     def test20(self):
         # print("Testing to make sure if Date is displayed")
         wp_add_page()
-        time.sleep(4)
+        time.sleep(drs_page_load_wait)
         driver.find_element_by_id("ui-id-6").click()
         time.sleep(drs_page_load_wait)
         self.assertTrue(driver.find_element_by_xpath("//*[@id='sortable-timeline-list']/li[1]/label/p").is_displayed())
