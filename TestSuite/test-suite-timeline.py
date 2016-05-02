@@ -366,7 +366,7 @@ class TestTimelineFunctions(unittest.TestCase):
         time.sleep(drs_page_load_wait)
         driver.find_element_by_id("ui-id-6").click()
         time.sleep(drs_page_load_wait)
-        self.assertTrue(driver.find_element_by_xpath("//*[@id='sortable-timeline-list']/li[1]/label/p").is_displayed())
+        self.assertNotEqual(driver.find_element_by_xpath("//*[@id='sortable-timeline-list']/li[1]/label/p").text, "")
 
 
 if __name__ == '__main__':
