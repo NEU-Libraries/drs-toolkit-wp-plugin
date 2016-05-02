@@ -55,13 +55,17 @@ def wp_login():
 
 
 def wp_add_page():
+    attempt = 0
     try:
         wp_login()
         time.sleep(drs_page_load_wait)
         driver.find_element_by_xpath("//*[@id='menu-pages']/a/div[3]").click()
         driver.find_element_by_xpath("//*[@id='menu-pages']/ul/li[3]/a").click()
         driver.find_element_by_id("insert-drs").click()
-    except Exception,e:
+        attempt = attempt + 1
+    except Exception as e:
+        if attempt < 3:
+            wp_add_page()
         print("Exception produced when creating new page. Error is: ")
         print(e)
 
@@ -247,7 +251,7 @@ class TestMapFunctions(unittest.TestCase):
         # print("Testing to make sure you can set the API Key.")
         wp_login()
         driver.get("http://liblab.neu.edu/drstest/wp-admin/options-general.php?page=drstk_admin_menu")
-        time.sleep(2)
+        time.sleep(4)
         driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[3]/td/input").clear()
         driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[3]/td/input").send_keys(leaflet_api_key)
         time.sleep(drs_page_load_wait)
@@ -260,7 +264,7 @@ class TestMapFunctions(unittest.TestCase):
         # print("Testing to make sure you can set the Project Key.")
         wp_login()
         driver.get("http://liblab.neu.edu/drstest/wp-admin/options-general.php?page=drstk_admin_menu")
-        time.sleep(2)
+        time.sleep(4)
         driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[4]/td/input").clear()
         driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[4]/td/input").send_keys(leaflet_project_key)
         time.sleep(drs_page_load_wait)
