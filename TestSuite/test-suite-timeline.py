@@ -51,6 +51,7 @@ def wp_login():
 def wp_add_page():
     try:
         wp_login()
+        time.sleep(4)
         driver.find_element_by_xpath("//*[@id='menu-pages']/a/div[3]").click()
         driver.find_element_by_xpath("//*[@id='menu-pages']/ul/li[3]/a").click()
         time.sleep(drs_page_load_wait)
