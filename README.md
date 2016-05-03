@@ -50,11 +50,13 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
       ";
   ```
 
-7. If the project is going to need to override styles, add a overrides.css file (which is gitignored so changes won't be overwritten)
+7. If you would like to override some of the functionality and styles or this child theme you may create a sub-directory named `overrides`.  This directory will be ignored by git and your changes won't be overwritten by future git pulls from the main repo.  Additionally, you can initialize this repository as a git-submodule and track your own changes in your own repo.
 
   ```
-    cd /wp-content/themes/quest-child
-    touch overrides.css
+    cd wp-content/themes/quest-child
+    mkdir overrides
+    touch overrides/style.css
+    echo "<?php //silence is golden" > overrides/functions.php
   ```
 
 8. Delete extra themes to avoid user confusion
