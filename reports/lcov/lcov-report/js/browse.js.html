@@ -1,0 +1,1325 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for js/browse.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">js/</a> browse.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">4.18% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>12/287</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/162</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/30</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">4.24% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>12/283</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">jQuery(document).ready(<span class="fstat-no" title="function not covered" >function($) {</span>
+<span class="cstat-no" title="statement not covered" >  $(".breadcrumbs").children("li").remove();</span>
+<span class="cstat-no" title="statement not covered" >  var q = '';</span>
+<span class="cstat-no" title="statement not covered" >  q = GetURLParameter(window.location.search.substring(1), 'q');</span>
+<span class="cstat-no" title="statement not covered" >  var per_page = 10;</span>
+<span class="cstat-no" title="statement not covered" >  var page = 1;</span>
+<span class="cstat-no" title="statement not covered" >  var f = {};</span>
+<span class="cstat-no" title="statement not covered" >  var sort = "score+desc%2C+system_create_dtsi+desc";</span>
+<span class="cstat-no" title="statement not covered" >  var params = {q:q, per_page:per_page, page:page, f:f, sort:sort};</span>
+<span class="cstat-no" title="statement not covered" >  var template = browse_obj.template;</span>
+<span class="cstat-no" title="statement not covered" >  var search_options = browse_obj.search_options;</span>
+<span class="cstat-no" title="statement not covered" >  var browse_options = browse_obj.browse_options;</span>
+<span class="cstat-no" title="statement not covered" >  var facets_to_display = browse_obj.facets_to_display;</span>
+<span class="cstat-no" title="statement not covered" >  var niec_facets = 'niec_facets_to_display' in browse_obj ? browse_obj.niec_facets_to_display : null;</span>
+<span class="cstat-no" title="statement not covered" >  if ((q) &amp;&amp; (q != '')){</span>
+<span class="cstat-no" title="statement not covered" >    $("#drs-selection").show();</span>
+<span class="cstat-no" title="statement not covered" >    $("#drs-selection a[data-type='q']").remove();</span>
+<span class="cstat-no" title="statement not covered" >    $("#drs-selection .col-md-10").append("&lt;a class='themebutton btn btn-more' href='#' data-type='q' data-val='"+params.q+"'&gt;"+params.q+" &lt;span class='fa fa-close'&gt;&lt;/span&gt;&lt;/a&gt;");</span>
+  }
+<span class="cstat-no" title="statement not covered" >  if (template == 'collections'){</span>
+<span class="cstat-no" title="statement not covered" >    params.f['type_sim'] = 'Collection';</span>
+<span class="cstat-no" title="statement not covered" >    $("#drs-facets").hide();</span>
+<span class="cstat-no" title="statement not covered" >    $("#drs-docs").css("width", "100%");</span>
+  }
+<span class="cstat-no" title="statement not covered" >  if (template == 'collection'){</span>
+<span class="cstat-no" title="statement not covered" >    params.collection = browse_obj.sub_collection_pid;</span>
+  }
+<span class="cstat-no" title="statement not covered" >  if (template == 'search'){</span>
+<span class="cstat-no" title="statement not covered" >    $("#primary").removeClass('col-md-12').addClass('col-md-9');</span>
+<span class="cstat-no" title="statement not covered" >    $("#secondary").show();</span>
+  } else <span class="cstat-no" title="statement not covered" >if (template == 'browse') {</span>
+<span class="cstat-no" title="statement not covered" >    params.sort = browse_obj.default_sort;</span>
+<span class="cstat-no" title="statement not covered" >    $("#primary").addClass('col-md-12').removeClass('col-md-9');</span>
+<span class="cstat-no" title="statement not covered" >    $("#secondary").hide();</span>
+  } else {
+<span class="cstat-no" title="statement not covered" >    params.sort = "title_ssi%20asc";</span>
+<span class="cstat-no" title="statement not covered" >    $("#primary").addClass('col-md-12').removeClass('col-md-9');</span>
+<span class="cstat-no" title="statement not covered" >    $("#secondary").hide();</span>
+  }
+<span class="cstat-no" title="statement not covered" >  get_data(params);</span>
+<span class="cstat-no" title="statement not covered" >  get_wp_data(params.q);</span>
+&nbsp;
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function get_data(params){</span>
+<span class="cstat-no" title="statement not covered" >    var errors = $.parseJSON(browse_obj.errors);</span>
+<span class="cstat-no" title="statement not covered" >    $("#drs-loading").html("&lt;h2&gt;Loading...&lt;br/&gt;&lt;span class='fa fa-spinner fa-spin'&gt;&lt;/span&gt;&lt;/h2&gt;").show();</span>
+<span class="cstat-no" title="statement not covered" >    $.ajax({</span>
+        type: 'POST',
+        url: browse_obj.ajax_url,
+        data: {
+          _ajax_nonce: browse_obj.nonce,
+           action: "get_browse",
+           params: params,
+        },
+    success: <span class="fstat-no" title="function not covered" >function(data)</span>
+     {
+<span class="cstat-no" title="statement not covered" >      $("#drs-loading").hide();</span>
+<span class="cstat-no" title="statement not covered" >        var data = $.parseJSON(data);</span>
+<span class="cstat-no" title="statement not covered" >        if (data == null) {</span>
+<span class="cstat-no" title="statement not covered" >          $("#drs-content").html(errors.search.fail_null);</span>
+        } else <span class="cstat-no" title="statement not covered" >if (data == -1){</span>
+<span class="cstat-no" title="statement not covered" >          $("#drs-content").html(errors.search.fail_null);</span>
+        } else <span class="cstat-no" title="statement not covered" >if (data.error) {</span>
+<span class="cstat-no" title="statement not covered" >          $("#drs-content").html(errors.search.no_results);</span>
+<span class="cstat-no" title="statement not covered" >          if (template == 'collections'){</span>
+<span class="cstat-no" title="statement not covered" >            $("#drs-content").html(errors.search.no_sub_collections);</span>
+          }
+        } else <span class="cstat-no" title="statement not covered" >if (data.response.response.numFound &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >          paginate(data.pagination.table);/</span>/send to paginate function
+<span class="cstat-no" title="statement not covered" >          facetize(data.response.facet_counts);/</span>/send to facetize function
+<span class="cstat-no" title="statement not covered" >          resultize(data.response.response);/</span>/send to resultize function
+<span class="cstat-no" title="statement not covered" >          clickable(data);</span>
+<span class="cstat-no" title="statement not covered" >          $("#drs-sort").show();</span>
+<span class="cstat-no" title="statement not covered" >          if ($("#drs-selection").find("a").length &lt; 1){</span>
+<span class="cstat-no" title="statement not covered" >            $("#drs-selection").hide();</span>
+          }
+        } else {
+<span class="cstat-no" title="statement not covered" >          $("#drs-content").html(errors.search.no_results);</span>
+        }
+    }, error: <span class="fstat-no" title="function not covered" >function()</span>
+    {
+<span class="cstat-no" title="statement not covered" >      $("#drs-content").html("&lt;div class='alert error alert-error'&gt;"+errors.search.fail_null+"&lt;/div&gt;");</span>
+    }
+  });
+  }
+&nbsp;
+  //parses pagination data
+<span class="fstat-no" title="function not covered" >  function paginate(data){</span>
+<span class="cstat-no" title="statement not covered" >    $("#drs-item-count").html("&lt;h6&gt;Displaying " + data.start + " to " + data.end + " of " + data.total_count + "&lt;/h6&gt;");</span>
+<span class="cstat-no" title="statement not covered" >    $("#drs-per-page-div").html("&lt;h6&gt;Show &lt;select id='drs-per-page'&gt;&lt;option val='10'&gt;10&lt;/option&gt;&lt;option val='20'&gt;20&lt;/option&gt;&lt;option val='50'&gt;50&lt;/option&gt;&lt;/select&gt; per page&lt;/h6&gt;");</span>
+<span class="cstat-no" title="statement not covered" >    $("#drs-per-page").val(params.per_page);</span>
+<span class="cstat-no" title="statement not covered" >    $("#drs-sort-option").val(params.sort);</span>
+<span class="cstat-no" title="statement not covered" >    if (data.num_pages &gt; 1) {</span>
+<span class="cstat-no" title="statement not covered" >      var pagination = "&lt;li class='";</span>
+<span class="cstat-no" title="statement not covered" >      if (data.current_page &gt; 1){</span>
+<span class="cstat-no" title="statement not covered" >        pagination += "'&gt;&lt;a href='#' class='prev'&gt;&lt;&lt;&lt;/a&gt;";</span>
+      } else {
+<span class="cstat-no" title="statement not covered" >        pagination += "disabled'&gt;&lt;span&gt;&lt;&lt;&lt;/span&gt;";</span>
+      }
+<span class="cstat-no" title="statement not covered" >      pagination += "&lt;/li&gt;";</span>
+<span class="cstat-no" title="statement not covered" >      var ellipsis = 0;</span>
+<span class="cstat-no" title="statement not covered" >      for (var i = 1; i &lt;= data.num_pages; i++) {</span>
+<span class="cstat-no" title="statement not covered" >        if (data.current_page == i){</span>
+<span class="cstat-no" title="statement not covered" >          var pagination_class = 'active';</span>
+        } else {
+<span class="cstat-no" title="statement not covered" >          var pagination_class = '';</span>
+        }
+<span class="cstat-no" title="statement not covered" >        if (data.current_page == i) {</span>
+<span class="cstat-no" title="statement not covered" >          pagination += "&lt;li class='"+pagination_class+"'&gt;&lt;span&gt;" + i + "&lt;/span&gt;";</span>
+        } else{
+<span class="cstat-no" title="statement not covered" >          if(i &lt;=1 || (data.current_page &amp;&amp; i &gt;= data.current_page -2 &amp;&amp; i &lt;= data.current_page + 2) || i &gt; data.num_pages -1){</span>
+<span class="cstat-no" title="statement not covered" >            pagination += "&lt;li class='"+pagination_class+"'&gt;&lt;a href='#'&gt;" + i + "&lt;/a&gt;";</span>
+          } else {
+<span class="cstat-no" title="statement not covered" >            ellipsis++;</span>
+          }
+        }
+<span class="cstat-no" title="statement not covered" >        pagination += "&lt;/li&gt;";</span>
+<span class="cstat-no" title="statement not covered" >        if (ellipsis &gt; 0 &amp;&amp; (i &gt;= data.num_pages -1 || i &lt;= 2 || (data.current_page &amp;&amp; i &lt;= data.num_pages -2) )){</span>
+<span class="cstat-no" title="statement not covered" >          pagination += "&lt;li class='disabled ellipsis'&gt;&lt;span class='ellipsis'&gt;...&lt;/span&gt;&lt;/li&gt;";</span>
+<span class="cstat-no" title="statement not covered" >          ellipsis = 0;</span>
+        }
+      }
+<span class="cstat-no" title="statement not covered" >      pagination += "&lt;li class='";</span>
+<span class="cstat-no" title="statement not covered" >      if (data.current_page == data.num_pages){</span>
+<span class="cstat-no" title="statement not covered" >        pagination += "disabled'&gt;&lt;span&gt;&gt;&gt;&lt;/span&gt;";</span>
+      } else {
+<span class="cstat-no" title="statement not covered" >        pagination += "'&gt;&lt;a href='#' class='next'&gt;&gt;&gt;&lt;/a&gt;";</span>
+      }
+<span class="cstat-no" title="statement not covered" >      pagination += "&lt;/li&gt;";</span>
+<span class="cstat-no" title="statement not covered" >      $("#drs-pagination ul.pag").html(pagination);</span>
+<span class="cstat-no" title="statement not covered" >      $("#drs-pagination").show();</span>
+    } else {
+<span class="cstat-no" title="statement not covered" >      $("#drs-pagination ul.pag").html("");</span>
+<span class="cstat-no" title="statement not covered" >      $("#drs-pagination").hide();</span>
+    }
+  }//end paginate
+&nbsp;
+  //parses facet data
+<span class="fstat-no" title="function not covered" >  function facetize(data){</span>
+<span class="cstat-no" title="statement not covered" >    var facet_html = '';</span>
+<span class="cstat-no" title="statement not covered" >    facet_html = parse_facets(data, facets_to_display, facet_html);</span>
+<span class="cstat-no" title="statement not covered" >    if (niec_facets != null){</span>
+<span class="cstat-no" title="statement not covered" >      facet_html = parse_facets(data, niec_facets, facet_html);</span>
+    }
+<span class="cstat-no" title="statement not covered" >    $("#drs-facets").html(facet_html);</span>
+<span class="cstat-no" title="statement not covered" >    $("#drs-facets").before("&lt;button class='themebutton button btn visible-phone hidden-tablet hidden-desktop drs-facet-toggle hidden-md hidden-lg visible-sm visible-xs'&gt;Show Facets&lt;/button&gt;");</span>
+  }//end facetize
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function parse_facets(data, object, facet_html){</span>
+<span class="cstat-no" title="statement not covered" >    $.each(object, <span class="fstat-no" title="function not covered" >function(facet, title){</span></span>
+<span class="cstat-no" title="statement not covered" >      var facet_name = title;</span>
+<span class="cstat-no" title="statement not covered" >      var facet_values = '';</span>
+<span class="cstat-no" title="statement not covered" >      if (Object.keys(data.facet_fields[facet]).length &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >        var this_facet, this_facet_name;</span>
+<span class="cstat-no" title="statement not covered" >        var facet_modal = facet_modal_vals = '';</span>
+<span class="cstat-no" title="statement not covered" >        var i=1;</span>
+<span class="cstat-no" title="statement not covered" >        var facet_array = [];</span>
+<span class="cstat-no" title="statement not covered" >        $.each(data.facet_fields[facet],<span class="fstat-no" title="function not covered" >function(index, val_q){</span></span>
+<span class="cstat-no" title="statement not covered" >          facet_array.push({v:index, k:val_q});</span>
+        });
+<span class="cstat-no" title="statement not covered" >        facet_array.sort(<span class="fstat-no" title="function not covered" >function(a,b){</span></span>
+<span class="cstat-no" title="statement not covered" >           if(a.k &gt; b.k){ <span class="cstat-no" title="statement not covered" >return -1}</span></span>
+<span class="cstat-no" title="statement not covered" >            if(a.k &lt; b.k){ <span class="cstat-no" title="statement not covered" >return 1}</span></span>
+<span class="cstat-no" title="statement not covered" >              return 0;</span>
+        });
+<span class="cstat-no" title="statement not covered" >        $.each(facet_array, <span class="fstat-no" title="function not covered" >function(index, val_q) {</span></span>
+<span class="cstat-no" title="statement not covered" >            var this_facet_count = val_q.k;</span>
+<span class="cstat-no" title="statement not covered" >            this_facet_name = val_q.v;</span>
+<span class="cstat-no" title="statement not covered" >          if (this_facet_count != undefined) {</span>
+<span class="cstat-no" title="statement not covered" >            this_facet = "&lt;a href='#' class='drs-facet-val row'&gt;&lt;div class='three_fourth col-xs-8'&gt;"+this_facet_name+"&lt;/div&gt;&lt;div class='one_fourth col-xs-4 last'&gt;"+this_facet_count+"&lt;/div&gt;&lt;/a&gt;";</span>
+<span class="cstat-no" title="statement not covered" >            if (i &lt;= 5){</span>
+<span class="cstat-no" title="statement not covered" >              facet_values += this_facet;</span>
+            }
+<span class="cstat-no" title="statement not covered" >              facet_modal_vals += this_facet;</span>
+          }
+<span class="cstat-no" title="statement not covered" >          i++;</span>
+        });
+<span class="cstat-no" title="statement not covered" >        facet_modal = '&lt;button type="button" class="themebutton btn btn-more" data-toggle="modal" data-target="#drs_modal_'+facet+'"&gt;More '+facet_name+'s&lt;/button&gt;&lt;div class="modal fade" id="drs_modal_'+facet+'"&gt;&lt;div class="modal-dialog"&gt;&lt;div class="modal-content"&gt;&lt;div class="modal-header"&gt;&lt;button type="button" class="close" data-dismiss="modal" aria-label="Close"&gt;&lt;span aria-hidden="true"&gt;&amp;times;&lt;/span&gt;&lt;/button&gt;&lt;h4 class="modal-title"&gt;All '+facet_name+'s&lt;/h4&gt;&lt;/div&gt;&lt;div class="modal-body"&gt;'+facet_modal_vals+'&lt;/div&gt;&lt;div class="modal-footer"&gt;&lt;button type="button" class="btn btn-default" data-dismiss="modal"&gt;Close&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- /.modal-content --&gt;&lt;/div&gt;&lt;!-- /.modal-dialog --&gt;&lt;/div&gt;&lt;!-- /.modal --&gt;';</span>
+<span class="cstat-no" title="statement not covered" >        facet_html += "&lt;div id='drs_"+facet+"' class='drs-facet'&gt;&lt;div class='panel panel-default'&gt;&lt;div class='panel-heading'&gt;&lt;b class='drs-facet-name'&gt;" + facet_name + "&lt;/b&gt;&lt;/div&gt;&lt;div class='panel-body'&gt;"+facet_values;</span>
+<span class="cstat-no" title="statement not covered" >        if (Object.keys(data.facet_fields[facet]).length &gt; 5){</span>
+<span class="cstat-no" title="statement not covered" >          facet_html += facet_modal;</span>
+        }
+<span class="cstat-no" title="statement not covered" >        facet_html += "&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;";</span>
+      }
+    });
+<span class="cstat-no" title="statement not covered" >    return facet_html;</span>
+  }
+&nbsp;
+  //parses actual results
+<span class="fstat-no" title="function not covered" >  function resultize(data){</span>
+    //do grid or list depending on if template is search or browse
+<span class="cstat-no" title="statement not covered" >    var docs_html = '';</span>
+<span class="cstat-no" title="statement not covered" >    $.each(data.docs, <span class="fstat-no" title="function not covered" >function(doc, doc_vals){</span></span>
+<span class="cstat-no" title="statement not covered" >      var title, abstract, creator, date, klass = '';</span>
+<span class="cstat-no" title="statement not covered" >      var thumbnail = [];</span>
+<span class="cstat-no" title="statement not covered" >      var home_url = browse_obj.home_url;</span>
+<span class="cstat-no" title="statement not covered" >      var this_doc_url;</span>
+<span class="cstat-no" title="statement not covered" >      doc_vals.full_title_ssi? title = doc_vals.full_title_ssi : "";</span>
+<span class="cstat-no" title="statement not covered" >      doc_vals.abstract_tesim? abstract = doc_vals.abstract_tesim : "";</span>
+<span class="cstat-no" title="statement not covered" >      doc_vals.creator_tesim? creator = doc_vals.creator_tesim : "";</span>
+<span class="cstat-no" title="statement not covered" >      doc_vals.thumbnail_list_tesim? thumbnail = doc_vals.thumbnail_list_tesim : "";</span>
+<span class="cstat-no" title="statement not covered" >      doc_vals.origin_info_date_created_tesim? date = doc_vals.origin_info_date_created_tesim : "";</span>
+<span class="cstat-no" title="statement not covered" >      doc_vals.active_fedora_model_ssi? klass = doc_vals.active_fedora_model_ssi : "";</span>
+<span class="cstat-no" title="statement not covered" >      if (klass == 'CoreFile'){<span class="cstat-no" title="statement not covered" >klass = get_short_name(doc_vals.canonical_class_tesim);}</span></span>
+<span class="cstat-no" title="statement not covered" >      if (doc_vals.active_fedora_model_ssi == 'Collection') {</span>
+<span class="cstat-no" title="statement not covered" >        this_doc_url = home_url + 'collection/' + doc_vals.id;</span>
+      } else <span class="cstat-no" title="statement not covered" >if (doc_vals.active_fedora_model_ssi == 'CoreFile') {</span>
+<span class="cstat-no" title="statement not covered" >        this_doc_url = home_url + 'item/' + doc_vals.id;</span>
+      }
+<span class="cstat-no" title="statement not covered" >      var this_doc = '';</span>
+<span class="cstat-no" title="statement not covered" >      if (template == 'search'){</span>
+        //search = grid
+<span class="cstat-no" title="statement not covered" >        this_doc += "&lt;div class='drs-item search panel panel-default'&gt;&lt;div class='panel-body'&gt;&lt;div class='one_fourth col-sm-3'&gt;&lt;figure&gt;&lt;a href='"+this_doc_url+"'&gt;";</span>
+<span class="cstat-no" title="statement not covered" >        if (thumbnail[1]) {</span>
+<span class="cstat-no" title="statement not covered" >          this_doc += "&lt;img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' /&gt;";</span>
+        } else {
+<span class="cstat-no" title="statement not covered" >          this_doc += "&lt;div class='fa fa-folder-open-o'&gt;&lt;/div&gt;";</span>
+        }
+<span class="cstat-no" title="statement not covered" >        this_doc += "&lt;figcaption&gt;&lt;span class='label small'&gt;"+klass+"&lt;/span&gt;&lt;/figcaption&gt;&lt;/a&gt;&lt;/figure&gt;&lt;/div&gt;&lt;div class='three_fourth col-sm-9 last'&gt;";</span>
+<span class="cstat-no" title="statement not covered" >        if (search_options.indexOf('Title') &gt; -1){</span>
+<span class="cstat-no" title="statement not covered" >          this_doc += "&lt;h4 class='drs-item-title'&gt;&lt;a href='"+this_doc_url+"'&gt;" + title + "&lt;/a&gt;&lt;/h4&gt;";</span>
+        }
+<span class="cstat-no" title="statement not covered" >        if (creator &amp;&amp; search_options.indexOf('Creator') &gt; -1){</span>
+<span class="cstat-no" title="statement not covered" >          this_doc += "&lt;h6 class='drs-item-creator'&gt;"+ creator + "&lt;/h6&gt;";</span>
+        }
+<span class="cstat-no" title="statement not covered" >        if (abstract  &amp;&amp; search_options.indexOf('Abstract') &gt; -1){</span>
+<span class="cstat-no" title="statement not covered" >          this_doc += "&lt;p class='drs-item-abstract'&gt;" + abstract + "&lt;/p&gt;";</span>
+        }
+<span class="cstat-no" title="statement not covered" >        if (date  &amp;&amp; search_options.indexOf('Date') &gt; -1){</span>
+<span class="cstat-no" title="statement not covered" >          this_doc += "&lt;p class='drs-item-date'&gt;" + date + "&lt;/p&gt;";</span>
+        }
+<span class="cstat-no" title="statement not covered" >        this_doc += "&lt;div class=''&gt;&lt;a href='"+this_doc_url+"' class='themebutton button btn'&gt;View More&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;";</span>
+      } else {
+        //browse = tile
+<span class="cstat-no" title="statement not covered" >        this_doc += "&lt;div class='drs-item browse one_third ";</span>
+<span class="cstat-no" title="statement not covered" >        if (template == 'collections'){</span>
+<span class="cstat-no" title="statement not covered" >          this_doc += "col-lg-3 col-md-4 col-sm-5";</span>
+        } else {
+<span class="cstat-no" title="statement not covered" >          this_doc += "col-sm-4";</span>
+        }
+<span class="cstat-no" title="statement not covered" >        this_doc += "'&gt;&lt;div class='thumbnail'&gt;&lt;figure&gt;&lt;a href='"+this_doc_url+"'&gt;";</span>
+<span class="cstat-no" title="statement not covered" >        if (thumbnail[1]) {</span>
+<span class="cstat-no" title="statement not covered" >          this_doc += "&lt;img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' /&gt;";</span>
+        } else {
+<span class="cstat-no" title="statement not covered" >          this_doc += "&lt;div class='fa fa-folder-open-o'&gt;&lt;/div&gt;";</span>
+        }
+<span class="cstat-no" title="statement not covered" >        this_doc += "&lt;figcaption&gt;&lt;span class='label small'&gt;"+klass+"&lt;/span&gt;&lt;/figcaption&gt;&lt;/a&gt;&lt;/figure&gt;&lt;div class='caption text-center'&gt;";</span>
+<span class="cstat-no" title="statement not covered" >        if (browse_options.indexOf('Title') &gt; -1){</span>
+<span class="cstat-no" title="statement not covered" >          this_doc += "&lt;h5 class='drs-item-title'&gt;&lt;a href='"+this_doc_url+"'&gt;"+title+"&lt;/a&gt;&lt;/h5&gt;";</span>
+        }
+<span class="cstat-no" title="statement not covered" >        if (creator &amp;&amp; browse_options.indexOf('Creator') &gt; -1){</span>
+<span class="cstat-no" title="statement not covered" >          this_doc += "&lt;h6 class='drs-item-creator'&gt;"+creator+"&lt;/h6&gt;";</span>
+        }
+<span class="cstat-no" title="statement not covered" >        if (abstract  &amp;&amp; browse_options.indexOf('Abstract') &gt; -1){</span>
+<span class="cstat-no" title="statement not covered" >          this_doc += "&lt;p class='drs-item-abstract'&gt;"+abstract+"&lt;/p&gt;";</span>
+        }
+<span class="cstat-no" title="statement not covered" >        if (date  &amp;&amp; browse_options.indexOf('Date') &gt; -1){</span>
+<span class="cstat-no" title="statement not covered" >          this_doc += "&lt;p class='drs-item-date'&gt;"+date+"&lt;/p&gt;";</span>
+        }
+<span class="cstat-no" title="statement not covered" >        this_doc += "&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;";</span>
+      }
+<span class="cstat-no" title="statement not covered" >      docs_html += this_doc;</span>
+    });
+<span class="cstat-no" title="statement not covered" >    $("#drs-docs").html(docs_html);</span>
+  }//end resultize
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function clickable(data){</span>
+<span class="cstat-no" title="statement not covered" >    $("#drs-pagination a").on("click", <span class="fstat-no" title="function not covered" >function(e){</span></span>
+<span class="cstat-no" title="statement not covered" >      e.preventDefault();</span>
+<span class="cstat-no" title="statement not covered" >      if ($(this).hasClass('next')){</span>
+<span class="cstat-no" title="statement not covered" >        params.page = params.page +1;</span>
+      }else <span class="cstat-no" title="statement not covered" >if ($(this).hasClass('prev')){</span>
+<span class="cstat-no" title="statement not covered" >        params.page = params.page -1;</span>
+      } else {
+<span class="cstat-no" title="statement not covered" >        params.page = $(this).html();</span>
+      }
+<span class="cstat-no" title="statement not covered" >      get_data(params);</span>
+    });
+<span class="cstat-no" title="statement not covered" >    $("#drs-per-page").on("change", <span class="fstat-no" title="function not covered" >function(){</span></span>
+<span class="cstat-no" title="statement not covered" >      params.per_page = $(this).val();</span>
+<span class="cstat-no" title="statement not covered" >      params.page = 1;</span>
+<span class="cstat-no" title="statement not covered" >      get_data(params);</span>
+    });
+<span class="cstat-no" title="statement not covered" >    $("#drs-facets a").on("click", <span class="fstat-no" title="function not covered" >function(e){</span></span>
+<span class="cstat-no" title="statement not covered" >      e.preventDefault();</span>
+<span class="cstat-no" title="statement not covered" >      var facet = $(this).parents('.drs-facet').attr("id");</span>
+<span class="cstat-no" title="statement not covered" >      if ($(this).parent().hasClass('modal-body')){</span>
+<span class="cstat-no" title="statement not covered" >        facet = $(this).parents('.modal').attr('id').substr(10);</span>
+<span class="cstat-no" title="statement not covered" >        $(this).parents('.modal').modal('hide');</span>
+      } else {
+<span class="cstat-no" title="statement not covered" >        facet = facet.substr(4);</span>
+      }
+<span class="cstat-no" title="statement not covered" >      var facet_val = $(this).children(".drs-facet-val div:first-of-type").html();</span>
+<span class="cstat-no" title="statement not covered" >      params.f[facet] = facet_val;</span>
+<span class="cstat-no" title="statement not covered" >      params.page = 1;</span>
+<span class="cstat-no" title="statement not covered" >      $("#drs-selection").show();</span>
+<span class="cstat-no" title="statement not covered" >      $("#drs-selection .col-md-10").append("&lt;a class='themebutton btn btn-more' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'&gt;"+titleize(facet)+" &gt; "+facet_val+" &lt;span class='fa fa-close'&gt;&lt;/span&gt;&lt;/a&gt;");</span>
+<span class="cstat-no" title="statement not covered" >      get_data(params);</span>
+    });
+<span class="cstat-no" title="statement not covered" >    $("#drs-selection a").on("click", <span class="fstat-no" title="function not covered" >function(e){</span></span>
+<span class="cstat-no" title="statement not covered" >      e.preventDefault();</span>
+<span class="cstat-no" title="statement not covered" >      var type = $(this).data("type");</span>
+<span class="cstat-no" title="statement not covered" >      if (type == 'f') {</span>
+<span class="cstat-no" title="statement not covered" >        var facet = $(this).data("facet");</span>
+<span class="cstat-no" title="statement not covered" >        delete params.f[facet];</span>
+      } else <span class="cstat-no" title="statement not covered" >if (type == 'q') {</span>
+<span class="cstat-no" title="statement not covered" >        params[type] = '';</span>
+<span class="cstat-no" title="statement not covered" >        location.href=location.href.replace(/&amp;?q=([^&amp;]$|[^&amp;]*)/i, "");</span>
+      } else {
+<span class="cstat-no" title="statement not covered" >        params[type] = '';</span>
+      }
+<span class="cstat-no" title="statement not covered" >      params.page = 1;</span>
+<span class="cstat-no" title="statement not covered" >      $(this).remove();</span>
+<span class="cstat-no" title="statement not covered" >      get_data(params);</span>
+<span class="cstat-no" title="statement not covered" >      get_wp_data(params.q);</span>
+    });
+&nbsp;
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  $("#drs-sort").html("&lt;h6&gt;Sort By: &lt;select id='drs-sort-option'&gt;&lt;option value='score+desc%2C+system_create_dtsi+desc'&gt;Relevance&lt;/option&gt;&lt;option value='title_ssi%20asc'&gt;Title A-Z&lt;/option&gt;&lt;option value='title_ssi%20desc'&gt;Title Z-A&lt;/option&gt;&lt;option value='creator_tesim%20asc'&gt;Creator A-Z&lt;/option&gt;&lt;option value='creator_tesim%20desc'&gt;Creator Z-A&lt;/option&gt;&lt;option value='system_modified_dtsi%20asc'&gt;Date (earliest to latest)&lt;/option&gt;&lt;option value='system_modified_dtsi%20desc'&gt;Date (latest to earliest)&lt;/option&gt;&lt;/select&gt;&lt;/h6&gt;");</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  $("#drs-sort-option").on("change", <span class="fstat-no" title="function not covered" >function() {</span></span>
+<span class="cstat-no" title="statement not covered" >    params.sort = $(this).val();</span>
+<span class="cstat-no" title="statement not covered" >    get_data(params);</span>
+<span class="cstat-no" title="statement not covered" >    $(this).val(params.sort);</span>
+  });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  $("#drs-content").on("click", ".drs-facet-toggle",  <span class="fstat-no" title="function not covered" >function() {</span></span>
+<span class="cstat-no" title="statement not covered" >    $("#drs-facets").toggleClass("hidden-xs hidden-sm visible-sm visible-xs");</span>
+<span class="cstat-no" title="statement not covered" >    $(".drs-facet-toggle").html($('.drs-facet-toggle').text() == 'Hide Facets' ? 'Show Facets' : 'Hide Facets');</span>
+  });
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function titleize(str){</span>
+<span class="cstat-no" title="statement not covered" >    if (facets_to_display[str]){</span>
+<span class="cstat-no" title="statement not covered" >      return facets_to_display[str];</span>
+    } else <span class="cstat-no" title="statement not covered" >if (niec_facets[str]){</span>
+<span class="cstat-no" title="statement not covered" >      return niec_facets[str];</span>
+    } else{
+<span class="cstat-no" title="statement not covered" >      str = str.replace("_tesim","").replace("_sim","").replace("_ssim","");</span>
+<span class="cstat-no" title="statement not covered" >      str = str.replace("_", " ");</span>
+<span class="cstat-no" title="statement not covered" >      str = str.replace(/\w\S*/g, <span class="fstat-no" title="function not covered" >function(txt){<span class="cstat-no" title="statement not covered" ></span>return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}</span>);</span>
+<span class="cstat-no" title="statement not covered" >      return str;</span>
+    }
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function GetURLParameter(url, sParam){</span>
+<span class="cstat-no" title="statement not covered" >    var sPageURL = url;</span>
+<span class="cstat-no" title="statement not covered" >    var sURLVariables = sPageURL.split('&amp;');</span>
+<span class="cstat-no" title="statement not covered" >    for (var i = 0; i &lt; sURLVariables.length; i++){</span>
+<span class="cstat-no" title="statement not covered" >      var sParameterName = sURLVariables[i].split('=');</span>
+<span class="cstat-no" title="statement not covered" >      if (sParameterName[0] == sParam){</span>
+<span class="cstat-no" title="statement not covered" >        return sParameterName[1];</span>
+      }
+    }
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function get_wp_data(query, page){</span>
+<span class="cstat-no" title="statement not covered" >    if (template == 'search'){</span>
+<span class="cstat-no" title="statement not covered" >      if (!page){</span>
+<span class="cstat-no" title="statement not covered" >        page = 1;</span>
+      }
+<span class="cstat-no" title="statement not covered" >      $.ajax({</span>
+  			type: 'GET',
+  			url: browse_obj.ajax_url,
+  			data: {
+  				action: 'wp_search',
+  				query: query,
+          page: page,
+  			},
+  			beforeSend: <span class="fstat-no" title="function not covered" >function ()</span>
+  			{
+<span class="cstat-no" title="statement not covered" >          $("#secondary").html("Looking for related content...");</span>
+  			},
+  			success: <span class="fstat-no" title="function not covered" >function(data)</span>
+  			{
+<span class="cstat-no" title="statement not covered" >          $("#secondary").html("&lt;div class='panel panel-default'&gt;&lt;div class='panel-heading'&gt;&lt;b&gt;Related Content&lt;/b&gt;&lt;/div&gt;&lt;div class='panel-body'&gt;"+data+"&lt;/div&gt;&lt;/div&gt;");</span>
+<span class="cstat-no" title="statement not covered" >          $("#secondary").addClass('drs-sidebar');</span>
+<span class="cstat-no" title="statement not covered" >          $("#primary").addClass('drs-main');</span>
+<span class="cstat-no" title="statement not covered" >          $("#secondary #title-container").hide();</span>
+<span class="cstat-no" title="statement not covered" >          fix_wp_pagination();</span>
+  			},
+  			error: <span class="fstat-no" title="function not covered" >function()</span>
+  			{
+<span class="cstat-no" title="statement not covered" >  				$("#secondary").hide();</span>
+<span class="cstat-no" title="statement not covered" >          $("#primary").removeClass('col-md-9').addClass('col-md-12');</span>
+  			}
+  		});
+    } else {
+      //we are in browse
+    }
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function fix_wp_pagination() {</span>
+<span class="cstat-no" title="statement not covered" >    $('#secondary .pagination li a').on("click", <span class="fstat-no" title="function not covered" >function(e) {</span></span>
+<span class="cstat-no" title="statement not covered" >      e.preventDefault();</span>
+<span class="cstat-no" title="statement not covered" >      var wp_page = GetURLParameter($(this).attr('href'), 'paged');</span>
+<span class="cstat-no" title="statement not covered" >      get_wp_data(params.q, wp_page);</span>
+    });
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function get_short_name(klass){</span>
+<span class="cstat-no" title="statement not covered" >    if (klass == 'AudioFile'){</span>
+<span class="cstat-no" title="statement not covered" >      klass = 'Audio';</span>
+    } else <span class="cstat-no" title="statement not covered" >if (klass == 'ImageLargeFile' || klass == 'ImageMasterFile' || klass == 'ImageMediumFile' || klass == 'ImageSmallFile' || klass == 'ImageThumbnailFile'){</span>
+<span class="cstat-no" title="statement not covered" >      klass = 'Image';</span>
+    } else <span class="cstat-no" title="statement not covered" >if (klass == 'MsexcelFile'){</span>
+<span class="cstat-no" title="statement not covered" >      klass = 'Dataset';</span>
+    } else <span class="cstat-no" title="statement not covered" >if (klass == 'MspowerpointFile'){</span>
+<span class="cstat-no" title="statement not covered" >      klass = 'Presentation';</span>
+    } else <span class="cstat-no" title="statement not covered" >if (klass == 'MswordFile' || klass == 'PdfFile' || klass == 'TextFile'){</span>
+<span class="cstat-no" title="statement not covered" >      klass = 'Document';</span>
+    } else <span class="cstat-no" title="statement not covered" >if (klass == 'VideoFile'){</span>
+<span class="cstat-no" title="statement not covered" >      klass = 'Video';</span>
+    } else <span class="cstat-no" title="statement not covered" >if (klass == 'ZipFile'){</span>
+<span class="cstat-no" title="statement not covered" >      klass = 'Zip';</span>
+    }
+<span class="cstat-no" title="statement not covered" >    return klass;</span>
+  }
+&nbsp;
+});//end doc ready
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue May 03 2016 14:23:15 GMT-0400 (EDT)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

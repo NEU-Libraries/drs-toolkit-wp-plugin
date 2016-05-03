@@ -15,9 +15,9 @@ before_script:
 script:
   - npm install
   - grunt jasmine
-  - cd TestSuite
+  # - cd TestSuite
   # - coverage run test-suite-maps.py
   # - coverage run test-suite-timeline.py
 after_success:
-  - coveralls
+  # - coveralls
   - grunt coveralls

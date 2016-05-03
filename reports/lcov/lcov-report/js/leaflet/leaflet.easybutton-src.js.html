@@ -1,0 +1,1223 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for js/leaflet/leaflet.easybutton-src.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">all files</a> / <a href="index.html">js/leaflet/</a> leaflet.easybutton-src.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">3.2% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>4/125</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/49</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">4.35% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>1/23</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">3.2% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>4/125</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/*
+Copyright (C) 2014 Daniel Montague
+&nbsp;
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+&nbsp;
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+&nbsp;
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+&nbsp;
+(function(){
+&nbsp;
+// This is for grouping buttons into a bar
+// takes an array of `L.easyButton`s and
+// then the usual `.addTo(map)`
+    L.Control.EasyBar = L.Control.extend({
+&nbsp;
+        options: {
+            position:       'topleft',  // part of leaflet's defaults
+            id:             null,       // an id to tag the Bar with
+            leafletClasses: true        // use leaflet classes?
+        },
+&nbsp;
+&nbsp;
+        initialize: <span class="fstat-no" title="function not covered" >function(buttons, options){</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            if(options){</span>
+<span class="cstat-no" title="statement not covered" >                L.Util.setOptions( this, options );</span>
+            }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            this._buildContainer();</span>
+<span class="cstat-no" title="statement not covered" >            this._buttons = [];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            for(var i = 0; i &lt; buttons.length; i++){</span>
+<span class="cstat-no" title="statement not covered" >                buttons[i]._bar = this;</span>
+<span class="cstat-no" title="statement not covered" >                buttons[i]._container = buttons[i].button;</span>
+<span class="cstat-no" title="statement not covered" >                this._buttons.push(buttons[i]);</span>
+<span class="cstat-no" title="statement not covered" >                this.container.appendChild(buttons[i].button);</span>
+            }
+&nbsp;
+        },
+&nbsp;
+&nbsp;
+        _buildContainer: <span class="fstat-no" title="function not covered" >function(){</span>
+<span class="cstat-no" title="statement not covered" >            this._container = this.container = L.DomUtil.create('div', '');</span>
+<span class="cstat-no" title="statement not covered" >            this.options.leafletClasses &amp;&amp; L.DomUtil.addClass(this.container, 'leaflet-bar easy-button-container leaflet-control');</span>
+<span class="cstat-no" title="statement not covered" >            this.options.id &amp;&amp; (this.container.id = this.options.id);</span>
+        },
+&nbsp;
+&nbsp;
+        enable: <span class="fstat-no" title="function not covered" >function(){</span>
+<span class="cstat-no" title="statement not covered" >            L.DomUtil.addClass(this.container, 'enabled');</span>
+<span class="cstat-no" title="statement not covered" >            L.DomUtil.removeClass(this.container, 'disabled');</span>
+<span class="cstat-no" title="statement not covered" >            this.container.setAttribute('aria-hidden', 'false');</span>
+<span class="cstat-no" title="statement not covered" >            return this;</span>
+        },
+&nbsp;
+&nbsp;
+        disable: <span class="fstat-no" title="function not covered" >function(){</span>
+<span class="cstat-no" title="statement not covered" >            L.DomUtil.addClass(this.container, 'disabled');</span>
+<span class="cstat-no" title="statement not covered" >            L.DomUtil.removeClass(this.container, 'enabled');</span>
+<span class="cstat-no" title="statement not covered" >            this.container.setAttribute('aria-hidden', 'true');</span>
+<span class="cstat-no" title="statement not covered" >            return this;</span>
+        },
+&nbsp;
+&nbsp;
+        onAdd: <span class="fstat-no" title="function not covered" >function () {</span>
+<span class="cstat-no" title="statement not covered" >            return this.container;</span>
+        },
+&nbsp;
+        addTo: <span class="fstat-no" title="function not covered" >function (map) {</span>
+<span class="cstat-no" title="statement not covered" >            this._map = map;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            for(var i = 0; i &lt; this._buttons.length; i++){</span>
+<span class="cstat-no" title="statement not covered" >                this._buttons[i]._map = map;</span>
+            }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            var container = this._container = this.onAdd(map),</span>
+                pos = this.getPosition(),
+                corner = map._controlCorners[pos];
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            L.DomUtil.addClass(container, 'leaflet-control');</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            if (pos.indexOf('bottom') !== -1) {</span>
+<span class="cstat-no" title="statement not covered" >                corner.insertBefore(container, corner.firstChild);</span>
+            } else {
+<span class="cstat-no" title="statement not covered" >                corner.appendChild(container);</span>
+            }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            return this;</span>
+        }
+&nbsp;
+    });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    L.easyBar = <span class="fstat-no" title="function not covered" >function(){</span></span>
+<span class="cstat-no" title="statement not covered" >        var args = [L.Control.EasyBar];</span>
+<span class="cstat-no" title="statement not covered" >        for(var i = 0; i &lt; arguments.length; i++){</span>
+<span class="cstat-no" title="statement not covered" >            args.push( arguments[i] );</span>
+        }
+<span class="cstat-no" title="statement not covered" >        return new (Function.prototype.bind.apply(L.Control.EasyBar, args));</span>
+    };
+&nbsp;
+// L.EasyButton is the actual buttons
+// can be called without being grouped into a bar
+<span class="cstat-no" title="statement not covered" >    L.Control.EasyButton = L.Control.extend({</span>
+&nbsp;
+        options: {
+            position:  'topleft',       // part of leaflet's defaults
+&nbsp;
+            id:        null,            // an id to tag the button with
+&nbsp;
+            type:      'replace',       // [(replace|animate)]
+                                        // replace swaps out elements
+                                        // animate changes classes with all elements inserted
+&nbsp;
+            states:    [],              // state names look like this
+                                        // {
+                                        //   stateName: 'untracked',
+                                        //   onClick: function(){ handle_nav_manually(); };
+                                        //   title: 'click to make inactive',
+                                        //   icon: 'fa-circle',    // wrapped with &lt;a&gt;
+                                        // }
+&nbsp;
+            leafletClasses:   true      // use leaflet styles for the button
+        },
+&nbsp;
+&nbsp;
+&nbsp;
+        initialize: <span class="fstat-no" title="function not covered" >function(icon, onClick, title, id){</span>
+&nbsp;
+            // clear the states manually
+<span class="cstat-no" title="statement not covered" >            this.options.states = [];</span>
+&nbsp;
+            // add id to options
+<span class="cstat-no" title="statement not covered" >            if(id != null){</span>
+<span class="cstat-no" title="statement not covered" >                this.options.id = id;</span>
+            }
+&nbsp;
+            // storage between state functions
+<span class="cstat-no" title="statement not covered" >            this.storage = {};</span>
+&nbsp;
+            // is the last item an object?
+<span class="cstat-no" title="statement not covered" >            if( typeof arguments[arguments.length-1] === 'object' ){</span>
+&nbsp;
+                // if so, it should be the options
+<span class="cstat-no" title="statement not covered" >                L.Util.setOptions( this, arguments[arguments.length-1] );</span>
+            }
+&nbsp;
+            // if there aren't any states in options
+            // use the early params
+<span class="cstat-no" title="statement not covered" >            if( this.options.states.length === 0 &amp;&amp;</span>
+                typeof icon  === 'string' &amp;&amp;
+                typeof onClick === 'function'){
+&nbsp;
+                // turn the options object into a state
+<span class="cstat-no" title="statement not covered" >                this.options.states.push({</span>
+                    icon: icon,
+                    onClick: onClick,
+                    title: typeof title === 'string' ? title : ''
+                });
+            }
+&nbsp;
+            // curate and move user's states into
+            // the _states for internal use
+<span class="cstat-no" title="statement not covered" >            this._states = [];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            for(var i = 0; i &lt; this.options.states.length; i++){</span>
+<span class="cstat-no" title="statement not covered" >                this._states.push( new State(this.options.states[i], this) );</span>
+            }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            this._buildButton();</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            this._activateState(this._states[0]);</span>
+&nbsp;
+        },
+&nbsp;
+        _buildButton: <span class="fstat-no" title="function not covered" >function(){</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            this.button = L.DomUtil.create('button', '');</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            if (this.options.id ){</span>
+<span class="cstat-no" title="statement not covered" >                this.button.id = this.options.id;</span>
+            }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            if (this.options.leafletClasses){</span>
+<span class="cstat-no" title="statement not covered" >                L.DomUtil.addClass(this.button, 'easy-button-button leaflet-bar-part');</span>
+            }
+&nbsp;
+            // don't let double clicks get to the map
+<span class="cstat-no" title="statement not covered" >            L.DomEvent.addListener(this.button, 'dblclick', L.DomEvent.stop);</span>
+&nbsp;
+            // take care of normal clicks
+<span class="cstat-no" title="statement not covered" >            L.DomEvent.addListener(this.button,'click', <span class="fstat-no" title="function not covered" >function(e){</span></span>
+<span class="cstat-no" title="statement not covered" >                L.DomEvent.stop(e);</span>
+<span class="cstat-no" title="statement not covered" >                this._currentState.onClick(this, this._map ? this._map : null );</span>
+<span class="cstat-no" title="statement not covered" >                this._map.getContainer().focus();</span>
+            }, this);
+&nbsp;
+            // prep the contents of the control
+<span class="cstat-no" title="statement not covered" >            if(this.options.type == 'replace'){</span>
+<span class="cstat-no" title="statement not covered" >                this.button.appendChild(this._currentState.icon);</span>
+            } else {
+<span class="cstat-no" title="statement not covered" >                for(var i=0;i&lt;this._states.length;i++){</span>
+<span class="cstat-no" title="statement not covered" >                    this.button.appendChild(this._states[i].icon);</span>
+                }
+            }
+        },
+&nbsp;
+&nbsp;
+        _currentState: {
+            // placeholder content
+            stateName: 'unnamed',
+            icon: (<span class="fstat-no" title="function not covered" >function(){</span> <span class="cstat-no" title="statement not covered" >return document.createElement('span'); </span>})()
+        },
+&nbsp;
+&nbsp;
+&nbsp;
+        _states: null, // populated on init
+&nbsp;
+&nbsp;
+&nbsp;
+        state: <span class="fstat-no" title="function not covered" >function(newState){</span>
+&nbsp;
+            // activate by name
+<span class="cstat-no" title="statement not covered" >            if(typeof newState == 'string'){</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                this._activateStateNamed(newState);</span>
+&nbsp;
+                // activate by index
+            } else <span class="cstat-no" title="statement not covered" >if (typeof newState == 'number'){</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                this._activateState(this._states[newState]);</span>
+            }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            return this;</span>
+        },
+&nbsp;
+&nbsp;
+        _activateStateNamed: <span class="fstat-no" title="function not covered" >function(stateName){</span>
+<span class="cstat-no" title="statement not covered" >            for(var i = 0; i &lt; this._states.length; i++){</span>
+<span class="cstat-no" title="statement not covered" >                if( this._states[i].stateName == stateName ){</span>
+<span class="cstat-no" title="statement not covered" >                    this._activateState( this._states[i] );</span>
+                }
+            }
+        },
+&nbsp;
+        _activateState: <span class="fstat-no" title="function not covered" >function(newState){</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            if( newState === this._currentState ){</span>
+&nbsp;
+                // don't touch the dom if it'll just be the same after
+<span class="cstat-no" title="statement not covered" >                return;</span>
+&nbsp;
+            } else {
+&nbsp;
+                // swap out elements... if you're into that kind of thing
+<span class="cstat-no" title="statement not covered" >                if( this.options.type == 'replace' ){</span>
+<span class="cstat-no" title="statement not covered" >                    this.button.appendChild(newState.icon);</span>
+<span class="cstat-no" title="statement not covered" >                    this.button.removeChild(this._currentState.icon);</span>
+                }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                if( newState.title ){</span>
+<span class="cstat-no" title="statement not covered" >                    this.button.title = newState.title;</span>
+                } else {
+<span class="cstat-no" title="statement not covered" >                    this.button.removeAttribute('title');</span>
+                }
+&nbsp;
+                // update classes for animations
+<span class="cstat-no" title="statement not covered" >                for(var i=0;i&lt;this._states.length;i++){</span>
+<span class="cstat-no" title="statement not covered" >                    L.DomUtil.removeClass(this._states[i].icon, this._currentState.stateName + '-active');</span>
+<span class="cstat-no" title="statement not covered" >                    L.DomUtil.addClass(this._states[i].icon, newState.stateName + '-active');</span>
+                }
+&nbsp;
+                // update classes for animations
+<span class="cstat-no" title="statement not covered" >                L.DomUtil.removeClass(this.button, this._currentState.stateName + '-active');</span>
+<span class="cstat-no" title="statement not covered" >                L.DomUtil.addClass(this.button, newState.stateName + '-active');</span>
+&nbsp;
+                // update the record
+<span class="cstat-no" title="statement not covered" >                this._currentState = newState;</span>
+&nbsp;
+            }
+        },
+&nbsp;
+&nbsp;
+&nbsp;
+        enable: <span class="fstat-no" title="function not covered" >function(){</span>
+<span class="cstat-no" title="statement not covered" >            L.DomUtil.addClass(this.button, 'enabled');</span>
+<span class="cstat-no" title="statement not covered" >            L.DomUtil.removeClass(this.button, 'disabled');</span>
+<span class="cstat-no" title="statement not covered" >            this.button.setAttribute('aria-hidden', 'false');</span>
+<span class="cstat-no" title="statement not covered" >            return this;</span>
+        },
+&nbsp;
+&nbsp;
+&nbsp;
+        disable: <span class="fstat-no" title="function not covered" >function(){</span>
+<span class="cstat-no" title="statement not covered" >            L.DomUtil.addClass(this.button, 'disabled');</span>
+<span class="cstat-no" title="statement not covered" >            L.DomUtil.removeClass(this.button, 'enabled');</span>
+<span class="cstat-no" title="statement not covered" >            this.button.setAttribute('aria-hidden', 'true');</span>
+<span class="cstat-no" title="statement not covered" >            return this;</span>
+        },
+&nbsp;
+&nbsp;
+        removeFrom: <span class="fstat-no" title="function not covered" >function (map) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            this._container.parentNode.removeChild(this._container);</span>
+<span class="cstat-no" title="statement not covered" >            this._map = null;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            return this;</span>
+        },
+&nbsp;
+        onAdd: <span class="fstat-no" title="function not covered" >function(){</span>
+<span class="cstat-no" title="statement not covered" >            var containerObj = L.easyBar([this], {</span>
+                position: this.options.position,
+                leafletClasses: this.options.leafletClasses
+            });
+<span class="cstat-no" title="statement not covered" >            this._container = containerObj.container;</span>
+<span class="cstat-no" title="statement not covered" >            return this._container;</span>
+        }
+&nbsp;
+&nbsp;
+    });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    L.easyButton = <span class="fstat-no" title="function not covered" >function(/* args will pass automatically */){</span></span>
+<span class="cstat-no" title="statement not covered" >        var args = Array.prototype.concat.apply([L.Control.EasyButton],arguments);</span>
+<span class="cstat-no" title="statement not covered" >        return new (Function.prototype.bind.apply(L.Control.EasyButton, args));</span>
+    };
+&nbsp;
+    /*************************
+     *
+     * util functions
+     *
+     *************************/
+&nbsp;
+// constructor for states so only curated
+// states end up getting called
+<span class="fstat-no" title="function not covered" >    function State(template, easyButton){</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        this.title = template.title;</span>
+<span class="cstat-no" title="statement not covered" >        this.stateName = template.stateName ? template.stateName : 'unnamed-state';</span>
+&nbsp;
+        // build the wrapper
+<span class="cstat-no" title="statement not covered" >        this.icon = L.DomUtil.create('span', '');</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        L.DomUtil.addClass(this.icon, 'button-state state-' + this.stateName.replace(/(^\s*|\s*$)/g,''));</span>
+<span class="cstat-no" title="statement not covered" >        this.icon.innerHTML = buildIcon(template.icon);</span>
+<span class="cstat-no" title="statement not covered" >        this.onClick = L.Util.bind(template.onClick?template.onClick:<span class="fstat-no" title="function not covered" >function(){</span>}, easyButton);</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function buildIcon(ambiguousIconString) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var tmpIcon;</span>
+&nbsp;
+        // does this look like html? (i.e. not a class)
+<span class="cstat-no" title="statement not covered" >        if( ambiguousIconString.match(/[&amp;;=&lt;&gt;"']/) ){</span>
+&nbsp;
+            // if so, the user should have put in html
+            // so move forward as such
+<span class="cstat-no" title="statement not covered" >            tmpIcon = ambiguousIconString;</span>
+&nbsp;
+            // then it wasn't html, so
+            // it's a class list, figure out what kind
+        } else {
+<span class="cstat-no" title="statement not covered" >            ambiguousIconString = ambiguousIconString.replace(/(^\s*|\s*$)/g,'');</span>
+<span class="cstat-no" title="statement not covered" >            tmpIcon = L.DomUtil.create('span', '');</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            if( ambiguousIconString.indexOf('fa-') === 0 ){</span>
+<span class="cstat-no" title="statement not covered" >                L.DomUtil.addClass(tmpIcon, 'fa '  + ambiguousIconString)</span>
+            } else <span class="cstat-no" title="statement not covered" >if ( ambiguousIconString.indexOf('glyphicon-') === 0 ) {</span>
+<span class="cstat-no" title="statement not covered" >                L.DomUtil.addClass(tmpIcon, 'glyphicon ' + ambiguousIconString)</span>
+            } else {
+<span class="cstat-no" title="statement not covered" >                L.DomUtil.addClass(tmpIcon, /*rollwithit*/ ambiguousIconString)</span>
+            }
+&nbsp;
+            // make this a string so that it's easy to set innerHTML below
+<span class="cstat-no" title="statement not covered" >            tmpIcon = tmpIcon.outerHTML;</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return tmpIcon;</span>
+    }
+&nbsp;
+})();</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue May 03 2016 14:23:15 GMT-0400 (EDT)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>
