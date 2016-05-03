@@ -4,3 +4,6 @@ deploy.sh
 .idea/
 node_modules/
 specs/results/
+specs/reports/
+.coverage
+reports/
