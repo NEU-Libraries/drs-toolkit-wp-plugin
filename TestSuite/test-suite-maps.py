@@ -260,18 +260,18 @@ class TestMapFunctions(unittest.TestCase):
         driver.get("http://liblab.neu.edu/drstest/wp-admin/options-general.php?page=drstk_admin_menu")
         self.assertEqual(driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[3]/td/input").get_attribute("value"), leaflet_api_key)
 
-    def test14(self):
-        # print("Testing to make sure you can set the Project Key.")
-        wp_login()
-        driver.get("http://liblab.neu.edu/drstest/wp-admin/options-general.php?page=drstk_admin_menu")
-        time.sleep(4)
-        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[4]/td/input").clear()
-        driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[4]/td/input").send_keys(leaflet_project_key)
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='submit']").submit()
-        time.sleep(drs_page_load_wait)
-        driver.get("http://liblab.neu.edu/drstest/wp-admin/options-general.php?page=drstk_admin_menu")
-        self.assertEqual(driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[4]/td/input").get_attribute("value"), leaflet_project_key)
+    # def test14(self):
+    #     # print("Testing to make sure you can set the Project Key.")
+    #     wp_login()
+    #     driver.get("http://liblab.neu.edu/drstest/wp-admin/options-general.php?page=drstk_admin_menu")
+    #     time.sleep(4)
+    #     driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[4]/td/input").clear()
+    #     driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[4]/td/input").send_keys(leaflet_project_key)
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_xpath("//*[@id='submit']").submit()
+    #     time.sleep(drs_page_load_wait)
+    #     driver.get("http://liblab.neu.edu/drstest/wp-admin/options-general.php?page=drstk_admin_menu")
+    #     self.assertEqual(driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[4]/td/input").get_attribute("value"), leaflet_project_key)
 
 
     # def test15(self):
