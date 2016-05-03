@@ -4,6 +4,7 @@ python:
 install:
   - pip install selenium
   - pip install pyvirtualdisplay
+  - pip install coveralls
   - pip install coverage
   - npm install -g grunt-cli
 before_script:
