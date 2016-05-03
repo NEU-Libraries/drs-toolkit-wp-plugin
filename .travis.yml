@@ -13,7 +13,7 @@ before_script:
   - sleep 3 # give xvfb some time to start
 script:
   - npm install
-  - grunt coveralls
+  - grunt jasmine
   - cd TestSuite
   # - coverage run test-suite-maps.py
   # - coverage run test-suite-timeline.py
