@@ -72,6 +72,7 @@ class TestTimelineFunctions(unittest.TestCase):
             # For headless Unix Testing, will not work on Windows as XVFB is not supported
             global driver
             driver = webdriver.Firefox()
+            driver.implicitly_wait(10) 
         except Exception as e:
             print("Error produced when setting webdriver and/or XVFB display.")
             print(e)

@@ -76,6 +76,7 @@ class TestMapFunctions(unittest.TestCase):
             global driver
             driver = webdriver.Firefox()
             driver.set_window_size(1280,720)
+            driver.implicitly_wait(10) 
         except Exception as e:
             print("Error produced when setting webdriver and/or XVFB display.")
             print(e)
