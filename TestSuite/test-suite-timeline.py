@@ -201,16 +201,16 @@ class TestTimelineFunctions(unittest.TestCase):
 
 
     # Sprint 3
-    def test10(self):
-        # print("Testing to make sure if Grouping checkbox is available")
-        wp_add_page()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("ui-id-6").click()
-        time.sleep(drs_page_load_wait)
-        time.sleep(drs_page_load_wait)
-        driver.find_elements_by_css_selector("#sortable-timeline-list .drstk-include-timeline")[0].click()
-        time.sleep(drs_page_load_wait)
-        self.assertTrue(driver.find_element_by_css_selector("#sortable-timeline-list .timeline_group_selection-0"))
+    # def test10(self):
+    #     # print("Testing to make sure if Grouping checkbox is available")
+    #     wp_add_page()
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_id("ui-id-6").click()
+    #     time.sleep(drs_page_load_wait)
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_elements_by_css_selector("#sortable-timeline-list .drstk-include-timeline")[0].click()
+    #     time.sleep(drs_page_load_wait)
+    #     self.assertTrue(driver.find_element_by_css_selector("#sortable-timeline-list .timeline_group_selection-0"))
 
 
     def test11(self):
@@ -233,36 +233,36 @@ class TestTimelineFunctions(unittest.TestCase):
         time.sleep(drs_page_load_wait)
         self.assertTrue(driver.find_element_by_id("end-date-boundary").is_displayed())
 
-    def test13(self):
-        # print("Testing to make sure if item is outside boundary dates or non-numeric, it triggers alert")
-        wp_add_page()
-        time.sleep(drs_page_load_wait)
-        start_date = 2000
-        end_date = 2010
-        driver.find_element_by_id("ui-id-6").click()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='tabs-6']/button[2]").click()
-        time.sleep(drs_page_load_wait)
-        time.sleep(drs_page_load_wait)
-        driver.find_elements_by_css_selector("#sortable-timeline-list .drstk-include-timeline")[0].click()
-        pid = driver.find_elements_by_css_selector("#sortable-timeline-list .drstk-include-timeline")[0].get_attribute("value")
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("start-date-boundary").send_keys(start_date)
-        driver.find_element_by_id("end-date-boundary").send_keys(end_date)
-        time.sleep(drs_page_load_wait)
-        time.sleep(drs_page_load_wait)
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        driver.find_element_by_id("drstk_insert_timeline").click()
-        alert = driver.switch_to_alert()
-        self.assertIn("out of the specified boundary dates", alert.text)
-        alert.accept()
-        start_date = "start"
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("start-date-boundary").send_keys(start_date)
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("drstk_insert_timeline").click()
-        alert = driver.switch_to_alert()
-        self.assertIn("is not numeric", alert.text)
+    # def test13(self):
+    #     # print("Testing to make sure if item is outside boundary dates or non-numeric, it triggers alert")
+    #     wp_add_page()
+    #     time.sleep(drs_page_load_wait)
+    #     start_date = 2000
+    #     end_date = 2010
+    #     driver.find_element_by_id("ui-id-6").click()
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_xpath("//*[@id='tabs-6']/button[2]").click()
+    #     time.sleep(drs_page_load_wait)
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_elements_by_css_selector("#sortable-timeline-list .drstk-include-timeline")[0].click()
+    #     pid = driver.find_elements_by_css_selector("#sortable-timeline-list .drstk-include-timeline")[0].get_attribute("value")
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_id("start-date-boundary").send_keys(start_date)
+    #     driver.find_element_by_id("end-date-boundary").send_keys(end_date)
+    #     time.sleep(drs_page_load_wait)
+    #     time.sleep(drs_page_load_wait)
+    #     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    #     driver.find_element_by_id("drstk_insert_timeline").click()
+    #     alert = driver.switch_to_alert()
+    #     self.assertIn("out of the specified boundary dates", alert.text)
+    #     alert.accept()
+    #     start_date = "start"
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_id("start-date-boundary").send_keys(start_date)
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_id("drstk_insert_timeline").click()
+    #     alert = driver.switch_to_alert()
+    #     self.assertIn("is not numeric", alert.text)
 
     def test14(self):
         # print("Testing to make sure legend descriptions are generated.")
@@ -360,13 +360,13 @@ class TestTimelineFunctions(unittest.TestCase):
         self.assertTrue(driver.find_element_by_id("timeline-table").is_displayed())
 
 
-    def test19(self):
-        # print("Testing to make sure if Date is displayed")
-        wp_add_page()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("ui-id-6").click()
-        time.sleep(drs_page_load_wait)
-        self.assertNotEqual(driver.find_element_by_xpath("//*[@id='sortable-timeline-list']/li[1]/label/p").text, "")
+    # def test19(self):
+    #     # print("Testing to make sure if Date is displayed")
+    #     wp_add_page()
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_id("ui-id-6").click()
+    #     time.sleep(drs_page_load_wait)
+    #     self.assertNotEqual(driver.find_element_by_xpath("//*[@id='sortable-timeline-list']/li[1]/label/p").text, "")
 
 
 if __name__ == '__main__':

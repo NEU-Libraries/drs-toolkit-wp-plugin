@@ -110,53 +110,53 @@ class TestMapFunctions(unittest.TestCase):
         time.sleep(drs_page_load_wait)
         self.assertTrue(driver.find_element_by_xpath("//img[@src='https://repository.library.northeastern.edu/downloads/neu:180456?datastream_id=thumbnail_1']"))
 
-    #DRS Map inserting 1 map shortcode test
-    def test3(self):
-        # print("Testing to make sure 1 map's shortcode is enabled for selected DRS map items.")
-        wp_add_page()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("ui-id-5").click()
-        time.sleep(drs_page_load_wait)
-        # driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
-        elem = driver.find_elements_by_css_selector("#sortable-map-list .drstk-include-map")[0]
-        elem.click()
-        pid = elem.get_attribute("value")
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("drstk_insert_map").click()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("content-html").click()
-        time.sleep(drs_page_load_wait)
-        this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
-        self.assertIn(pid, this_content)
-
-    def test4(self):
-        # print("Testing to make sure several map's shortcode is enabled for selected DRS map items.")
-        wp_add_page()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("ui-id-5").click()
-        time.sleep(drs_page_load_wait)
-        elem1 = driver.find_elements_by_css_selector(".drstk-include-map")[0]
-        elem1.click()
-        pid1 = elem1.get_attribute("value")
-        time.sleep(drs_page_load_wait)
-        elem2 = driver.find_elements_by_css_selector(".drstk-include-map")[1]
-        elem2.click()
-        pid2 = elem2.get_attribute("value")
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("drstk_insert_map").click()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("content-html").click()
-        time.sleep(drs_page_load_wait)
-        this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
-        self.assertIn(pid1, this_content)
-        self.assertIn(pid2, this_content)
-
-    def test5(self):
-        # print("Testing to see if map elements where coordinates are specified are populated and clickable.")
-        driver.get("http://liblab.neu.edu/drstest/maps-test-coord")
-        time.sleep(drs_page_load_wait)
-        driver.find_elements_by_css_selector(".leaflet-marker-icon")[0].click()
-        self.assertTrue(driver.find_elements_by_css_selector(".leaflet-marker-icon")[0])
+    # #DRS Map inserting 1 map shortcode test
+    # def test3(self):
+    #     # print("Testing to make sure 1 map's shortcode is enabled for selected DRS map items.")
+    #     wp_add_page()
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_id("ui-id-5").click()
+    #     time.sleep(drs_page_load_wait)
+    #     # driver.find_elements_by_css_selector(".drstk-include-map")[0].send_keys(Keys.SPACE)
+    #     elem = driver.find_elements_by_css_selector("#sortable-map-list .drstk-include-map")[0]
+    #     elem.click()
+    #     pid = elem.get_attribute("value")
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_id("drstk_insert_map").click()
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_id("content-html").click()
+    #     time.sleep(drs_page_load_wait)
+    #     this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
+    #     self.assertIn(pid, this_content)
+    #
+    # def test4(self):
+    #     # print("Testing to make sure several map's shortcode is enabled for selected DRS map items.")
+    #     wp_add_page()
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_id("ui-id-5").click()
+    #     time.sleep(drs_page_load_wait)
+    #     elem1 = driver.find_elements_by_css_selector(".drstk-include-map")[0]
+    #     elem1.click()
+    #     pid1 = elem1.get_attribute("value")
+    #     time.sleep(drs_page_load_wait)
+    #     elem2 = driver.find_elements_by_css_selector(".drstk-include-map")[1]
+    #     elem2.click()
+    #     pid2 = elem2.get_attribute("value")
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_id("drstk_insert_map").click()
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_id("content-html").click()
+    #     time.sleep(drs_page_load_wait)
+    #     this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
+    #     self.assertIn(pid1, this_content)
+    #     self.assertIn(pid2, this_content)
+    #
+    # def test5(self):
+    #     # print("Testing to see if map elements where coordinates are specified are populated and clickable.")
+    #     driver.get("http://liblab.neu.edu/drstest/maps-test-coord")
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_elements_by_css_selector(".leaflet-marker-icon")[0].click()
+    #     self.assertTrue(driver.find_elements_by_css_selector(".leaflet-marker-icon")[0])
 
     def test6(self):
         # print("Testing to see if map elements where coordinates are specified can be zoomed in.")
@@ -174,12 +174,12 @@ class TestMapFunctions(unittest.TestCase):
         time.sleep(drs_page_load_wait)
         #leaflet tests the functionality of the zoom buttons
 
-    def test8(self):
-        # print("Testing to see if map elements where geographic locations are specified are populated and clickable.")
-        driver.get("http://liblab.neu.edu/drstest/maps-test-geo/")
-        time.sleep(drs_page_load_wait)
-        driver.find_elements_by_css_selector(".leaflet-marker-icon")[0].click()
-        self.assertTrue(driver.find_elements_by_css_selector(".leaflet-marker-icon")[0])
+    # def test8(self):
+    #     # print("Testing to see if map elements where geographic locations are specified are populated and clickable.")
+    #     driver.get("http://liblab.neu.edu/drstest/maps-test-geo/")
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_elements_by_css_selector(".leaflet-marker-icon")[0].click()
+    #     self.assertTrue(driver.find_elements_by_css_selector(".leaflet-marker-icon")[0])
 
     def test9(self):
         # print("Testing to see if map elements where geographic locations are specified can be zoomed in.")
@@ -198,35 +198,35 @@ class TestMapFunctions(unittest.TestCase):
         #leaflet tests the functionality of the zoom buttons
 
     #Tests for Sprint 3
-    def test11(self):
-        # print("Testing to make sure legend descriptions are generated.")
-        wp_add_page()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='tabs-5']/button[2]").click()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='redlegend']").send_keys("red legend")
-        driver.find_element_by_xpath("//*[@id='bluelegend']").send_keys("blue legend")
-        driver.find_element_by_xpath("//*[@id='greenlegend']").send_keys("green legend")
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_xpath("//*[@id='yellowlegend']").send_keys("yellow legend")
-        driver.find_element_by_xpath("//*[@id='orangelegend']").send_keys("orange legend")
-        driver.find_element_by_css_selector("#sortable-map-list #drstile-0").click()
-        pid = driver.find_element_by_css_selector("#sortable-map-list #drstile-0").get_attribute("value")
-        el = driver.find_element_by_css_selector("#sortable-map-list #map_div-0 .map_group_selection-0")
-        for option in el.find_elements_by_tag_name('option'):
-            if option.text == 'Red':
-                option.click() # select() in earlier versions of webdriver
-                break
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("drstk_insert_map").click()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("content-html").click()
-        time.sleep(drs_page_load_wait)
-        this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
-        self.assertIn('red_legend_desc="red legend"', this_content)
-        self.assertIn('red_id="'+pid+'"', this_content)
+    # def test11(self):
+    #     # print("Testing to make sure legend descriptions are generated.")
+    #     wp_add_page()
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_xpath("//*[@id='ui-id-5']").click()
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_xpath("//*[@id='tabs-5']/button[2]").click()
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_xpath("//*[@id='redlegend']").send_keys("red legend")
+    #     driver.find_element_by_xpath("//*[@id='bluelegend']").send_keys("blue legend")
+    #     driver.find_element_by_xpath("//*[@id='greenlegend']").send_keys("green legend")
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_xpath("//*[@id='yellowlegend']").send_keys("yellow legend")
+    #     driver.find_element_by_xpath("//*[@id='orangelegend']").send_keys("orange legend")
+    #     driver.find_elements_by_css_selector("#sortable-map-list .drstk-include-map")[0].click()
+    #     pid = driver.find_elements_by_css_selector("#sortable-map-list .drstk-include-map")[0].get_attribute("value")
+    #     el = driver.find_element_by_css_selector("#sortable-map-list li:first div select")
+    #     for option in el.find_elements_by_tag_name('option'):
+    #         if option.text == 'Red':
+    #             option.click() # select() in earlier versions of webdriver
+    #             break
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_id("drstk_insert_map").click()
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_id("content-html").click()
+    #     time.sleep(drs_page_load_wait)
+    #     this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
+    #     self.assertIn('red_legend_desc="red legend"', this_content)
+    #     self.assertIn('red_id="'+pid+'"', this_content)
 
     def test12(self):
         # print("Testing to make sure you can set map display information.")
@@ -274,22 +274,22 @@ class TestMapFunctions(unittest.TestCase):
         self.assertEqual(driver.find_element_by_xpath("//*[@id='wpbody-content']/div[2]/form/table[1]/tbody/tr[4]/td/input").get_attribute("value"), leaflet_project_key)
 
 
-    def test15(self):
-        # print("Testing to see if multiple map elements where coordinates are specified are populated and clickable.")
-        driver.get("http://liblab.neu.edu/drstest/maps-test/")
-        time.sleep(drs_page_load_wait)
-        driver.find_elements_by_css_selector(".leaflet-marker-icon")[0].click()
-        driver.find_elements_by_css_selector(".leaflet-marker-icon .leaflet-marker-icon")[0].click()
-        popup = driver.find_element_by_css_selector(".leaflet_popup_pane")
-        self.assertTrue(popup.is_displayed())
-
-    def test16(self):
-        # print("Testing to see if multiple map elements where geolocations are specified are populated and clickable.")
-        driver.get("http://liblab.neu.edu/drstest/maps-test-2")
-        time.sleep(drs_page_load_wait)
-        driver.find_elements_by_css_selector(".leaflet-marker-icon")[0].click()
-        popup = driver.find_element_by_css_selector(".leaflet_popup_pane")
-        self.assertTrue(popup.is_displayed())
+    # def test15(self):
+    #     # print("Testing to see if multiple map elements where coordinates are specified are populated and clickable.")
+    #     driver.get("http://liblab.neu.edu/drstest/maps-test/")
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_elements_by_css_selector(".leaflet-marker-icon")[0].click()
+    #     driver.find_elements_by_css_selector(".leaflet-marker-icon .leaflet-marker-icon")[0].click()
+    #     popup = driver.find_element_by_css_selector(".leaflet_popup_pane")
+    #     self.assertTrue(popup.is_displayed())
+    #
+    # def test16(self):
+    #     # print("Testing to see if multiple map elements where geolocations are specified are populated and clickable.")
+    #     driver.get("http://liblab.neu.edu/drstest/maps-test-2")
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_elements_by_css_selector(".leaflet-marker-icon")[0].click()
+    #     popup = driver.find_element_by_css_selector(".leaflet_popup_pane")
+    #     self.assertTrue(popup.is_displayed())
 
 
     #Tests for Sprint 4
@@ -368,13 +368,13 @@ class TestMapFunctions(unittest.TestCase):
         self.assertIn("metadata=", this_content)
 
 
-    def test19(self):
-        # print("Testing to see if multiple map elements where some items are custom, and some are not,  are populated and clickable.")
-        driver.get("http://liblab.neu.edu/drstest/maps-test-2")
-        time.sleep(drs_page_load_wait)
-        driver.find_elements_by_css_selector(".leaflet-marker-icon")[0].click()
-        popup = driver.find_element_by_css_selector(".leaflet_popup_pane")
-        self.assertTrue(popup.is_displayed())
+    # def test19(self):
+    #     # print("Testing to see if multiple map elements where some items are custom, and some are not,  are populated and clickable.")
+    #     driver.get("http://liblab.neu.edu/drstest/maps-test-2")
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_elements_by_css_selector(".leaflet-marker-icon")[0].click()
+    #     popup = driver.find_element_by_css_selector(".leaflet_popup_pane")
+    #     self.assertTrue(popup.is_displayed())
 
 
 
