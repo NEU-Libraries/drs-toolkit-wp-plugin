@@ -64,7 +64,7 @@ def wp_add_page():
         driver.find_element_by_id("insert-drs").click()
         attempt = attempt + 1
     except Exception as e:
-        if attempt < 3:
+        if attempt < 5:
             wp_add_page()
         print("Exception produced when creating new page. Error is: ")
         print(e)
