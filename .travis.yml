@@ -6,8 +6,9 @@ install:
   - pip install pyvirtualdisplay
   - pip install coveralls
   - pip install coverage
-  - npm install coveralls
   - npm install -g grunt-cli
+  - npm install coveralls
+  - npm update -g
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
