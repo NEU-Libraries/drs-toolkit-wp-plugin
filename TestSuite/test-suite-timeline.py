@@ -109,24 +109,24 @@ class TestTimelineFunctions(unittest.TestCase):
 
 
     # DRS Timeline inserting 1 timeline shortcode test
-    def test3(self):
-        # print("Testing to make sure 1 timeline's shortcode is enabled for selected DRS map items.")
-        wp_add_page()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("ui-id-6").click()
-        time.sleep(drs_page_load_wait)
-        time.sleep(drs_page_load_wait)
-        elem = driver.find_element_by_css_selector("#sortable-timeline-list #drstile-1")
-        elem.click()
-        time.sleep(drs_page_load_wait)
-        pid = elem.get_attribute("value")
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("drstk_insert_timeline").click()
-        time.sleep(drs_page_load_wait)
-        driver.find_element_by_id("content-html").click()
-        time.sleep(drs_page_load_wait)
-        this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
-        self.assertIn(pid, this_content)
+    # def test3(self):
+    #     # print("Testing to make sure 1 timeline's shortcode is enabled for selected DRS map items.")
+    #     wp_add_page()
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_id("ui-id-6").click()
+    #     time.sleep(drs_page_load_wait)
+    #     time.sleep(drs_page_load_wait)
+    #     elem = driver.find_element_by_css_selector("#sortable-timeline-list #drstile-1")
+    #     elem.click()
+    #     time.sleep(drs_page_load_wait)
+    #     pid = elem.get_attribute("value")
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_id("drstk_insert_timeline").click()
+    #     time.sleep(drs_page_load_wait)
+    #     driver.find_element_by_id("content-html").click()
+    #     time.sleep(drs_page_load_wait)
+    #     this_content = driver.find_element_by_xpath("//*[@id=\"wp-content-editor-container\"]/textarea").get_attribute("value")
+    #     self.assertIn(pid, this_content)
 
 
 
