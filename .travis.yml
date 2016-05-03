@@ -15,7 +15,7 @@ script:
   - npm install
   - grunt jasmine
   - cd TestSuite
-  # - python test-suite-maps.py
-  # - python test-suite-timeline.py
+  - coverage run test-suite-maps.py
+  - coverage run test-suite-timeline.py
 after_success:
   - coveralls
