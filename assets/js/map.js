@@ -1,5 +1,5 @@
 jQuery(document).ready(function($) {
-    var home_url = map_obj.home_url || "";
+    var home_url = map_obj.home_url;
 
     var apiKey = getApiKey($('#map'));
     var projectKey = getProjectKey($('#map'));
