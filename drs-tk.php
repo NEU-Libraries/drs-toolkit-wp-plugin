@@ -2,7 +2,7 @@
 /**
  * Plugin Name: DRS Toolkit Plugin
  * Plugin URI:
- * Version: 1.0.1
+ * Version: 1.1.1
  * Author: Eli Zoller
  * Description: This plugin provides the core functionality of the DRS Project Toolkit and brings the content of a project from the DRS into Wordpress using the DRS API.
  */
@@ -23,7 +23,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/timeline_shortcode.php' );
 
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
 
-$VERSION = '1.0.1';
+$VERSION = '1.1.1';
 
 // Set template names here so we don't have to go into the code.
 $TEMPLATE = array(
@@ -101,7 +101,7 @@ function register_drs_settings() {
     //Adding Map Leaflet API Field
   add_settings_field('leaflet_api_key', 'Leaflet API Key', 'leaflet_api_key_callback', 'drstk_options', 'drstk_project');
   register_setting( 'drstk_options', 'leaflet_api_key' );
-  
+
    //Adding Map Leaflet Project Field
   add_settings_field('leaflet_project_key', 'Leaflet Project Key', 'leaflet_project_key_callback', 'drstk_options', 'drstk_project');
   register_setting( 'drstk_options', 'leaflet_project_key' );
