@@ -16,10 +16,8 @@ before_script:
 script:
   - npm install
   - grunt jasmine
-  - cd TestSuite
-  - coverage run test-suite-maps.py
-  - coverage run test-suite-timeline.py
+  - coverage run TestSuite/test-suite-maps.py
+  - coverage run TestSuite/test-suite-timeline.py
 after_success:
-  - coveralls
-  - cd ../
   - grunt coveralls
+  - coveralls --merge=reports/coverage.json
