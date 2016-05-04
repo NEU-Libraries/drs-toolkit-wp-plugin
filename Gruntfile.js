@@ -3,8 +3,8 @@ module.exports = function(grunt) {
     // Project configuration.
     grunt.initConfig({
         jasmine: {
-    pivotal: {
-      src: "assets/**/*.js",
+      // src: "assets/*.js",
+      src: ["assets/js/admin.js","assets/js/breadcrumb.js","assets/js/browse.js","assets/js/gallery.js","assets/js/item_gallery.js","assets/js/item_meta_helper.js","assets/js/map.js","assets/js/tiles.js","assets/js/timelinepage.js","assets/js/zoom.js"],
       options: {
         specs: "specs/**/*.js",
         junit: {
@@ -32,10 +32,10 @@ module.exports = function(grunt) {
         vendor: [
           'node_modules/jquery/dist/jquery.js',
           'assets/js/jwplayer/jwplayer.js',
+          'assets/js/leaflet/leaflet.js',
           'node_modules/jasmine-jquery/lib/jasmine-jquery.js'
         ]
       }
-    }
   },
   coveralls: {
   options: {

@@ -7,3 +7,6 @@ specs/results/
 specs/reports/
 .coverage
 reports/
+reports/*
+reports/lcov/*
+reports/html/*
