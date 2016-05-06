@@ -111,7 +111,7 @@ function item_admin_ajax_handler() {
 }
 
 function drstk_item_shortcode_scripts() {
-  global $post, $VERSION;
+  global $post, $VERSION, $wp_query;
   if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_item') && !isset($wp_query->query_vars['drstk_template_type']) ) {
     wp_register_script('drstk_elevatezoom', plugins_url('../assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__), array( 'jquery' ));
     wp_enqueue_script('drstk_elevatezoom');

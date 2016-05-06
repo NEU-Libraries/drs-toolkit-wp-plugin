@@ -82,7 +82,7 @@ function drstk_tiles( $atts ){
 }
 
 function drstk_tile_shortcode_scripts() {
-	global $post;
+	global $post, $wp_query;
 	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_tiles') && !isset($wp_query->query_vars['drstk_template_type']) ) {
     wp_register_script('drstk_freewall',
         plugins_url('../assets/js/freewall/freewall.js', __FILE__),
