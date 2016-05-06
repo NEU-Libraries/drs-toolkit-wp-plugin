@@ -47,7 +47,7 @@ function drstk_collection_playlist($atts){
               $playlist = 'http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/MP3:'. $full_pid .'/playlist.m3u8';
               $no_flash = 'http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/' . $dir . '/' . urlencode($full_pid);
               $type = 'MP3';
-              $provider = 'audio';
+              $provider = 'sound';
             }
             if ($val == 'Video File'){
               $rtmp = 'rtmp://libwowza.neu.edu:1935/vod/_definst_/MP4:datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/info%3Afedora%2F'.$encoded.'%2Fcontent%2Fcontent.0';
