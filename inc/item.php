@@ -263,12 +263,16 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   $id_img = 'drs-item-img-'.$numeric_pid;
   $id_video = 'drs-item-video-'.$numeric_pid;
 
-  $html = '<img id="'.$id_img.'" src="'.$drs_item_img.'" />';
+  $html = '<img id="'.$id_img.'" src="'.$drs_item_img.'" class="replace_thumbs"/>';
   $html .= '<div id="'.$id_video.'"></div>';
   $html .= '<script type="text/javascript">
   jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A==";
   var primary = "flash";
   if (typeof swfobject == "undefined" || swfobject.getFlashPlayerVersion().major == 0) {
+    primary = "html5";
+  }
+  var provider = "'.$av_provider.'";
+  if (provider == "sound"){
     primary = "html5";
   }
   jQuery(document).ready(function($){
@@ -288,6 +292,10 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
     width: "100%",
     height: 400,
   });
+  var renderingMode
+  jwplayer().onReady(function() {
+    renderingMode = jwplayer().getRenderingMode()
+  })
 
   var errorMessage = function(e) {
     $("#'.$id_img.'").before("<div class=\'alert alert-warning\'>'.$errors['item']['jwplayer_fail'].'<br /><strong>Error Message:</strong> "+e.message+"</div>");
@@ -301,6 +309,17 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
       errorMessage(e);
     }, 5000);
   });
+  jwplayer().onPlay( function(){
+     clearTimeout(theTimeout);
+     if (provider == \'sound\' && renderingMode == \'flash\') {
+       jwplayer().resize(\'100%\', 50);
+       $(".replace_thumbs").show().css("height", 440).css("display","block").css("margin-left","auto").css("margin-right","auto");
+       $("#drs-item-left").css("background", "#000");
+     }
+   });
+   $(".replace_thumbs").click(function() {
+     jwplayer().play()
+   })
   });</script>';
 
   return $html;
