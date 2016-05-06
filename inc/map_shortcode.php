@@ -136,7 +136,7 @@ function drstk_map( $atts ){
 
 function drstk_map_shortcode_scripts() {
   global $post;
-  if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_map') ) {
+  if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_map') && !isset($wp_query->query_vars['drstk_template_type']) ) {
     wp_register_script('drstk_leaflet',
         plugins_url('../assets/js/leaflet/leaflet.js', __FILE__),
         array( 'jquery' ));
