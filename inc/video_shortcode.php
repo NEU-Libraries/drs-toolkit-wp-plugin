@@ -83,13 +83,15 @@ function drstk_collection_playlist($atts){
           provider: "'.$provider.'",
           fallback: "false",
           androidhls: "true",
-          primary: primary,
-          listbar: {
-            position: "right",
-            size: 250,
-            layout: "basic"
-          },
-          playlist: [ '. $playlists . ']
+          primary: primary,';
+    if(count($collection) > 1){
+        $cache_output .= 'listbar: {
+          position: "right",
+          size: 250,
+          layout: "basic"
+        },';
+    }
+      $cache_output .= 'playlist: [ '. $playlists . ']
         });
         var errorMessage = function(e) {
           $("#drs-item-video").before("<div class=\'alert alert-warning\'>'.$errors['item']['jwplayer_fail'].'<br /><strong>Error Message:</strong> "+e.message+"</div>");
