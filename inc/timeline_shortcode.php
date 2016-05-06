@@ -146,7 +146,7 @@ function drstk_timeline( $atts ){
 
 function drstk_timeline_shortcode_scripts() {
 	global $post;
-	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_timeline') ) {
+	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_timeline') && !isset($wp_query->query_vars['drstk_template_type']) ) {
     wp_register_script( 'drstk_timelinejs',
         plugins_url( '../assets/js/timeline/timeline.js', __FILE__ ),
         array( 'jquery' ));

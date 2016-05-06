@@ -149,7 +149,7 @@ function drstk_gallery( $atts ){
 
 function drstk_gallery_shortcode_scripts() {
 	global $post;
-	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_gallery') ) {
+	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_gallery') && !isset($wp_query->query_vars['drstk_template_type']) ) {
     wp_register_script( 'drstk_gallery',
         plugins_url( '../assets/js/gallery.js', __FILE__ ),
         array( 'jquery' ));
