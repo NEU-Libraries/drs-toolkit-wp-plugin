@@ -65,7 +65,8 @@ function drstk_collection_playlist($atts){
           return $errors['shortcodes']['fail'];
         }
       }
-    $cache_output = '<div id="drs-item-video_'.$pid.'">
+    $pid_selector = "drs-item-video-".str_replace(':', "-", $pid);
+    $cache_output = '<div id="'.$pid_selector.'">
         <img style="width: 100%;" src="' . $poster[0] .'" />
       </div>
       <script type="text/javascript">
@@ -75,7 +76,7 @@ function drstk_collection_playlist($atts){
           primary = "html5";
         }
         jQuery(document).ready(function($){
-        jwplayer("drs-item-video_'.$pid.'").setup({
+        jwplayer("'.$pid_selector.'").setup({
           width: "'.$width.'",
           height: "'.$height.'",
           rtmp: { bufferlength: 5 } ,
