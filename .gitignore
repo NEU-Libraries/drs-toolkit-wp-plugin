@@ -11,3 +11,4 @@ reports/*
 reports/lcov/*
 reports/html/*
 .coveralls.yml
+tests/vendor/*
