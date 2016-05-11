@@ -24,6 +24,11 @@ function drstk_collection_playlist($atts){
     } else {
       $aspectratio = '16:9';
     }
+    if (isset($atts['skin'])){
+      $skin = $atts['skin'];
+    } else {
+      $skin = 'six';
+    }
     foreach($collection as $video){
         $url = "https://repository.library.northeastern.edu/api/v1/files/" . $video;
         $data = get_response($url);
@@ -89,6 +94,7 @@ function drstk_collection_playlist($atts){
           fallback: "false",
           androidhls: "true",
           aspectratio:"'.$aspectratio.'",
+          skin:"'.$skin.'",
           primary: primary,';
     if(count($collection) > 1){
         $cache_output .= 'listbar: {
