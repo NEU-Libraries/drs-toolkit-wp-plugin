@@ -7,27 +7,6 @@
 
  require_once 'vendor/autoload.php';
 
-/**
- * Sample test case.
- */
-// class SampleTest extends WP_UnitTestCase {
-//
-// 	/**
-// 	 * A single example test.
-// 	 */
-// 	function test_sample() {
-// 		// Replace this with some actual testing code.
-// 		$this->assertTrue( true );
-// 		// $this->go_to('http://liblab.neu.edu/drstest/timeline-test-sprint-4');
-//     // $elements = $this->elements($this->using('css selector')->value('#_1949-1950-roxbury-clubhouse-basketball-team-posing-with-their-trophy'));
-//     // $this->assertEquals(1, count($elements));
-//     // $this->assertEquals('Other div', $elements[0]->text());
-// 	}
-//
-//
-// }
-
-
 class TestTest extends PHPUnit_Extensions_Selenium2TestCase {
 	/**
 	 * A single example test.
@@ -76,18 +55,32 @@ class TestTest extends PHPUnit_Extensions_Selenium2TestCase {
 		 $this->wp_add_page();
 		 $this->byId('ui-id-6')->click();
 		 $this->byCssSelector("#sortable-timeline-list li:nth-of-type(20)")->click();
-		 $imgs = $this->elements($this->using('css selector')->value('#sortable-timeline-list li'));
+		 $imgs = $this->elements($this->using('css selector')->value('#sortable-timeline-list li img'));
 		 $this->assertEquals(20, count($imgs));
-		 $elem = $this->byCssSelector("#sortable-timeline-list li:nth-of-type(1) .drstk-include-timeline");
+		 $elem = $this->byCssSelector("#sortable-timeline-list #drstile-0");
 		 $pid = $elem->value();
-		 $elem->keys('');
+		 $elem->click();
 		 $this->byId('drstk_insert_timeline')->click();
 		 $this->byId('content-html')->click();
 		 $this->assertContains($pid, $this->byCssSelector("#wp-content-editor-container textarea")->value());
 	 }
 
 	 public function test_insert_multi_shortcode(){
-
+		 $this->wp_add_page();
+		 $this->byId('ui-id-6')->click();
+		 $this->byCssSelector("#sortable-timeline-list li:nth-of-type(20)")->click();
+		 $imgs = $this->elements($this->using('css selector')->value('#sortable-timeline-list li img'));
+		 $this->assertEquals(20, count($imgs));
+		 $elem1 = $this->byCssSelector("#sortable-timeline-list #drstile-0");
+		 $pid1 = $elem1->value();
+		 $elem1->click();
+		 $elem2 = $this->byCssSelector("#sortable-timeline-list #drstile-1");
+		 $pid2 = $elem2->value();
+		 $elem2->click();
+		 $this->byId('drstk_insert_timeline')->click();
+		 $this->byId('content-html')->click();
+		 $this->assertContains($pid1, $this->byCssSelector("#wp-content-editor-container textarea")->value());
+		 $this->assertContains($pid2, $this->byCssSelector("#wp-content-editor-container textarea")->value());
 	 }
 
 	//  public function test_url(){
