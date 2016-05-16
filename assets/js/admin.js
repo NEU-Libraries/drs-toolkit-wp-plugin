@@ -243,7 +243,7 @@
                 if (item.canonical_class_tesim == 'AudioFile' || item.canonical_class_tesim == 'VideoFile'){
                   $("#sortable-"+tab_name+"-list").append('<li style="display:inline-block;padding:10px;"><label for="drstile-' + id + '"><img src="https://repository.library.northeastern.edu' + item.thumbnail_list_tesim[0] + '" width="150" /><br/><input id="drstile-' + id + '" type="checkbox" class="drstk-include-'+tab_name+'" value="' + item.id + '" /><span style="width:100px;display:inline-block">' + item.full_title_ssi + '</span></label></li>');
                   media_count++;
-                  data.pagination.table.num_pages = Math.ceil(media_count / 10);
+                  data.pagination.table.num_pages = Math.ceil(media_count / 20);
                 }
               } else if (current_tab == 5){ //Maps
                 get_item_geographic_or_date_handler(id, tab_name, item, true, false, data, media_count);
@@ -307,7 +307,7 @@
 
 	function update_pagination(tab, data, media_count=0){
     if (media_count > 0){
-      data.pagination.table.num_pages = Math.ceil(media_count / 10);
+      data.pagination.table.num_pages = Math.ceil(media_count / 20);
     }
     if (data.pagination.table.num_pages > 1){
        var pagination = "";
