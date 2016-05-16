@@ -1,36 +1,39 @@
 jQuery(document).ready(function($) {
 
-	$('.carousel').carousel({
-		interval: false
-	});
+	if($().carousel) {
+		$('.carousel').carousel({
+			interval: false
+		});
 
-	$(window).on('load', function(){
-		fix_dimensions($('.carousel'));
-		fix_caption($('.carousel .item:first-of-type img'));
-	});
+		$(window).on('load', function(){
+			fix_dimensions($('.carousel'));
+			fix_caption($('.carousel .item:first-of-type img'));
+		});
 
-	var cHeight = 0;
-	$('.carousel').on('slide.bs.carousel', function(e) {
-		var $nextImage = $(e.relatedTarget).find('img');
-		$activeItem = $('.active.item', this);
+		var cHeight = 0;
+		$('.carousel').on('slide.bs.carousel', function(e) {
+			var $nextImage = $(e.relatedTarget).find('img');
+			$activeItem = $('.active.item', this);
 
-		// prevents the slide decrease in height
-		if (cHeight == 0) {
-			cHeight = $(this).height();
-			$activeItem.next('.item').find("img").height(cHeight);
-		}
+			// prevents the slide decrease in height
+			if (cHeight == 0) {
+				cHeight = $(this).height();
+				$activeItem.next('.item').find("img").height(cHeight);
+			}
 
-		// prevents the loaded image if it is already loaded
-		var src = $nextImage.data('src');
+			// prevents the loaded image if it is already loaded
+			var src = $nextImage.data('src');
 
-		if (typeof src !== "undefined" && src != "") {
-			$nextImage.attr('src', src)
-			$nextImage.data('src', '');
-			$nextImage.on('load', function(){
-				fix_caption($nextImage);
-			});
-		}
-	});
+			if (typeof src !== "undefined" && src != "") {
+				$nextImage.attr('src', src)
+				$nextImage.data('src', '');
+				$nextImage.on('load', function(){
+					fix_caption($nextImage);
+				});
+			}
+		});
+	}
+
 
 	function fix_dimensions(carousel){
 		if (carousel.data("max-height") > 0){
