@@ -7,9 +7,9 @@ before_install:
 - composer install --dev
 - composer require se/selenium-server-standalone
 - composer require satooshi/php-coveralls:dev-master
+- ./vendor/bin/selenium-server-standalone -port 4444
  
 script:
-- ./vendor/bin/selenium-server-standalone -port 4444
 - ./vendor/bin/phpunit --verbose --coverage-clover ./tests/logs/clover.xml
  
 after_script:
