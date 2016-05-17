@@ -4,8 +4,8 @@ php:
 
 before_install:
 - wget http://getcomposer.org/composer.phar
-- composer require phpunit/phpunit:4.8.* satooshi/php-coveralls:dev-master
 - composer install --dev
+- composer require phpunit/phpunit:4.8.* satooshi/php-coveralls:dev-master
  
 script:
 - ./vendor/bin/phpunit --verbose --coverage-clover ./tests/logs/clover.xml
