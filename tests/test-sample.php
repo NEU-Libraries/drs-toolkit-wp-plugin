@@ -16,6 +16,7 @@ class TestTest extends PHPUnit_Extensions_Selenium2TestCase {
 
 	 protected function setUp(){
 		 $this->setBrowser('firefox');
+     $this->setPort(4441);
 		 $this->setBrowserUrl('http://localhost');
 		 $this->setSeleniumServerRequestsTimeout(999999999);
 	 }
