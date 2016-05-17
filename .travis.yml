@@ -12,9 +12,9 @@ before_install:
 - sleep 5 
 
 script:
-- "xvfb-run java -jar selenium-server-standalone-2.31.0.jar -port 4441  > /dev/null &"
-- ./vendor/bin/phpunit --verbose --coverage-clover ./tests/logs/clover.xml
+- "java -jar selenium-server-standalone-2.31.0.jar -port 4441  > /dev/null &"
 - "wget http://localhost:4441/wd/hub/status"
+- ./vendor/bin/phpunit --verbose --coverage-clover ./tests/logs/clover.xml
  
 after_script:
 - php vendor/bin/coveralls -v
