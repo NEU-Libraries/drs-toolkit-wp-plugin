@@ -1,23 +1,9 @@
-language: python
-python:
-  - "2.7"
-install:
-  - pip install selenium
-  - pip install pyvirtualdisplay
-  - pip install coveralls
-  - pip install coverage
-  - npm install -g grunt-cli
-  - npm install coveralls
-  - npm update -g
-before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
+before_install:
+- composer require phpunit/phpunit:4.8.* satooshi/php-coveralls:dev-master
+- composer install --dev
+ 
 script:
-  - npm install
-  - grunt jasmine
-  # - coverage run --source=TestMapFunctions TestSuite/test-suite-maps.py
-  # - coverage run TestSuite/test-suite-timeline.py
-after_success:
-  - grunt coveralls
-  # - coveralls --merge=reports/coverage.json
+- ./vendor/bin/phpunit --coverage-clover ./tests/logs/clover.xml
+ 
+after_script:
+- php vendor/bin/coveralls -v
