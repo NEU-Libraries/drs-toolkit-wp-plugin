@@ -13,3 +13,4 @@ reports/html/*
 .coveralls.yml
 tests/vendor/*
 vendor/*
+selenium.log
