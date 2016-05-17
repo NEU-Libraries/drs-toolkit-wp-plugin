@@ -1,4 +1,11 @@
+language: php
+php:
+-5.3
+-5.4
+-5.5
+
 before_install:
+- wget http://getcomposer.org/composer.phar
 - composer require phpunit/phpunit:4.8.* satooshi/php-coveralls:dev-master
 - composer install --dev
  
