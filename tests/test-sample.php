@@ -6,7 +6,7 @@
  */
 
  require_once 'vendor/autoload.php';
- require_once 'PHPUnit/Extensions/SeleniumTestCase.php';
+ // require_once 'PHPUnit/Extensions/Selenium2TestCase.php';
 
 
 class TestTest extends PHPUnit_Extensions_Selenium2TestCase {
