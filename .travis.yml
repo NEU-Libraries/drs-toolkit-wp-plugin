@@ -14,6 +14,7 @@ before_install:
 script:
 - "xvfb-run java -jar selenium-server-standalone-2.31.0.jar -port 4441  > /dev/null &"
 - ./vendor/bin/phpunit --verbose --coverage-clover ./tests/logs/clover.xml
+- "wget http://localhost:4441/wd/hub/status"
  
 after_script:
 - php vendor/bin/coveralls -v
