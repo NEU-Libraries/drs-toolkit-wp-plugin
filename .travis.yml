@@ -2,19 +2,14 @@ language: php
 php:
 - 5.6
 
-before_script:
-    - "sh -e /etc/init.d/xvfb start"
-    - "export DISPLAY=:99.0"
-    - "wget http://selenium.googlecode.com/files/selenium-server-standalone-2.31.0.jar"
-    - "java -jar selenium-server-standalone-2.31.0.jar > /dev/null &"
-    - sleep 5
-
 before_install:
 - wget http://getcomposer.org/composer.phar
 - composer install --dev
+- composer require se/selenium-server-standalone
 - composer require satooshi/php-coveralls:dev-master
  
 script:
+- ./vendor/bin/selenium-server-standalone -port 4444
 - ./vendor/bin/phpunit --verbose --coverage-clover ./tests/logs/clover.xml
  
 after_script:
