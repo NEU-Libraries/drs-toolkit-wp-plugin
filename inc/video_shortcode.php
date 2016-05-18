@@ -26,8 +26,6 @@ function drstk_collection_playlist($atts){
     }
     if (isset($atts['skin'])){
       $skin = $atts['skin'];
-    } else {
-      $skin = 'six';
     }
     if (isset($atts['listbarwidth']) && $atts['listbarwidth'] != 0){
       $listbarwidth = $atts['listbarwidth'];
@@ -99,9 +97,11 @@ function drstk_collection_playlist($atts){
           provider: "'.$provider.'",
           fallback: "false",
           androidhls: "true",
-          aspectratio:"'.$aspectratio.'",
-          skin:"'.$skin.'",
-          primary: primary,';
+          aspectratio:"'.$aspectratio.'",';
+          if (isset($skin)){
+            $cache_output .= 'skin: "'.$skin.'",';
+          }
+          $cache_output .='primary: primary,';
     if(count($collection) > 1){
         $cache_output .= 'listbar: {
           position: "right",
