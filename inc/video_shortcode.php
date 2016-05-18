@@ -19,6 +19,19 @@ function drstk_collection_playlist($atts){
     } else {
       $width = '100%';
     }
+    if (isset($atts['aspectratio'])){
+      $aspectratio = $atts['aspectratio'];
+    } else {
+      $aspectratio = '16:9';
+    }
+    if (isset($atts['skin'])){
+      $skin = $atts['skin'];
+    }
+    if (isset($atts['listbarwidth']) && $atts['listbarwidth'] != 0){
+      $listbarwidth = $atts['listbarwidth'];
+    } else {
+      $listbarwidth = '250';
+    }
     foreach($collection as $video){
         $url = "https://repository.library.northeastern.edu/api/v1/files/" . $video;
         $data = get_response($url);
@@ -84,7 +97,11 @@ function drstk_collection_playlist($atts){
           provider: "'.$provider.'",
           fallback: "false",
           androidhls: "true",
-          primary: primary,';
+          aspectratio:"'.$aspectratio.'",';
+          if (isset($skin)){
+            $cache_output .= 'skin: "'.$skin.'",';
+          }
+          $cache_output .='primary: primary,';
     if(count($collection) > 1){
         $cache_output .= 'listbar: {
           position: "right",
