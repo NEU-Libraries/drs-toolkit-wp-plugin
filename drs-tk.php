@@ -127,6 +127,8 @@ function register_drs_settings() {
     add_settings_field('drstk_'.$option.'_title', null, 'drstk_facet_title_callback', 'drstk_options', 'drstk_facet_settings', array('class'=>'hidden'));
     register_setting( 'drstk_options', 'drstk_'.$option.'_title');
   }
+  add_settings_field('drstk_facet_sort_order', 'Default Facet Sort', 'drstk_facet_sort_callback', 'drstk_options', 'drstk_facet_settings');
+  register_setting('drstk_options', 'drstk_facet_sort_order');
   add_settings_field('drstk_niec', 'Does your project include NIEC metadata?', 'drstk_niec_callback', 'drstk_options', 'drstk_facet_settings');
   register_setting('drstk_options', 'drstk_niec');
   add_settings_field('drstk_niec_metadata', 'Facets and Metadata to Display', 'drstk_niec_metadata_callback', 'drstk_options', 'drstk_facet_settings', array('class'=>'niec'));
@@ -310,6 +312,18 @@ function drstk_facets_callback(){
 
 function drstk_facet_title_callback(){
   echo '';
+}
+
+function drstk_facet_sort_callback(){
+  $sort_options = array("fc_desc"=>"Facet Count (Highest to Lowest)","fc_asc"=>"Facet Count (Lowest to Highest)","abc_asc"=>"Facet Title (A-Z)","abc_desc"=>"Facet Title (Z-A)");
+  $default_sort = get_option('drstk_facet_sort_order');
+  echo '<select name="drstk_facet_sort_order">';
+  foreach($sort_options as $val=>$option){
+    echo '<option value="'.$val.'"';
+    if ($default_sort == $val){ echo 'selected="true"';}
+    echo '/> '.$option.'</option>';
+  }
+  echo '</select><br/>';
 }
 
 function drstk_niec_callback(){
@@ -506,6 +520,7 @@ function drstk_browse_script() {
     $search_options = get_option('drstk_search_metadata');
     $browse_options = get_option('drstk_browse_metadata');
     $default_sort = get_option('drstk_default_sort');
+    $default_facet_sort = get_option('drstk_facet_sort_order');
     //this creates a unique nonce to pass back and forth from js/php to protect
     $browse_nonce = wp_create_nonce( 'browse_drs' );
     $facets = drstk_get_facets_to_display();
@@ -532,6 +547,7 @@ function drstk_browse_script() {
       'errors' => json_encode($errors),
       'facets_to_display' => $facets_to_display,
       'default_sort' => $default_sort,
+      'default_facet_sort' => $default_facet_sort
     );
     if (get_option('drstk_niec') == 'on' && count($niec_facets_to_display) > 0){
       $browse_obj['niec_facets_to_display'] = $niec_facets_to_display;

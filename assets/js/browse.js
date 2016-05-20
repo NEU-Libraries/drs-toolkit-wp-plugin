@@ -160,9 +160,14 @@ jQuery(document).ready(function($) {
           facet_array.push({v:index, k:val_q});
         });
         facet_array.sort(function(a,b){
-           if(a.k > b.k){ return -1}
-            if(a.k < b.k){ return 1}
-              return 0;
+          var sortBy = (browse_obj.default_facet_sort !== "" ? browse_obj.default_facet_sort : "fc_desc");
+          var sorts = sortBy.split("_");
+          var r1 = (sorts[1] === "desc" ? -1 : 1);
+          var type = (sorts[0] === "fc" ? 'k' : 'v');
+          if(a[type] > b[type]){ return r1; }
+          if(a[type] < b[type]){ return r1 *= -1; }
+          return 0;
+
         });
         $.each(facet_array, function(index, val_q) {
             var this_facet_count = val_q.k;
