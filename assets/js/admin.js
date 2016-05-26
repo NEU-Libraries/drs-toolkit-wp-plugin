@@ -229,7 +229,7 @@
      var tab_name = tabs[current_tab];
      $("#TB_ajaxContent #tabs-"+current_tab+" .drs-items").html("Loading...");
      console.log(search_params);
-     if (current_tab == 4){ search_params.avfilter = true; }
+     if (current_tab == 4){ search_params.avfilter = true; } else { delete search_params.avfilter; }
      $.post(tile_ajax_obj.ajax_url, {
         _ajax_nonce: tile_ajax_obj.tile_ajax_nonce,
          action: "get_tile_code",
