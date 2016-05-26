@@ -228,6 +228,8 @@
 	function get_updated_items(search_params){
      var tab_name = tabs[current_tab];
      $("#TB_ajaxContent #tabs-"+current_tab+" .drs-items").html("Loading...");
+     console.log(search_params);
+     if (current_tab == 4){ search_params.avfilter = true; }
      $.post(tile_ajax_obj.ajax_url, {
         _ajax_nonce: tile_ajax_obj.tile_ajax_nonce,
          action: "get_tile_code",
@@ -239,13 +241,7 @@
           var media_count = 0;
           $.each(data.response.response.docs, function(id, item){
             if (item.active_fedora_model_ssi == 'CoreFile'){
-              if (current_tab == 4){ //A/V Media
-                if (item.canonical_class_tesim == 'AudioFile' || item.canonical_class_tesim == 'VideoFile'){
-                  $("#sortable-"+tab_name+"-list").append('<li style="display:inline-block;padding:10px;"><label for="drstile-' + id + '"><img src="https://repository.library.northeastern.edu' + item.thumbnail_list_tesim[0] + '" width="150" /><br/><input id="drstile-' + id + '" type="checkbox" class="drstk-include-'+tab_name+'" value="' + item.id + '" /><span style="width:100px;display:inline-block">' + item.full_title_ssi + '</span></label></li>');
-                  media_count++;
-                  data.pagination.table.num_pages = Math.ceil(media_count / 20);
-                }
-              } else if (current_tab == 5){ //Maps
+              if (current_tab == 5){ //Maps
                 get_item_geographic_or_date_handler(id, tab_name, item, true, false, data, media_count);
               } else if (current_tab == 6){ //Timeline
                 get_item_geographic_or_date_handler(id, tab_name, item, false, true, data, media_count);
@@ -305,7 +301,8 @@
   }
 
 
-	function update_pagination(tab, data, media_count=0){
+	function update_pagination(tab, data, media_count){
+    console.log(media_count);
     if (media_count > 0){
       data.pagination.table.num_pages = Math.ceil(media_count / 20);
     }
