@@ -72,10 +72,14 @@ function drstk_add_tile_gallery(){
     $url = "https://repository.library.northeastern.edu/api/v1/search/".$col_pid."?per_page=20";
     if ($_POST['params']['q'] ){
       $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
+      if (isset($_POST['params']['avfilter'])){
+        $url .= 'AND%20canonical_class_tesim%3A"AudioFile"%20OR%20canonical_class_tesim%3A"VideoFile"';
+      }
     }
     if ($_POST['params']['page']) {
       $url .= "&page=" . $_POST['params']['page'];
     }
+
     $data = get_response($url);
     $json = json_decode($data);
     if (isset($json->error)) {
