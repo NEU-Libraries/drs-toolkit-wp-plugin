@@ -6,6 +6,7 @@ install:
   - pip install pyvirtualdisplay
   - pip install coveralls
   - pip install coverage
+  - npm install
   - npm install -g grunt-cli
   - npm install coveralls
   - npm update -g
