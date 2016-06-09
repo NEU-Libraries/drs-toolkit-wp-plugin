@@ -7,15 +7,14 @@ install:
   - pip install coveralls
   - pip install coverage
   - npm install
+  - npm update -g
   - npm install -g grunt-cli
   - npm install coveralls
-  - npm update -g
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
 script:
-  - npm install
   - grunt jasmine
   # - coverage run --source=TestMapFunctions TestSuite/test-suite-maps.py
   # - coverage run TestSuite/test-suite-timeline.py
