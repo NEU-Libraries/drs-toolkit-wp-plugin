@@ -130,9 +130,9 @@ function drstk_collection_playlist($atts){
 }
 
 function drstk_video_shortcode_scripts() {
-    global $post, $VERSION, $wp_query;
+    global $post, $VERSION, $wp_query, $DRS_PLUGIN_URL;
     if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_collection_playlist') && !isset($wp_query->query_vars['drstk_template_type']) ) {
-      wp_register_script('drstk_jwplayer7',plugins_url('../assets/js/jwplayer/jwplayer.js', __FILE__), array(), $VERSION, false );
+      wp_register_script('drstk_jwplayer7', $DRS_PLUGIN_URL . '/assets/js/jwplayer/jwplayer.js', array(), $VERSION, false );
       wp_enqueue_script('drstk_jwplayer7');
       wp_register_script('swfobject', '');
       wp_enqueue_script('swfobject');

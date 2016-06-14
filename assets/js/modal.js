@@ -1,0 +1,623 @@
+/**
+ * Backbone Application File
+ * @package drstk.backbone_modal
+ */
+
+
+var drstk = {
+	backbone_modal: {
+		__instance: undefined
+	}
+};
+
+drstk.Item = Backbone.Model.extend({
+	title: '',
+	pid: '',
+	thumbnail: '',
+	repo: ''
+});
+
+drstk.Items = Backbone.Collection.extend({
+	model: drstk.Item
+});
+
+drstk.Shortcode = Backbone.Model.extend({
+	defaults:{
+		type: '',
+		items: new drstk.Items(),
+		settings: {},
+	},
+	initialize: function() {
+    this.set('items', new drstk.Items());
+  },
+	parse: function(response){
+		response.items = new drstk.Items(response.items);
+		return response;
+	},
+	set: function(attributes, options) {
+    if (attributes.items !== undefined && !(attributes.items instanceof drstk.Items)) {
+        attributes.items = new drstk.Items(attributes.items);
+    }
+    return Backbone.Model.prototype.set.call(this, attributes, options);
+	}
+});
+
+drstk.ItemView = Backbone.View.extend({
+	tagName: 'li',
+	item_template: _.template("<label for='tile-<%=pid%>'><img src='<%=thumbnail%>' width='150' /><br/><input id='tile-<%=pid%>' type='checkbox' class='tile <%=repo%>' value='<%=pid%>'/><span class='title'><%=title%></span></label>"),
+	initialize: function(){
+		this.render();
+	},
+	render: function(){
+		this.$el.html( this.item_template(this.model.toJSON()));
+	}
+});
+
+/**
+ * Primary Modal Application Class
+ */
+drstk.backbone_modal.Application = Backbone.View.extend(
+	{
+		id: "backbone_modal_dialog",
+		events: {
+			"click .backbone_modal-close": "closeModal",
+			"click #btn-cancel": "closeModal",
+			"click #btn-ok": "insertShortcode",
+			"click .navigation-bar a": "navigate",
+			"click .backbone_modal-main article table .button": "navigate",
+			"change .tile": "selectItem",
+			"click .tablenav-pages a": "paginate",
+			"click .nav-tab": "navigateShortcode",
+			"click .search-button": "search",
+			"change #selected .tile": "deSelectItem",
+		},
+
+		/**
+		 * Simple object to store any UI elements we need to use over the life of the application.
+		 */
+		ui: {
+			nav: undefined,
+			content: undefined
+		},
+
+		/**
+		 * Container to store our compiled templates. Not strictly necessary in such a simple example
+		 * but might be useful in a larger one.
+		 */
+		templates: {},
+
+		shortcode: null,
+
+		search_q: '',
+		search_page: 1,
+		search_params: {q:this.search_q, page:this.search_page},
+		current_tab: 1,  // store our current tab as a variable for easy lookup
+		tabs: {        // dictionary of key/value pairs for our tabs
+			1: 'single',
+			2: 'tile',
+			3: 'slider',
+			4: 'media',
+			5: 'map',
+			6: 'timeline'
+		},
+
+		/**
+		 * Instantiates the Template object and triggers load.
+		 */
+		initialize: function () {
+			"use strict";
+
+			_.bindAll( this, 'render', 'preserveFocus', 'closeModal', 'insertShortcode', 'navigate', 'showTab', 'getDRSitems', 'selectItem', 'paginate', 'navigateShortcode', 'search' );
+			this.initialize_templates();
+			this.render();
+			this.shortcode = new drstk.Shortcode({});
+		},
+
+
+		/**
+		 * Creates compiled implementations of the templates. These compiled versions are created using
+		 * the wp.template class supplied by WordPress in 'wp-util'. Each template name maps to the ID of a
+		 * script tag ( without the 'tmpl-' namespace ) created in template-data.php.
+		 */
+		initialize_templates: function () {
+			this.templates.window = wp.template( "drstk-modal-window" );
+			this.templates.backdrop = wp.template( "drstk-modal-backdrop" );
+			this.templates.menuItem = wp.template( "drstk-modal-menu-item" );
+			this.templates.menuItemSeperator = wp.template( "drstk-modal-menu-item-separator" );
+			this.templates.tabMenu = wp.template( "drstk-modal-tab-menu" );
+			this.templates.tabItem = wp.template( "drstk-modal-tab-item" );
+			this.templates.tabContent = wp.template( "drstk-modal-tab-content" );
+		},
+
+		/**
+		 * Assembles the UI from loaded templates.
+		 * @internal Obviously, if the templates fail to load, our modal never launches.
+		 */
+		render: function () {
+			"use strict";
+
+			// Build the base window and backdrop, attaching them to the $el.
+			// Setting the tab index allows us to capture focus and redirect it in Application.preserveFocus
+			this.$el.attr( 'tabindex', '0' )
+				.append( this.templates.window() )
+				.append( this.templates.backdrop() );
+
+			// Save a reference to the navigation bar's unordered list and populate it with items.
+			// This is here mostly to demonstrate the use of the template class.
+			this.ui.nav = this.$( '.navigation-bar nav ul' )
+				.append( this.templates.menuItem( {url: "#one", name: "Single Item"} ) )
+				.append( this.templates.menuItem( {url: "#two", name: "Tile Gallery"} ) )
+				.append( this.templates.menuItem( {url: "#three", name: "Gallery Slider"} ) )
+				.append( this.templates.menuItemSeperator() )
+				.append( this.templates.menuItem( {url: "#four", name: "Media Playlist"} ) )
+				.append( this.templates.menuItem( {url: "#five", name: "Map"} ) )
+				.append( this.templates.menuItem( {url: "#six", name: "Timeline"} ) );
+
+
+			// The l10n object generated by wp_localize_script() should be available, but check to be sure.
+			// Again, this is a trivial example for demonstration.
+			if ( typeof drstk_backbone_modal_l10n === "object" ) {
+				this.ui.content = this.$( '.backbone_modal-main article' )
+					.append( "<p>" + drstk_backbone_modal_l10n.replace_message + "</p>" );
+			}
+
+			// Handle any attempt to move focus out of the modal.
+			jQuery( document ).on( "focusin", this.preserveFocus );
+
+			// set overflow to "hidden" on the body so that it ignores any scroll events while the modal is active
+			// and append the modal to the body.
+			// TODO: this might better be represented as a class "modal-open" rather than a direct style declaration.
+			jQuery( "body" ).css( {"overflow": "hidden"} ).append( this.$el );
+
+			// Set focus on the modal to prevent accidental actions in the underlying page
+			// Not strictly necessary, but nice to do.
+			this.$el.focus();
+		},
+
+		/**
+		 * Ensures that keyboard focus remains within the Modal dialog.
+		 * @param e {object} A jQuery-normalized event object.
+		 */
+		preserveFocus: function ( e ) {
+			"use strict";
+			if ( this.$el[0] !== e.target && ! this.$el.has( e.target ).length ) {
+				this.$el.focus();
+			}
+		},
+
+		/**
+		 * Closes the modal and cleans up after the instance.
+		 * @param e {object} A jQuery-normalized event object.
+		 */
+		closeModal: function ( e ) {
+			"use strict";
+
+			e.preventDefault();
+			this.undelegateEvents();
+			jQuery( document ).off( "focusin" );
+			jQuery( "body" ).css( {"overflow": "auto"} );
+			this.remove();
+			drstk.backbone_modal.__instance = undefined;
+		},
+
+		/**
+		 * Responds to the btn-ok.click event
+		 * @param e {object} A jQuery-normalized event object.
+		 */
+		insertShortcode: function ( e ) {
+			var drs_items = this.shortcode.items.where({ repo: 'drs' });
+			drs_ids = []
+			jQuery.each(drs_items, function(i, item){
+				drs_ids.push(item.attributes.pid);
+			});
+			drs_ids.join(",");
+			var dpla_items = this.shortcode.items.where({ repo: 'dpla' });
+			dpla_ids = []
+			jQuery.each(dpla_items, function(i, item){
+				dpla_ids.push(item.attributes.pid);
+			});
+			dpla_ids.join(",");
+			shortcode = '[drstk_'+this.tabs[this.current_tab]+' id="'+drs_ids+'" dpla_id="'+dpla_ids+'"]';
+			window.wp.media.editor.insert(shortcode);
+			this.closeModal( e );
+		},
+
+		/**
+		 * Ensures that events do nothing.
+		 * @param e {object} A jQuery-normalized event object.
+		 */
+		navigate: function ( e ) {
+			"use strict";
+			e.preventDefault();
+			this.search_params.page = 1;
+			this.showTab(jQuery(e.currentTarget).attr("href"));
+			jQuery(".navigation-bar a").removeClass("active");
+			jQuery(e.currentTarget).addClass("active");
+		},
+
+		navigateShortcode: function( e ){
+			"use strict";
+			var path = jQuery(e.currentTarget).attr("href");
+			jQuery(".nav-tab").removeClass("nav-tab-active");
+			jQuery(e.currentTarget).addClass("nav-tab-active");
+			this.search_params.page = 1;
+			jQuery(".pane").hide();
+			if (path == '#drs'){
+				jQuery("#drs").show();
+				jQuery("#drs input[name='search']").val(this.search_params.q);
+				this.getDRSitems();
+			} else if ( path == '#dpla' ){
+				jQuery("#dpla input[name='search']").val(this.search_params.q);
+				jQuery("#dpla").show();
+				this.getDPLAitems();
+			} else if (path == '#selected'){
+				jQuery("#selected").show();
+				this.getSelecteditems();
+				tab_name = this.tabs[this.current_tab]
+				var self = this;
+				jQuery("#selected #sortable-"+tab_name+"-list").sortable({
+					update: function(event, ui){
+						_.each(_.clone(self.shortcode.items.models), function(model) {
+							model.destroy();
+						});
+						jQuery.each(event.target.children, function(i, item){
+							console.log(item);
+							pid = jQuery(item).find("input").val();
+							title = jQuery(item).find(".title").text();
+							thumbnail = jQuery(item).find("img").attr("src");
+							repo = jQuery(item).find("input").attr("class").split(" ")[1];
+							if (self.shortcode.items.length == 0){
+								self.shortcode.items = new drstk.Items({
+									'title':title,
+									'pid':pid,
+									'thumbnail':thumbnail,
+									'repo':repo
+								})
+							} else {
+								self.shortcode.items.add({
+									'title':title,
+									'pid':pid,
+									'thumbnail':thumbnail,
+									'repo':repo
+								})
+							}
+						});
+					}
+				});
+			} else if (path == '#settings'){
+				jQuery("#settings").show();
+				this.getSettings();
+			}
+		},
+
+		showTab: function ( id ){
+			jQuery(".backbone_modal-main article").html("");
+			var type = ""
+			var title = ""
+			switch(id) {
+				case "#one":
+					this.current_tab = 1
+					type = this.tabs[1]
+					title = "Single Item"
+					break;
+				case "#two":
+					this.current_tab = 2
+					type = this.tabs[2]
+					title = "Tile Gallery"
+					break;
+				case "#three":
+					this.current_tab = 3
+					type = this.tabs[3]
+					title = "Gallery Slider"
+					break;
+				case "#four":
+					this.current_tab = 4
+					type = this.tabs[4]
+					title = "Media Playlist"
+					break;
+				case "#five":
+					this.current_tab = 5
+					type = this.tabs[5]
+					title = "Map"
+					break;
+				case "#six":
+					this.current_tab = 6
+					type = this.tabs[6]
+					title = "Timeline"
+					break;
+			}
+			jQuery(".backbone_modal-main article").append( this.templates.tabContent( {title: title, type: type} ) )
+			jQuery("#drs").show();
+			this.getDRSitems();
+			this.shortcode.set({"type": type});
+		},
+
+		getDRSitems: function( ){
+			if (this.current_tab == 4){ this.search_params.avfilter = true; } else { delete this.search_params.avfilter; }
+			var self = this;
+			tab_name = this.tabs[this.current_tab]
+      jQuery.post(drs_ajax_obj.ajax_url, {
+         _ajax_nonce: drs_ajax_obj.drs_ajax_nonce,
+          action: "get_drs_code",
+          params: this.search_params,
+      }, function(data) {
+         var data = jQuery.parseJSON(data);
+         if (data.response.response.numFound > 0){
+           jQuery("#drs #sortable-"+tab_name+"-list").children("li").remove();
+           var media_count = 0;
+           jQuery.each(data.response.response.docs, function(id, item){
+             if (item.active_fedora_model_ssi == 'CoreFile'){
+               if (this.current_tab == 5){ //Maps
+                 self.get_item_geographic_or_date_handler(id, tab_name, item, true, false, data, media_count);
+               } else if (this.current_tab == 6){ //Timeline
+                 self.get_item_geographic_or_date_handler(id, tab_name, item, false, true, data, media_count);
+               } else { //Everything else
+								this_item = new drstk.Item;
+								thumb = "https://repository.library.northeastern.edu"+item.thumbnail_list_tesim[0];
+								this_item.set("pid", item.id).set("thumbnail", thumb).set("repo", "drs").set("title", item.full_title_ssi);
+								view = new drstk.ItemView({model:this_item});
+								jQuery("#drs #sortable-"+tab_name+"-list").append(view.el);
+								if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
+									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
+								}
+              }
+							jQuery(".drs-items").html("");
+             }
+           });
+           self.updateDRSPagination(data, media_count);
+         } else {
+           jQuery(".drs-items").html("No results were retrieved for your query. Please try a different query.");
+         }
+       });
+		},
+
+		get_item_geographic_or_date_handler: function(id, tab_name, item, mapsBool, timelineBool, collection_data, media_count) {
+			var key_date = {};
+			//AJAX call will be passed to internal WP AJAX
+			jQuery.ajax({
+				type: "POST",
+				url: ajaxurl,
+				data: {
+					'action':'get_json_data_from_neu_item',
+					'item' : item.id,
+					'_ajax_nonce': item_admin_obj.item_admin_nonce,
+				},
+				success:function(data) {
+					key_date[key_date] = Object.keys(data.key_date)[0];
+					if ((data && data.geographic && data.geographic.length && mapsBool) || data && data.coordinates && data.coordinates.length && mapsBool)  {
+						this_item = new drstk.Item;
+						thumb = "https://repository.library.northeastern.edu"+item.thumbnail_list_tesim[0];
+						this_item.set("pid", item.id).set("thumbnail", thumb).set("repo", "drs").set("title", item.full_title_ssi);
+						view = new drstk.ItemView({model:this_item});
+						jQuery("#drs #sortable-"+tab_name+"-list").append(view.el);
+					} else if (data && data.key_date && timelineBool){
+						this_item = new drstk.Item;
+						thumb = "https://repository.library.northeastern.edu"+item.thumbnail_list_tesim[0];
+						this_item.set("pid", item.id).set("thumbnail", thumb).set("repo", "drs").set("title", item.full_title_ssi);
+						view = new drstk.ItemView({model:this_item});
+						jQuery("#drs #sortable-"+tab_name+"-list").append(view.el);
+						jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type .title").append("<p>Date: "+key_date[key_date]+"</p>");
+					}  else {
+						console.log("no timeline or geo data found");
+					}
+				},
+				error: function(errorThrown){
+					console.log(errorThrown);
+				},
+				complete: function(jqXHR, textStatus){
+					media_count = jQuery("#sortable-"+tab_name+"-list li").length;
+					self.updateDRSPagination(data, media_count);
+				}
+			});
+		},
+
+		selectItem: function( e ){
+			item = jQuery(e.currentTarget);
+			pid = item.val();
+			title = item.siblings(".title").text();
+			thumbnail = item.siblings("img").attr("src");
+			parent = item.parents(".pane").attr("id");
+			if (parent == 'drs'){
+				repo = 'drs'
+			} else if (parent == 'dpla'){
+				repo = 'dpla'
+			}
+			if (item.is(":checked")){
+				if (this.shortcode.items === undefined){
+					this.shortcode.items = new drstk.Items({
+						'title':title,
+						'pid':pid,
+						'thumbnail':thumbnail,
+						'repo':repo
+					})
+				} else if (this.shortcode.items.where({ pid: pid }).length == 0) {
+					this.shortcode.items.add({
+						'title':title,
+						'pid':pid,
+						'thumbnail':thumbnail,
+						'repo':repo
+					})
+				}
+			} else {
+				var remove = this.shortcode.items.where({ pid: pid })
+				this.shortcode.items.remove(remove);
+			}
+			console.log(this.shortcode.items);
+		},
+
+		deSelectItem: function( e ){
+			item = jQuery(e.currentTarget);
+			pid = item.val();
+			if (item.is(":checked")){
+			} else {
+				var remove = this.shortcode.items.where({ pid: pid })
+				this.shortcode.items.remove(remove);
+			}
+		},
+
+		updateDRSPagination: function (data, media_count){
+	    console.log(media_count);
+	    if (media_count > 0){
+	      data.pagination.table.num_pages = Math.ceil(media_count / 20);
+	    }
+	    if (data.pagination.table.num_pages > 1){
+	       var pagination = "";
+	       if (data.pagination.table.current_page > 1){
+	         pagination += "<a href='#' class='prev-page'> << </a>";
+	       } else {
+	         pagination += "<a href='#' class='prev-page disabled'> << </a>";
+	       }
+	       for (var i = 1; i <= data.pagination.table.num_pages; i++) {
+	         if (data.pagination.table.current_page == i){
+	           var pagination_class = 'current-page disabled';
+	         } else {
+	           var pagination_class = '';
+	         }
+	           pagination += "<a href='#' class='"+pagination_class+"'>" + i + "</a>";
+	       }
+	       if (data.pagination.table.current_page == data.pagination.table.num_pages){
+	         pagination += "<a href='#' class='next-page' data-val='"+data.pagination.table.num_pages+"'>>></a>";
+	       } else {
+	         pagination += "<a href='#' class='next-page disabled' data-val='"+data.pagination.table.num_pages+"'>>></a>";
+	       }
+				 jQuery(".drs-pagination").html("<span class='tablenav'><span class='tablenav-pages'>" + pagination + "</span></span>");
+	    } else {
+				jQuery(".drs-pagination").html("");
+			}
+		},
+
+		paginate: function( e ){
+      val = jQuery(e.currentTarget).html();
+			val = jQuery.trim(val);
+			type = jQuery(e.currentTarget).parents(".pane").attr("id");
+			current_page = jQuery("#"+type+" .tablenav-pages .current-page").html();
+      if (val == '&lt;&lt;'){
+				val = parseInt(current_page) - 1;
+      }
+      if (val == '&gt;&gt;'){
+				val = parseInt(current_page) + 1;
+				if (jQuery("#"+type+" .tablenav-pages .current-page").next('a').html() == '&gt;&gt;'){//last page
+					val = 0;
+				}
+      }
+      if (jQuery.isNumeric(val) && val != 0){
+        this.search_params.page = val;
+				if (type == 'drs'){
+					this.getDRSitems();
+				} else if (type == 'dpla'){
+					this.getDPLAitems();
+				}
+      }
+		},
+
+		getDPLAitems: function( ){
+			var self = this;
+			tab_name = this.tabs[this.current_tab];
+      jQuery.post(dpla_ajax_obj.ajax_url, {
+         _ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
+          action: "get_dpla_code",
+          params: this.search_params,
+      }, function(data) {
+				  var data = jQuery.parseJSON(data);
+         if (data.count > 0){
+					 jQuery(".dpla-items").html("");
+           jQuery("#dpla #sortable-"+tab_name+"-list").children("li").remove();
+           jQuery.each(data.docs, function(id, item){
+						 this_item = new drstk.Item;
+						 this_item.set("pid", item.id).set("thumbnail", item.object).set("repo", "dpla").set("title", item.sourceResource.title);
+						 view = new drstk.ItemView({model:this_item});
+						 jQuery("#dpla #sortable-"+tab_name+"-list").append(view.el);
+						 if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
+							 jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
+						 }
+           });
+					 if (self.search_params.q != ""){//too much pagination if there isn't a query
+						 self.updateDPLAPagination(data);
+					 }
+         } else {
+           jQuery(".dpla-items").html("No results were retrieved for your query. Please try a different query.");
+         }
+       });
+		},
+
+		updateDPLAPagination: function( data ){
+			num_pages = Math.round(data.count/data.limit);
+			console.log(num_pages);
+			current_page = this.search_params.page;
+			console.log(current_page);
+			if (num_pages > 1){
+	       var pagination = "";
+	    //    if (current_page > 1){
+	    //      pagination += "<a href='#' class='prev-page'> << </a>";
+	    //    } else {
+	    //      pagination += "<a href='#' class='prev-page disabled'> << </a>";
+	    //    }
+	    //    for (var i = 1; i <= num_pages; i++) {
+	    //      if (current_page == i){
+	    //        var pagination_class = 'current-page disabled';
+	    //      } else {
+	    //        var pagination_class = '';
+	    //      }
+	    //        pagination += "<a href='#' class='"+pagination_class+"'>" + i + "</a>";
+	    //    }
+	    //    if (current_page == num_pages){
+	    //      pagination += "<a href='#' class='next-page' data-val='"+num_pages+"'>>></a>";
+	    //    } else {
+	    //      pagination += "<a href='#' class='next-page disabled' data-val='"+num_pages+"'>>></a>";
+	    //    }
+			// 	 jQuery(".dpla-pagination").html("<span class='tablenav'><span class='tablenav-pages'>" + pagination + "</span></span>");
+	    } else {
+				jQuery(".dpla-pagination").html("");
+			}
+		},
+
+		search: function( e ){
+			this.search_params.q = jQuery(e.currentTarget).siblings("input[type='text']").val();
+			parent = jQuery(e.currentTarget).parents(".pane").attr("id");
+			if (parent == 'drs'){
+				this.getDRSitems();
+			} else if (parent == 'dpla'){
+				this.getDPLAitems();
+			}
+		},
+
+		getSelecteditems: function( ){
+			tab_name = this.tabs[this.current_tab];
+			count = this.shortcode.items.length;
+	     if (count > 0){
+				 jQuery(".selected-items").html("");
+	       jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
+				 var self = this;
+	       jQuery.each(this.shortcode.items.models, function(i, item) {
+						var itemView = new drstk.ItemView({
+		            model:item
+		        });
+		        jQuery("#selected #sortable-"+tab_name+"-list").append(itemView.el);
+						if(self.shortcode.items.where({ pid: item.attributes.pid }).length > 0){
+							console.log(jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type input"));
+							jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
+						}
+	        });
+	     } else {
+	       jQuery(".selected-items").html("You haven't selected any items yet.");
+	     }
+		},
+
+		getSettings: function( ) {
+
+		},
+
+	} );
+
+jQuery( function ( $ ) {
+	"use strict";
+	/**
+	 * Attach a click event to the meta-box button that instantiates the Application object, if it's not already open.
+	 */
+	$( "#drs-backbone_modal" ).click( function ( e ) {
+		e.preventDefault();
+		if ( drstk.backbone_modal.__instance === undefined ) {
+			drstk.backbone_modal.__instance = new drstk.backbone_modal.Application();
+		}
+	} );
+} );

@@ -22,6 +22,8 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/timeline_shortcode.php' );
 
 
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
+$DRS_PLUGIN_PATH = plugin_dir_path( __FILE__ );
+$DRS_PLUGIN_URL = plugin_dir_url( __FILE__ );
 
 $VERSION = '1.1.1';
 

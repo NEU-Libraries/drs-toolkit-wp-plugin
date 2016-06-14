@@ -148,10 +148,10 @@ function drstk_gallery( $atts ){
 }
 
 function drstk_gallery_shortcode_scripts() {
-	global $post, $wp_query;
+	global $post, $wp_query, $DRS_PLUGIN_URL;
 	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_gallery') && !isset($wp_query->query_vars['drstk_template_type']) ) {
     wp_register_script( 'drstk_gallery',
-        plugins_url( '../assets/js/gallery.js', __FILE__ ),
+        $DRS_PLUGIN_URL . '/assets/js/gallery.js',
         array( 'jquery' ));
     wp_enqueue_script('drstk_gallery');
 	}

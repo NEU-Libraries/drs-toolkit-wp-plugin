@@ -135,33 +135,33 @@ function drstk_map( $atts ){
 }
 
 function drstk_map_shortcode_scripts() {
-  global $post, $wp_query;
+  global $post, $wp_query, $DRS_PLUGIN_URL;
   if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_map') && !isset($wp_query->query_vars['drstk_template_type']) ) {
     wp_register_script('drstk_leaflet',
-        plugins_url('../assets/js/leaflet/leaflet.js', __FILE__),
+        $DRS_PLUGIN_URL .'/assets/js/leaflet/leaflet.js',
         array( 'jquery' ));
     wp_enqueue_script('drstk_leaflet');
 
     wp_register_script('drstk_leaflet_marker_cluster',
-        plugins_url('../assets/js/leaflet/leaflet.markercluster-src.js', __FILE__),
+        $DRS_PLUGIN_URL.'/assets/js/leaflet/leaflet.markercluster-src.js',
         array('jquery', 'drstk_leaflet'));
     wp_enqueue_script('drstk_leaflet_marker_cluster');
 
     wp_register_script('drstk_leaflet_message_box',
-        plugins_url('../assets/js/leaflet/leaflet.messagebox-src.js', __FILE__),
+        $DRS_PLUGIN_URL.'/assets/js/leaflet/leaflet.messagebox-src.js',
         array('jquery', 'drstk_leaflet'));
     wp_enqueue_script('drstk_leaflet_message_box');
 
     wp_register_script('drstk_leaflet_easy_button',
-        plugins_url('../assets/js/leaflet/leaflet.easybutton-src.js', __FILE__),
+        $DRS_PLUGIN_URL.'/assets/js/leaflet/leaflet.easybutton-src.js',
         array('jquery', 'drstk_leaflet'));
     wp_enqueue_script('drstk_leaflet_easy_button');
 
     wp_register_style('drstk_leaflet_css',
-        plugins_url('../assets/css/leaflet.css', __FILE__));
+        $DRS_PLUGIN_URL.'/assets/css/leaflet.css');
     wp_enqueue_style('drstk_leaflet_css');
     wp_register_script( 'drstk_map',
-        plugins_url( '../assets/js/map.js', __FILE__ ),
+        $DRS_PLUGIN_URL. '/assets/js/map.js',
         array( 'jquery' ));
     wp_enqueue_script('drstk_map');
 

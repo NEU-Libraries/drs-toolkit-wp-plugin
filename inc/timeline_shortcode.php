@@ -145,16 +145,16 @@ function drstk_timeline( $atts ){
 }
 
 function drstk_timeline_shortcode_scripts() {
-	global $post, $wp_query;
+	global $post, $wp_query, $DRS_PLUGIN_URL;
 	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_timeline') && !isset($wp_query->query_vars['drstk_template_type']) ) {
     wp_register_script( 'drstk_timelinejs',
-        plugins_url( '../assets/js/timeline/timeline.js', __FILE__ ),
+        $DRS_PLUGIN_URL . '/assets/js/timeline/timeline.js',
         array( 'jquery' ));
     wp_enqueue_script('drstk_timelinejs');
-    wp_register_style( 'drstk_timelinejs_css',plugins_url('../assets/css/timeline.css', __FILE__));
+    wp_register_style( 'drstk_timelinejs_css', $DRS_PLUGIN_URL . '/assets/css/timeline.css');
     wp_enqueue_style( 'drstk_timelinejs_css');
     wp_register_script( 'drstk_timelinepage',
-        plugins_url( '../assets/js/timelinepage.js', __FILE__ ),
+      $DRS_PLUGIN_URL . '/assets/js/timelinepage.js',
         array( 'jquery' ));
     wp_enqueue_script('drstk_timelinepage');
 	}

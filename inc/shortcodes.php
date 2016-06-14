@@ -2,31 +2,21 @@
 //allows modals in admin
 
 function add_drs_button() {
-    echo '<a href="#TB_inline?width=750&height=675&inlineId=drs-tile-modal" id="insert-drs" class="button thickbox" title="Add DRS Item(s)">Add DRS Item(s)</a>';
-    echo '<div id="drs-tile-modal" style="display:none;padding:10px;">';
-    echo '<div id="tabs"><ul><li><a href="#tabs-1">Tile Gallery</a></li><li><a href="#tabs-2">Gallery Slider</a></li><li><a href="#tabs-3">Single Item</a></li><li><a href="#tabs-4">Media Playlist</a></li><li><a href="#tabs-5">Map</a></li><li><a href="#tabs-6">Timeline</a></li></ul><div id="tabs-1">';
-    echo '</div><div id="tabs-2">';
-    echo '</div><div id="tabs-3">';
-    echo '</div><div id="tabs-4">';
-    echo '</div><div id="tabs-5">';
-    echo '</div><div id="tabs-6">';
-    echo '</div>';
-    echo '</div>';
-    echo '</div>';
+  echo '<a href="#" id="drs-backbone_modal" class="button" title="Add Toolkit Shortcodes">Add Toolkit Shortcodes</a>';
 }
 add_action('media_buttons', 'add_drs_button', 1000);
 
 
 /*enques extra js*/
 function drstk_enqueue_page_scripts( $hook ) {
-  global $errors;
-  add_thickbox();
+  global $errors, $DRS_PLUGIN_PATH, $DRS_PLUGIN_URL;
+  // add_thickbox();
     if ($hook == 'post.php' || $hook == 'post-new.php') {
     wp_register_script('drstk_admin_js',
-        plugins_url('../assets/js/admin.js', __FILE__),
+    $DRS_PLUGIN_URL . '/assets/js/admin.js',
         array('jquery', 'jquery-ui-tabs'));
     wp_enqueue_script( 'drstk_admin_js' );
-    wp_enqueue_script('jquery-ui-sortable');
+    // wp_enqueue_script('jquery-ui-sortable');
    //this creates a unique nonce to pass back and forth from js/php to protect
    $item_admin_nonce = wp_create_nonce( 'item_admin_nonce' );
    //this allows an ajax call from admin.js
@@ -40,43 +30,78 @@ function drstk_enqueue_page_scripts( $hook ) {
       'errors' => json_encode($errors),
    ) );
 
-   $video_ajax_nonce = wp_create_nonce( 'video_ajax_nonce' );
-   wp_localize_script('drstk_admin_js', 'video_ajax_obj', array(
-     'ajax_url' => admin_url( 'admin-ajax.php' ),
-     'video_ajax_nonce'    => $video_ajax_nonce,
-   ));
-   $tile_ajax_nonce = wp_create_nonce( 'tile_ajax_nonce');
-   wp_localize_script( 'drstk_admin_js', 'tile_ajax_obj', array(
+   $drs_ajax_nonce = wp_create_nonce( 'drs_ajax_nonce');
+   wp_localize_script( 'drstk_admin_js', 'drs_ajax_obj', array(
      'ajax_url' => admin_url('admin-ajax.php'),
-     'tile_ajax_nonce' => $tile_ajax_nonce,
+     'drs_ajax_nonce' => $drs_ajax_nonce,
    ));
 
-   $map_ajax_nonce = wp_create_nonce( 'map_ajax_nonce');
-   wp_localize_script( 'drstk_admin_js', 'map_ajax_obj', array(
+   $dpla_ajax_nonce = wp_create_nonce( 'dpla_ajax_nonce');
+   wp_localize_script( 'drstk_admin_js', 'dpla_ajax_obj', array(
      'ajax_url' => admin_url('admin-ajax.php'),
-     'map_ajax_nonce' => $map_ajax_nonce,
+     'dpla_ajax_nonce' => $dpla_ajax_nonce,
    ));
 
+   include $DRS_PLUGIN_PATH.'templates/modal.php';
+   wp_enqueue_script( 'backbone_modal', $DRS_PLUGIN_URL . '/assets/js/modal.js', array(
+     'jquery',
+     'backbone',
+     'underscore',
+     'wp-util',
+     'jquery-ui-sortable'
+   ) );
+   wp_localize_script( 'backbone_modal', 'drstk_backbone_modal_l10n',
+     array(
+       'replace_message' => __( 'Choose a method of embedding DRS and/or DPLA item(s).<br/><br/><table><tr><td><a class="button" href="#one">Single Item</a></td><td><a class="button" href="#four">Media Playlist</a></td></tr><tr><td><a class="button" href="#two">Tile Gallery</a></td><td><a class="button" href="#five">Map</a></td></tr><tr><td><a class="button" href="#three">Gallery Slider</a></td><td><a class="button" href="#six">Timeline</a></td></tr></table>', 'backbone_modal' )
+     ) );
+   wp_enqueue_style( 'backbone_modal', $DRS_PLUGIN_URL . '/assets/css/modal.css' );
 
  } else {
    return;
  }
 }
 add_action('admin_enqueue_scripts', 'drstk_enqueue_page_scripts');
-add_action( 'wp_ajax_get_tile_code', 'drstk_add_tile_gallery' ); //for auth users
+add_action( 'wp_ajax_get_drs_code', 'drstk_get_drs_items' ); //for auth users
 
 /* side box content for tile gallery shortcode */
-function drstk_add_tile_gallery(){
-  check_ajax_referer( 'tile_ajax_nonce' );
+function drstk_get_drs_items(){
+  check_ajax_referer( 'drs_ajax_nonce' );
   $col_pid = drstk_get_pid();
     $url = "https://repository.library.northeastern.edu/api/v1/search/".$col_pid."?per_page=20";
-    if ($_POST['params']['q'] ){
+    if (isset($_POST['params']['q'])){
       $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
       if (isset($_POST['params']['avfilter'])){
         $url .= 'AND%20canonical_class_tesim%3A"AudioFile"%20OR%20canonical_class_tesim%3A"VideoFile"';
       }
     }
-    if ($_POST['params']['page']) {
+    if (isset($_POST['params']['page'])) {
+      $url .= "&page=" . $_POST['params']['page'];
+    }
+
+    $data = get_response($url);
+    $json = json_decode($data);
+    if (isset($json->error)) {
+      wp_send_json(json_encode( "There was an error: " . $json->error));
+      wp_die();
+      return;
+    }
+    wp_send_json($data);
+    wp_die();
+}
+
+add_action( 'wp_ajax_get_dpla_code', 'drstk_get_dpla_items' ); //for auth users
+
+/* side box content for tile gallery shortcode */
+function drstk_get_dpla_items(){
+  check_ajax_referer( 'dpla_ajax_nonce' );
+    $url = "http://api.dp.la/v2/items?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7&page_size=20";
+    if (isset($_POST['params']['q'])){
+      $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
+      // if (isset($_POST['params']['avfilter'])){ //TODO figure this out
+      //   $url .= 'AND%20canonical_class_tesim%3A"AudioFile"%20OR%20canonical_class_tesim%3A"VideoFile"';
+      // }
+    }
+    if (isset($_POST['params']['page'])) {
       $url .= "&page=" . $_POST['params']['page'];
     }
 
@@ -120,50 +145,11 @@ add_action( 'wp_ajax_get_json_data_from_neu_item', 'get_json_data_from_neu_item'
 
 function thickbox_styles() {
    echo '<style type="text/css">
-           #TB_window{height:700px !important;}
-           #TB_ajaxContent{width:750px !important;}
-            .ui-tabs.ui-tabs-vertical {
-                padding: 0;
-                width: 53em;
-            }
-            .ui-tabs.ui-tabs-vertical .ui-widget-header {
-                border: none;
-            }
-            .ui-tabs.ui-tabs-vertical .ui-tabs-nav {
-                float: left;
-                width: 10em;
-                background: #CCC;
-                border-right: 1px solid gray;
-            }
-            .ui-tabs.ui-tabs-vertical .ui-tabs-nav li {
-                margin: 0.2em 0;
-                border: 1px solid gray;
-                border-radius: 4px 0 0 4px;
-                position: relative;
-                right: -2px;
-            }
-            .ui-tabs.ui-tabs-vertical .ui-tabs-nav li a {
-                display: block;
-                padding: 0.6em 1em;
-            }
-            .ui-tabs.ui-tabs-vertical .ui-tabs-nav li a:hover {
-                cursor: pointer;
-            }
-            .ui-tabs.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active {
-                border-right: 1px solid white;
-            }
-            .ui-tabs.ui-tabs-vertical .ui-tabs-panel {
-                float: left;
-                width: 38em;
-                background:#FFF;
-                padding:26px;
-                max-height:597px;
-                overflow:auto;
-            }
-            .ui-tabs.ui-tabs-vertical .ui-tabs-panel h4{
-              margin-top:0;
-              margin-bottom:5px;
-            }
+          .tablenav-pages a.current-page {
+            border-color: #5b9dd9;
+            color: #fff;
+            background: #00a0d2;
+          }
             [id="9_section_group_li"], .redux-action_bar .promotion-button{
               display:none;
             }

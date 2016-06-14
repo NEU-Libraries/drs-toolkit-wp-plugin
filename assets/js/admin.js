@@ -51,10 +51,10 @@
  });
 
 	//click the main add drs button
-	$("body").on('click', "#insert-drs",  function(){
+	// $("body").on('click', "#insert-drs",  function(){
   //  $("#TB_ajaxContent #tabs-1 .drs-items").html("Loading...");
-   get_updated_items(search_params);
- });
+  //  get_updated_items(search_params);
+ // });
 
 	//when an item is selected
 	$("body").on("change", "[class^='drstk-include-']", function(e){
@@ -230,8 +230,8 @@
      $("#TB_ajaxContent #tabs-"+current_tab+" .drs-items").html("Loading...");
      console.log(search_params);
      if (current_tab == 4){ search_params.avfilter = true; } else { delete search_params.avfilter; }
-     $.post(tile_ajax_obj.ajax_url, {
-        _ajax_nonce: tile_ajax_obj.tile_ajax_nonce,
+     $.post(drs_ajax_obj.ajax_url, {
+        _ajax_nonce: drs_ajax_obj.drs_ajax_nonce,
          action: "get_tile_code",
          params: search_params,
      }, function(data) {
