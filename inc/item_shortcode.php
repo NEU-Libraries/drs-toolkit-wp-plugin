@@ -36,20 +36,32 @@ function drstk_item( $atts ){
   }
 
   if (!$jwplayer) {
-    $html .= "<a href='".drstk_home_url()."item/".$atts['id']."'><img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
-
-    if (isset($atts['align'])){
-      $html .= " data-align='".$atts['align']."'";
-    }
-
-    if (isset($atts['zoom']) && $atts['zoom'] == 'on'){
-      $html .= " data-zoom-image='".$master."' data-zoom='on'";
-      if (isset($atts['zoom_position'])){
-        $html .= " data-zoom-position='".$atts['zoom_position']."'";
+    if (isset($data->mods->Location) && strpos($data->mods->Location[0], "issuu") !== FALSE){
+      $location_href = explode("'", strval(htmlentities($data->mods->Location[0])));
+      if (count($location_href) == 1){
+        $location_href = explode('"', strval(htmlentities($data->mods->Location[0])));
       }
-    }
+      $issu_id = explode('?',$location_href[1]);
+      $issu_id = explode('=',$issu_id[1]);
+      $issu_id = $issu_id[1];
+      $html .= '<div data-configid="'.$issu_id.'" style="width:100%; height:500px;" class="issuuembed"></div><script type="text/javascript" src="//e.issuu.com/embed.js" async="true"></script>';
+      $html .= "<a href='".drstk_home_url()."item/".$atts['id']."'>View Item Details</a>";
+    } else {
+      $html .= "<a href='".drstk_home_url()."item/".$atts['id']."'><img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
 
-    $html .= "/></a>";
+      if (isset($atts['align'])){
+        $html .= " data-align='".$atts['align']."'";
+      }
+
+      if (isset($atts['zoom']) && $atts['zoom'] == 'on'){
+        $html .= " data-zoom-image='".$master."' data-zoom='on'";
+        if (isset($atts['zoom_position'])){
+          $html .= " data-zoom-position='".$atts['zoom_position']."'";
+        }
+      }
+
+      $html .= "/></a>";
+    }
   }
 
   // start item meta data
