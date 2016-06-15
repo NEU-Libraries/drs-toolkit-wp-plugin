@@ -1,6 +1,7 @@
 <?php
 /* adds shortcode */
 add_shortcode( 'drstk_gallery', 'drstk_gallery' );
+add_shortcode('drstk_slider', 'drstk_gallery');
 function drstk_gallery( $atts ){
   global $errors;
   $cache = get_transient(md5('DRSTK'.serialize($atts)));

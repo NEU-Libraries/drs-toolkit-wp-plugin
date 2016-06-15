@@ -1,6 +1,7 @@
 <?php
 /* adds shortcode */
 add_shortcode( 'drstk_item', 'drstk_item' );
+add_shortcode('drstk_single', 'drstk_item');
 function drstk_item( $atts ){
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
 

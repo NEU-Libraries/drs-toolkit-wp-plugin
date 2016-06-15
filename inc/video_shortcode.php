@@ -1,6 +1,7 @@
 <?php
 /* adds shortcode */
 add_shortcode( 'drstk_collection_playlist', 'drstk_collection_playlist' );
+add_shortcode( 'drstk_media', 'drstk_collection_playlist' );
 function drstk_collection_playlist($atts){
   global $errors;
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
