@@ -17,26 +17,44 @@ drstk.Item = Backbone.Model.extend({
 	repo: ''
 });
 
+drstk.Setting = Backbone.Model.extend({
+	name: '',
+	value: [],
+	choices: {},
+	label: '',
+	helper: '',
+	tag: ''
+});
+
 drstk.Items = Backbone.Collection.extend({
 	model: drstk.Item
+});
+
+drstk.Settings = Backbone.Collection.extend({
+	model: drstk.Setting
 });
 
 drstk.Shortcode = Backbone.Model.extend({
 	defaults:{
 		type: '',
 		items: new drstk.Items(),
-		settings: {},
+		settings: new drstk.Settings(),
 	},
 	initialize: function() {
     this.set('items', new drstk.Items());
+		this.set('settings',  new drstk.Settings());
   },
 	parse: function(response){
 		response.items = new drstk.Items(response.items);
+		response.settings = new drstk.Settings(response.settings);
 		return response;
 	},
 	set: function(attributes, options) {
     if (attributes.items !== undefined && !(attributes.items instanceof drstk.Items)) {
         attributes.items = new drstk.Items(attributes.items);
+    }
+		if (attributes.settings !== undefined && !(attributes.settings instanceof drstk.Settings)) {
+        attributes.settings = new drstk.Settings(attributes.settings);
     }
     return Backbone.Model.prototype.set.call(this, attributes, options);
 	}
@@ -44,14 +62,44 @@ drstk.Shortcode = Backbone.Model.extend({
 
 drstk.ItemView = Backbone.View.extend({
 	tagName: 'li',
-	item_template: _.template("<label for='tile-<%=pid%>'><img src='<%=thumbnail%>' width='150' /><br/><input id='tile-<%=pid%>' type='checkbox' class='tile <%=repo%>' value='<%=pid%>'/><span class='title'><%=title%></span></label>"),
+	item_template: _.template("<label for='tile-<%=pid%>'><img src='<%=thumbnail%>' /><br/><input id='tile-<%=pid%>' type='checkbox' class='tile <%=repo%>' value='<%=pid%>'/><span class='title'><%=title%></span></label>"),
+	item_noimg_template: _.template("<label for='tile-<%=pid%>'><span class='dashicons dashicons-format-image'></span><br/><input id='tile-<%=pid%>' type='checkbox' class='tile <%=repo%>' value='<%=pid%>'/><span class='title'><%=title%></span></label>"),
 	initialize: function(){
 		this.render();
 	},
 	render: function(){
-		this.$el.html( this.item_template(this.model.toJSON()));
+		if (this.model.attributes.thumbnail === undefined){
+			this.$el.html( this.item_noimg_template(this.model.toJSON()));
+		} else {
+			this.$el.html( this.item_template(this.model.toJSON()));
+		}
 	}
 });
+
+drstk.SettingView = Backbone.View.extend({
+	checkbox_template: wp.template( "drstk-setting-checkbox" ),
+	select_template: wp.template( "drstk-setting-select" ),
+	url_template: wp.template( "drstk-setting-url" ),
+	text_template: wp.template( "drstk-setting-text" ),
+	number_template: wp.template( "drstk-setting-number" ),
+	tagName: 'tr',
+	initialize: function(){
+		this.render();
+	},
+	render: function(){
+		if (this.model.attributes.tag == 'select'){
+			this.$el.html( this.select_template(this.model.toJSON()));
+		} else if (this.model.attributes.tag == 'checkbox'){
+			this.$el.html( this.checkbox_template(this.model.toJSON()));
+		} else if (this.model.attributes.tag == 'url'){
+			this.$el.html( this.url_template(this.model.toJSON()));
+		} else if (this.model.attributes.tag == 'text'){
+			this.$el.html( this.text_template(this.model.toJSON()));
+		} else if (this.model.attributes.tag == 'number'){
+			this.$el.html( this.number_template(this.model.toJSON()));
+		}
+	},
+})
 
 /**
  * Primary Modal Application Class
@@ -70,6 +118,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			"click .nav-tab": "navigateShortcode",
 			"click .search-button": "search",
 			"change #selected .tile": "deSelectItem",
+			"change #settings input": "settingsChange",
+			"change #settings select": "settingsChange",
 		},
 
 		/**
@@ -87,6 +137,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		templates: {},
 
 		shortcode: null,
+		geo_count: 0,
+		time_count: 0,
 
 		search_q: '',
 		search_page: 1,
@@ -107,7 +159,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		initialize: function () {
 			"use strict";
 
-			_.bindAll( this, 'render', 'preserveFocus', 'closeModal', 'insertShortcode', 'navigate', 'showTab', 'getDRSitems', 'selectItem', 'paginate', 'navigateShortcode', 'search' );
+			_.bindAll( this, 'render', 'preserveFocus', 'closeModal', 'insertShortcode', 'navigate', 'showTab', 'getDRSitems', 'selectItem', 'paginate', 'navigateShortcode', 'search', 'setDefaultSettings' );
 			this.initialize_templates();
 			this.render();
 			this.shortcode = new drstk.Shortcode({});
@@ -185,10 +237,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			}
 		},
 
-		/**
-		 * Closes the modal and cleans up after the instance.
-		 * @param e {object} A jQuery-normalized event object.
-		 */
+		/* close the modal */
 		closeModal: function ( e ) {
 			"use strict";
 
@@ -200,43 +249,91 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			drstk.backbone_modal.__instance = undefined;
 		},
 
-		/**
-		 * Responds to the btn-ok.click event
-		 * @param e {object} A jQuery-normalized event object.
-		 */
+		/* inserts shortcode and closes modal */
 		insertShortcode: function ( e ) {
-			var drs_items = this.shortcode.items.where({ repo: 'drs' });
-			drs_ids = []
-			jQuery.each(drs_items, function(i, item){
-				drs_ids.push(item.attributes.pid);
-			});
-			drs_ids.join(",");
-			var dpla_items = this.shortcode.items.where({ repo: 'dpla' });
-			dpla_ids = []
-			jQuery.each(dpla_items, function(i, item){
-				dpla_ids.push(item.attributes.pid);
-			});
-			dpla_ids.join(",");
-			shortcode = '[drstk_'+this.tabs[this.current_tab]+' id="'+drs_ids+'" dpla_id="'+dpla_ids+'"]';
-			window.wp.media.editor.insert(shortcode);
-			this.closeModal( e );
+			var items = this.shortcode.items;
+			if (items != undefined){
+				ids = []
+				jQuery.each(items.models, function(i, item){
+					ids.push(item.attributes.pid);
+				});
+				ids.join(",");
+				shortcode = '[drstk_'+this.tabs[this.current_tab]+' id="'+ids+'"';
+				_.each(this.shortcode.get('settings').models, function(setting, i){
+					vals = setting.get('value').join(",");
+					shortcode += ' '+setting.get('name')+'="'+vals+'"';
+				});
+				shortcode += ']';
+				window.wp.media.editor.insert(shortcode);
+				this.closeModal( e );
+			} else {
+				alert("Please select items before inserting a shortcode");
+			}
 		},
 
-		/**
-		 * Ensures that events do nothing.
-		 * @param e {object} A jQuery-normalized event object.
-		 */
+		setDefaultSettings: function(){
+			if (this.shortcode.get('type') == 'tile'){
+				settings = this.shortcode.get('settings');
+				settings.add({
+					'name': 'tile-type',
+					'value':['pinterest-hover'],
+					'choices':{'pinterest-below':"Pinterest style with caption below", 'pinterest-hover':"Pinterest style with caption on hover", 'even-row':"Even rows with caption on hover", 'square':"Even Squares with caption on hover"},
+					'label': 'Layout Type',
+					'tag': 'select'
+				});
+				settings.add({
+					'name': 'text-align',
+					'value':['left'],
+					'choices':{'center':"Center", 'left':"Left", 'right':"Right"},
+					'label':'Caption Alignment',
+					'tag':'select'
+				});
+				settings.add({
+					'name': 'cell-height',
+					'value':[200],
+					'label':'Cell Height (auto for Pinterest style)',
+					'tag':'number'
+				});
+				settings.add({
+					'name':'cell-width',
+					'value':[200],
+					'label':'Cell Width',
+					'tag':'number',
+					'helper':'Make the height and width the same for squares'
+				});
+				settings.add({
+					'name':'image-size',
+					'value':[4],
+					'label':'Image Size',
+					'tag':'select',
+					'choices':{1:'Largest side is 85px', 2:'Largest side is 170px', 3:'Largest side is 340px', 4:'Largest side is 500px', 5:'Largest side is 1000px'}
+				});
+				settings.add({
+					'name':'metadata',
+					'label':'Metadata for Captions',
+					'tag':'checkbox',
+					'value':['full_title_ssi','creator_tesim'],
+					'choices':{'full_title_ssi':'Title','creator_tesim':'Creator,Contributor','date_ssi':'Date Created','abstract_tesim':'Abstract/Description'},
+				});
+			} else if (){
+
+			}
+			this.shortcode.set('settings', settings);
+		},
+
+		/* navigation between shortcode types */
 		navigate: function ( e ) {
 			"use strict";
 			e.preventDefault();
 			this.search_params.page = 1;
-			this.showTab(jQuery(e.currentTarget).attr("href"));
+			this.geo_count = 0;
+			this.time_count = 0;
 			jQuery(".navigation-bar a").removeClass("active");
-			jQuery(e.currentTarget).addClass("active");
+			this.showTab(jQuery(e.currentTarget).attr("href"));
 		},
 
+		/* navigate tabs within a chosen shortcode type */
 		navigateShortcode: function( e ){
-			"use strict";
 			var path = jQuery(e.currentTarget).attr("href");
 			jQuery(".nav-tab").removeClass("nav-tab-active");
 			jQuery(e.currentTarget).addClass("nav-tab-active");
@@ -261,7 +358,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 							model.destroy();
 						});
 						jQuery.each(event.target.children, function(i, item){
-							console.log(item);
 							pid = jQuery(item).find("input").val();
 							title = jQuery(item).find(".title").text();
 							thumbnail = jQuery(item).find("img").attr("src");
@@ -292,44 +388,39 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 
 		showTab: function ( id ){
 			jQuery(".backbone_modal-main article").html("");
-			var type = ""
 			var title = ""
 			switch(id) {
 				case "#one":
 					this.current_tab = 1
-					type = this.tabs[1]
 					title = "Single Item"
 					break;
 				case "#two":
 					this.current_tab = 2
-					type = this.tabs[2]
 					title = "Tile Gallery"
 					break;
 				case "#three":
 					this.current_tab = 3
-					type = this.tabs[3]
 					title = "Gallery Slider"
 					break;
 				case "#four":
 					this.current_tab = 4
-					type = this.tabs[4]
 					title = "Media Playlist"
 					break;
 				case "#five":
 					this.current_tab = 5
-					type = this.tabs[5]
 					title = "Map"
 					break;
 				case "#six":
 					this.current_tab = 6
-					type = this.tabs[6]
 					title = "Timeline"
 					break;
 			}
-			jQuery(".backbone_modal-main article").append( this.templates.tabContent( {title: title, type: type} ) )
+			jQuery(".backbone_modal-main article").append( this.templates.tabContent( {title: title, type: this.tabs[this.current_tab]} ) );
+			jQuery(".navigation-bar a[href="+id+"]").addClass("active");
 			jQuery("#drs").show();
 			this.getDRSitems();
-			this.shortcode.set({"type": type});
+			this.shortcode.set({"type": this.tabs[this.current_tab]});
+			this.setDefaultSettings();
 		},
 
 		getDRSitems: function( ){
@@ -342,15 +433,20 @@ drstk.backbone_modal.Application = Backbone.View.extend(
           params: this.search_params,
       }, function(data) {
          var data = jQuery.parseJSON(data);
-         if (data.response.response.numFound > 0){
-           jQuery("#drs #sortable-"+tab_name+"-list").children("li").remove();
-           var media_count = 0;
+				 jQuery("#drs #sortable-"+tab_name+"-list").children("li").remove();
+				 jQuery(".drs-pagination").html("");
+				 if (jQuery.type(data) === "string"){
+					 jQuery(".drs-items").html("<div class='notice notice-warning'><p>No results were retrieved for your query. Please try a different query.</p></div>");
+				 } else if (data.response.response.numFound > 0){
            jQuery.each(data.response.response.docs, function(id, item){
+						 if (id === 19) {// this is the last one
+							 last = true;
+						 } else {last = false;}
              if (item.active_fedora_model_ssi == 'CoreFile'){
-               if (this.current_tab == 5){ //Maps
-                 self.get_item_geographic_or_date_handler(id, tab_name, item, true, false, data, media_count);
-               } else if (this.current_tab == 6){ //Timeline
-                 self.get_item_geographic_or_date_handler(id, tab_name, item, false, true, data, media_count);
+               if (self.current_tab == 5){ //Maps
+                 self.get_item_geographic_or_date_handler(item, true, false, data, last);
+               } else if (self.current_tab == 6){ //Timeline
+                 self.get_item_geographic_or_date_handler(item, false, true, data, last);
                } else { //Everything else
 								this_item = new drstk.Item;
 								thumb = "https://repository.library.northeastern.edu"+item.thumbnail_list_tesim[0];
@@ -364,15 +460,17 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 							jQuery(".drs-items").html("");
              }
            });
-           self.updateDRSPagination(data, media_count);
+           self.updateDRSPagination(data);
          } else {
-           jQuery(".drs-items").html("No results were retrieved for your query. Please try a different query.");
+           jQuery(".drs-items").html("<div class='notice notice-warning'><p>No results were retrieved for your query. Please try a different query.</p></div>");
          }
        });
 		},
 
-		get_item_geographic_or_date_handler: function(id, tab_name, item, mapsBool, timelineBool, collection_data, media_count) {
+		get_item_geographic_or_date_handler: function(item, mapsBool, timelineBool, collection_data, last) {
+			var tab_name = this.tabs[this.current_tab]
 			var key_date = {};
+			var self = this;
 			//AJAX call will be passed to internal WP AJAX
 			jQuery.ajax({
 				type: "POST",
@@ -390,6 +488,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						this_item.set("pid", item.id).set("thumbnail", thumb).set("repo", "drs").set("title", item.full_title_ssi);
 						view = new drstk.ItemView({model:this_item});
 						jQuery("#drs #sortable-"+tab_name+"-list").append(view.el);
+						self.geo_count = self.geo_count + 1;
 					} else if (data && data.key_date && timelineBool){
 						this_item = new drstk.Item;
 						thumb = "https://repository.library.northeastern.edu"+item.thumbnail_list_tesim[0];
@@ -397,6 +496,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						view = new drstk.ItemView({model:this_item});
 						jQuery("#drs #sortable-"+tab_name+"-list").append(view.el);
 						jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type .title").append("<p>Date: "+key_date[key_date]+"</p>");
+						self.time_count = self.time_count + 1;
 					}  else {
 						console.log("no timeline or geo data found");
 					}
@@ -405,8 +505,15 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					console.log(errorThrown);
 				},
 				complete: function(jqXHR, textStatus){
-					media_count = jQuery("#sortable-"+tab_name+"-list li").length;
-					self.updateDRSPagination(data, media_count);
+					if (mapsBool){media_count = self.geo_count}
+					if (timelineBool){media_count = self.time_count}
+					if ((media_count >= (collection_data.pagination.table.current_page * 20)) && (last === true)){
+						if (mapsBool){ self.geo_count = self.geo_count +1}
+						if (timelineBool){self.time_count = self.time_count+1}
+					}
+					if (last === true){
+						self.updateDRSPagination(collection_data);
+					}
 				}
 			});
 		},
@@ -442,7 +549,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				var remove = this.shortcode.items.where({ pid: pid })
 				this.shortcode.items.remove(remove);
 			}
-			console.log(this.shortcode.items);
 		},
 
 		deSelectItem: function( e ){
@@ -455,17 +561,20 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			}
 		},
 
-		updateDRSPagination: function (data, media_count){
-	    console.log(media_count);
-	    if (media_count > 0){
+		updateDRSPagination: function (data){
+			media_count = 0;
+			if (this.current_tab == 5){media_count = this.geo_count}
+			if (this.current_tab == 6){media_count = this.time_count}
+			console.log("geo or time count is " + media_count);
+			if ( media_count > 0){
 	      data.pagination.table.num_pages = Math.ceil(media_count / 20);
 	    }
-	    if (data.pagination.table.num_pages > 1){
+			if (data.pagination.table.num_pages > 1){
 	       var pagination = "";
 	       if (data.pagination.table.current_page > 1){
-	         pagination += "<a href='#' class='prev-page'> << </a>";
+	         pagination += "<a href='#' class='prev-page'>&lt;&lt;</a>";
 	       } else {
-	         pagination += "<a href='#' class='prev-page disabled'> << </a>";
+	         pagination += "<a href='#' class='prev-page disabled'>&lt;&lt;</a>";
 	       }
 	       for (var i = 1; i <= data.pagination.table.num_pages; i++) {
 	         if (data.pagination.table.current_page == i){
@@ -476,9 +585,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 	           pagination += "<a href='#' class='"+pagination_class+"'>" + i + "</a>";
 	       }
 	       if (data.pagination.table.current_page == data.pagination.table.num_pages){
-	         pagination += "<a href='#' class='next-page' data-val='"+data.pagination.table.num_pages+"'>>></a>";
+	         pagination += "<a href='#' class='next-page' data-val='"+data.pagination.table.num_pages+"'>&gt;&gt;</a>";
 	       } else {
-	         pagination += "<a href='#' class='next-page disabled' data-val='"+data.pagination.table.num_pages+"'>>></a>";
+	         pagination += "<a href='#' class='next-page disabled' data-val='"+data.pagination.table.num_pages+"'>&gt;&gt;</a>";
 	       }
 				 jQuery(".drs-pagination").html("<span class='tablenav'><span class='tablenav-pages'>" + pagination + "</span></span>");
 	    } else {
@@ -500,6 +609,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					val = 0;
 				}
       }
+			console.log("going to page "+ val);
       if (jQuery.isNumeric(val) && val != 0){
         this.search_params.page = val;
 				if (type == 'drs'){
@@ -519,9 +629,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
           params: this.search_params,
       }, function(data) {
 				  var data = jQuery.parseJSON(data);
+					jQuery("#dpla #sortable-"+tab_name+"-list").children("li").remove();
          if (data.count > 0){
 					 jQuery(".dpla-items").html("");
-           jQuery("#dpla #sortable-"+tab_name+"-list").children("li").remove();
            jQuery.each(data.docs, function(id, item){
 						 this_item = new drstk.Item;
 						 this_item.set("pid", item.id).set("thumbnail", item.object).set("repo", "dpla").set("title", item.sourceResource.title);
@@ -535,7 +645,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						 self.updateDPLAPagination(data);
 					 }
          } else {
-           jQuery(".dpla-items").html("No results were retrieved for your query. Please try a different query.");
+           jQuery(".dpla-items").html("<div class='notice notice-warning'><p>No results were retrieved for your query. Please try a different query.</p></div>");
+					 jQuery("#dpla-pagination").html("");
          }
        });
 		},
@@ -547,27 +658,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			console.log(current_page);
 			if (num_pages > 1){
 	       var pagination = "";
-	    //    if (current_page > 1){
-	    //      pagination += "<a href='#' class='prev-page'> << </a>";
-	    //    } else {
-	    //      pagination += "<a href='#' class='prev-page disabled'> << </a>";
-	    //    }
-	    //    for (var i = 1; i <= num_pages; i++) {
-	    //      if (current_page == i){
-	    //        var pagination_class = 'current-page disabled';
-	    //      } else {
-	    //        var pagination_class = '';
-	    //      }
-	    //        pagination += "<a href='#' class='"+pagination_class+"'>" + i + "</a>";
-	    //    }
-	    //    if (current_page == num_pages){
-	    //      pagination += "<a href='#' class='next-page' data-val='"+num_pages+"'>>></a>";
-	    //    } else {
-	    //      pagination += "<a href='#' class='next-page disabled' data-val='"+num_pages+"'>>></a>";
-	    //    }
-			// 	 jQuery(".dpla-pagination").html("<span class='tablenav'><span class='tablenav-pages'>" + pagination + "</span></span>");
+				 //TODO - set up DPLA pagination
 	    } else {
-				jQuery(".dpla-pagination").html("");
+				jQuery("#dpla-pagination").html("");
 			}
 		},
 
@@ -594,7 +687,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		        });
 		        jQuery("#selected #sortable-"+tab_name+"-list").append(itemView.el);
 						if(self.shortcode.items.where({ pid: item.attributes.pid }).length > 0){
-							console.log(jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type input"));
 							jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
 						}
 	        });
@@ -604,7 +696,33 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		},
 
 		getSettings: function( ) {
+			jQuery("#settings").html("<table />");
+			_.each(this.shortcode.get('settings').models, function(setting, i) {
+				var settingView = new drstk.SettingView({
+						model:setting
+				});
+				jQuery("#settings table").append(settingView.el);
+				jQuery("#settings table tr:last-of-type").addClass(setting.get('name'));
+			});
+		},
 
+		settingsChange: function(e){
+			if (jQuery(e.currentTarget).attr("type") == "checkbox"){
+				name = jQuery(e.currentTarget).parents("tr").attr("class");
+				setting = this.shortcode.get('settings').where({name:name})[0];
+				var vals = []
+				jQuery(e.currentTarget).parents("td").find("input[type='checkbox']").each(function(){
+					if (jQuery(this).is(":checked")){
+						vals.push(jQuery(this).attr("name"));
+					}
+				});
+				setting.set('value', vals);
+			} else {
+				name = jQuery(e.currentTarget).attr("name");
+				setting = this.shortcode.get('settings').where({name:name})[0];
+				val = jQuery(e.currentTarget).val();
+				setting.set('value', [val]);
+			}
 		},
 
 	} );
