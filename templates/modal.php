@@ -88,7 +88,7 @@
 		</div>
 		<div class="pane" id="dpla">
 			<label for="search">Search for an item: </label><input type="text" name="search" id="search-{{data.type}}" /><button class="themebutton search-button">Search</button>
-			<div class="dpla-items">Loading...</div><ol id="sortable-{{data.type}}-list"></ol><div class="dpla-pagination"></div>
+			<div class="dpla-items">Loading...</div><ol id="sortable-{{data.type}}-list"></ol><div id="dpla-pagination"><span class="tablenav"></span></div>
 		</div>
 		<div class="pane" id="selected">
 			<div class="selected-items">Loading...</div><ol id="sortable-{{data.type}}-list"></ol><div class="selected-pagination"></div>
@@ -96,4 +96,66 @@
 		<div class="pane" id="settings">
 		</div>
 	</div>
+</script>
+<?php
+/* a template for select settings */
+?>
+<script type='text/html' id='tmpl-drstk-setting-select'>
+	<td>
+		<label for='{{data.name}}'>
+			{{data.label}}
+		</label>
+	</td>
+	<td>
+		<select name='{{data.name}}'>
+			<# _.each(data.choices, function(choice, key) { #>
+			    <option value='{{key}}' <# if (data.value.indexOf(key) > -1) { #> selected="selected" <# } #>>{{ choice }}</option>
+			<# }); #>
+		</select>
+	</td>
+	<# if (data.helper != undefined && data.helper != "") { #>
+		<p>{{data.helper}}</p>
+	<# } #>
+</script>
+
+<?php
+/* a template for checkbox settings */
+?>
+<script type='text/html' id='tmpl-drstk-setting-checkbox'>
+	<td><h5>{{data.label}}</h5></td>
+	<td>
+		<# _.each(data.choices, function(choice, key) { #>
+			<label><input type="checkbox" name="{{key}}" <# if (data.value.indexOf(key) > -1) { #> checked="checked" <# } #>/> {{choice}} </label><br/>
+		<# }); #>
+	</td>
+	<# if (data.helper != undefined && data.helper != "") { #>
+		<p>{{data.helper}}</p>
+	<# } #>
+</script>
+
+<?php
+/* a template for url settings */
+?>
+<script type='text/html' id='tmpl-drstk-setting-url'>
+
+</script>
+<?php
+/* a template for number settings */
+?>
+<script type='text/html' id='tmpl-drstk-setting-number'>
+	<td>
+		<label for="{{data.name}}">{{data.label}}</label>
+	</td>
+	<td>
+		<input type="number" value="{{data.value[0]}}" name="{{data.name}}"/>
+	</td>
+	<# if (data.helper != undefined && data.helper != "") { #>
+		<p>{{data.helper}}</p>
+	<# } #>
+</script>
+<?php
+/* a template for text settings */
+?>
+<script type='text/html' id='tmpl-drstk-setting-text'>
+
 </script>
