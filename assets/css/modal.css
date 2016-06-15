@@ -141,11 +141,35 @@
 }
 .backbone_modal-main .pane li {
 	display: inline-block;
+  vertical-align: top;
+  float: none;
 	padding: 10px;
 }
-.backbone_modal-main .pane .title{
-	width: 100px;
+.backbone_modal-main .pane .tile {
+	vertical-align: top;
+	margin: 4px;
+}
+.backbone_modal-main .pane li img {
 	display: inline-block;
+  vertical-align: top;
+  float: none;
+	width: 150px;
+	height:auto;
+}
+.backbone_modal-main .pane li .dashicons{
+	width:150px;
+	height:150px;
+	font-size: 150px;
+  color: #ddd;
+}
+.backbone_modal-main .pane .title{
+	width: 130px;
+	display: inline-block;
+}
+.backbone_modal-main .tablenav-pages a.active {
+  border-color: #5b9dd9;
+  color: #fff;
+  background: #00a0d2;
 }
 .backbone_modal-main footer {
 	position: absolute;
