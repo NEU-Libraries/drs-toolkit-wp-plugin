@@ -259,9 +259,14 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				});
 				ids.join(",");
 				shortcode = '[drstk_'+this.tabs[this.current_tab]+' id="'+ids+'"';
+				console.log(this.shortcode.get('settings').models);
 				_.each(this.shortcode.get('settings').models, function(setting, i){
-					vals = setting.get('value').join(",");
-					shortcode += ' '+setting.get('name')+'="'+vals+'"';
+					vals = setting.get('value');
+					console.log(vals);
+					if (vals.length > 0){
+						vals = vals.join(",");
+						shortcode += ' '+setting.get('name')+'="'+vals+'"';
+					}
 				});
 				shortcode += ']';
 				window.wp.media.editor.insert(shortcode);
@@ -272,10 +277,11 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		},
 
 		setDefaultSettings: function(){
-			if (this.shortcode.get('type') == 'tile'){
-				settings = this.shortcode.get('settings');
+			type = this.shortcode.get('type');
+			settings = this.shortcode.get('settings');
+			if (type == 'tile'){
 				settings.add({
-					'name': 'tile-type',
+					'name': 'tile-type',//previously called type
 					'value':['pinterest-hover'],
 					'choices':{'pinterest-below':"Pinterest style with caption below", 'pinterest-hover':"Pinterest style with caption on hover", 'even-row':"Even rows with caption on hover", 'square':"Even Squares with caption on hover"},
 					'label': 'Layout Type',
@@ -315,10 +321,85 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					'value':['full_title_ssi','creator_tesim'],
 					'choices':{'full_title_ssi':'Title','creator_tesim':'Creator,Contributor','date_ssi':'Date Created','abstract_tesim':'Abstract/Description'},
 				});
-			} else if (){
+				this.shortcode.set('settings', settings);
+			} else if (type == 'single'){
+				settings.add({
+					'name':'image-size',
+					'value':[4],
+					'label':'Image Size',
+					'tag':'select',
+					'choices':{1:'Largest side is 85px', 2:'Largest side is 170px', 3:'Largest side is 340px', 4:'Largest side is 500px', 5:'Largest side is 1000px'}
+				});
+				settings.add({
+					'name':'display-video',
+					'value':['true'],
+					'label':'Display Audio/Video',
+					'tag':'checkbox',
+					'choices':{0:'true'},
+				});
+				settings.add({
+					'name':'align',
+					'value':['center'],
+					'label':'Image Alignment',
+					'tag':'select',
+					'choices':{'center':'Center','left':'Left','right':'Right'}
+				});
+				settings.add({
+					'name': 'caption-align',
+					'value':['left'],
+					'choices':{'center':"Center", 'left':"Left", 'right':"Right"},
+					'label':'Caption Alignment',
+					'tag':'select'
+				});
+				settings.add({
+					'name':'caption-position',
+					'value':['below'],
+					'label':'Caption Position',
+					'choices':{'below':'Below','hover':'Over Image on Hover'},
+					'tag':'select'
+				});
+				settings.add({
+					'name':'zoom',
+					'value':['on'],
+					'label':'Enable Zoom',
+					'choices':{0:'on'},
+					'tag':'checkbox'
+				});
+				settings.add({
+					'name':'zoom-position',
+					'value':[1],
+					'label':'Zoom Position',
+					'helper':'Recommended and Default position:Top Right',
+					'choices':{1:'Top Right',2:'Middle Right',3:'Bottom Right',4:'Bottom Corner Right',5:'Under Right',6:'Under Middle',7:'Under Left',8:'Bottom Corner Left',9:'Bottom Left',10:'Middle Left',11:'Top Left',12:'Top Corner Left',13:'Above Left',14:'Above Middle',15:'Above Right',16:'Top Right Corner','inner':"Over image itself"},
+					'tag':'select'
+				});
+				this.shortcode.set('settings', settings);
+			} else if (type == 'slider'){
 
+			} else if (type == 'timeline') {
+
+			} else if (type == 'media') {
+				settings.add({
+					'name': 'height',
+					'value':["270"],
+					'label':'Height',
+					'helper':'(Enter in pixels or %, Default is 270)',
+					'tag':'text'
+				});
+				settings.add({
+					'name':'width',
+					'value':["100%"],
+					'label':'Width',
+					'tag':'text',
+					'helper':'(Enter in pixels or %, Default is 100%)'
+				});
+				//we historically have not provided interface for aspectratio, skin, and listbarwidth, TODO - add these
+				this.shortcode.set('settings', settings);
+			} else if (type == 'maps'){
+
+			} else {
+				//handle old types? tile -> plural, slider -> gallery, single -> item, media -> collection_playlist
 			}
-			this.shortcode.set('settings', settings);
 		},
 
 		/* navigation between shortcode types */
@@ -328,6 +409,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			this.search_params.page = 1;
 			this.geo_count = 0;
 			this.time_count = 0;
+			this.shortcode.set('settings',  new drstk.Settings()); //TODO - may need to change how this works when we are pulling values from an existing shortcode
 			jQuery(".navigation-bar a").removeClass("active");
 			this.showTab(jQuery(e.currentTarget).attr("href"));
 		},
@@ -393,6 +475,13 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				case "#one":
 					this.current_tab = 1
 					title = "Single Item"
+					//clear items if there are more than one at this point
+					if (this.shortcode.items != undefined && this.shortcode.items.length > 1){
+						var self = this;
+						_.each(_.clone(this.shortcode.items.models), function(item){
+							item.destroy();
+						});
+					}
 					break;
 				case "#two":
 					this.current_tab = 2
@@ -426,6 +515,10 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		getDRSitems: function( ){
 			if (this.current_tab == 4){ this.search_params.avfilter = true; } else { delete this.search_params.avfilter; }
 			var self = this;
+			if (self.search_params.page == 1){
+				self.geo_count = 0;
+				self.time_count = 0;
+			}
 			tab_name = this.tabs[this.current_tab]
       jQuery.post(drs_ajax_obj.ajax_url, {
          _ajax_nonce: drs_ajax_obj.drs_ajax_nonce,
@@ -544,6 +637,43 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						'thumbnail':thumbnail,
 						'repo':repo
 					})
+				}
+				if (this.shortcode.get('type') == 'single'){ //if type is single then get the metadata options for the settings
+					var self = this;
+					//single items can only have one items so we'll clear the rest out
+					item.parents("ol").find("input:checked").not(item).each(function(){
+						jQuery(this).prop( "checked", false );
+						pid = jQuery(this).val();
+						var remove = self.shortcode.items.where({ pid: pid });
+						self.shortcode.items.remove(remove);
+					});
+					jQuery.ajax({
+						url: item_admin_obj.ajax_url,
+            type: "POST",
+            data: {
+              action: "get_item_admin",
+              _ajax_nonce: item_admin_obj.item_admin_nonce,
+              pid: pid,
+		        }, complete: function(data){
+							var data = jQuery.parseJSON(data.responseJSON);
+							settings = self.shortcode.get('settings');
+							choices_array = Object.keys(data.mods);
+							choices = {}
+							jQuery.each(choices_array, function(i, choice){
+								choices[choice] = choice;
+							});
+							oldmeta = settings.where({name:'metadata'});
+							settings.remove(oldmeta);
+							settings.add({
+								'name':'metadata',
+								'label':'Metadata to Display',
+								'tag':'checkbox',
+								'value':[],
+								'choices':choices,
+							});
+							self.shortcode.set('settings', settings);
+						}
+					});
 				}
 			} else {
 				var remove = this.shortcode.items.where({ pid: pid })
@@ -708,8 +838,10 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 
 		settingsChange: function(e){
 			if (jQuery(e.currentTarget).attr("type") == "checkbox"){
+				console.log("CHECKBOX CHNAGE");
 				name = jQuery(e.currentTarget).parents("tr").attr("class");
 				setting = this.shortcode.get('settings').where({name:name})[0];
+				console.log(setting);
 				var vals = []
 				jQuery(e.currentTarget).parents("td").find("input[type='checkbox']").each(function(){
 					if (jQuery(this).is(":checked")){
