@@ -375,7 +375,90 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				});
 				this.shortcode.set('settings', settings);
 			} else if (type == 'slider'){
+				settings.add({
+					'name':'image-size',
+					'value':[4],
+					'label':'Image Size',
+					'tag':'select',
+					'choices':{1:'Largest side is 85px', 2:'Largest side is 170px', 3:'Largest side is 340px', 4:'Largest side is 500px', 5:'Largest side is 1000px'}
+				});
+				settings.add({
+					'name':'auto',
+					'value':['on'],
+					'label':'Auto rotate',
+					'choices':{0:'on'},
+					'tag':'checkbox'
+				});
+				settings.add({
+					'name':'nav',
+					'value':['on'],
+					'label':'Next/Prev Buttons',
+					'choices':{0:'on'},
+					'tag':'checkbox'
+				});
+				settings.add({
+					'name':'pager',
+					'value':['on'],
+					'label':'Dot pager',
+					'choices':{0:'on'},
+					'tag':'checkbox'
+				});
+				settings.add({
+					'name':'speed',
+					'value':[],
+					'label':'Rotation Speed',
+					'tag':'number',
+					'helper':'Speed is in milliseconds. 5000 milliseconds = 5 seconds'
+				});
+				settings.add({
+					'name': 'max-height',
+					'value':[],
+					'label':'Max Height',
+					'tag':'number'
+				});
+				settings.add({
+					'name':'max-width',
+					'value':[],
+					'label':'Max Width',
+					'tag':'number',
+				});
+				settings.add({
+					'name':'caption',
+					'value':['on'],
+					'label':'Enable captions',
+					'choices':{0:'on'},
+					'tag':'checkbox'
+				});
+				settings.add({
+					'name': 'caption-align',
+					'value':['center'],
+					'choices':{'center':"Center", 'left':"Left", 'right':"Right"},
+					'label':'Caption Alignment',
+					'tag':'select'
+				});
+				settings.add({
+					'name':'caption-position',
+					'value':['relative'],
+					'label':'Caption Position',
+					'choices':{'absolute':'Over Image','relative':'Below Image'},
+					'tag':'select'
+				});
+				settings.add({
+					'name':'caption-width',
+					'value':['below'],
+					'label':'Caption Width',
+					'choices':{'100%':'Width of gallery','image':'Width of image'},
+					'tag':'select'
+				});
+				settings.add({
+					'name':'metadata',
+					'label':'Metadata for Captions',
+					'tag':'checkbox',
+					'value':['full_title_ssi','creator_tesim'],
+					'choices':{'full_title_ssi':'Title','creator_tesim':'Creator,Contributor','date_ssi':'Date Created','abstract_tesim':'Abstract/Description'},
+				});
 
+				this.shortcode.set('settings', settings);
 			} else if (type == 'timeline') {
 
 			} else if (type == 'media') {
@@ -515,7 +598,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		getDRSitems: function( ){
 			if (this.current_tab == 4){ this.search_params.avfilter = true; } else { delete this.search_params.avfilter; }
 			var self = this;
-			if (self.search_params.page == 1){
+			if (self.search_params.page == 1){//reset time/geo counts when we're on the first page
 				self.geo_count = 0;
 				self.time_count = 0;
 			}
