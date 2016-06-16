@@ -14,7 +14,8 @@ drstk.Item = Backbone.Model.extend({
 	title: '',
 	pid: '',
 	thumbnail: '',
-	repo: ''
+	repo: '',
+	color: ''
 });
 
 drstk.Setting = Backbone.Model.extend({
@@ -120,6 +121,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			"change #selected .tile": "deSelectItem",
 			"change #settings input": "settingsChange",
 			"change #settings select": "settingsChange",
+			"change #selected select[name='color']": "changeColor",
 		},
 
 		/**
@@ -152,6 +154,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			5: 'map',
 			6: 'timeline'
 		},
+		colors: ["red", "green", "blue", "yellow", "orange"],
 
 		/**
 		 * Instantiates the Template object and triggers load.
@@ -253,24 +256,47 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		insertShortcode: function ( e ) {
 			var items = this.shortcode.items;
 			if (items != undefined){
-				ids = []
-				jQuery.each(items.models, function(i, item){
-					ids.push(item.attributes.pid);
-				});
-				ids.join(",");
-				shortcode = '[drstk_'+this.tabs[this.current_tab]+' id="'+ids+'"';
-				console.log(this.shortcode.get('settings').models);
-				_.each(this.shortcode.get('settings').models, function(setting, i){
-					vals = setting.get('value');
-					console.log(vals);
-					if (vals.length > 0){
-						vals = vals.join(",");
-						shortcode += ' '+setting.get('name')+'="'+vals+'"';
+				start_date = this.shortcode.get('settings').where({name:'start-date'})[0];
+				start_date = start_date.attributes.value[0];
+				end_date = this.shortcode.get('settings').where({name:'end-date'})[0];
+				end_date = end_date.attributes.value[0];
+
+				if ((this.current_tab == 6 && (start_date != "" || end_date != "") && this.validTime() == true) || this.current_tab != 6){
+					shortcode = '[drstk_'+this.tabs[this.current_tab];
+					ids = []
+					jQuery.each(items.models, function(i, item){
+						ids.push(item.attributes.pid);
+					});
+					ids.join(",");
+					shortcode += ' id="'+ids+'"';
+					if (this.current_tab == 5 || this.current_tab == 6){
+						var self = this;
+						_.each(this.colors, function(color){
+							arr = [];
+							items = self.shortcode.items.where({'color':color});
+							_.each(items, function(i){
+								arr.push(i.attributes.pid);
+							});
+							if (arr.length > 0){
+								shortcode += ' '+color+'_id="'+arr.join(",")+'"';
+							}
+						});
 					}
-				});
-				shortcode += ']';
-				window.wp.media.editor.insert(shortcode);
-				this.closeModal( e );
+					_.each(this.shortcode.get('settings').models, function(setting, i){
+						vals = setting.get('value');
+						if (vals.length > 0){
+							vals = vals.join(",");
+							shortcode += ' '+setting.get('name')+'="'+vals+'"';
+						}
+					});
+					shortcode += ']';
+					window.wp.media.editor.insert(shortcode);
+					this.closeModal( e );
+				} else {
+					titles = this.validTime();
+					titles = titles.join("\n");
+					alert("The following item(s) are outside the specified date range: \n"+titles);
+				}
 			} else {
 				alert("Please select items before inserting a shortcode");
 			}
@@ -460,7 +486,44 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 
 				this.shortcode.set('settings', settings);
 			} else if (type == 'timeline') {
-
+				settings.add({
+					'name':'start-date',
+					'value':[],
+					'label':'Start Date Boundary',
+					'tag':'number',
+					'helper':'year eg:1960'
+				});
+				settings.add({
+					'name':'end-date',
+					'value':[],
+					'label':'End Date Boundary',
+					'tag':'number',
+					'helper':'year eg:1990'
+				});
+				settings.add({
+					'name':'metadata',
+					'label':'Metadata',
+					'tag':'checkbox',
+					'value':['Creator,Contributor'],
+					'choices':{'Creator,Contributor':'Creator,Contributor','Abstract/Description':'Abstract/Description'},
+				});
+				settings.add({
+					'name':'increments',
+					'label':'Scale Increments',
+					'tag':'select',
+					'value':[5],
+					'choices':{.5:'Very Low',2:'Low',5:'Medium',8:'High',13:'Very High'},
+					'helper':'Specifies the granularity to represent items on the timeline'
+				});
+				_.each(this.colors, function(color){
+					settings.add({
+						'name':color+'_desc',
+						'label':color.charAt(0).toUpperCase()+color.slice(1)+" Description",
+						'tag':'text',
+						'value':''
+					});
+				});
+				this.shortcode.set('settings', settings);
 			} else if (type == 'media') {
 				settings.add({
 					'name': 'height',
@@ -480,6 +543,15 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				this.shortcode.set('settings', settings);
 			} else if (type == 'maps'){
 
+				_.each(this.colors, function(color){
+					settings.add({
+						'name':color+'_desc',
+						'label':color.charAt(0).toUpperCase()+color.slice(1)+" Description",
+						'tag':'text',
+						'value':''
+					});
+				});
+				this.shortcode.set('settings', settings);
 			} else {
 				//handle old types? tile -> plural, slider -> gallery, single -> item, media -> collection_playlist
 			}
@@ -650,13 +722,14 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			//AJAX call will be passed to internal WP AJAX
 			jQuery.ajax({
 				type: "POST",
-				url: ajaxurl,
+				url: item_admin_obj.ajax_url,
 				data: {
-					'action':'get_json_data_from_neu_item',
-					'item' : item.id,
+					'action':'get_item_admin',
+					'pid' : item.id,
 					'_ajax_nonce': item_admin_obj.item_admin_nonce,
 				},
 				success:function(data) {
+					data = jQuery.parseJSON(data);
 					key_date[key_date] = Object.keys(data.key_date)[0];
 					if ((data && data.geographic && data.geographic.length && mapsBool) || data && data.coordinates && data.coordinates.length && mapsBool)  {
 						this_item = new drstk.Item;
@@ -664,6 +737,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						this_item.set("pid", item.id).set("thumbnail", thumb).set("repo", "drs").set("title", item.full_title_ssi);
 						view = new drstk.ItemView({model:this_item});
 						jQuery("#drs #sortable-"+tab_name+"-list").append(view.el);
+						if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
+							jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
+						}
 						self.geo_count = self.geo_count + 1;
 					} else if (data && data.key_date && timelineBool){
 						this_item = new drstk.Item;
@@ -671,7 +747,10 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						this_item.set("pid", item.id).set("thumbnail", thumb).set("repo", "drs").set("title", item.full_title_ssi);
 						view = new drstk.ItemView({model:this_item});
 						jQuery("#drs #sortable-"+tab_name+"-list").append(view.el);
-						jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type .title").append("<p>Date: "+key_date[key_date]+"</p>");
+						if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
+							jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
+						}
+						jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: "+key_date[key_date]+"</p>");
 						self.time_count = self.time_count + 1;
 					}  else {
 						console.log("no timeline or geo data found");
@@ -899,6 +978,13 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		            model:item
 		        });
 		        jQuery("#selected #sortable-"+tab_name+"-list").append(itemView.el);
+						if (self.current_tab == 5 || self.current_tab == 6){
+							colors = "";
+							_.each(self.colors, function(color){
+								colors += "<option value='"+color+"'>"+color.charAt(0).toUpperCase()+color.slice(1)+"</option>";
+							});
+							jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type label").append('<br/>Color: <select name="color"><option value="">Choose one</option>'+colors+'</select>');
+						}
 						if(self.shortcode.items.where({ pid: item.attributes.pid }).length > 0){
 							jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
 						}
@@ -921,10 +1007,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 
 		settingsChange: function(e){
 			if (jQuery(e.currentTarget).attr("type") == "checkbox"){
-				console.log("CHECKBOX CHNAGE");
 				name = jQuery(e.currentTarget).parents("tr").attr("class");
 				setting = this.shortcode.get('settings').where({name:name})[0];
-				console.log(setting);
 				var vals = []
 				jQuery(e.currentTarget).parents("td").find("input[type='checkbox']").each(function(){
 					if (jQuery(this).is(":checked")){
@@ -939,6 +1023,51 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				setting.set('value', [val]);
 			}
 		},
+
+		validTime: function(){
+			return_arr = [];
+			key_date_list = [];
+			_.each(_.clone(this.shortcode.items.models), function(item){
+				jQuery.ajax({
+					url: item_admin_obj.ajax_url,
+					type: "POST",
+					async: false,
+					data: {
+						action: "get_item_admin",
+						_ajax_nonce: item_admin_obj.item_admin_nonce,
+						pid: item.get('pid'),
+					}, success: function(data){
+						data = jQuery.parseJSON(data);
+						var key_date_year = Object.keys(data.key_date)[0].split("/")[0];
+						key_date_list.push({year:key_date_year, name:data.mods.Title[0]});
+					}
+				});
+			});
+			var self = this;
+			key_date_list.forEach(function(each_key){
+				start_date = self.shortcode.get('settings').where({name:'start-date'})[0];
+				start_date = start_date.attributes.value[0];
+				end_date = self.shortcode.get('settings').where({name:'end-date'})[0];
+				end_date = end_date.attributes.value[0];
+				if(each_key.year < start_date || each_key.year > end_date){
+          return_arr.push(each_key.name);
+				}
+			});
+			if (return_arr.length > 0){
+				return return_arr;
+			} else {
+				return true;
+			}
+		},
+
+		changeColor: function(e){
+			color = jQuery(e.currentTarget).val();
+			if (color != ""){
+				pid = jQuery(e.currentTarget).siblings(".tile").val();
+				item = this.shortcode.items.where({pid: pid});
+				item[0].set({'color':color});
+			}
+		}
 
 	} );
 
