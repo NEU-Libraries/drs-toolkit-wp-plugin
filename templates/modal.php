@@ -124,9 +124,13 @@
 <script type='text/html' id='tmpl-drstk-setting-checkbox'>
 	<td><h5>{{data.label}}</h5></td>
 	<td>
-		<# _.each(data.choices, function(choice, key) { #>
-			<label><input type="checkbox" name="{{key}}" <# if (data.value.indexOf(key) > -1) { #> checked="checked" <# } #>/> {{choice}} </label><br/>
-		<# }); #>
+		<# if (_.size(data.choices) == 1) { #>
+			<label><input type="checkbox" name="{{data.choices[0]}}" <# if (data.value == data.choices[0]) { #> checked="checked" <# } #>/> </label><br/>
+		<# } else { #>
+			<# _.each(data.choices, function(choice, key) { #>
+				<label><input type="checkbox" name="{{key}}" <# if (data.value.indexOf(key) > -1) { #> checked="checked" <# } #>/> {{choice}} </label><br/>
+			<# }); #>
+		<# } #>
 	</td>
 	<# if (data.helper != undefined && data.helper != "") { #>
 		<p>{{data.helper}}</p>
@@ -157,5 +161,13 @@
 /* a template for text settings */
 ?>
 <script type='text/html' id='tmpl-drstk-setting-text'>
-
+	<td>
+		<label for="{{data.name}}">{{data.label}}</label>
+	</td>
+	<td>
+		<input type="text" value="{{data.value[0]}}" name="{{data.name}}"/>
+	</td>
+	<# if (data.helper != undefined && data.helper != "") { #>
+		<p>{{data.helper}}</p>
+	<# } #>
 </script>
