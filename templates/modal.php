@@ -113,9 +113,7 @@
 			<# }); #>
 		</select>
 	</td>
-	<# if (data.helper != undefined && data.helper != "") { #>
-		<p>{{data.helper}}</p>
-	<# } #>
+	<td>{{data.helper}}</td>
 </script>
 
 <?php
@@ -132,9 +130,7 @@
 			<# }); #>
 		<# } #>
 	</td>
-	<# if (data.helper != undefined && data.helper != "") { #>
-		<p>{{data.helper}}</p>
-	<# } #>
+	<td>{{data.helper}}</td>
 </script>
 
 <?php
@@ -153,9 +149,7 @@
 	<td>
 		<input type="number" value="{{data.value[0]}}" name="{{data.name}}"/>
 	</td>
-	<# if (data.helper != undefined && data.helper != "") { #>
-		<p>{{data.helper}}</p>
-	<# } #>
+	<td>{{data.helper}}</td>
 </script>
 <?php
 /* a template for text settings */
@@ -167,7 +161,5 @@
 	<td>
 		<input type="text" value="{{data.value[0]}}" name="{{data.name}}"/>
 	</td>
-	<# if (data.helper != undefined && data.helper != "") { #>
-		<p>{{data.helper}}</p>
-	<# } #>
+	<td>{{data.helper}}</td>
 </script>
