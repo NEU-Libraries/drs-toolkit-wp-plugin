@@ -542,7 +542,20 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				//we historically have not provided interface for aspectratio, skin, and listbarwidth, TODO - add these
 				this.shortcode.set('settings', settings);
 			} else if (type == 'maps'){
-
+				settings.add({
+					'name':'story',
+					'value':['yes'],
+					'label':'Story',
+					'tag':'checkbox',
+					'choices':{0:'yes'},
+				});
+				settings.add({
+					'name':'metadata',
+					'label':'Metadata',
+					'tag':'checkbox',
+					'value':['Creator,Contributor'],
+					'choices':{'Creator,Contributor':'Creator,Contributor','Date Created':'Date Created','Abstract/Description':'Abstract/Description'},
+				});
 				_.each(this.colors, function(color){
 					settings.add({
 						'name':color+'_desc',
