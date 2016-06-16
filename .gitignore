@@ -11,6 +11,7 @@ reports/*
 reports/lcov/*
 reports/html/*
 .coveralls.yml
+.coveralls.yml.php
 tests/vendor/*
 vendor/*
 selenium.log
