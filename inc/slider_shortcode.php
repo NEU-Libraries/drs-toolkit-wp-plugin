@@ -150,7 +150,7 @@ function drstk_gallery( $atts ){
 
 function drstk_gallery_shortcode_scripts() {
 	global $post, $wp_query, $DRS_PLUGIN_URL;
-	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_gallery') && !isset($wp_query->query_vars['drstk_template_type']) ) {
+	if( is_a( $post, 'WP_Post' ) && (has_shortcode( $post->post_content, 'drstk_gallery') || has_shortcode( $post->post_content, 'drstk_slider')) && !isset($wp_query->query_vars['drstk_template_type']) ) {
     wp_register_script( 'drstk_gallery',
         $DRS_PLUGIN_URL . '/assets/js/gallery.js',
         array( 'jquery' ));
