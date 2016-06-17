@@ -207,7 +207,7 @@ function addPopupsToItems(items, map, colorGroups, home_url) {
             shadowAnchor: [13, 41]
         });
 
-        if (colorGroups.red.includes(item.pid)) {
+        if (colorGroups.red && colorGroups.red.includes(item.pid)) {
             icon = L.icon({
                 iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-red-icon.png',
                 iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-red-icon-2x.png',
@@ -221,7 +221,7 @@ function addPopupsToItems(items, map, colorGroups, home_url) {
             });
         }
 
-        if (colorGroups.blue.includes(item.pid)) {
+        if (colorGroups.blue && colorGroups.blue.includes(item.pid)) {
             icon = L.icon({
                 iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon.png',
                 iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon-2x.png',
@@ -235,7 +235,7 @@ function addPopupsToItems(items, map, colorGroups, home_url) {
             });
         }
 
-        if (colorGroups.green.includes(item.pid)) {
+        if (colorGroups.green && colorGroups.green.includes(item.pid)) {
             icon = L.icon({
                 iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-green-icon.png',
                 iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-green-icon-2x.png',
@@ -249,7 +249,7 @@ function addPopupsToItems(items, map, colorGroups, home_url) {
             });
         }
 
-        if (colorGroups.yellow.includes(item.pid)) {
+        if (colorGroups.yellow && colorGroups.yellow.includes(item.pid)) {
             icon = L.icon({
                 iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-yellow-icon.png',
                 iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-yellow-icon-2x.png',
@@ -263,7 +263,7 @@ function addPopupsToItems(items, map, colorGroups, home_url) {
             });
         }
 
-        if (colorGroups.orange.includes(item.pid)) {
+        if (colorGroups.orange && colorGroups.orange.includes(item.pid)) {
             icon = L.icon({
                 iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-orange-icon.png',
                 iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-orange-icon-2x.png',
