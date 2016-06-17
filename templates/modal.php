@@ -79,6 +79,7 @@
 			<a class="nav-tab nav-tab-active" href="#drs">DRS Items</a>
 			<a class="nav-tab" href="#dpla">DPLA Items</a>
 			<a class="nav-tab" href="#selected">Selected Items</a>
+			<a class="nav-tab" href="#local">Local Items</a>
 			<a class="nav-tab" href="#settings">Settings</a>
 		</h2>
 		<br/>
@@ -89,6 +90,8 @@
 		<div class="pane" id="dpla">
 			<label for="search">Search for an item: </label><input type="text" name="search" id="search-{{data.type}}" /><button class="themebutton search-button">Search</button>
 			<div class="dpla-items">Loading...</div><ol id="sortable-{{data.type}}-list"></ol><div id="dpla-pagination"><span class="tablenav"></span></div>
+		</div>
+		<div class="pane" id="local">
 		</div>
 		<div class="pane" id="selected">
 			<div class="selected-items">Loading...</div><ol id="sortable-{{data.type}}-list"></ol><div class="selected-pagination"></div>
