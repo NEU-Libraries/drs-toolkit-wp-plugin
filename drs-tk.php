@@ -702,3 +702,18 @@ function drstk_image_attachment_fields_to_save($post, $attachment) {
     return $post;
 }
 add_filter("attachment_fields_to_save", "drstk_image_attachment_fields_to_save", 10, 2);
+
+/*helper method for getting repo type from pid valiues*/
+function drstk_get_repo_from_pid($pid){
+  $arr = explode(":", $pid);
+  if ($arr[0] == "neu"){
+    $repo = "drs";
+  } else if ($arr[0] == "wp"){
+    $repo = "wp";
+  } else if ($arr[0] == "dpla"){
+    $repo == "dpla";
+  } else {
+    $repo = NULL;
+  }
+  return $repo;
+}
