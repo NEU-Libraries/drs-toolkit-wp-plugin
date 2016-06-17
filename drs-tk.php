@@ -205,6 +205,16 @@ function drstk_get_errors(){
   return $errors;
 }
 
+function drstk_get_map_api_key(){
+  $api_key = get_option('leaflet_api_key');
+  return $api_key;
+}
+
+function drstk_get_map_project_key(){
+  $project_key = get_option('leaflet_project_key');
+  return $project_key;
+}
+
 /*callback functions for display fields on settings page*/
 function drstk_collection_callback(){
   $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'https://repository.library.northeastern.edu/collections/neu:1';

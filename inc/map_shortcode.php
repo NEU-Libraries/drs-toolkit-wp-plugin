@@ -9,20 +9,20 @@ function drstk_map( $atts ){
     return $cache;
   }
   $items = array_map('trim', explode(',', $atts['id']));
-  $map_api_key = $atts['map_api_key'];
-  $map_project_key = $atts['map_project_key'];
-  $story = $atts['story'];
+  $map_api_key = drstk_get_map_api_key();
+  $map_project_key = drstk_get_map_project_key();
+  $story = isset($atts['story']) ? $atts['story'] : "no";
   $map_html = "";
-  if (!isset($atts['red'])){ $atts['red'] = $atts['red_id']; }
-  if (!isset($atts['red_legend_desc'])){ $atts['red_legend_desc'] = $atts['red_desc']; }
-  if (!isset($atts['green'])){ $atts['green'] = $atts['green_id']; }
-  if (!isset($atts['green_legend_desc'])){ $atts['green_legend_desc'] = $atts['green_desc']; }
-  if (!isset($atts['blue'])){ $atts['blue'] = $atts['blue_id']; }
-  if (!isset($atts['blue_legend_desc'])){ $atts['blue_legend_desc'] = $atts['blue_desc']; }
-  if (!isset($atts['yellow'])){ $atts['yellow'] = $atts['yellow_id']; }
-  if (!isset($atts['yellow_legend_desc'])){ $atts['yellow_legend_desc'] = $atts['yellow_desc']; }
-  if (!isset($atts['orange'])){ $atts['orange'] = $atts['orange_id']; }
-  if (!isset($atts['orange_legend_desc'])){ $atts['orange_legend_desc'] = $atts['orange_desc']; }
+  if (!isset($atts['red']) && isset($atts['red_id'])){ $atts['red'] = $atts['red_id']; }
+  if (!isset($atts['red_legend_desc']) && isset($atts['red_desc'])){ $atts['red_legend_desc'] = $atts['red_desc']; }
+  if (!isset($atts['green']) && isset($atts['green_id'])){ $atts['green'] = $atts['green_id']; }
+  if (!isset($atts['green_legend_desc']) && isset($atts['green_desc'])){ $atts['green_legend_desc'] = $atts['green_desc']; }
+  if (!isset($atts['blue']) && isset($atts['blue_id'])){ $atts['blue'] = $atts['blue_id']; }
+  if (!isset($atts['blue_legend_desc']) && isset($atts['blue_desc'])){ $atts['blue_legend_desc'] = $atts['blue_desc']; }
+  if (!isset($atts['yellow']) && isset($atts['yellow_id'])){ $atts['yellow'] = $atts['yellow_id']; }
+  if (!isset($atts['yellow_legend_desc']) && isset($atts['yellow_desc'])){ $atts['yellow_legend_desc'] = $atts['yellow_desc']; }
+  if (!isset($atts['orange']) && isset($atts['orange_id'])){ $atts['orange'] = $atts['orange_id']; }
+  if (!isset($atts['orange_legend_desc']) && isset($atts['orange_desc'])){ $atts['orange_legend_desc'] = $atts['orange_desc']; }
 
   $shortcode = "<div id='map' data-story='".$story."' data-map_api_key='".$map_api_key."' data-map_project_key='".$map_project_key."'";
 
