@@ -14,19 +14,52 @@ function drstk_gallery( $atts ){
     $img_html = '';
     $height = $width = 0;
     $i = 0;
+    if (isset($atts['image-size'])){
+      $num = $atts['image-size']-1;
+    } else {
+      $num = 4;
+    }
    foreach($images as $id){
+     $repo = drstk_get_repo_from_pid($id);
+     if ($repo != "drs"){$pid = explode(":",$id)[1];} else {$pid = $id;}
+     if ($repo == "drs"){
        $url = "https://repository.library.northeastern.edu/api/v1/files/" . $id . "?solr_only=true";
        $data = get_response($url);
        $data = json_decode($data);
        $data = $data->_source;
+       $thumbnail = "http://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
+     }
+     if ($repo == "wp"){
+       $post = get_post($pid);
+       $data = new StdClass;
+       $meta = wp_get_attachment_metadata($pid); //get sizes
+       $thumb_base = wp_get_attachment_thumb_url($pid);
+       $thumb_base = explode("/",$thumb_base);
+       $arr = array_pop($thumb_base);
+       $thumb_base = implode("/", $thumb_base);
+       if ($num == 1){ $thumbnail = $thumb_base."/".$meta['sizes']['thumbnail']['file'];}
+       if ($num == 2){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
+       if ($num == 3){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
+       if ($num == 4){
+        if (isset($meta['sizes']['large'])){
+          $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
+        } else {
+          $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+        }
+       }
+       if ($num == 5){
+        if (isset($meta['sizes']['large'])){
+          $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
+        } else {
+          $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+        }
+       }
+       $master = $post->guid;
+       $data->full_title_ssi = $post->post_title;
+       $data->abstract_tesim = array($post->post_excerpt);
+     }
        if (!isset($data->error)){
-        $pid = $data->id;
-         if (isset($atts['image-size'])){
-           $num = $atts['image-size']-1;
-         } else {
-           $num = 4;
-         }
-         $thumbnail = "http://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
+        $pid = $id;
          $this_height = getimagesize($thumbnail);
          $this_height = $this_height[1];
          if ($this_height > $height){

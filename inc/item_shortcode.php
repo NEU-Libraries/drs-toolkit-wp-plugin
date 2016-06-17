@@ -41,8 +41,20 @@ function drstk_item( $atts ){
     if ($num == 1){ $thumbnail = $thumb_base."/".$meta['sizes']['thumbnail']['file'];}
     if ($num == 2){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
     if ($num == 3){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
-    if ($num == 4){ $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];}
-    if ($num == 5){ $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];}
+    if ($num == 4){
+     if (isset($meta['sizes']['large'])){
+       $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
+     } else {
+       $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+     }
+    }
+    if ($num == 5){
+     if (isset($meta['sizes']['large'])){
+       $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
+     } else {
+       $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+     }
+    }
     $master = $post->guid;
     $data->mods = new StdClass;
     $data->mods->title = array($post->post_title);
