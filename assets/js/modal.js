@@ -257,11 +257,11 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			var items = this.shortcode.items;
 			if (items != undefined){
 				start_date = this.shortcode.get('settings').where({name:'start-date'})[0];
-				start_date = start_date.attributes.value[0];
+				if (start_date != undefined) {start_date = start_date.attributes.value[0];}
 				end_date = this.shortcode.get('settings').where({name:'end-date'})[0];
-				end_date = end_date.attributes.value[0];
+				if (end_date != undefined) {end_date = end_date.attributes.value[0];}
 
-				if ((this.current_tab == 6 && (start_date != "" || end_date != "") && this.validTime() == true) || this.current_tab != 6){
+				if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || this.current_tab != 6){
 					shortcode = '[drstk_'+this.tabs[this.current_tab];
 					ids = []
 					jQuery.each(items.models, function(i, item){
@@ -541,7 +541,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				});
 				//we historically have not provided interface for aspectratio, skin, and listbarwidth, TODO - add these
 				this.shortcode.set('settings', settings);
-			} else if (type == 'maps'){
+			} else if (type == 'map'){
 				settings.add({
 					'name':'story',
 					'value':['yes'],
@@ -994,7 +994,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						if (self.current_tab == 5 || self.current_tab == 6){
 							colors = "";
 							_.each(self.colors, function(color){
-								colors += "<option value='"+color+"'>"+color.charAt(0).toUpperCase()+color.slice(1)+"</option>";
+								colors += "<option value='"+color+"'";
+								if (item.attributes.color == color){ colors += " selected='selected'"; }
+								colors += ">"+color.charAt(0).toUpperCase()+color.slice(1)+"</option>";
 							});
 							jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type label").append('<br/>Color: <select name="color"><option value="">Choose one</option>'+colors+'</select>');
 						}
