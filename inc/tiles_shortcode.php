@@ -11,20 +11,53 @@ function drstk_tiles( $atts ){
   }
   $imgs = array_map('trim', explode(',', $atts['id']));
   $img_html = "";
+  if (isset($atts['image-size'])){
+    $num = $atts['image-size']-1;
+  } else {
+    $num = 4;
+  }
   foreach($imgs as $img){
-    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $img . "?solr_only=true";
-    $data = get_response($url);
-    $data = json_decode($data);
-    $data = $data->_source;
+    $repo = drstk_get_repo_from_pid($img);
+    if ($repo != "drs"){$pid = explode(":",$img)[1];} else {$pid = $img;}
+    if ($repo == "drs"){
+      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $img . "?solr_only=true";
+      $data = get_response($url);
+      $data = json_decode($data);
+      $data = $data->_source;
+      $thumbnail = "http://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
+    }
+    if ($repo == "wp"){
+      $post = get_post($pid);
+      $data = new StdClass;
+      $meta = wp_get_attachment_metadata($pid); //get sizes
+      $thumb_base = wp_get_attachment_thumb_url($pid);
+      $thumb_base = explode("/",$thumb_base);
+      $arr = array_pop($thumb_base);
+      $thumb_base = implode("/", $thumb_base);
+      if ($num == 1){ $thumbnail = $thumb_base."/".$meta['sizes']['thumbnail']['file'];}
+      if ($num == 2){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
+      if ($num == 3){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
+      if ($num == 4){
+       if (isset($meta['sizes']['large'])){
+         $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
+       } else {
+         $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+       }
+      }
+      if ($num == 5){
+       if (isset($meta['sizes']['large'])){
+         $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
+       } else {
+         $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+       }
+      }
+      $master = $post->guid;
+      $data->full_title_ssi = $post->post_title;
+      $data->abstract_tesim = array($post->post_excerpt);
+    }
     $type = isset($atts['type']) ? $atts['type'] : $atts['tile-type'];
     if (!isset($data->error)){
-      $pid = $data->id;
-      if (isset($atts['image-size'])){
-        $num = $atts['image-size']-1;
-      } else {
-        $num = 4;
-      }
-      $thumbnail = "http://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
+      // $pid = $data->id;
       if (isset($atts['metadata'])){
         $img_metadata = '';
         $metadata = explode(",",$atts['metadata']);
