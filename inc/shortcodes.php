@@ -43,9 +43,6 @@ function drstk_enqueue_page_scripts( $hook ) {
    ));
 
    include $DRS_PLUGIN_PATH.'templates/modal.php';
-   wp_enqueue_script( 'twbs_pagination', $DRS_PLUGIN_URL . '/assets/js/jquery.twbsPagination.min.js', array(
-     'jquery',
-   ) );
    wp_enqueue_script( 'backbone_modal', $DRS_PLUGIN_URL . '/assets/js/modal.js', array(
      'jquery',
      'backbone',
