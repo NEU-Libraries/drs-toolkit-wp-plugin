@@ -118,10 +118,10 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			"click .tablenav-pages a": "paginate",
 			"click .nav-tab": "navigateShortcode",
 			"click .search-button": "search",
-			"change #selected .tile": "deSelectItem",
 			"change #settings input": "settingsChange",
 			"change #settings select": "settingsChange",
 			"change #selected select[name='color']": "changeColor",
+			"click #local #wp_media": "addMediaItems",
 		},
 
 		/**
@@ -260,8 +260,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				if (start_date != undefined) {start_date = start_date.attributes.value[0];}
 				end_date = this.shortcode.get('settings').where({name:'end-date'})[0];
 				if (end_date != undefined) {end_date = end_date.attributes.value[0];}
-
-				if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || this.current_tab != 6){
+				if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || (this.current_tab == 6 && (start_date != "" || start_date != undefined || end_date != "" || end_date != undefined)) || this.current_tab != 6){
 					shortcode = '[drstk_'+this.tabs[this.current_tab];
 					ids = []
 					jQuery.each(items.models, function(i, item){
@@ -597,6 +596,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				jQuery("#dpla input[name='search']").val(this.search_params.q);
 				jQuery("#dpla").show();
 				this.getDPLAitems();
+			} else if (path == '#local'){
+				jQuery("#local").show();
+				this.getMediaitems();
 			} else if (path == '#selected'){
 				jQuery("#selected").show();
 				this.getSelecteditems();
@@ -796,6 +798,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				repo = 'drs'
 			} else if (parent == 'dpla'){
 				repo = 'dpla'
+			} else {
+				repo = 'local'
 			}
 			if (item.is(":checked")){
 				if (this.shortcode.items === undefined){
@@ -851,17 +855,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					});
 				}
 			} else {
-				var remove = this.shortcode.items.where({ pid: pid })
-				this.shortcode.items.remove(remove);
-			}
-		},
-
-		deSelectItem: function( e ){
-			item = jQuery(e.currentTarget);
-			pid = item.val();
-			if (item.is(":checked")){
-			} else {
-				var remove = this.shortcode.items.where({ pid: pid })
+				var remove = this.shortcode.items.where({ pid: pid });
 				this.shortcode.items.remove(remove);
 			}
 		},
@@ -870,7 +864,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			media_count = 0;
 			if (this.current_tab == 5){media_count = this.geo_count}
 			if (this.current_tab == 6){media_count = this.time_count}
-			console.log("geo or time count is " + media_count);
 			if ( media_count > 0){
 	      data.pagination.table.num_pages = Math.ceil(media_count / 20);
 	    }
@@ -914,7 +907,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					val = 0;
 				}
       }
-			console.log("going to page "+ val);
       if (jQuery.isNumeric(val) && val != 0){
         this.search_params.page = val;
 				if (type == 'drs'){
@@ -1006,6 +998,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 	        });
 	     } else {
 	       jQuery(".selected-items").html("You haven't selected any items yet.");
+				 jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 	     }
 		},
 
@@ -1042,7 +1035,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		validTime: function(){
 			return_arr = [];
 			key_date_list = [];
-			_.each(_.clone(this.shortcode.items.models), function(item){
+			_.each(_.clone(this.shortcode.items.where({repo:'drs'})), function(item){
 				jQuery.ajax({
 					url: item_admin_obj.ajax_url,
 					type: "POST",
@@ -1068,6 +1061,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
           return_arr.push(each_key.name);
 				}
 			});
+			console.log(return_arr);
 			if (return_arr.length > 0){
 				return return_arr;
 			} else {
@@ -1082,6 +1076,77 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				item = this.shortcode.items.where({pid: pid});
 				item[0].set({'color':color});
 			}
+		},
+
+		getMediaitems: function(){
+			jQuery("#local").html("<a class='button' id='wp_media'>Add or Browse Local Items</a><br/>");
+			if (this.shortcode.items != undefined && this.shortcode.items.where({repo:'local'}).length > 0){
+				var self = this;
+				_.each(this.shortcode.items.where({repo:'local'}), function(item){
+					pid = item.get('pid');
+					thumbnail = item.get('thumbnail');
+					repo = "local";
+					title = item.get('title');
+					this_item = new drstk.Item;
+					this_item.set("pid", pid).set("thumbnail", thumbnail).set("repo", repo).set("title", title);
+					view = new drstk.ItemView({model:this_item});
+					jQuery("#local").append(view.el);
+					if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: pid }).length > 0){
+						jQuery("#local").find("li:last-of-type input").prop("checked", true);
+					}
+				});
+
+			}
+		},
+
+		addMediaItems: function(e){
+			console.log(e);
+			if (typeof(frame) !== 'undefined') frame.close();
+			if (this.current_tab == 1){
+				multiple = false;
+			} else {
+				multiple = true;
+			}
+			var self = this;
+			frame = wp.media.frames.drstk_frame = wp.media({
+				title: "Select Images",
+				library: {
+					type: 'image'
+				},
+				button: {
+					text: "Add Selected Images"
+				},
+				multiple: multiple
+			});
+			frame.on('select', function() {
+				var files = frame.state().get('selection').toJSON();
+				jQuery.each(files, function(i) {
+					pid = this.id.toString();
+					title = this.title;
+					thumbnail = this.sizes.thumbnail.url;
+					repo = "local";
+					if (self.shortcode.items === undefined){
+						self.shortcode.items = new drstk.Items({
+							'title':title,
+							'pid':pid,
+							'thumbnail':thumbnail,
+							'repo':repo
+						})
+					} else if (self.shortcode.items.where({ pid: pid }).length == 0) {
+						self.shortcode.items.add({
+							'title':title,
+							'pid':pid,
+							'thumbnail':thumbnail,
+							'repo':repo
+						})
+					};
+					this_item = new drstk.Item;
+					this_item.set("pid", pid).set("thumbnail", thumbnail).set("repo", repo).set("title", title);
+					view = new drstk.ItemView({model:this_item});
+					jQuery("#local").append(view.el);
+					jQuery("#local").find("li:last-of-type input").prop("checked", true);
+				});
+			}).open();
 		}
 
 	} );
