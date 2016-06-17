@@ -701,3 +701,4 @@ function drstk_image_attachment_fields_to_save($post, $attachment) {
     }
     return $post;
 }
+add_filter("attachment_fields_to_save", "drstk_image_attachment_fields_to_save", 10, 2);
