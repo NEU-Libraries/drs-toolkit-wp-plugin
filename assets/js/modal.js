@@ -260,11 +260,18 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				if (start_date != undefined) {start_date = start_date.attributes.value[0];}
 				end_date = this.shortcode.get('settings').where({name:'end-date'})[0];
 				if (end_date != undefined) {end_date = end_date.attributes.value[0];}
-				if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || (this.current_tab == 6 && (start_date != "" || start_date != undefined || end_date != "" || end_date != undefined)) || (this.current_tab == 1 && this.shortcode.items.length == 1) || (this.current_tab != 6 && this.current_tab != 1)){
+				if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || (this.current_tab == 6 && start_date == undefined && end_date == undefined) || (this.current_tab == 1 && this.shortcode.items.length == 1) || (this.current_tab != 6 && this.current_tab != 1)){
 					shortcode = '[drstk_'+this.tabs[this.current_tab];
 					ids = []
 					jQuery.each(items.models, function(i, item){
-						ids.push(item.attributes.pid);
+						if (item.attributes.repo == 'dpla'){
+							pid = "dpla:"+item.attributes.pid;
+						} else if (item.attributes.repo == 'drs'){
+							pid = item.attributes.pid;
+						} else if (item.attributes.repo == 'local'){
+							pid = "wp:"+item.attributes.pid;
+						}
+						ids.push(pid);
 					});
 					ids.join(",");
 					shortcode += ' id="'+ids+'"';
@@ -274,7 +281,14 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 							arr = [];
 							items = self.shortcode.items.where({'color':color});
 							_.each(items, function(i){
-								arr.push(i.attributes.pid);
+								if (i.attributes.repo == 'dpla'){
+									pid = "dpla:"+i.attributes.pid;
+								} else if (i.attributes.repo == 'drs'){
+									pid = i.attributes.pid;
+								} else if (i.attributes.repo == 'local'){
+									pid = "wp:"+i.attributes.pid;
+								}
+								arr.push(pid);
 							});
 							if (arr.length > 0){
 								shortcode += ' '+color+'_id="'+arr.join(",")+'"';
@@ -295,8 +309,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					alert("There are more than 1 items selected for a single item shortcode.");
 			  } else {
 					titles = this.validTime();
+
 					titles = titles.join("\n");
-					alert("The following item(s) are outside the specified date range: \n"+titles);
+					alert("The following item(s) are outside the specified date range or custom items may not have date values: \n"+titles);
 				}
 			} else {
 				alert("Please select items before inserting a shortcode");
@@ -855,6 +870,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 							self.shortcode.set('settings', settings);
 						}
 					});
+				} else if (this.shortcode.get('type') == 'single' && parent == 'dpla'){
+					//TODO - get custom meta fields from DPLA api
 				}
 			} else {
 				var remove = this.shortcode.items.where({ pid: pid });
@@ -1036,6 +1053,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 
 		validTime: function(){
 			return_arr = [];
+			no_year = [];
 			key_date_list = [];
 			_.each(_.clone(this.shortcode.items.where({repo:'drs'})), function(item){
 				jQuery.ajax({
@@ -1053,6 +1071,28 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					}
 				});
 			});
+			_.each(_.clone(this.shortcode.items.where({repo:'local'})), function(item){
+				jQuery.ajax({
+					url: item_admin_obj.ajax_url,
+					type: "POST",
+					async: false,
+					data: {
+						action: "get_custom_meta",
+						_ajax_nonce: item_admin_obj.item_admin_nonce,
+						pid: item.get('pid'),
+					}, success: function(data){
+						if (data._timeline_date == undefined){
+							no_year.push(item.get('title'));
+						} else {
+							var key_date_year = data._timeline_date[0].split("/")[0];
+							key_date_list.push({year:key_date_year, name:item.get('title')});
+						}
+					}
+				});
+			});
+			_.each(_.clone(this.shortcode.items.where({repo:'dpla'})), function(item){
+				//TO DO - check for valid time meta
+			});
 			var self = this;
 			key_date_list.forEach(function(each_key){
 				start_date = self.shortcode.get('settings').where({name:'start-date'})[0];
@@ -1063,9 +1103,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
           return_arr.push(each_key.name);
 				}
 			});
-			console.log(return_arr);
-			if (return_arr.length > 0){
-				return return_arr;
+			if (return_arr.length > 0 || no_year.length > 0){
+				return return_arr.concat(no_year);
 			} else {
 				return true;
 			}
@@ -1102,7 +1141,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		},
 
 		addMediaItems: function(e){
-			console.log(e);
 			if (typeof(frame) !== 'undefined') frame.close();
 			if (this.current_tab == 1){
 				multiple = false;
@@ -1127,36 +1165,53 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					title = this.title;
 					thumbnail = this.sizes.thumbnail.url;
 					repo = "local";
-					console.log(pid);
-					if (self.shortcode.items === undefined){
-						self.shortcode.items = new drstk.Items({
-							'title':title,
-							'pid':pid,
-							'thumbnail':thumbnail,
-							'repo':repo
-						});
+					if (self.shortcode.items === undefined || self.shortcode.items.where({ pid: pid }).length == 0){
 						this_item = new drstk.Item;
 						this_item.set("pid", pid).set("thumbnail", thumbnail).set("repo", repo).set("title", title);
-						view = new drstk.ItemView({model:this_item});
-						jQuery("#local").append(view.el);
-						jQuery("#local").find("li:last-of-type input").prop("checked", true);
-					} else if (self.shortcode.items.where({ pid: pid }).length == 0) {
-						self.shortcode.items.add({
-							'title':title,
-							'pid':pid,
-							'thumbnail':thumbnail,
-							'repo':repo
-						});
-						this_item = new drstk.Item;
-						this_item.set("pid", pid).set("thumbnail", thumbnail).set("repo", repo).set("title", title);
+						if (self.shortcode.items === undefined){
+							self.shortcode.items = new drstk.Items(this_item);
+						} else if (self.shortcode.items.where({ pid: pid }).length == 0){
+							self.shortcode.items.add(this_item);
+						}
 						view = new drstk.ItemView({model:this_item});
 						jQuery("#local").append(view.el);
 						jQuery("#local").find("li:last-of-type input").prop("checked", true);
 					}
+					if (self.current_tab == 1){
+						jQuery.ajax({
+							url: item_admin_obj.ajax_url,
+	            type: "POST",
+	            data: {
+	              action: "get_post_meta",
+	              _ajax_nonce: item_admin_obj.item_admin_nonce,
+	              pid: pid,
+			        }, success: function(data){
+								choices = {}
+								settings = self.shortcode.get('settings');
+								if (data.post_title){
+									choices["title"] = "Title"
+								}
+								if (data.post_excerpt){
+									choices["caption"] = "Caption"
+								}
+								oldmeta = settings.where({name:'metadata'});
+								settings.remove(oldmeta);
+								if (Object.keys(choices).length > 0){
+									settings.add({
+										'name':'metadata',
+										'label':'Metadata to Display',
+										'tag':'checkbox',
+										'value':[],
+										'choices':choices,
+									});
+									self.shortcode.set('settings', settings);
+								}
+							}
+						});
+					}
 				});
 			}).open();
 		}
-
 	} );
 
 jQuery( function ( $ ) {
