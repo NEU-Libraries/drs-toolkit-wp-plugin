@@ -674,3 +674,30 @@ function remove_bstw_widget_text_filters() {
         remove_filter( 'widget_text', array( bstw()->text_filters(), 'do_shortcode' ), 10 );
     }
 }
+
+function drstk_image_attachment_fields_to_edit($form_fields, $post) {
+    $form_fields["timeline_date"] = array(
+        "label" => __("Timeline Date"),
+        "input" => "text", // this is default if "input" is omitted
+        "value" => get_post_meta($post->ID, "_timeline_date", true),
+        "helps" => "Must be YYYY/MM/DD format"
+    );
+    $form_fields["map_coords"] = array(
+        "label" => __("Map Coordinates"),
+        "input" => "text", // this is default if "input" is omitted
+        "value" => get_post_meta($post->ID, "_map_coords", true),
+        "helps" => "Must be in Lat, Long format"
+    );
+    return $form_fields;
+}
+add_filter("attachment_fields_to_edit", "drstk_image_attachment_fields_to_edit", null, 2);
+
+function drstk_image_attachment_fields_to_save($post, $attachment) {
+    if( isset($attachment['timeline_date']) ){
+      update_post_meta($post['ID'], '_timeline_date', $attachment['timeline_date']);
+    }
+    if( isset($attachment['map_coords']) ){
+      update_post_meta($post['ID'], '_map_coords', $attachment['map_coords']);
+    }
+    return $post;
+}
