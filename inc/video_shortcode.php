@@ -5,9 +5,9 @@ add_shortcode( 'drstk_media', 'drstk_collection_playlist' );
 function drstk_collection_playlist($atts){
   global $errors;
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
-  if($cache) {
-    return $cache;
-  }
+  // if($cache) {
+  //   return $cache;
+  // }
     $collection = array_map('trim', explode(',', $atts['id']));
     $playlists = '';
     if (isset($atts['height']) && $atts['height'] != 0){
@@ -34,11 +34,15 @@ function drstk_collection_playlist($atts){
       $listbarwidth = '250';
     }
     foreach($collection as $video){
+      $repo = drstk_get_repo_from_pid($video);
+      if ($repo != "drs"){$pid = explode(":",$video)[1];} else {$pid = $video;}
+      $poster;
+      if ($repo == "drs"){
         $url = "https://repository.library.northeastern.edu/api/v1/files/" . $video;
         $data = get_response($url);
         $data = json_decode($data);
-        $poster;
         if (!isset($data->error)){
+
           $poster[] = $data->thumbnails[4];
           $this_poster = $data->thumbnails[4];
           $title = $data->mods->Title[0];
@@ -70,15 +74,32 @@ function drstk_collection_playlist($atts){
               $type = 'MP4';
               $provider = 'video';
             }
+            $playlists .= '{ sources: [ ';
+            $playlists .= '{ file: "' .  $rtmp . '"}, { file: "' . $playlist . '"},';
+            $playlists .= ' { file: "' . $no_flash . '", type: "'.strtolower($type).'" } ], image: "' . $this_poster . '", title: "' . $title . '" },';
           }
-          $download = 'download';
-          $playlists .= '{ sources: [ ';
-          $playlists .= '{ file: "' .  $rtmp . '"}, { file: "' . $playlist . '"},';
-          $playlists .= ' { file: "' . $no_flash . '", type: "'.strtolower($type).'" } ], image: "' . $this_poster . '", title: "' . $title . '" },';
         } else {
           return $errors['shortcodes']['fail'];
         }
+
       }
+      if ($repo == "wp"){
+        $post = get_post($pid);
+        $this_poster = "";
+        $poster[0] = "";
+        $title = $post->post_title;
+        if (strpos($post->post_mime_type, "video") !== false){
+          $provider = 'sound';
+        }
+        if (strpos($post->post_mime_type, "audio") !== false){
+          $provider = 'audio';
+        }
+        $playlists .= '{sources:[{file:"'.$post->guid.'",title:"'.$title.'"}],title:"'.$title.'"}';
+      }
+
+      $download = 'download';
+
+    }
     $pid_selector = "drs-item-video-".str_replace(':', "-", $pid);
     $cache_output = '<div id="'.$pid_selector.'">
         <img style="width: 100%;" src="' . $poster[0] .'" />
