@@ -1179,11 +1179,16 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			} else {
 				multiple = true;
 			}
+			if (this.current_tab == 4){
+				type = ['audio','video'];
+			} else {
+				type = 'image';
+			}
 			var self = this;
 			frame = wp.media.frames.drstk_frame = wp.media({
 				title: "Select Images",
 				library: {
-					type: 'image'
+					type: type
 				},
 				button: {
 					text: "Add Selected Images"
@@ -1195,7 +1200,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				jQuery.each(files, function(i) {
 					pid = this.id.toString();
 					title = this.title;
-					thumbnail = this.sizes.thumbnail.url;
+					thumbnail = (this.sizes != undefined) ? this.sizes.thumbnail.url : this.image.src;
 					repo = "local";
 					if (self.shortcode.items === undefined || self.shortcode.items.where({ pid: pid }).length == 0){
 						this_item = new drstk.Item;
