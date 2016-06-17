@@ -120,6 +120,25 @@ function drstk_get_dpla_items(){
     wp_die();
 }
 
+
+add_action('wp_ajax_get_custom_meta', 'drstk_get_custom_meta');
+function drstk_get_custom_meta(){
+  check_ajax_referer('item_admin_nonce');
+  $id = $_POST['pid'];
+  $data = get_post_custom($id);
+  wp_send_json($data);
+  wp_die();
+}
+
+add_action('wp_ajax_get_post_meta', 'drstk_get_post_meta');
+function drstk_get_post_meta(){
+  check_ajax_referer('item_admin_nonce');
+  $id = $_POST['pid'];
+  $data = get_post($id);
+  wp_send_json($data);
+  wp_die();
+}
+
 function thickbox_styles() {
    echo '<style type="text/css">
           .tablenav-pages a.current-page {
