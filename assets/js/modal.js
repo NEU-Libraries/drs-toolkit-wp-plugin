@@ -260,7 +260,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				if (start_date != undefined) {start_date = start_date.attributes.value[0];}
 				end_date = this.shortcode.get('settings').where({name:'end-date'})[0];
 				if (end_date != undefined) {end_date = end_date.attributes.value[0];}
-				if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || (this.current_tab == 6 && (start_date != "" || start_date != undefined || end_date != "" || end_date != undefined)) || this.current_tab != 6){
+				if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || (this.current_tab == 6 && (start_date != "" || start_date != undefined || end_date != "" || end_date != undefined)) || (this.current_tab == 1 && this.shortcode.items.length == 1) || (this.current_tab != 6 && this.current_tab != 1)){
 					shortcode = '[drstk_'+this.tabs[this.current_tab];
 					ids = []
 					jQuery.each(items.models, function(i, item){
@@ -291,7 +291,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					shortcode += ']';
 					window.wp.media.editor.insert(shortcode);
 					this.closeModal( e );
-				} else {
+				} else if (this.current_tab == 1 && this.shortcode.items.length > 1){
+					alert("There are more than 1 items selected for a single item shortcode.");
+			  } else {
 					titles = this.validTime();
 					titles = titles.join("\n");
 					alert("The following item(s) are outside the specified date range: \n"+titles);
@@ -817,7 +819,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						'repo':repo
 					})
 				}
-				if (this.shortcode.get('type') == 'single'){ //if type is single then get the metadata options for the settings
+				if (this.shortcode.get('type') == 'single' && parent == 'drs'){ //if type is single then get the metadata options for the settings
 					var self = this;
 					//single items can only have one items so we'll clear the rest out
 					item.parents("ol").find("input:checked").not(item).each(function(){
@@ -1125,26 +1127,32 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					title = this.title;
 					thumbnail = this.sizes.thumbnail.url;
 					repo = "local";
+					console.log(pid);
 					if (self.shortcode.items === undefined){
 						self.shortcode.items = new drstk.Items({
 							'title':title,
 							'pid':pid,
 							'thumbnail':thumbnail,
 							'repo':repo
-						})
+						});
+						this_item = new drstk.Item;
+						this_item.set("pid", pid).set("thumbnail", thumbnail).set("repo", repo).set("title", title);
+						view = new drstk.ItemView({model:this_item});
+						jQuery("#local").append(view.el);
+						jQuery("#local").find("li:last-of-type input").prop("checked", true);
 					} else if (self.shortcode.items.where({ pid: pid }).length == 0) {
 						self.shortcode.items.add({
 							'title':title,
 							'pid':pid,
 							'thumbnail':thumbnail,
 							'repo':repo
-						})
-					};
-					this_item = new drstk.Item;
-					this_item.set("pid", pid).set("thumbnail", thumbnail).set("repo", repo).set("title", title);
-					view = new drstk.ItemView({model:this_item});
-					jQuery("#local").append(view.el);
-					jQuery("#local").find("li:last-of-type input").prop("checked", true);
+						});
+						this_item = new drstk.Item;
+						this_item.set("pid", pid).set("thumbnail", thumbnail).set("repo", repo).set("title", title);
+						view = new drstk.ItemView({model:this_item});
+						jQuery("#local").append(view.el);
+						jQuery("#local").find("li:last-of-type input").prop("checked", true);
+					}
 				});
 			}).open();
 		}
