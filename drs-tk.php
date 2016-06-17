@@ -686,7 +686,7 @@ function drstk_image_attachment_fields_to_edit($form_fields, $post) {
         "label" => __("Map Coordinates"),
         "input" => "text", // this is default if "input" is omitted
         "value" => get_post_meta($post->ID, "_map_coords", true),
-        "helps" => "Must be in Lat, Long format"
+        "helps" => "Must be in Lat, Long or City name, State Initials format"
     );
     return $form_fields;
 }
