@@ -8,21 +8,48 @@ function drstk_item( $atts ){
   if($cache) {
       return $cache;
   }
-  $url = "https://repository.library.northeastern.edu/api/v1/files/" . $atts['id'];
-  $data = get_response($url);
-  $data = json_decode($data);
+  $repo = drstk_get_repo_from_pid($atts['id']);
+  if ($repo != "drs"){$pid = explode(":",$atts['id'])[1];} else {$pid = $atts['id'];}
   if (isset($atts['image-size'])){
     $num = $atts['image-size']-1;
   } else {
     $num = 3;
   }
-  $thumbnail = $data->thumbnails[$num];
-  $master = $data->thumbnails[4];
-  foreach($data->content_objects as $key=>$val){
-    if ($val == 'Large Image'){
-      $master = $key;
+  if ($repo == "drs"){
+    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $pid;
+    $data = get_response($url);
+    $data = json_decode($data);
+    $thumbnail = $data->thumbnails[$num];
+    $master = $data->thumbnails[4];
+    foreach($data->content_objects as $key=>$val){
+      if ($val == 'Large Image'){
+        $master = $key;
+      }
     }
   }
+  if ($repo == "wp"){
+    $post = get_post($pid);
+    $data = new StdClass;
+    $data->canonical_object = new StdClass;
+    $url = $post->guid;
+    $data->canonical_object->$url = "Master Image";
+    $meta = wp_get_attachment_metadata($pid); //get sizes
+    $thumb_base = wp_get_attachment_thumb_url($pid);
+    $thumb_base = explode("/",$thumb_base);
+    $arr = array_pop($thumb_base);
+    $thumb_base = implode("/", $thumb_base);
+    if ($num == 1){ $thumbnail = $thumb_base."/".$meta['sizes']['thumbnail']['file'];}
+    if ($num == 2){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
+    if ($num == 3){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
+    if ($num == 4){ $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];}
+    if ($num == 5){ $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];}
+    $master = $post->guid;
+    $data->mods = new StdClass;
+    $data->mods->title = array($post->post_title);
+    $data->mods->caption = array($post->post_excerpt);
+  }
+
+
   $html = "<div class='drs-item'>";
 
   $jwplayer = false; // note: unneeded if there is only one canonical_object type
