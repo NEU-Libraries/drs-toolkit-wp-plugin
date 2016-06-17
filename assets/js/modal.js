@@ -260,7 +260,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				if (start_date != undefined) {start_date = start_date.attributes.value[0];}
 				end_date = this.shortcode.get('settings').where({name:'end-date'})[0];
 				if (end_date != undefined) {end_date = end_date.attributes.value[0];}
-				if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || (this.current_tab == 6 && start_date == undefined && end_date == undefined) || (this.current_tab == 1 && this.shortcode.items.length == 1) || (this.current_tab != 6 && this.current_tab != 1)){
+				if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || (this.current_tab == 6 && start_date == undefined && end_date == undefined) || (this.current_tab == 5 && this.validMap() == true) || (this.current_tab == 1 && this.shortcode.items.length == 1) || (this.current_tab != 6 && this.current_tab != 1 && this.current_tab != 5)){
 					shortcode = '[drstk_'+this.tabs[this.current_tab];
 					ids = []
 					jQuery.each(items.models, function(i, item){
@@ -307,11 +307,14 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					this.closeModal( e );
 				} else if (this.current_tab == 1 && this.shortcode.items.length > 1){
 					alert("There are more than 1 items selected for a single item shortcode.");
-			  } else {
+			  } else if (this.current_tab == 6){
 					titles = this.validTime();
-
 					titles = titles.join("\n");
 					alert("The following item(s) are outside the specified date range or custom items may not have date values: \n"+titles);
+				} else if (this.current_tab == 5){
+					titles = this.validMap();
+					titles = titles.join("\n");
+					alert("The following item(s) may not have coordinate or location values: \n"+titles);
 				}
 			} else {
 				alert("Please select items before inserting a shortcode");
@@ -1105,6 +1108,35 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			});
 			if (return_arr.length > 0 || no_year.length > 0){
 				return return_arr.concat(no_year);
+			} else {
+				return true;
+			}
+		},
+
+		validMap: function(){
+			no_map = [];
+			key_date_list = [];
+			_.each(_.clone(this.shortcode.items.where({repo:'local'})), function(item){
+				jQuery.ajax({
+					url: item_admin_obj.ajax_url,
+					type: "POST",
+					async: false,
+					data: {
+						action: "get_custom_meta",
+						_ajax_nonce: item_admin_obj.item_admin_nonce,
+						pid: item.get('pid'),
+					}, success: function(data){
+						if (data._map_coords == undefined || data._map_coords == ""){
+							no_map.push(item.get('title'));
+						}
+					}
+				});
+			});
+			_.each(_.clone(this.shortcode.items.where({repo:'dpla'})), function(item){
+				//TO DO - check for valid map meta
+			});
+			if (no_map.length > 0){
+				return no_map;
 			} else {
 				return true;
 			}
