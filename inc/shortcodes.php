@@ -73,11 +73,15 @@ function drstk_get_drs_items(){
       if (isset($_POST['params']['avfilter'])){
         $url .= 'AND%20canonical_class_tesim%3A"AudioFile"%20OR%20canonical_class_tesim%3A"VideoFile"';
       }
+    } else {
+      if (isset($_POST['params']['avfilter'])){
+        $url .= '&q=%20canonical_class_tesim%3A"AudioFile"%20OR%20canonical_class_tesim%3A"VideoFile"';
+      }
     }
+
     if (isset($_POST['params']['page'])) {
       $url .= "&page=" . $_POST['params']['page'];
     }
-
     $data = get_response($url);
     $json = json_decode($data);
     if (isset($json->error)) {
