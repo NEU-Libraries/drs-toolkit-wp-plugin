@@ -78,8 +78,8 @@
 		<h2 class="nav-tab-wrapper">
 			<a class="nav-tab nav-tab-active" href="#drs">DRS Items</a>
 			<a class="nav-tab" href="#dpla">DPLA Items</a>
-			<a class="nav-tab" href="#selected">Selected Items</a>
 			<a class="nav-tab" href="#local">Local Items</a>
+			<a class="nav-tab" href="#selected">Selected Items</a>
 			<a class="nav-tab" href="#settings">Settings</a>
 		</h2>
 		<br/>
