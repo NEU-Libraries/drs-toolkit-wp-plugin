@@ -41,56 +41,80 @@ function drstk_timeline( $atts ){
   $timeline_html = "";
   $counter = 1;
   foreach($neu_ids as $current_key => $neu_id){
-    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $neu_id;
-    $data = get_response($url);
-    $data = json_decode($data);
 
-    if (!isset($data->error)){
-      $pid = $data->pid;
-      $key_date = $data->key_date;
-      $current_array = array();
-      $breadcrumbs = $data->breadcrumbs;
+    $repo = drstk_get_repo_from_pid($neu_id);
+    if ($repo != "drs"){$pid = explode(":",$neu_id)[1];} else {$pid = $neu_id;}
+    if($repo == "drs"){
+      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $neu_id;
+      $data = get_response($url);
+      $data = json_decode($data);
 
-      $thumbnail_url = $data->thumbnails[2];
+      if (!isset($data->error)){
+        $pid = $data->pid;
+        $key_date = $data->key_date;
+        $current_array = array();
+        $breadcrumbs = $data->breadcrumbs;
 
-      if (isset($atts['metadata'])){
-        $timeline_metadata = '';
-        $metadata = explode(",",$atts['metadata']);
-        foreach($metadata as $field){
-          if (isset($data->mods->$field)) {
-            $this_field = $data->mods->$field;
-            if (isset($this_field[0])) {
-              $timeline_metadata .= $this_field[0] . "<br/>";
+        $thumbnail_url = $data->thumbnails[2];
+
+        if (isset($atts['metadata'])){
+          $timeline_metadata = '';
+          $metadata = explode(",",$atts['metadata']);
+          foreach($metadata as $field){
+            if (isset($data->mods->$field)) {
+              $this_field = $data->mods->$field;
+              if (isset($this_field[0])) {
+                $timeline_metadata .= $this_field[0] . "<br/>";
+              }
             }
           }
+          $text = htmlentities($timeline_metadata);
+        } else {
+          $text = "<p>&nbsp;</p>";
         }
-        $text = htmlentities($timeline_metadata);
+        if ($text == NULL || $text == ""){
+          $text = "<p>&nbsp;</p>";
+        }
+        $caption = htmlentities($data->mods->Title[0]);
+        $headline = htmlentities($data->mods->Title[0]);
+
+        $keys = (array)$key_date;
+        $just_keys = array_keys($keys);
+        $key_date_explode = explode("/",$just_keys[0]);
+
+
+        $timeline_html .= "<div class=\"timelineclass\" data-url=\"".$thumbnail_url."\" data-caption=\"".$caption."\" data-credit=\" \" data-year=\"".$key_date_explode[0]."\" data-month=\"".$key_date_explode[1]."\" data-day=\"".$key_date_explode[2]."\" data-headline=\"".$headline."\" data-text=\"".$text."\">";
+        $timeline_html .= "</div>";
+      }else {
+        $timeline_html = $errors['shortcodes']['fail'];
+      }
+      if (isset($current_color_code_id_values[str_replace(' ', '', $neu_id)])) {
+        $present_id_color = $current_color_code_id_values[str_replace(' ', '', $neu_id)];
       } else {
-        $text = "<p>&nbsp;</p>";
+        $present_id_color = NULL;
       }
-      if ($text == NULL || $text == ""){
-        $text = "<p>&nbsp;</p>";
-      }
-      $caption = htmlentities($data->mods->Title[0]);
-      $headline = htmlentities($data->mods->Title[0]);
-
-      $keys = (array)$key_date;
       $just_keys = array_keys($keys);
-      $key_date_explode = explode("/",$just_keys[0]);
-
-
-      $timeline_html .= "<div class=\"timelineclass\" data-url=\"".$thumbnail_url."\" data-caption=\"".$caption."\" data-credit=\" \" data-year=\"".$key_date_explode[0]."\" data-month=\"".$key_date_explode[1]."\" data-day=\"".$key_date_explode[2]."\" data-headline=\"".$headline."\" data-text=\"".$text."\">";
-      $timeline_html .= "</div>";
-    }else {
-      $timeline_html = $errors['shortcodes']['fail'];
+  	  $index_color_pair[$just_keys[0]] = $present_id_color;
     }
-    if (isset($current_color_code_id_values[str_replace(' ', '', $neu_id)])) {
-      $present_id_color = $current_color_code_id_values[str_replace(' ', '', $neu_id)];
-    } else {
-      $present_id_color = NULL;
+    if ($repo == "wp"){
+      $timeline_custom_html = "";
+      $post = get_post($pid);
+      $url = $post->guid;
+      $title = $post->post_title;
+      $description = $post->post_excerpt;
+      $custom = get_post_custom($pid);
+      $date = $custom['_timeline_date'][0];
+      $date = explode("/", $date);
+      $year = $date[0];
+      $month = $date[1];
+      $day = $date[2];
+      if (isset($current_color_code_id_values["wp:".$pid])){
+        $colorGroup = $current_color_code_id_values["wp:".$pid];
+        $index_color_pair["wp:".$pid] = $colorGroup;
+      }
+      $timeline_custom_html .= "<div class='timelineclass' data-credit='' data-url=".$url." data-year='".$year."' data-month='".$month."' data-day='".$day."' data-caption='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."' data-headline='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."' data-text='".htmlspecialchars($description, ENT_QUOTES, 'UTF-8')."'";
+      $timeline_custom_html .= "></div>";
     }
-    $just_keys = array_keys($keys);
-	  $index_color_pair[$just_keys[0]] = $present_id_color;
   }
   $color_ids_html_data = '';
   $color_desc_html_data = '';
