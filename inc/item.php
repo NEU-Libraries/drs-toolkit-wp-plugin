@@ -231,14 +231,34 @@ function check_for_bad_data($data){
 
 function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) {
   global $errors;
-  $av_pid = explode("/", $av_pid);
-  $av_pid = end($av_pid);
-  $encoded_av_pid = str_replace(':','%3A', $av_pid);
-  $av_dir = substr(md5("info:fedora/".$av_pid."/content/content.0"), 0, 2);
-  $av_type = "";
-  if ($data->thumbnails){
-    $av_poster = $data->thumbnails[3];
+  if (strpos($av_pid, "repository.library.northeastern.edu") !== false){
+    $av_pid = explode("/", $av_pid);
+    $av_pid = end($av_pid);
+    $encoded_av_pid = str_replace(':','%3A', $av_pid);
+    $av_dir = substr(md5("info:fedora/".$av_pid."/content/content.0"), 0, 2);
+    if ($data->thumbnails){
+      $av_poster = $data->thumbnails[3];
+    }
+    $user_agent = $_SERVER['HTTP_USER_AGENT'];
+    if (stripos( $user_agent, 'Chrome') !== false){
+      $av_for_ext = $av_type;
+      $full_pid = "info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0";
+    } elseif (stripos( $user_agent, 'Safari') !== false) {
+      $av_for_ext = strtolower($av_type);
+      $full_pid = urlencode("info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0");
+    } else {
+      $av_for_ext = strtolower($av_type);
+      $full_pid = "info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0";
+    }
+    $numeric_pid = str_replace(":", "-", $av_pid);
+    $id_img = 'drs-item-img-'.$numeric_pid;
+    $id_video = 'drs-item-video-'.$numeric_pid;
+  } else {
+    $id_img = 'drs-item-img-'.$data->id;
+    $id_video = 'drs-item-video-'.$data->id;
   }
+
+  $av_type = "";
   if ($canonical_object_type == 'Video File'){
     $av_provider = 'video';
     $av_type = "MP4";
@@ -247,21 +267,10 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
     $av_provider = 'sound';
     $av_type = "MP3";
   }
-  $user_agent = $_SERVER['HTTP_USER_AGENT'];
-  if (stripos( $user_agent, 'Chrome') !== false){
-    $av_for_ext = $av_type;
-    $full_pid = "info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0";
-  } elseif (stripos( $user_agent, 'Safari') !== false) {
-    $av_for_ext = strtolower($av_type);
-    $full_pid = urlencode("info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0");
-  } else {
-    $av_for_ext = strtolower($av_type);
-    $full_pid = "info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0";
-  }
 
-  $numeric_pid = str_replace(":", "-", $av_pid);
-  $id_img = 'drs-item-img-'.$numeric_pid;
-  $id_video = 'drs-item-video-'.$numeric_pid;
+  if (!isset($av_poster)){
+    $av_poster = $drs_item_img;
+  }
 
   $html = '<img id="'.$id_img.'" src="'.$drs_item_img.'" class="replace_thumbs"/>';
   $html .= '<div id="'.$id_video.'"></div>';
@@ -277,15 +286,19 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   }
   jQuery(document).ready(function($){
   $("#'.$id_img.'").hide();
-  jwplayer("'.$id_video.'").setup({
-    sources:
+  jwplayer("'.$id_video.'").setup({';
+  if (strpos($av_pid, "repository.library.northeastern.edu") !== false) {
+    $html .='sources:
     [
     { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"},
     { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':'.$full_pid.'/playlist.m3u8", type:"'.$av_for_ext.'"},
     { file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.urlencode($full_pid).'", type:"'.strtolower($av_for_ext).'"}
-    ],
-    image: "'.$av_poster.'",
-    provider: "'.$av_provider.'",
+    ],';
+  } else {
+    $html .= 'sources:[{file:"'.$av_pid.'"}],';
+  }
+  if ($av_poster != null){$html .= 'image: "'.$av_poster.'",';}
+  $html .= 'provider: "'.$av_provider.'",
     fallback: "false",
     androidhls: "true",
     primary: primary,

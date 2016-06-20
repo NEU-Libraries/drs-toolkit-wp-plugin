@@ -32,33 +32,45 @@ function drstk_item( $atts ){
     $data = new StdClass;
     $data->canonical_object = new StdClass;
     $url = $post->guid;
-    $data->canonical_object->$url = "Master Image";
+    if (strpos($post->post_mime_type, "audio") !== false){
+      $type = "Audio File";
+    } else if (strpos($post->post_mime_type, "video") !== false){
+      $type = "Video File";
+    } else {
+      $type = "Master Image";
+    }
+    $data->canonical_object->$url = $type;
     $meta = wp_get_attachment_metadata($pid); //get sizes
     $thumb_base = wp_get_attachment_thumb_url($pid);
-    $thumb_base = explode("/",$thumb_base);
-    $arr = array_pop($thumb_base);
-    $thumb_base = implode("/", $thumb_base);
-    if ($num == 1){ $thumbnail = $thumb_base."/".$meta['sizes']['thumbnail']['file'];}
-    if ($num == 2){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
-    if ($num == 3){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
-    if ($num == 4){
-     if (isset($meta['sizes']['large'])){
-       $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
-     } else {
-       $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
-     }
-    }
-    if ($num == 5){
-     if (isset($meta['sizes']['large'])){
-       $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
-     } else {
-       $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
-     }
+    if (isset($meta['sizes'])){
+      $thumb_base = explode("/",$thumb_base);
+      $arr = array_pop($thumb_base);
+      $thumb_base = implode("/", $thumb_base);
+      if ($num == 1){ $thumbnail = $thumb_base."/".$meta['sizes']['thumbnail']['file'];}
+      if ($num == 2){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
+      if ($num == 3){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
+      if ($num == 4){
+       if (isset($meta['sizes']['large'])){
+         $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
+       } else {
+         $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+       }
+      }
+      if ($num == 5){
+       if (isset($meta['sizes']['large'])){
+         $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
+       } else {
+         $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+       }
+      }
+    } else {
+      $thumbnail = null;
     }
     $master = $post->guid;
     $data->mods = new StdClass;
     $data->mods->title = array($post->post_title);
     $data->mods->caption = array($post->post_excerpt);
+    $data->id = $post->ID;
   }
 
 
