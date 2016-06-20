@@ -93,9 +93,15 @@ function drstk_get_dpla_items(){
     $url = "http://api.dp.la/v2/items?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7&page_size=20";
     if (isset($_POST['params']['q'])){
       $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
-      // if (isset($_POST['params']['avfilter'])){ //TODO figure this out
-      //   $url .= 'AND%20canonical_class_tesim%3A"AudioFile"%20OR%20canonical_class_tesim%3A"VideoFile"';
-      // }
+    }
+    // if (isset($_POST['params']['avfilter'])){
+    //   $url .= '&sourceResource.type=%22moving%20image%22+OR+%22sound%22';
+    // } //This won't work because there are no links avail through the api for the actual files
+    if (isset($_POST['params']['spatialfilter'])){
+      $url .= '&sourceResource.spatial=**';
+    }
+    if (isset($_POST['params']['timefilter'])){
+      $url .= '&sourceResource.date.displayDate=**';
     }
     if (isset($_POST['params']['page'])) {
       $url .= "&page=" . $_POST['params']['page'];
