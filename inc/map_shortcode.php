@@ -52,17 +52,81 @@ function drstk_map( $atts ){
   }
 
   foreach($items as $item){
-    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item;
-    $data = get_response($url);
-    $data = json_decode($data);
-    if (!isset($data->error)){
-      $pid = $data->pid;
+    $repo = drstk_get_repo_from_pid($item);
+    if ($repo != "drs"){$pid = explode(":",$item)[1];} else {$pid = $item;}
+    if ($repo == "drs"){
+      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item;
+      $data = get_response($url);
+      $data = json_decode($data);
+      if (!isset($data->error)){
+        $pid = $data->pid;
 
-      $coordinates = "";
-      if(isset($data->coordinates)) {
-        $coordinates = $data->coordinates;
+        $coordinates = "";
+        if(isset($data->coordinates)) {
+          $coordinates = $data->coordinates;
+        } else {
+          $location = $data->geographic[0];
+          $locationUrl = "http://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
+          $locationData = get_response($locationUrl);
+          $locationData = json_decode($locationData);
+          if (!isset($locationData->error)) {
+            $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
+          }
+        }
+
+        $title = $data->mods->Title[0];
+        $permanentUrl = 'Permanent URL';
+        $permanentUrl = $data->mods->$permanentUrl;
+        $map_html .= "<div class='coordinates' data-pid='".$pid."' data-url='".$permanentUrl[0]."' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."'";
+
+        if (isset($atts['metadata'])){
+          $map_metadata = '';
+          $metadata = explode(",",$atts['metadata']);
+          foreach($metadata as $field){
+            if (isset($data->mods->$field)) {
+              $this_field = $data->mods->$field;
+              if (isset($this_field[0])) {
+                $map_metadata .= $this_field[0] . "<br/>";
+              }
+            }
+          }
+          $map_html .= " data-metadata='".$map_metadata."'";
+        }
+        $canonical_object = "";
+        if (isset($data->canonical_object)){
+          foreach($data->canonical_object as $key=>$val){
+            if ($val == 'Video File' || $val == 'Audio File'){
+              $canonical_object = insert_jwplayer($key, $val, $data, $data->thumbnails[2]);
+            } else {
+              $canonical_object = '<img src="'.$data->thumbnails[2].'"/>';
+            }
+          }
+        }
+        $map_html .= " data-media-content='".$canonical_object."'";
+
+        $map_html .= "></div>";
+
       } else {
-        $location = $data->geographic[0];
+        $map_html = $errors['shortcodes']['fail'];
+      }
+    }
+    if ($repo == "wp"){
+      $post = get_post($pid);
+      $url = $post->guid;
+      $title = $post->post_title;
+      $description = $post->post_excerpt;
+      $custom = get_post_custom($pid);
+      $coordinates = $custom['_map_coords'][0];
+      $data = new StdClass;
+      $data->mods = new StdClass;
+      $data->mods->Title = array($post->post_title);
+      $abs = "Abstract/Description";
+      $data->mods->$abs = array($post->post_excerpt);
+      $data->canonical_object = new StdClass;
+      $url = $post->guid;
+      $data->canonical_object->$url = "Master Image";
+      if(!is_numeric($coordinates[0])) {
+        $location = $coordinates;
         $locationUrl = "http://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
         $locationData = get_response($locationUrl);
         $locationData = json_decode($locationData);
@@ -70,11 +134,8 @@ function drstk_map( $atts ){
           $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
         }
       }
-
-      $title = $data->mods->Title[0];
-      $permanentUrl = 'Permanent URL';
-      $permanentUrl = $data->mods->$permanentUrl;
-      $map_html .= "<div class='coordinates' data-pid='".$pid."' data-url='".$permanentUrl[0]."' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."'";
+      $permanentUrl = drstk_home_url() . "?attachment_id=".$post->ID;
+      $map_html .= "<div class='coordinates' data-pid='".$pid."' data-url='".$permanentUrl."' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."'";
 
       if (isset($atts['metadata'])){
         $map_metadata = '';
@@ -92,19 +153,16 @@ function drstk_map( $atts ){
       $canonical_object = "";
       if (isset($data->canonical_object)){
         foreach($data->canonical_object as $key=>$val){
-          if ($val == 'Video File' || $val == 'Audio File'){
-            $canonical_object = insert_jwplayer($key, $val, $data, $data->thumbnails[2]);
+          if ($val == 'Video File' || $val == 'Audio File'){ //change to check mime type
+            $canonical_object = insert_jwplayer($key, $val, $data, $data->thumbnails[2]); //probably going to need to update this function
           } else {
-            $canonical_object = '<img src="'.$data->thumbnails[2].'"/>';
+            $canonical_object = '<img src="'.$post->guid.'"/>';
           }
         }
       }
       $map_html .= " data-media-content='".$canonical_object."'";
 
       $map_html .= "></div>";
-
-    } else {
-      $map_html = $errors['shortcodes']['fail'];
     }
   }
 
