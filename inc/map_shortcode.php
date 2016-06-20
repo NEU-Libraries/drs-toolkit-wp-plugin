@@ -124,7 +124,15 @@ function drstk_map( $atts ){
       $data->mods->$abs = array($post->post_excerpt);
       $data->canonical_object = new StdClass;
       $url = $post->guid;
-      $data->canonical_object->$url = "Master Image";
+      if (strpos($post->post_mime_type, "audio") !== false){
+        $type = "Audio File";
+      } else if (strpos($post->post_mime_type, "video") !== false){
+        $type = "Video File";
+      } else {
+        $type = "Master Image";
+      }
+      $data->canonical_object->$url = $type;
+      $data->id=$post->ID;
       if(!is_numeric($coordinates[0])) {
         $location = $coordinates;
         $locationUrl = "http://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
@@ -153,8 +161,8 @@ function drstk_map( $atts ){
       $canonical_object = "";
       if (isset($data->canonical_object)){
         foreach($data->canonical_object as $key=>$val){
-          if ($val == 'Video File' || $val == 'Audio File'){ //change to check mime type
-            $canonical_object = insert_jwplayer($key, $val, $data, $data->thumbnails[2]); //probably going to need to update this function
+          if ($val == 'Video File' || $val == 'Audio File'){
+            $canonical_object = insert_jwplayer($key, $val, $data, null); //TODO: this doesn't work yet
           } else {
             $canonical_object = '<img src="'.$post->guid.'"/>';
           }
@@ -164,7 +172,58 @@ function drstk_map( $atts ){
 
       $map_html .= "></div>";
     }
+
+    if ($repo == "dpla"){
+      $url = "http://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
+      $data = get_response($url);
+      $data = json_decode($data);
+      $url = $data->docs[0]->object;
+      $title = $data->docs[0]->sourceResource->title;
+      $description = $data->docs[0]->sourceResource->description;
+      $data->mods = new StdClass;
+      $data->mods->Title = array($title);
+      $abs = "Abstract/Description";
+      $data->mods->$abs = $description;
+      $cre = "Creator,Contributor";
+      $data->mods->$cre = $data->docs[0]->sourceResource->creator;
+      $date = "Date Created";
+      $data->mods->$date = array($data->docs[0]->sourceResource->date->displayDate);
+      $data->canonical_object = new StdClass;
+      $data->canonical_object->$url = "Master Image";
+      if(!isset($data->docs[0]->sourceResource->spatial[0]->coordinates)) {
+        $location = $data->docs[0]->sourceResource->spatial[0]->name . $data->docs[0]->sourceResource->spatial[0]->state;
+        $locationUrl = "http://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
+        $locationData = get_response($locationUrl);
+        $locationData = json_decode($locationData);
+        if (!isset($locationData->error)) {
+          $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
+        }
+      } else {
+        $coordinates = $data->docs[0]->sourceResource->spatial[0]->coordinates;
+      }
+      $permanentUrl = drstk_home_url() . "?attachment_id=".$data->docs[0]->id;
+      $map_html .= "<div class='coordinates' data-pid='".$pid."' data-url='".$permanentUrl."' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."'";
+
+      if (isset($atts['metadata'])){
+        $map_metadata = '';
+        $metadata = explode(",",$atts['metadata']);
+        foreach($metadata as $field){
+          if (isset($data->mods->$field)) {
+            $this_field = $data->mods->$field;
+            if (isset($this_field[0])) {
+              $map_metadata .= $this_field[0] . "<br/>";
+            }
+          }
+        }
+        $map_html .= " data-metadata='".$map_metadata."'";
+      }
+      $canonical_object = '<img src="'.$url.'"/>';
+      $map_html .= " data-media-content='".$canonical_object."'";
+
+      $map_html .= "></div>";
+    }
   }
+
 
   if (isset($atts['custom_map_urls']) && ($atts['custom_map_urls'] != '')) {
     $custom_map_urls = explode(",",$atts['custom_map_urls']);
