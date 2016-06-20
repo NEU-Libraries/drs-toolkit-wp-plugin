@@ -711,7 +711,7 @@ function drstk_get_repo_from_pid($pid){
   } else if ($arr[0] == "wp"){
     $repo = "wp";
   } else if ($arr[0] == "dpla"){
-    $repo == "dpla";
+    $repo = "dpla";
   } else {
     $repo = NULL;
   }
