@@ -283,7 +283,11 @@ function addPopupsToItems(items, map, colorGroups, home_url) {
                 title: item.title,
                 icon: icon
             });
-        var popupContent = "<a href='./item/" + item.pid + "' target='_blank'>" + item.title + "</a><br/>";
+        var url = item.url;
+        if (url.indexOf("hdl.handle") > -1){
+          url = './item/' + item.pid;
+        }
+        var popupContent = "<a href='" + url + "' target='_blank'>" + item.title + "</a><br/>";
 
         if (item.metadata) {
             popupContent += item.metadata
