@@ -58,6 +58,27 @@ function drstk_gallery( $atts ){
        $data->full_title_ssi = $post->post_title;
        $data->abstract_tesim = array($post->post_excerpt);
      }
+     if ($repo == "dpla"){
+       $url = "http://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
+       $dpla = get_response($url);
+       $dpla = json_decode($dpla);
+       $url = $dpla->docs[0]->object;
+       $title = $dpla->docs[0]->sourceResource->title;
+       if (isset($dpla->docs[0]->sourceResource->description)){
+         $description = $dpla->docs[0]->sourceResource->description;
+       } else {
+         $description = "";
+       }
+       $master = $url;
+       $thumbnail = $url;
+       $data = new StdClass;
+       $data->full_title_ssi = $title;
+       $data->abstract_tesim = array($description);
+       if (isset($dpla->docs[0]->sourceResource->creator)){
+         $data->creator_tesim = array($dpla->docs[0]->sourceResource->creator);
+       }
+       $data->date_ssi = $dpla->docs[0]->sourceResource->date->displayDate;
+     }
        if (!isset($data->error)){
         $pid = $id;
          $this_height = getimagesize($thumbnail);
@@ -81,6 +102,7 @@ function drstk_gallery( $atts ){
          } else {
            $img_html .= " data-src='".$thumbnail."'";
          }
+         $img_html .= " data-height='".$this_height."'";
          $img_html .= "  alt='".$title."'></a>";
          if (isset($atts['caption']) && $atts['caption'] == "on"){
            $img_metadata = "";
@@ -92,7 +114,11 @@ function drstk_gallery( $atts ){
                  if (isset($this_field)){
                    if (is_array($this_field)){
                      foreach($this_field as $val){
-                       $img_metadata .= $val ."<br/>";
+                       if (is_array($val)){
+                        $img_metadata .= implode("<br/>",$val)."<br/>";
+                       } else {
+                         $img_metadata .= $val ."<br/>";
+                       }
                      }
                    } else {
                      $img_metadata .= $this_field . "<br/>";
@@ -124,7 +150,11 @@ function drstk_gallery( $atts ){
               if ($key != "all_text_timv" && $key != "object_profile_ssm"){
                 if (is_array($field)){
                   foreach($field as $key=>$field_val){
-                    $img_html .= $field_val . "<br/>";
+                    if (is_array($field_val)){
+                      $img_html .= implode("<br/>", $field_val)."<br/>";
+                    } else {
+                      $img_html .= $field_val . "<br/>";
+                    }
                   }
                 } else {
                   $img_html .= $field . "<br/>";
