@@ -75,7 +75,7 @@ function drstk_timeline( $atts ){
         if ($text == NULL || $text == ""){
           $text = "<p>&nbsp;</p>";
         }
-        $caption = htmlentities($data->mods->Title[0]);
+        $caption = "";
         $headline = htmlentities($data->mods->Title[0]);
 
         $keys = (array)$key_date;
@@ -83,7 +83,7 @@ function drstk_timeline( $atts ){
         $key_date_explode = explode("/",$just_keys[0]);
 
 
-        $timeline_html .= "<div class=\"timelineclass\" data-url=\"".$thumbnail_url."\" data-caption=\"".$caption."\" data-credit=\" \" data-year=\"".$key_date_explode[0]."\" data-month=\"".$key_date_explode[1]."\" data-day=\"".$key_date_explode[2]."\" data-headline=\"".$headline."\" data-text=\"".$text."\">";
+        $timeline_html .= "<div class=\"timelineclass\" data-url=\"".$thumbnail_url."\" data-caption=\"".$caption."\" data-credit=\" \" data-year=\"".$key_date_explode[0]."\" data-month=\"".$key_date_explode[1]."\" data-day=\"".$key_date_explode[2]."\" data-headline=\"".$headline."\" data-text=\"".$text."\" data-pid=\"".$pid."\">";
         $timeline_html .= "</div>";
       }else {
         $timeline_html = $errors['shortcodes']['fail'];
@@ -93,11 +93,10 @@ function drstk_timeline( $atts ){
       } else {
         $present_id_color = NULL;
       }
-      $just_keys = array_keys($keys);
-  	  $index_color_pair[$just_keys[0]] = $present_id_color;
+  	  $index_color_pair[str_replace(":","",$pid)] = $present_id_color;
     }
     if ($repo == "wp"){
-      $timeline_custom_html = "";
+      if (!isset($timeline_custom_html)){$timeline_custom_html = "";}
       $post = get_post($pid);
       $url = $post->guid;
       $title = $post->post_title;
@@ -110,9 +109,58 @@ function drstk_timeline( $atts ){
       $day = $date[2];
       if (isset($current_color_code_id_values["wp:".$pid])){
         $colorGroup = $current_color_code_id_values["wp:".$pid];
-        $index_color_pair["wp:".$pid] = $colorGroup;
+        $index_color_pair["wp".$pid] = $colorGroup;
       }
-      $timeline_custom_html .= "<div class='timelineclass' data-credit='' data-url=".$url." data-year='".$year."' data-month='".$month."' data-day='".$day."' data-caption='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."' data-headline='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."' data-text='".htmlspecialchars($description, ENT_QUOTES, 'UTF-8')."'";
+      $timeline_custom_html .= "<div class='timelineclass' data-credit='' data-url=".$url." data-year='".$year."' data-month='".$month."' data-day='".$day."' data-caption='' data-headline='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."' data-text='".htmlspecialchars($description, ENT_QUOTES, 'UTF-8')."' data-pid='wp".$post->ID."'";
+      $timeline_custom_html .= "></div>";
+    }
+    if ($repo == "dpla"){
+      if (!isset($timeline_custom_html)){$timeline_custom_html = "";}
+      $data = get_response("http://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7");
+      $data = json_decode($data);
+      if (isset($data->docs[0]->object)){
+        $url = $data->docs[0]->object;
+      } else {
+        $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+      }
+      $title = $data->docs[0]->sourceResource->title[0];
+      if (isset($data->docs[0]->sourceResource->description)){
+        $description = $data->docs[0]->sourceResource->description[0];
+      } else {
+        $description = "";
+      }
+      $text = $description;
+      $data->mods = new StdClass;
+      $abs = "Abstract/Description";
+      $data->mods->$abs = $description;
+      if (isset($data->docs[0]->sourceResource->creator)){
+        $data->mods->Creator = $data->docs[0]->sourceResource->creator;
+      }
+      if (isset($atts['metadata'])){
+        $timeline_metadata = '';
+        $metadata = explode(",",$atts['metadata']);
+        foreach($metadata as $field){
+          if (isset($data->mods->$field)) {
+            $this_field = $data->mods->$field;
+            if (is_array($this_field)) {
+              $timeline_metadata .= $this_field[0] . "<br/>";
+            } else {
+              $timeline_metadata .= $this_field . "<br/>";
+            }
+          }
+        }
+        $text = htmlentities($timeline_metadata);
+      }
+      $date = $data->docs[0]->sourceResource->date->displayDate;
+      $date = explode("-", $date);
+      $year = $date[0];
+      $month = 1;
+      $day = 1;
+      if (isset($current_color_code_id_values["dpla:".$pid])){
+        $colorGroup = $current_color_code_id_values["dpla:".$pid];
+        $index_color_pair["dpla".$pid] = $colorGroup;
+      }
+      $timeline_custom_html .= "<div class='timelineclass' data-url=".$url." data-year='".$year."' data-month='".$month."' data-day='".$day."' data-caption=' ' data-headline='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."' data-text='".$text."' data-pid='dpla".$pid."' data-colorGroup=".$colorGroup."";
       $timeline_custom_html .= "></div>";
     }
   }
@@ -127,7 +175,7 @@ function drstk_timeline( $atts ){
   }
 
   if (isset($atts['custom_timeline_urls']) && ($atts['custom_timeline_urls'] != '')) {
-    $timeline_custom_html = "";
+    if (!isset($timeline_custom_html)){$timeline_custom_html = "";}
     $custom_timeline_urls = explode(",",$atts['custom_timeline_urls']);
     $custom_timeline_titles = explode(",",$atts['custom_timeline_titles']);
     $custom_timeline_descriptions = explode(",",$atts['custom_timeline_descriptions']);
