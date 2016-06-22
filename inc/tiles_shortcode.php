@@ -55,6 +55,21 @@ function drstk_tiles( $atts ){
       $data->full_title_ssi = $post->post_title;
       $data->abstract_tesim = array($post->post_excerpt);
     }
+    if ($repo == "dpla"){
+      $url = "http://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
+      $dpla = get_response($url);
+      $dpla = json_decode($dpla);
+      $url = $dpla->docs[0]->object;
+      $title = $dpla->docs[0]->sourceResource->title;
+      $description = $dpla->docs[0]->sourceResource->description;
+      $master = $url;
+      $thumbnail = $url;
+      $data = new StdClass;
+      $data->full_title_ssi = array($title);
+      $data->abstract_tesim = array($description);
+      $data->creator_tesim = array($dpla->docs[0]->sourceResource->creator);
+      $data->date_ssi = array($dpla->docs[0]->sourceResource->date->displayDate);
+    }
     $type = isset($atts['type']) ? $atts['type'] : $atts['tile-type'];
     if (!isset($data->error)){
       // $pid = $data->id;
@@ -67,7 +82,11 @@ function drstk_tiles( $atts ){
             if (isset($this_field)){
               if (is_array($this_field)){
                 foreach($this_field as $val){
-                  $img_metadata .= $val ."<br/>";
+                  if (is_array($val)){
+                    $img_metadata .= implode("<br/>",$val) . "<br/>";
+                  } else {
+                    $img_metadata .= $val ."<br/>";
+                  }
                 }
               } else {
                 $img_metadata .= $this_field . "<br/>";
