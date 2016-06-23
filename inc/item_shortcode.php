@@ -72,6 +72,38 @@ function drstk_item( $atts ){
     $data->mods->caption = array($post->post_excerpt);
     $data->id = $post->ID;
   }
+  if ($repo == "dpla"){
+    $dpla = get_response("http://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7");
+    $dpla = json_decode($dpla);
+    if (isset($dpla->docs[0]->object)){
+      $url = $dpla->docs[0]->object;
+    } else {
+      $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+    }
+    $data = new StdClass;
+    $data->canonical_object = new StdClass;
+    $type = "Master Image";
+    $data->canonical_object->$url = $type;
+    $thumbnail = $url;
+    $master = null;
+    $data->mods = new StdClass;
+    $title = array($dpla->docs[0]->sourceResource->title);
+    $data->mods->Title = $title;
+    if (isset($dpla->docs[0]->sourceResource->description)){
+      $description = $dpla->docs[0]->sourceResource->description;
+    } else {
+      $description = "";
+    }
+    $abs = "Abstract/Description";
+    $data->mods->$abs = $description;
+    if (isset($dpla->docs[0]->sourceResource->creator)){
+      $data->mods->Creator = array($dpla->docs[0]->sourceResource->creator);
+    }
+    $dat = "Date Created";
+    $data->mods->$dat = array($dpla->docs[0]->sourceResource->date->displayDate);
+    $data->id = $pid;
+  }
+
 
 
   $html = "<div class='drs-item'>";
@@ -105,7 +137,7 @@ function drstk_item( $atts ){
         $html .= " data-align='".$atts['align']."'";
       }
 
-      if (isset($atts['zoom']) && $atts['zoom'] == 'on'){
+      if (isset($atts['zoom']) && $atts['zoom'] == 'on' && $master != null){
         $html .= " data-zoom-image='".$master."' data-zoom='on'";
         if (isset($atts['zoom_position'])){
           $html .= " data-zoom-position='".$atts['zoom_position']."'";
