@@ -11,6 +11,12 @@ function get_item_details($data, $meta_options){
     return false;
   }
   $html = '';
+  if ($repo == "wp"){
+    $abs = "Abstract/Description";
+    $data->mods->$abs = $data->post_excerpt;
+    $datec = "Date created";
+    $data->mods->$datec = $data->post_date;
+  }
   if (isset($data->mods)){ //mods
     $html .= parse_metadata($data->mods, $meta_options, $html);
   } else if (isset($data->_source)){//solr_only = true
@@ -123,6 +129,12 @@ function get_item_title(){
     }
     $data->mods->Title = $title;
     echo $title[0];
+  } else if ($repo == "wp"){
+    $item_pid = explode(":",$item_pid)[1];
+    $data = get_post($item_pid);
+    $data->mods = new StdClass;
+    $data->mods->Title = array($data->post_title);
+    echo $data->post_title;
   }
 }
 
@@ -170,6 +182,31 @@ function get_item_image(){
       $img = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
     } //not doing canonical object because we can't do any zoom or media playing anyway
   }
+  if ($repo == "wp"){
+    $meta = wp_get_attachment_metadata($item_pid); //get sizes
+    $data->canonical_object = new StdClass;
+    $url = $data->guid;
+    if (strpos($data->post_mime_type, "audio") !== false){
+      $type = "Audio File";
+    } else if (strpos($data->post_mime_type, "video") !== false){
+      $type = "Video File";
+    } else {
+      $type = "Master Image";
+      $meta = wp_get_attachment_metadata($item_pid); //get sizes
+      $thumb_base = wp_get_attachment_thumb_url($item_pid);
+      if (isset($meta['sizes'])){
+        $thumb_base = explode("/",$thumb_base);
+        $arr = array_pop($thumb_base);
+        $thumb_base = implode("/", $thumb_base);
+        if (isset($meta['sizes']['large'])){
+          $img = $thumb_base."/".$meta['sizes']['large']['file'];
+        } else {
+          $img = $thumb_base."/".$meta['sizes']['medium']['file'];
+        }
+      }
+    }
+    $data->canonical_object->$url = $type;
+  }
   if (isset($data->thumbnails)){
     $img = $data->thumbnails[count($data->thumbnails)-2];
   }
@@ -177,7 +214,11 @@ function get_item_image(){
     $val = current($data->canonical_object);
     $key = key($data->canonical_object);
     if ($val == 'Master Image'){
-      $zoom_img = $data->thumbnails[count($data->thumbnails)-1];
+      if ($repo == "wp"){
+        $zoom_img = $data->guid;
+      } else {
+        $zoom_img = $data->thumbnails[count($data->thumbnails)-1];
+      }
       echo  '<img id="drs-item-img" src="'.$img.'" data-zoom-image="'.$zoom_img.'"/>';
       echo '<script type="text/javascript"> jQuery("#drs-item-img").elevateZoom();</script>';
     } else if ($val == 'PDF'){
@@ -194,7 +235,11 @@ function get_item_image(){
         echo  '<img id="drs-item-img" src="'.$img.'" />';
       }
     } else if ($val == 'Video File' || $val == 'Audio File'){
-      print(insert_jwplayer($key, $val, $data, $img));
+      if ($repo == "wp"){
+        print(do_shortcode('[video src="'.$data->guid.'"]'));
+      } else {
+        print(insert_jwplayer($key, $val, $data, $img));
+      }
     }
   } else {
     //case where there is no canonical_objects set
