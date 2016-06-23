@@ -116,7 +116,11 @@ function get_item_title(){
       return false;
     }
     $data->mods = new StdClass;
-    $title = array($data->docs[0]->sourceResource->title);
+    if (is_array($data->docs[0]->sourceResource->title)){
+      $title = $data->docs[0]->sourceResource->title;
+    } else {
+      $title = array($data->docs[0]->sourceResource->title);
+    }
     $data->mods->Title = $title;
     echo $title[0];
   }
@@ -376,116 +380,63 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
 function map_dpla_to_mods($data, $meta_options){
   global $all_meta_options;
   $sourceResource = $data->docs[0]->sourceResource;
-  $modsname = "mods:mods";
-  if (isset($data->docs[0]->originalRecord->metadata->$modsname)){
-    $mods = $data->docs[0]->originalRecord->metadata->$modsname;
-  } else {
-    $mods = $sourceResource;
-  }
+
   if (isset($sourceResource->creator)){
     $data->mods->Creator = $sourceResource->creator;
   }
+  if (isset($sourceResource->contributor)){
+    $data->mods->Contributor = $sourceResource->contributor;
+  }
+  if (isset($sourceResource->publisher)){
+    $data->mods->Publisher = $sourceResource->publisher;
+  }
+  if(isset($sourceResource->date)){
+    if(isset($sourceResource->date->displayDate)){
+      $datec = "Date created";
+      $data->mods->$datec = $sourceResource->date->displayDate;
+    }
+  }
   $type = "Type of Resource";
-  $data->mods->$type = "";
-  $typename = "mods:typeOfResource";
-  if (isset($mods->$typename)){
-    $data->mods->$type = $mods->$typename;
-  } else if (isset($sourceResource->type)){
+  if (isset($sourceResource->type)){
+    $data->mods->$type = "";
     $data->mods->$type = $sourceResource->type;
   }
-  $data->mods->Genre = "";
-  $genrename = "mods:genre";
-  if (isset($mods->$genrename)){
-    foreach($mods->$genrename as $key=>$genre){
-      $textname = "#text";
-      $data->mods->Genre .= $genre->$textname ."<br/>";
-    }
-  }
-  $descname = "Physical Description";
-  $modsdesc = "mods:physicalDescription";
-  if (isset($mods->$modsdesc)){
-    foreach($mods->$modsdesc as $key=>$val){
-      if (strpos($key, "digitalOrigin") !== false || strpos($key, "extent") !== false){
-        $data->mods->$descname = $val . "<br/>";
-      }
-    }
-  }
-  $absname = "Abstract/Description";
-  $data->mods->$absname = "";
-  $modsabs = "mods:abstractDescription";//notsure on this
-  if (isset($mods->$modsabs)){
-    //TODO
-  } else if (isset($sourceResource->description)){
+  if (isset($sourceResource->description)){
+    $absname = "Abstract/Description";
     $data->mods->$absname = implode("<br/>",$sourceResource->description);
   }
-
-  $subjname = "Subjects and keywords";
-  $modssubj = "mods:subject";
-  if (isset($mods->$modssubj)){
-    $data->mods->$subjname = array();
-    foreach($mods->$modssubj as $key=>$val){
-      $modstop = "mods:topic";
-      array_push($data->mods->$subjname, $val->$modstop);
-    }
-  } else if (isset($sourceResource->subject)){
+  if (isset($sourceResource->subject)){
+    $subjname = "Subjects and keywords";
     $data->mods->$subjname = array();
     foreach($sourceResource->subject as $key=>$val){
       array_push($data->mods->$subjname, $val->name);
     }
   }
-  $relname = "Related item";
-  $modsrel = "mods:relatedItem";
-  if (isset($mods->$modsrel)){
-    $data->mods->$relname = array();
-    foreach($mods->$modsrel as $key=>$val){
-      $modstitlei = "mods:titleInfo";
-      $modstitle = "mods:title";
-      if (isset($val->$modstitle)){
-        array_push($data->mods->$relname, $val->$modstitle);
-      } else if (isset($val->$modstitlei)){
-        array_push($data->mods->$relname, $val->$modstitlei->$modstitle);
-      }
+  if (isset($sourceResource->format)){
+    $data->mods->Format = $sourceResource->format;
+  }
+  if (isset($sourceResource->language)){
+    $data->mods->Language = array();
+    foreach($sourceResource->language as $key=>$val){
+      array_push($data->mods->Language, $val->name);
     }
   }
-  $modsid = "mods:identifier";
-  if (isset($mods->$modsid)){
-    foreach($mods->$modsid as $key=>$val){
-      $text = "#text";
-      if($val->type == "uri" || $val->type == "hdl" || $val->type == "handle"){
-        $data->mods->uri = array($val->$text);
-      } else {
-        $type = $val->type;
-        $data->mods->$type = array($val->$text);
-      }
-    }
+  $relname = "Related item";
+  if (isset($sourceResource->relation)){
+    $data->mods->$relname = array();
+    array_push($data->mods->$relname, $sourceResource->relation);
+  }
+  if (isset($sourceResource->rights)){
+    $data->mods->Rights = $sourceResource->rights;
   }
   $permname = "Permanent URL";
   $data->mods->$permname = array($data->docs[0]->isShownAt);
-  $modsacc = "mods:accessCondition";
-  $usename = "Use and reproduction";
-  $data->mods->$usename = array();
-  if(isset($mods->$modsacc)){
-    foreach($mods->$modsacc as $key=>$val){
-      if ($val->type == "use and reproduction"){
-        array_push($data->mods->$usename, $val->$text);
-      } else {
-        $type = $val->type;
-        $data->mods->$type = $val->$text;
-      }
-    }
-  } else if (isset($sourceResource->rights)){
-    $data->mods->Rights = $sourceResource->rights;
+  if(isset($sourceResource->identifier)){
+    $data->mods->Identifier = $sourceResource->identifier;
   }
-  //Location - from mods:location TODO
-  //Format - from mods:format or sourceResource format TODO
-  //Date created - from mods:originInfo > mods:dateCreated TODO
-  //Date issued TODO
-  //Copyright date TODO
-  // $data->mods->Language = TODO
-  // "Table of contents" TODO
-  //"Notes" TODO
-  // $data->mods->Contributor = TODO
-  // $data->mods->Publisher = TODO
 
+
+  //FIELDS not connected because they would have to come from the originalRecord which has incredibly unreliable JSON formatting
+  // Location, date issued, copyright date, table of contents, notes, genre, phsyical description
   return $data->mods;
 }
