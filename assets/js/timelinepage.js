@@ -27,10 +27,11 @@ jQuery(document).ready(function($) {
 		var timelineClass = '.timelineclass';
 
 		jqArray.each(function(index) {
+      var headline = "<a href='"+genericRetrieval(index, timelineClass, 'full')+"'>"+genericRetrieval(index, timelineClass, 'headline')+"</a>";
 			items.push({
 				media: {url : genericRetrieval(index, timelineClass, 'url'), caption:genericRetrieval(index, timelineClass, 'caption'), credit:genericRetrieval(index, timelineClass, 'caption')},
 				start_date: {year:genericRetrieval(index, timelineClass, 'year'), month:genericRetrieval(index, timelineClass, 'month'), day:genericRetrieval(index, timelineClass, 'day')},
-				text: {headline:genericRetrieval(index, timelineClass, 'headline'), text:genericRetrieval(index, timelineClass, 'text')},
+				text: {headline:headline, text:genericRetrieval(index, timelineClass, 'text')},
         unique_id: genericRetrieval(index, timelineClass, 'pid').replace(":","")
 		 });
 	 });
