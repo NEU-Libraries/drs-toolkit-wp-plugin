@@ -30,26 +30,30 @@ function drstk_tiles( $atts ){
       $post = get_post($pid);
       $data = new StdClass;
       $meta = wp_get_attachment_metadata($pid); //get sizes
-      $thumb_base = wp_get_attachment_thumb_url($pid);
-      $thumb_base = explode("/",$thumb_base);
-      $arr = array_pop($thumb_base);
-      $thumb_base = implode("/", $thumb_base);
-      if ($num == 1){ $thumbnail = $thumb_base."/".$meta['sizes']['thumbnail']['file'];}
-      if ($num == 2){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
-      if ($num == 3){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
-      if ($num == 4){
-       if (isset($meta['sizes']['large'])){
-         $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
-       } else {
-         $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
-       }
-      }
-      if ($num == 5){
-       if (isset($meta['sizes']['large'])){
-         $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
-       } else {
-         $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
-       }
+      if (isset($meta['sizes'])){
+        $thumb_base = wp_get_attachment_thumb_url($pid);
+        $thumb_base = explode("/",$thumb_base);
+        $arr = array_pop($thumb_base);
+        $thumb_base = implode("/", $thumb_base);
+        if ($num == 1){ $thumbnail = $thumb_base."/".$meta['sizes']['thumbnail']['file'];}
+        if ($num == 2){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
+        if ($num == 3){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
+        if ($num == 4){
+         if (isset($meta['sizes']['large'])){
+           $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
+         } else {
+           $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+         }
+        }
+        if ($num == 5){
+         if (isset($meta['sizes']['large'])){
+           $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
+         } else {
+           $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+         }
+        }
+      } else {
+        $thumbnail = drstk_home_url()."/wp-includes/images/media/video.png";
       }
       $master = $post->guid;
       $data->full_title_ssi = $post->post_title;
@@ -65,7 +69,11 @@ function drstk_tiles( $atts ){
         $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
       }
       $title = $dpla->docs[0]->sourceResource->title;
-      $description = $dpla->docs[0]->sourceResource->description;
+      if (isset($dpla->docs[0]->sourceResource->description)){
+        $description = $dpla->docs[0]->sourceResource->description;
+      } else {
+        $description = "";
+      }
       $master = $url;
       $thumbnail = $url;
       $data = new StdClass;

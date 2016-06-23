@@ -5,9 +5,9 @@ add_shortcode( 'drstk_media', 'drstk_collection_playlist' );
 function drstk_collection_playlist($atts){
   global $errors;
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
-  // if($cache) {
-  //   return $cache;
-  // }
+  if($cache) {
+    return $cache;
+  }
     $collection = array_map('trim', explode(',', $atts['id']));
     $playlists = '';
     if (isset($atts['height']) && $atts['height'] != 0){

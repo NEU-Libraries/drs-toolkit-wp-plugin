@@ -83,7 +83,7 @@ function drstk_timeline( $atts ){
         $key_date_explode = explode("/",$just_keys[0]);
 
 
-        $timeline_html .= "<div class=\"timelineclass\" data-url=\"".$thumbnail_url."\" data-caption=\"".$caption."\" data-credit=\" \" data-year=\"".$key_date_explode[0]."\" data-month=\"".$key_date_explode[1]."\" data-day=\"".$key_date_explode[2]."\" data-headline=\"".$headline."\" data-text=\"".$text."\" data-pid=\"".$pid."\">";
+        $timeline_html .= "<div class=\"timelineclass\" data-url=\"".$thumbnail_url."\" data-caption=\"".$caption."\" data-credit=\" \" data-year=\"".$key_date_explode[0]."\" data-month=\"".$key_date_explode[1]."\" data-day=\"".$key_date_explode[2]."\" data-headline=\"".$headline."\" data-text=\"".$text."\" data-pid=\"".$pid."\" data-full=\"".drstk_home_url()."item/".$pid."\">";
         $timeline_html .= "</div>";
       }else {
         $timeline_html = $errors['shortcodes']['fail'];
@@ -99,20 +99,27 @@ function drstk_timeline( $atts ){
       if (!isset($timeline_custom_html)){$timeline_custom_html = "";}
       $post = get_post($pid);
       $url = $post->guid;
+      if (strpos($data->post_mime_type, "audio") !== false || strpos($data->post_mime_type, "video") !== false){
+        $url = drstk_home_url()."/wp-includes/images/media/video.png";
+      }
       $title = $post->post_title;
       $description = $post->post_excerpt;
       $custom = get_post_custom($pid);
       $date = $custom['_timeline_date'][0];
-      $date = explode("/", $date);
-      $year = $date[0];
-      $month = $date[1];
-      $day = $date[2];
-      if (isset($current_color_code_id_values["wp:".$pid])){
-        $colorGroup = $current_color_code_id_values["wp:".$pid];
-        $index_color_pair["wp".$pid] = $colorGroup;
+      if ($date != ""){
+        $date = explode("/", $date);
+        $year = $date[0];
+        $month = $date[1];
+        $day = $date[2];
+        if (isset($current_color_code_id_values["wp:".$pid])){
+          $colorGroup = $current_color_code_id_values["wp:".$pid];
+          $index_color_pair["wp".$pid] = $colorGroup;
+        }
+        $timeline_custom_html .= "<div class='timelineclass' data-credit='' data-url=".$url." data-year='".$year."' data-month='".$month."' data-day='".$day."' data-caption='' data-headline='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."' data-text='".htmlspecialchars($description, ENT_QUOTES, 'UTF-8')."' data-pid='wp".$post->ID."' data-full='".drstk_home_url()."item/wp:".$post->ID."'";
+        $timeline_custom_html .= "></div>";
+      } else {
+        //no date
       }
-      $timeline_custom_html .= "<div class='timelineclass' data-credit='' data-url=".$url." data-year='".$year."' data-month='".$month."' data-day='".$day."' data-caption='' data-headline='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."' data-text='".htmlspecialchars($description, ENT_QUOTES, 'UTF-8')."' data-pid='wp".$post->ID."'";
-      $timeline_custom_html .= "></div>";
     }
     if ($repo == "dpla"){
       if (!isset($timeline_custom_html)){$timeline_custom_html = "";}
@@ -123,7 +130,10 @@ function drstk_timeline( $atts ){
       } else {
         $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
       }
-      $title = $data->docs[0]->sourceResource->title[0];
+      $title = $data->docs[0]->sourceResource->title;
+      if (is_array($title)){
+        $title = implode("<br/>",$title);
+      }
       if (isset($data->docs[0]->sourceResource->description)){
         $description = $data->docs[0]->sourceResource->description[0];
       } else {
@@ -152,21 +162,34 @@ function drstk_timeline( $atts ){
         $text = htmlentities($timeline_metadata);
       }
       if (isset($data->docs[0]->sourceResource->rights)){
-        $credit = $data->docs[0]->sourceResource->rights;
+        if (is_array($data->docs[0]->sourceResource->rights)){
+          $credit = implode("<br/>",$data->docs[0]->sourceResource->rights);
+        } else {
+          $credit = $data->docs[0]->sourceResource->rights;
+        }
       } else {
         $credit = "";
       }
-      $date = $data->docs[0]->sourceResource->date->displayDate;
-      $date = explode("-", $date);
-      $year = $date[0];
-      $month = 1;
-      $day = 1;
-      if (isset($current_color_code_id_values["dpla:".$pid])){
-        $colorGroup = $current_color_code_id_values["dpla:".$pid];
-        $index_color_pair["dpla".$pid] = $colorGroup;
+      if (isset($data->docs[0]->sourceResource->date->displayDate) && $data->docs[0]->sourceResource->date->displayDate != "Unknown"){
+        $date = $data->docs[0]->sourceResource->date->displayDate;
+        $date = explode("-", $date);
+        $year = $date[0];
+        if (strlen($year) > 4){
+          $year = $data->docs[0]->sourceResource->date->begin;
+        }
+        $month = 1;
+        $day = 1;
+        if (isset($current_color_code_id_values["dpla:".$pid])){
+          $colorGroup = $current_color_code_id_values["dpla:".$pid];
+          $index_color_pair["dpla".$pid] = $colorGroup;
+        } else {
+          $colorGroup = "";
+        }
+        $timeline_custom_html .= "<div class='timelineclass' data-credit='".$credit."' data-url=".$url." data-year='".$year."' data-month='".$month."' data-day='".$day."' data-caption=' ' data-headline='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."' data-text='".$text."' data-pid='dpla".$pid."' data-full='".drstk_home_url()."item/dpla:".$pid."' data-colorGroup=".$colorGroup."";
+        $timeline_custom_html .= "></div>";
+      } else {
+        //no date
       }
-      $timeline_custom_html .= "<div class='timelineclass' data-credit='".$credit."' data-url=".$url." data-year='".$year."' data-month='".$month."' data-day='".$day."' data-caption=' ' data-headline='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."' data-text='".$text."' data-pid='dpla".$pid."' data-colorGroup=".$colorGroup."";
-      $timeline_custom_html .= "></div>";
     }
   }
   $color_ids_html_data = '';
