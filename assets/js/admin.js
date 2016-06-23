@@ -874,7 +874,43 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						}
 					});
 				} else if (this.shortcode.get('type') == 'single' && parent == 'dpla'){
-					//TODO - get custom meta fields from DPLA api
+					local_params = this.search_params;
+					var self = this;
+					local_params.q = pid;
+					jQuery.post(dpla_ajax_obj.ajax_url, {
+		         _ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
+		          action: "get_dpla_code",
+		          params: local_params,
+		      }, function(data) {
+						var data = jQuery.parseJSON(data);
+						data = data.docs[0]
+						choices = {}
+						settings = self.shortcode.get('settings');
+						if (data.sourceResource.title){
+							choices["Title"] = "Title"
+						}
+						if (data.sourceResource.description){
+							choices["Abstract/Description"] = "Abstract/Description"
+						}
+						if (data.sourceResource.creator){
+							choices["Creator"] = "Creator"
+						}
+						if (data.sourceResource.date.displayDate){
+							choices["Date Created"] = "Date Created"
+						}
+						oldmeta = settings.where({name:'metadata'});
+						settings.remove(oldmeta);
+						if (Object.keys(choices).length > 0){
+							settings.add({
+								'name':'metadata',
+								'label':'Metadata to Display',
+								'tag':'checkbox',
+								'value':[],
+								'choices':choices,
+							});
+							self.shortcode.set('settings', settings);
+						}
+					});
 				}
 			} else {
 				var remove = this.shortcode.items.where({ pid: pid });
@@ -940,8 +976,12 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		},
 
 		getDPLAitems: function( ){
+			if (this.current_tab == 4){ this.search_params.avfilter = true; } else { delete this.search_params.avfilter; }
+			if (this.current_tab == 5){ this.search_params.spatialfilter = true; } else { delete this.search_params.spatialfilter; }
+			if (this.current_tab == 6){ this.search_params.timefilter = true; } else { delete this.search_params.timefilter; }
 			var self = this;
 			tab_name = this.tabs[this.current_tab];
+			console.log(this.search_params);
       jQuery.post(dpla_ajax_obj.ajax_url, {
          _ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
           action: "get_dpla_code",
@@ -958,6 +998,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						 jQuery("#dpla #sortable-"+tab_name+"-list").append(view.el);
 						 if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
 							 jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
+						 }
+						 if (self.current_tab == 6){
+							jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: "+item.sourceResource.date.dislpayDate+"</p>");
 						 }
            });
 					 if (self.search_params.q != ""){//too much pagination if there isn't a query
@@ -1093,9 +1136,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					}
 				});
 			});
-			_.each(_.clone(this.shortcode.items.where({repo:'dpla'})), function(item){
-				//TO DO - check for valid time meta
-			});
 			var self = this;
 			key_date_list.forEach(function(each_key){
 				start_date = self.shortcode.get('settings').where({name:'start-date'})[0];
@@ -1131,9 +1171,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						}
 					}
 				});
-			});
-			_.each(_.clone(this.shortcode.items.where({repo:'dpla'})), function(item){
-				//TO DO - check for valid map meta
 			});
 			if (no_map.length > 0){
 				return no_map;
@@ -1179,17 +1216,17 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			} else {
 				multiple = true;
 			}
-			if (this.current_tab == 4){
-				type = ['audio','video'];
-			} else {
-				type = 'image';
-			}
+			// if (this.current_tab == 4){
+			// 	type = ['audio','video'];
+			// } else {
+			// 	type = 'image';
+			// }//TODO shortcodes have to handle wp items which may not have thumbnails and DPLA items which may have thumbnails that fail
 			var self = this;
 			frame = wp.media.frames.drstk_frame = wp.media({
 				title: "Select Images",
-				library: {
-					type: type
-				},
+				// library: {
+				// 	type: type
+				// },
 				button: {
 					text: "Add Selected Images"
 				},
