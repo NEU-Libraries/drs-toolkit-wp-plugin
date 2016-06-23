@@ -59,7 +59,11 @@ function drstk_tiles( $atts ){
       $url = "http://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
       $dpla = get_response($url);
       $dpla = json_decode($dpla);
-      $url = $dpla->docs[0]->object;
+      if (isset($dpla->docs[0]->object)){
+        $url = $dpla->docs[0]->object;
+      } else {
+        $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+      }
       $title = $dpla->docs[0]->sourceResource->title;
       $description = $dpla->docs[0]->sourceResource->description;
       $master = $url;

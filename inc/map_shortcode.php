@@ -177,7 +177,11 @@ function drstk_map( $atts ){
       $url = "http://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
       $data = get_response($url);
       $data = json_decode($data);
-      $url = $data->docs[0]->object;
+      if (isset($data->docs[0]->object)){
+        $url = $data->docs[0]->object;
+      } else {
+        $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+      }
       $title = $data->docs[0]->sourceResource->title;
       $description = $data->docs[0]->sourceResource->description;
       $data->mods = new StdClass;

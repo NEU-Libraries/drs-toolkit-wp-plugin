@@ -151,6 +151,11 @@ function drstk_timeline( $atts ){
         }
         $text = htmlentities($timeline_metadata);
       }
+      if (isset($data->docs[0]->sourceResource->rights)){
+        $credit = $data->docs[0]->sourceResource->rights;
+      } else {
+        $credit = "";
+      }
       $date = $data->docs[0]->sourceResource->date->displayDate;
       $date = explode("-", $date);
       $year = $date[0];
@@ -160,7 +165,7 @@ function drstk_timeline( $atts ){
         $colorGroup = $current_color_code_id_values["dpla:".$pid];
         $index_color_pair["dpla".$pid] = $colorGroup;
       }
-      $timeline_custom_html .= "<div class='timelineclass' data-url=".$url." data-year='".$year."' data-month='".$month."' data-day='".$day."' data-caption=' ' data-headline='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."' data-text='".$text."' data-pid='dpla".$pid."' data-colorGroup=".$colorGroup."";
+      $timeline_custom_html .= "<div class='timelineclass' data-credit='".$credit."' data-url=".$url." data-year='".$year."' data-month='".$month."' data-day='".$day."' data-caption=' ' data-headline='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."' data-text='".$text."' data-pid='dpla".$pid."' data-colorGroup=".$colorGroup."";
       $timeline_custom_html .= "></div>";
     }
   }
