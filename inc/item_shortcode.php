@@ -113,7 +113,11 @@ function drstk_item( $atts ){
   if (isset($atts['display-video']) && isset($data->canonical_object)){
     foreach($data->canonical_object as $key=>$val){
       if (($val == 'Video File' || $val == 'Audio File') && $atts['display-video'] == "true" ){
-        $html .= insert_jwplayer($key, $val, $data, $thumbnail);
+        if ($repo == "wp"){
+          $html .= do_shortcode('[video src="'.$master.'"]');
+        } else {
+          $html .= insert_jwplayer($key, $val, $data, $thumbnail);
+        }
         $jwplayer = true;
       }
     }
