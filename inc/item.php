@@ -1,12 +1,12 @@
 <?php
-global $item_pid, $data, $collection, $meta_options, $errors;
+global $item_pid, $data, $collection, $meta_options, $errors, $repo, $all_meta_options;
 $collection = drstk_get_pid();
 $meta_options = get_option('drstk_item_page_metadata');
 $assoc_meta_options = drstk_get_assoc_meta_options();
 $errors = drstk_get_errors();
 
 function get_item_details($data, $meta_options){
-  global $errors;
+  global $errors, $repo;
   if (check_for_bad_data($data)){
     return false;
   }
@@ -15,6 +15,9 @@ function get_item_details($data, $meta_options){
     $html .= parse_metadata($data->mods, $meta_options, $html);
   } else if (isset($data->_source)){//solr_only = true
     $html .= parse_metadata($data->_source, $meta_options, $html, true);
+  }
+  if ($repo == "dpla"){
+    $html = parse_metadata($data, $meta_options, "", false, true);
   }
   $niec_facets = get_option('drstk_niec_metadata');
   $niec_facets_to_display = array();
@@ -29,7 +32,7 @@ function get_item_details($data, $meta_options){
   return $html;
 }
 
-function parse_metadata($data, $meta_options, $html, $solr=false){
+function parse_metadata($data, $meta_options, $html, $solr=false, $dpla=false){
   if ($solr){//this is necessary to not use default solr ordering
     $arr1 = (array) $data;
     $arr2 = $meta_options;
@@ -38,9 +41,11 @@ function parse_metadata($data, $meta_options, $html, $solr=false){
       $data[$val] = $arr1[$val];
     }
   }
-
+  if ($dpla){
+    $data = map_dpla_to_mods($data, $meta_options);
+  }
   foreach($data as $key => $value){
-    if (($meta_options == NULL) || in_array($key, $meta_options) || array_key_exists($key, $meta_options)){
+    if (($meta_options == NULL) || array_key_exists($key, $meta_options) || in_array($key, $meta_options)){
       $html .= "<div class='drs-field-label'><b>";
       if (!isset($meta_options[$key])){
         $html .= titleize($key);
@@ -73,7 +78,11 @@ function get_download_links(){
   if (check_for_bad_data($data)){
     return false;
   }
-  echo "<br/><h4>Downloads</h4>";
+  if (isset($data->content_objects)){
+    echo "<br/><h4>Downloads</h4>";
+  } else {
+    $data->content_objects = new StdClass;
+  }
   foreach($data->content_objects as $key=>$val){
     if ($val != "Thumbnail Image"){
       if ($val == 'Video File'){
@@ -88,14 +97,29 @@ function get_download_links(){
 }
 
 function get_item_title(){
-  global $item_pid, $data, $url;
-  $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item_pid;
-  $data = get_response($url);
-  $data = json_decode($data);
-  if (check_for_bad_data($data)){
-    return false;
+  global $item_pid, $data, $url, $repo;
+  $repo = drstk_get_repo_from_pid($item_pid);
+  if ($repo == "drs"){
+    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item_pid;
+    $data = get_response($url);
+    $data = json_decode($data);
+    if (check_for_bad_data($data)){
+      return false;
+    }
+    echo $data->mods->Title[0];
+  } else if ($repo == "dpla"){
+    $item_pid = explode(":",$item_pid)[1];
+    $url = "http://api.dp.la/v2/items/".$item_pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
+    $data = get_response($url);
+    $data = json_decode($data);
+    if (check_for_bad_data($data)){
+      return false;
+    }
+    $data->mods = new StdClass;
+    $title = array($data->docs[0]->sourceResource->title);
+    $data->mods->Title = $title;
+    echo $title[0];
   }
-  echo $data->mods->Title[0];
 }
 
 function get_item_breadcrumbs(){
@@ -105,7 +129,11 @@ function get_item_breadcrumbs(){
   }
   $breadcrumb_html = array();
   $end = false;
-  $breadcrumbs = $data->breadcrumbs;
+  if (isset($data->breadcrumbs)){
+    $breadcrumbs = $data->breadcrumbs;
+  } else {
+    $breadcrumbs = new StdClass;
+  }
   if (array_key_exists($collection,$breadcrumbs)){
     foreach($breadcrumbs as $pid=>$title){
       if ($pid == $item_pid){
@@ -126,10 +154,17 @@ function get_item_breadcrumbs(){
 }
 
 function get_item_image(){
-  global $item_pid, $data, $errors;
+  global $item_pid, $data, $errors, $repo;
   if (check_for_bad_data($data)){
     echo check_for_bad_data($data);
     return false;
+  }
+  if ($repo == "dpla"){
+    if (isset($data->docs[0]->object)){
+      $img = $data->docs[0]->object;
+    } else {
+      $img = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+    } //not doing canonical object because we can't do any zoom or media playing anyway
   }
   if (isset($data->thumbnails)){
     $img = $data->thumbnails[count($data->thumbnails)-2];
@@ -231,6 +266,16 @@ function check_for_bad_data($data){
 
 function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) {
   global $errors;
+  $av_type = "";
+  if ($canonical_object_type == 'Video File'){
+    $av_provider = 'video';
+    $av_type = "MP4";
+  }
+  if ($canonical_object_type == 'Audio File'){
+    $av_provider = 'sound';
+    $av_type = "MP3";
+  }
+
   if (strpos($av_pid, "repository.library.northeastern.edu") !== false){
     $av_pid = explode("/", $av_pid);
     $av_pid = end($av_pid);
@@ -256,16 +301,6 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   } else {
     $id_img = 'drs-item-img-'.$data->id;
     $id_video = 'drs-item-video-'.$data->id;
-  }
-
-  $av_type = "";
-  if ($canonical_object_type == 'Video File'){
-    $av_provider = 'video';
-    $av_type = "MP4";
-  }
-  if ($canonical_object_type == 'Audio File'){
-    $av_provider = 'sound';
-    $av_type = "MP3";
   }
 
   if (!isset($av_poster)){
@@ -336,4 +371,121 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   });</script>';
 
   return $html;
+}
+
+function map_dpla_to_mods($data, $meta_options){
+  global $all_meta_options;
+  $sourceResource = $data->docs[0]->sourceResource;
+  $modsname = "mods:mods";
+  if (isset($data->docs[0]->originalRecord->metadata->$modsname)){
+    $mods = $data->docs[0]->originalRecord->metadata->$modsname;
+  } else {
+    $mods = $sourceResource;
+  }
+  if (isset($sourceResource->creator)){
+    $data->mods->Creator = $sourceResource->creator;
+  }
+  $type = "Type of Resource";
+  $data->mods->$type = "";
+  $typename = "mods:typeOfResource";
+  if (isset($mods->$typename)){
+    $data->mods->$type = $mods->$typename;
+  } else if (isset($sourceResource->type)){
+    $data->mods->$type = $sourceResource->type;
+  }
+  $data->mods->Genre = "";
+  $genrename = "mods:genre";
+  if (isset($mods->$genrename)){
+    foreach($mods->$genrename as $key=>$genre){
+      $textname = "#text";
+      $data->mods->Genre .= $genre->$textname ."<br/>";
+    }
+  }
+  $descname = "Physical Description";
+  $modsdesc = "mods:physicalDescription";
+  if (isset($mods->$modsdesc)){
+    foreach($mods->$modsdesc as $key=>$val){
+      if (strpos($key, "digitalOrigin") !== false || strpos($key, "extent") !== false){
+        $data->mods->$descname = $val . "<br/>";
+      }
+    }
+  }
+  $absname = "Abstract/Description";
+  $data->mods->$absname = "";
+  $modsabs = "mods:abstractDescription";//notsure on this
+  if (isset($mods->$modsabs)){
+    //TODO
+  } else if (isset($sourceResource->description)){
+    $data->mods->$absname = implode("<br/>",$sourceResource->description);
+  }
+
+  $subjname = "Subjects and keywords";
+  $modssubj = "mods:subject";
+  if (isset($mods->$modssubj)){
+    $data->mods->$subjname = array();
+    foreach($mods->$modssubj as $key=>$val){
+      $modstop = "mods:topic";
+      array_push($data->mods->$subjname, $val->$modstop);
+    }
+  } else if (isset($sourceResource->subject)){
+    $data->mods->$subjname = array();
+    foreach($sourceResource->subject as $key=>$val){
+      array_push($data->mods->$subjname, $val->name);
+    }
+  }
+  $relname = "Related item";
+  $modsrel = "mods:relatedItem";
+  if (isset($mods->$modsrel)){
+    $data->mods->$relname = array();
+    foreach($mods->$modsrel as $key=>$val){
+      $modstitlei = "mods:titleInfo";
+      $modstitle = "mods:title";
+      if (isset($val->$modstitle)){
+        array_push($data->mods->$relname, $val->$modstitle);
+      } else if (isset($val->$modstitlei)){
+        array_push($data->mods->$relname, $val->$modstitlei->$modstitle);
+      }
+    }
+  }
+  $modsid = "mods:identifier";
+  if (isset($mods->$modsid)){
+    foreach($mods->$modsid as $key=>$val){
+      $text = "#text";
+      if($val->type == "uri" || $val->type == "hdl" || $val->type == "handle"){
+        $data->mods->uri = array($val->$text);
+      } else {
+        $type = $val->type;
+        $data->mods->$type = array($val->$text);
+      }
+    }
+  }
+  $permname = "Permanent URL";
+  $data->mods->$permname = array($data->docs[0]->isShownAt);
+  $modsacc = "mods:accessCondition";
+  $usename = "Use and reproduction";
+  $data->mods->$usename = array();
+  if(isset($mods->$modsacc)){
+    foreach($mods->$modsacc as $key=>$val){
+      if ($val->type == "use and reproduction"){
+        array_push($data->mods->$usename, $val->$text);
+      } else {
+        $type = $val->type;
+        $data->mods->$type = $val->$text;
+      }
+    }
+  } else if (isset($sourceResource->rights)){
+    $data->mods->Rights = $sourceResource->rights;
+  }
+  //Location - from mods:location TODO
+  //Format - from mods:format or sourceResource format TODO
+  //Date created - from mods:originInfo > mods:dateCreated TODO
+  //Date issued TODO
+  //Copyright date TODO
+  // $data->mods->Language = TODO
+  // "Table of contents" TODO
+  //"Notes" TODO
+  // $data->mods->Contributor = TODO
+  // $data->mods->Publisher = TODO
+
+  return $data->mods;
 }
