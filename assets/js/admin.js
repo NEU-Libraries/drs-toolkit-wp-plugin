@@ -934,7 +934,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 	       }
 	       for (var i = 1; i <= data.pagination.table.num_pages; i++) {
 	         if (data.pagination.table.current_page == i){
-	           var pagination_class = 'current-page disabled';
+	           var pagination_class = 'current-page active';
 	         } else {
 	           var pagination_class = '';
 	         }
@@ -1015,12 +1015,29 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 
 		updateDPLAPagination: function( data ){
 			num_pages = Math.round(data.count/data.limit);
-			console.log(num_pages);
-			current_page = this.search_params.page;
-			console.log(current_page);
+			current_page = parseInt(this.search_params.page);
 			if (num_pages > 1){
 	       var pagination = "";
-				 //TODO - set up DPLA pagination
+				 if (current_page > 1){
+					 pagination += "<a href='#' class='prev-page' data-val='"+parseInt(current_page-1)+"'>&lt;&lt;</a>";
+				 }
+				 if (current_page >= 3){
+					 pagination += "<a href='#' class=''>" + parseInt(current_page-2) + "</a>";
+				 }
+				 if (current_page >= 2){
+					 pagination += "<a href='#' class=''>" + parseInt(current_page-1) + "</a>";
+				 }
+				 pagination += "<a href='#' class='current-page active'>" + current_page + "</a>";
+				 if (current_page+1 < num_pages){
+					 pagination += "<a href='#' class=''>" + parseInt(current_page+1) + "</a>";
+				 }
+				 if (current_page+2 < num_pages){
+					 pagination += "<a href='#' class=''>" + parseInt(current_page+2) + "</a>";
+				 }
+				 if (current_page+1 != num_pages){
+					 pagination += "<a href='#' class='next-page' data-val='"+parseInt(current_page+1)+"'>&gt;&gt;</a>";
+				 }
+				 jQuery("#dpla-pagination").html("<span class='tablenav'><span class='tablenav-pages'>"+pagination+"</span></span>");
 	    } else {
 				jQuery("#dpla-pagination").html("");
 			}
