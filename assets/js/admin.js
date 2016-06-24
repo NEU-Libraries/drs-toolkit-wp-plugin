@@ -981,7 +981,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			if (this.current_tab == 6){ this.search_params.timefilter = true; } else { delete this.search_params.timefilter; }
 			var self = this;
 			tab_name = this.tabs[this.current_tab];
-			console.log(this.search_params);
       jQuery.post(dpla_ajax_obj.ajax_url, {
          _ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
           action: "get_dpla_code",
@@ -1310,10 +1309,11 @@ jQuery( function ( $ ) {
 	/**
 	 * Attach a click event to the meta-box button that instantiates the Application object, if it's not already open.
 	 */
-	$( "#drs-backbone_modal" ).click( function ( e ) {
+	$("body").on('click', "#drs-backbone_modal", function(e){
 		e.preventDefault();
 		if ( drstk.backbone_modal.__instance === undefined ) {
 			drstk.backbone_modal.__instance = new drstk.backbone_modal.Application();
 		}
-	} );
+	});
+
 } );
