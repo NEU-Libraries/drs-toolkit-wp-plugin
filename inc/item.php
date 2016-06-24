@@ -371,7 +371,7 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   jQuery(document).ready(function($){
   $("#'.$id_img.'").hide();
   jwplayer("'.$id_video.'").setup({';
-  if (strpos($av_pid, "repository.library.northeastern.edu") !== false) {
+  if (strpos($av_pid, "neu") !== false) {
     $html .='sources:
     [
     { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"},
