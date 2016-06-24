@@ -141,11 +141,12 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		shortcode: null,
 		geo_count: 0,
 		time_count: 0,
+		old_shortcode: null,
 
 		search_q: '',
 		search_page: 1,
 		search_params: {q:this.search_q, page:this.search_page},
-		current_tab: 1,  // store our current tab as a variable for easy lookup
+		current_tab: 0,  // store our current tab as a variable for easy lookup
 		tabs: {        // dictionary of key/value pairs for our tabs
 			1: 'single',
 			2: 'tile',
@@ -159,13 +160,38 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		/**
 		 * Instantiates the Template object and triggers load.
 		 */
-		initialize: function () {
+		initialize: function (options) {
 			"use strict";
+			this.options = options;
 
-			_.bindAll( this, 'render', 'preserveFocus', 'closeModal', 'insertShortcode', 'navigate', 'showTab', 'getDRSitems', 'selectItem', 'paginate', 'navigateShortcode', 'search', 'setDefaultSettings' );
+			_.bindAll( this, 'render', 'preserveFocus', 'closeModal', 'insertShortcode', 'navigate', 'showTab', 'getDRSitems', 'selectItem', 'paginate', 'navigateShortcode', 'search', 'setDefaultSettings', 'appendSingleItem' );
 			this.initialize_templates();
 			this.render();
 			this.shortcode = new drstk.Shortcode({});
+			if (this.options && this.options.current_tab != ""){
+				var e = {currentTarget:""};
+				var num = _.invert(this.tabs)[this.options.current_tab];
+				var words = {1:"one",2:"two",3:"three",4:"four",5:"five",6:"six"}
+				var word = words[num];
+				e.currentTarget = "<a href='#"+word+"'></a>";
+				this.navigate(e);
+				this.current_tab = num;
+			} else {
+				this.current_tab = 1;
+			}
+			if (this.options && this.options.items.length > 0){
+				var self = this;
+				_.each(this.options.items, function(item, i){
+					if (i == 0){
+						self.shortcode.items = new drstk.Items(item);
+					} else {
+						self.shortcode.items.add(item);
+					}
+				});
+			}
+			if (this.options && this.options.old_shortcode){
+				this.old_shortcode = this.options.old_shortcode
+			}
 		},
 
 
@@ -244,10 +270,13 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		closeModal: function ( e ) {
 			"use strict";
 
-			e.preventDefault();
+			e.preventDefault
 			this.undelegateEvents();
 			jQuery( document ).off( "focusin" );
 			jQuery( "body" ).css( {"overflow": "auto"} );
+			if (this.old_shortcode && jQuery(e.currentTarget).attr("id") != "btn-ok"){
+				window.wp.media.editor.insert(this.old_shortcode);
+			}
 			this.remove();
 			drstk.backbone_modal.__instance = undefined;
 		},
@@ -592,7 +621,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		/* navigation between shortcode types */
 		navigate: function ( e ) {
 			"use strict";
-			e.preventDefault();
+			//e.preventDefault();
 			this.search_params.page = 1;
 			this.geo_count = 0;
 			this.time_count = 0;
@@ -738,6 +767,13 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								jQuery("#drs #sortable-"+tab_name+"-list").append(view.el);
 								if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
 									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
+									short_item = self.shortcode.items.where({ pid: item.id })[0];
+									if (!short_item.get("title")){
+										short_item.set("title", item.full_title_ssi);
+									}
+									if (!short_item.get("thumbnail")){
+										short_item.set("thumbnail", thumb);
+									}
 								}
               }
 							jQuery(".drs-items").html("");
@@ -994,9 +1030,17 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						 this_item = new drstk.Item;
 						 this_item.set("pid", item.id).set("thumbnail", item.object).set("repo", "dpla").set("title", item.sourceResource.title);
 						 view = new drstk.ItemView({model:this_item});
+						 console.log(item.id);
 						 jQuery("#dpla #sortable-"+tab_name+"-list").append(view.el);
 						 if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
 							 jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
+							 short_item = self.shortcode.items.where({ pid: item.id })[0];
+							 if (!short_item.get("title")){
+								 short_item.set("title", item.sourceResource.title);
+							 }
+							 if (!short_item.get("thumbnail")){
+								 short_item.set("thumbnail", item.object);
+							 }
 						 }
 						 if (self.current_tab == 6){
 							jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: "+item.sourceResource.date.dislpayDate+"</p>");
@@ -1054,33 +1098,91 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 
 		getSelecteditems: function( ){
 			tab_name = this.tabs[this.current_tab];
+			// console.log(this.shortcode.items);
 			count = this.shortcode.items.length;
 	     if (count > 0){
 				 jQuery(".selected-items").html("");
 	       jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 				 var self = this;
 	       jQuery.each(this.shortcode.items.models, function(i, item) {
-						var itemView = new drstk.ItemView({
-		            model:item
-		        });
-		        jQuery("#selected #sortable-"+tab_name+"-list").append(itemView.el);
-						if (self.current_tab == 5 || self.current_tab == 6){
-							colors = "";
-							_.each(self.colors, function(color){
-								colors += "<option value='"+color+"'";
-								if (item.attributes.color == color){ colors += " selected='selected'"; }
-								colors += ">"+color.charAt(0).toUpperCase()+color.slice(1)+"</option>";
+					 if (!item.get("title")){
+						 count=parseInt(count)+1;
+						 repo = item.get("repo");
+						 if (repo == "drs"){
+							jQuery.ajax({
+								url: item_admin_obj.ajax_url,
+		             type: "POST",
+		             data: {
+		               action: "get_item_admin",
+		               _ajax_nonce: item_admin_obj.item_admin_nonce,
+		               pid: item.get("pid"),
+								 }, complete: function(data){
+									var data = jQuery.parseJSON(data.responseJSON);
+									item.set("title", data.mods.Title[0]);
+									if (!item.get("thumbnail")){
+										item.set("thumbnail", data.thumbnails[0]);
+									}
+									self.appendSingleItem(item);
+								}
 							});
-							jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type label").append('<br/>Color: <select name="color"><option value="">Choose one</option>'+colors+'</select>');
-						}
-						if(self.shortcode.items.where({ pid: item.attributes.pid }).length > 0){
-							jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
-						}
+						 } else if (repo == "dpla"){
+							jQuery.post(dpla_ajax_obj.ajax_url, {
+				          _ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
+				          action: "get_dpla_code",
+				          params: {q:item.get("pid")},
+				       }, function(data) {
+								var data = jQuery.parseJSON(data);
+								item.set("title", data.docs[0].sourceResource.title);
+								if (data.docs[0].object){
+									item.set("thumbnail", data.docs[0].object);
+								}
+								self.appendSingleItem(item);
+							});
+						 } else if (repo == "wp"){
+							jQuery.ajax({
+								url: item_admin_obj.ajax_url,
+		            type: "POST",
+		            data: {
+		              action: "get_post_meta",
+		              _ajax_nonce: item_admin_obj.item_admin_nonce,
+		              pid: item.get("pid"),
+				        }, success: function(data){
+									item.set("title",data.post_title);
+									if (!data.post_mime_type.includes("audio") && !data.post_mime_type.includes("video")){
+										item.set("thumbnail",data.guid);
+									}
+									self.appendSingleItem(item);
+								}
+							});
+						 }
+					 } else {
+						 self.appendSingleItem(item);
+					 }
 	        });
 	     } else {
 	       jQuery(".selected-items").html("You haven't selected any items yet.");
 				 jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 	     }
+		},
+
+		appendSingleItem: function( item ) {
+			tab_name = this.tabs[this.current_tab];
+			var itemView = new drstk.ItemView({
+				model:item
+			});
+			jQuery("#selected #sortable-"+tab_name+"-list").append(itemView.el);
+			if (this.current_tab == 5 || this.current_tab == 6){
+				colors = "";
+				_.each(this.colors, function(color){
+					colors += "<option value='"+color+"'";
+					if (item.attributes.color == color){ colors += " selected='selected'"; }
+					colors += ">"+color.charAt(0).toUpperCase()+color.slice(1)+"</option>";
+				});
+				jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type label").append('<br/>Color: <select name="color"><option value="">Choose one</option>'+colors+'</select>');
+			}
+			if(this.shortcode.items.where({ pid: item.attributes.pid }).length > 0){
+				jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
+			}
 		},
 
 		getSettings: function( ) {
@@ -1232,17 +1334,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			} else {
 				multiple = true;
 			}
-			// if (this.current_tab == 4){
-			// 	type = ['audio','video'];
-			// } else {
-			// 	type = 'image';
-			// }//TODO shortcodes have to handle wp items which may not have thumbnails and DPLA items which may have thumbnails that fail
 			var self = this;
 			frame = wp.media.frames.drstk_frame = wp.media({
 				title: "Select Images",
-				// library: {
-				// 	type: type
-				// },
 				button: {
 					text: "Add Selected Images"
 				},
