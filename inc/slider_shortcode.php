@@ -1,6 +1,7 @@
 <?php
 /* adds shortcode */
 add_shortcode( 'drstk_gallery', 'drstk_gallery' );
+add_shortcode('drstk_slider', 'drstk_gallery');
 function drstk_gallery( $atts ){
   global $errors;
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
@@ -13,19 +14,77 @@ function drstk_gallery( $atts ){
     $img_html = '';
     $height = $width = 0;
     $i = 0;
+    if (isset($atts['image-size'])){
+      $num = $atts['image-size']-1;
+    } else {
+      $num = 4;
+    }
    foreach($images as $id){
+     $repo = drstk_get_repo_from_pid($id);
+     if ($repo != "drs"){$pid = explode(":",$id)[1];} else {$pid = $id;}
+     if ($repo == "drs"){
        $url = "https://repository.library.northeastern.edu/api/v1/files/" . $id . "?solr_only=true";
        $data = get_response($url);
        $data = json_decode($data);
        $data = $data->_source;
+       $thumbnail = "http://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
+     }
+     if ($repo == "wp"){
+       $post = get_post($pid);
+       $data = new StdClass;
+       $meta = wp_get_attachment_metadata($pid); //get sizes
+       $thumb_base = wp_get_attachment_thumb_url($pid);
+       $thumb_base = explode("/",$thumb_base);
+       $arr = array_pop($thumb_base);
+       $thumb_base = implode("/", $thumb_base);
+       if ($num == 1){ $thumbnail = $thumb_base."/".$meta['sizes']['thumbnail']['file'];}
+       if ($num == 2){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
+       if ($num == 3){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
+       if ($num == 4){
+        if (isset($meta['sizes']['large'])){
+          $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
+        } else {
+          $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+        }
+       }
+       if ($num == 5){
+        if (isset($meta['sizes']['large'])){
+          $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
+        } else {
+          $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+        }
+       }
+       $master = $post->guid;
+       $data->full_title_ssi = $post->post_title;
+       $data->abstract_tesim = array($post->post_excerpt);
+     }
+     if ($repo == "dpla"){
+       $url = "http://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
+       $dpla = get_response($url);
+       $dpla = json_decode($dpla);
+       if (isset($dpla->docs[0]->object)){
+         $url = $dpla->docs[0]->object;
+       } else {
+         $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+       }
+       $title = $dpla->docs[0]->sourceResource->title;
+       if (isset($dpla->docs[0]->sourceResource->description)){
+         $description = $dpla->docs[0]->sourceResource->description;
+       } else {
+         $description = "";
+       }
+       $master = $url;
+       $thumbnail = $url;
+       $data = new StdClass;
+       $data->full_title_ssi = $title;
+       $data->abstract_tesim = array($description);
+       if (isset($dpla->docs[0]->sourceResource->creator)){
+         $data->creator_tesim = array($dpla->docs[0]->sourceResource->creator);
+       }
+       $data->date_ssi = $dpla->docs[0]->sourceResource->date->displayDate;
+     }
        if (!isset($data->error)){
-        $pid = $data->id;
-         if (isset($atts['image-size'])){
-           $num = $atts['image-size']-1;
-         } else {
-           $num = 4;
-         }
-         $thumbnail = "http://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
+        $pid = $id;
          $this_height = getimagesize($thumbnail);
          $this_height = $this_height[1];
          if ($this_height > $height){
@@ -47,6 +106,7 @@ function drstk_gallery( $atts ){
          } else {
            $img_html .= " data-src='".$thumbnail."'";
          }
+         $img_html .= " data-height='".$this_height."'";
          $img_html .= "  alt='".$title."'></a>";
          if (isset($atts['caption']) && $atts['caption'] == "on"){
            $img_metadata = "";
@@ -58,7 +118,11 @@ function drstk_gallery( $atts ){
                  if (isset($this_field)){
                    if (is_array($this_field)){
                      foreach($this_field as $val){
-                       $img_metadata .= $val ."<br/>";
+                       if (is_array($val)){
+                        $img_metadata .= implode("<br/>",$val)."<br/>";
+                       } else {
+                         $img_metadata .= $val ."<br/>";
+                       }
                      }
                    } else {
                      $img_metadata .= $this_field . "<br/>";
@@ -90,7 +154,11 @@ function drstk_gallery( $atts ){
               if ($key != "all_text_timv" && $key != "object_profile_ssm"){
                 if (is_array($field)){
                   foreach($field as $key=>$field_val){
-                    $img_html .= $field_val . "<br/>";
+                    if (is_array($field_val)){
+                      $img_html .= implode("<br/>", $field_val)."<br/>";
+                    } else {
+                      $img_html .= $field_val . "<br/>";
+                    }
                   }
                 } else {
                   $img_html .= $field . "<br/>";
@@ -148,10 +216,10 @@ function drstk_gallery( $atts ){
 }
 
 function drstk_gallery_shortcode_scripts() {
-	global $post, $wp_query;
-	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_gallery') && !isset($wp_query->query_vars['drstk_template_type']) ) {
+	global $post, $wp_query, $DRS_PLUGIN_URL;
+	if( is_a( $post, 'WP_Post' ) && (has_shortcode( $post->post_content, 'drstk_gallery') || has_shortcode( $post->post_content, 'drstk_slider')) && !isset($wp_query->query_vars['drstk_template_type']) ) {
     wp_register_script( 'drstk_gallery',
-        plugins_url( '../assets/js/gallery.js', __FILE__ ),
+        $DRS_PLUGIN_URL . '/assets/js/gallery.js',
         array( 'jquery' ));
     wp_enqueue_script('drstk_gallery');
 	}

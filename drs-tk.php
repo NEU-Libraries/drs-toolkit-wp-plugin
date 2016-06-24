@@ -22,6 +22,8 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/timeline_shortcode.php' );
 
 
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
+$DRS_PLUGIN_PATH = plugin_dir_path( __FILE__ );
+$DRS_PLUGIN_URL = plugin_dir_url( __FILE__ );
 
 $VERSION = '1.1.1';
 
@@ -201,6 +203,16 @@ function drstk_get_facet_name($facet, $niec=false){
 function drstk_get_errors(){
   global $errors;
   return $errors;
+}
+
+function drstk_get_map_api_key(){
+  $api_key = get_option('leaflet_api_key');
+  return $api_key;
+}
+
+function drstk_get_map_project_key(){
+  $project_key = get_option('leaflet_project_key');
+  return $project_key;
 }
 
 /*callback functions for display fields on settings page*/
@@ -661,4 +673,47 @@ function remove_bstw_widget_text_filters() {
     if ( function_exists( 'bstw' ) ) {
         remove_filter( 'widget_text', array( bstw()->text_filters(), 'do_shortcode' ), 10 );
     }
+}
+
+function drstk_image_attachment_fields_to_edit($form_fields, $post) {
+    $form_fields["timeline_date"] = array(
+        "label" => __("Timeline Date"),
+        "input" => "text", // this is default if "input" is omitted
+        "value" => get_post_meta($post->ID, "_timeline_date", true),
+        "helps" => "Must be YYYY/MM/DD format"
+    );
+    $form_fields["map_coords"] = array(
+        "label" => __("Map Coordinates"),
+        "input" => "text", // this is default if "input" is omitted
+        "value" => get_post_meta($post->ID, "_map_coords", true),
+        "helps" => "Must be in Lat, Long or City name, State Initials format"
+    );
+    return $form_fields;
+}
+add_filter("attachment_fields_to_edit", "drstk_image_attachment_fields_to_edit", null, 2);
+
+function drstk_image_attachment_fields_to_save($post, $attachment) {
+    if( isset($attachment['timeline_date']) ){
+      update_post_meta($post['ID'], '_timeline_date', $attachment['timeline_date']);
+    }
+    if( isset($attachment['map_coords']) ){
+      update_post_meta($post['ID'], '_map_coords', $attachment['map_coords']);
+    }
+    return $post;
+}
+add_filter("attachment_fields_to_save", "drstk_image_attachment_fields_to_save", 10, 2);
+
+/*helper method for getting repo type from pid valiues*/
+function drstk_get_repo_from_pid($pid){
+  $arr = explode(":", $pid);
+  if ($arr[0] == "neu"){
+    $repo = "drs";
+  } else if ($arr[0] == "wp"){
+    $repo = "wp";
+  } else if ($arr[0] == "dpla"){
+    $repo = "dpla";
+  } else {
+    $repo = NULL;
+  }
+  return $repo;
 }

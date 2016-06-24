@@ -1,20 +1,29 @@
 <?php
-global $item_pid, $data, $collection, $meta_options, $errors;
+global $item_pid, $data, $collection, $meta_options, $errors, $repo, $all_meta_options;
 $collection = drstk_get_pid();
 $meta_options = get_option('drstk_item_page_metadata');
 $assoc_meta_options = drstk_get_assoc_meta_options();
 $errors = drstk_get_errors();
 
 function get_item_details($data, $meta_options){
-  global $errors;
+  global $errors, $repo;
   if (check_for_bad_data($data)){
     return false;
   }
   $html = '';
+  if ($repo == "wp"){
+    $abs = "Abstract/Description";
+    $data->mods->$abs = $data->post_excerpt;
+    $datec = "Date created";
+    $data->mods->$datec = $data->post_date;
+  }
   if (isset($data->mods)){ //mods
     $html .= parse_metadata($data->mods, $meta_options, $html);
   } else if (isset($data->_source)){//solr_only = true
     $html .= parse_metadata($data->_source, $meta_options, $html, true);
+  }
+  if ($repo == "dpla"){
+    $html = parse_metadata($data, $meta_options, "", false, true);
   }
   $niec_facets = get_option('drstk_niec_metadata');
   $niec_facets_to_display = array();
@@ -29,7 +38,7 @@ function get_item_details($data, $meta_options){
   return $html;
 }
 
-function parse_metadata($data, $meta_options, $html, $solr=false){
+function parse_metadata($data, $meta_options, $html, $solr=false, $dpla=false){
   if ($solr){//this is necessary to not use default solr ordering
     $arr1 = (array) $data;
     $arr2 = $meta_options;
@@ -38,9 +47,11 @@ function parse_metadata($data, $meta_options, $html, $solr=false){
       $data[$val] = $arr1[$val];
     }
   }
-
+  if ($dpla){
+    $data = map_dpla_to_mods($data, $meta_options);
+  }
   foreach($data as $key => $value){
-    if (($meta_options == NULL) || in_array($key, $meta_options) || array_key_exists($key, $meta_options)){
+    if (($meta_options == NULL) || array_key_exists($key, $meta_options) || in_array($key, $meta_options)){
       $html .= "<div class='drs-field-label'><b>";
       if (!isset($meta_options[$key])){
         $html .= titleize($key);
@@ -73,7 +84,11 @@ function get_download_links(){
   if (check_for_bad_data($data)){
     return false;
   }
-  echo "<br/><h4>Downloads</h4>";
+  if (isset($data->content_objects)){
+    echo "<br/><h4>Downloads</h4>";
+  } else {
+    $data->content_objects = new StdClass;
+  }
   foreach($data->content_objects as $key=>$val){
     if ($val != "Thumbnail Image"){
       if ($val == 'Video File'){
@@ -88,14 +103,39 @@ function get_download_links(){
 }
 
 function get_item_title(){
-  global $item_pid, $data, $url;
-  $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item_pid;
-  $data = get_response($url);
-  $data = json_decode($data);
-  if (check_for_bad_data($data)){
-    return false;
+  global $item_pid, $data, $url, $repo;
+  $repo = drstk_get_repo_from_pid($item_pid);
+  if ($repo == "drs"){
+    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item_pid;
+    $data = get_response($url);
+    $data = json_decode($data);
+    if (check_for_bad_data($data)){
+      return false;
+    }
+    echo $data->mods->Title[0];
+  } else if ($repo == "dpla"){
+    $item_pid = explode(":",$item_pid)[1];
+    $url = "http://api.dp.la/v2/items/".$item_pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
+    $data = get_response($url);
+    $data = json_decode($data);
+    if (check_for_bad_data($data)){
+      return false;
+    }
+    $data->mods = new StdClass;
+    if (is_array($data->docs[0]->sourceResource->title)){
+      $title = $data->docs[0]->sourceResource->title;
+    } else {
+      $title = array($data->docs[0]->sourceResource->title);
+    }
+    $data->mods->Title = $title;
+    echo $title[0];
+  } else if ($repo == "wp"){
+    $item_pid = explode(":",$item_pid)[1];
+    $data = get_post($item_pid);
+    $data->mods = new StdClass;
+    $data->mods->Title = array($data->post_title);
+    echo $data->post_title;
   }
-  echo $data->mods->Title[0];
 }
 
 function get_item_breadcrumbs(){
@@ -105,7 +145,11 @@ function get_item_breadcrumbs(){
   }
   $breadcrumb_html = array();
   $end = false;
-  $breadcrumbs = $data->breadcrumbs;
+  if (isset($data->breadcrumbs)){
+    $breadcrumbs = $data->breadcrumbs;
+  } else {
+    $breadcrumbs = new StdClass;
+  }
   if (array_key_exists($collection,$breadcrumbs)){
     foreach($breadcrumbs as $pid=>$title){
       if ($pid == $item_pid){
@@ -126,10 +170,42 @@ function get_item_breadcrumbs(){
 }
 
 function get_item_image(){
-  global $item_pid, $data, $errors;
+  global $item_pid, $data, $errors, $repo;
   if (check_for_bad_data($data)){
     echo check_for_bad_data($data);
     return false;
+  }
+  if ($repo == "dpla"){
+    if (isset($data->docs[0]->object)){
+      $img = $data->docs[0]->object;
+    } else {
+      $img = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+    } //not doing canonical object because we can't do any zoom or media playing anyway
+  }
+  if ($repo == "wp"){
+    $meta = wp_get_attachment_metadata($item_pid); //get sizes
+    $data->canonical_object = new StdClass;
+    $url = $data->guid;
+    if (strpos($data->post_mime_type, "audio") !== false){
+      $type = "Audio File";
+    } else if (strpos($data->post_mime_type, "video") !== false){
+      $type = "Video File";
+    } else {
+      $type = "Master Image";
+      $meta = wp_get_attachment_metadata($item_pid); //get sizes
+      $thumb_base = wp_get_attachment_thumb_url($item_pid);
+      if (isset($meta['sizes'])){
+        $thumb_base = explode("/",$thumb_base);
+        $arr = array_pop($thumb_base);
+        $thumb_base = implode("/", $thumb_base);
+        if (isset($meta['sizes']['large'])){
+          $img = $thumb_base."/".$meta['sizes']['large']['file'];
+        } else {
+          $img = $thumb_base."/".$meta['sizes']['medium']['file'];
+        }
+      }
+    }
+    $data->canonical_object->$url = $type;
   }
   if (isset($data->thumbnails)){
     $img = $data->thumbnails[count($data->thumbnails)-2];
@@ -138,7 +214,11 @@ function get_item_image(){
     $val = current($data->canonical_object);
     $key = key($data->canonical_object);
     if ($val == 'Master Image'){
-      $zoom_img = $data->thumbnails[count($data->thumbnails)-1];
+      if ($repo == "wp"){
+        $zoom_img = $data->guid;
+      } else {
+        $zoom_img = $data->thumbnails[count($data->thumbnails)-1];
+      }
       echo  '<img id="drs-item-img" src="'.$img.'" data-zoom-image="'.$zoom_img.'"/>';
       echo '<script type="text/javascript"> jQuery("#drs-item-img").elevateZoom();</script>';
     } else if ($val == 'PDF'){
@@ -155,7 +235,11 @@ function get_item_image(){
         echo  '<img id="drs-item-img" src="'.$img.'" />';
       }
     } else if ($val == 'Video File' || $val == 'Audio File'){
-      print(insert_jwplayer($key, $val, $data, $img));
+      if ($repo == "wp"){
+        print(do_shortcode('[video src="'.$data->guid.'"]'));
+      } else {
+        print(insert_jwplayer($key, $val, $data, $img));
+      }
     }
   } else {
     //case where there is no canonical_objects set
@@ -231,14 +315,7 @@ function check_for_bad_data($data){
 
 function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) {
   global $errors;
-  $av_pid = explode("/", $av_pid);
-  $av_pid = end($av_pid);
-  $encoded_av_pid = str_replace(':','%3A', $av_pid);
-  $av_dir = substr(md5("info:fedora/".$av_pid."/content/content.0"), 0, 2);
   $av_type = "";
-  if ($data->thumbnails){
-    $av_poster = $data->thumbnails[3];
-  }
   if ($canonical_object_type == 'Video File'){
     $av_provider = 'video';
     $av_type = "MP4";
@@ -247,21 +324,37 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
     $av_provider = 'sound';
     $av_type = "MP3";
   }
-  $user_agent = $_SERVER['HTTP_USER_AGENT'];
-  if (stripos( $user_agent, 'Chrome') !== false){
-    $av_for_ext = $av_type;
-    $full_pid = "info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0";
-  } elseif (stripos( $user_agent, 'Safari') !== false) {
-    $av_for_ext = strtolower($av_type);
-    $full_pid = urlencode("info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0");
+
+  if (strpos($av_pid, "repository.library.northeastern.edu") !== false){
+    $av_pid = explode("/", $av_pid);
+    $av_pid = end($av_pid);
+    $encoded_av_pid = str_replace(':','%3A', $av_pid);
+    $av_dir = substr(md5("info:fedora/".$av_pid."/content/content.0"), 0, 2);
+    if ($data->thumbnails){
+      $av_poster = $data->thumbnails[3];
+    }
+    $user_agent = $_SERVER['HTTP_USER_AGENT'];
+    if (stripos( $user_agent, 'Chrome') !== false){
+      $av_for_ext = $av_type;
+      $full_pid = "info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0";
+    } elseif (stripos( $user_agent, 'Safari') !== false) {
+      $av_for_ext = strtolower($av_type);
+      $full_pid = urlencode("info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0");
+    } else {
+      $av_for_ext = strtolower($av_type);
+      $full_pid = "info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0";
+    }
+    $numeric_pid = str_replace(":", "-", $av_pid);
+    $id_img = 'drs-item-img-'.$numeric_pid;
+    $id_video = 'drs-item-video-'.$numeric_pid;
   } else {
-    $av_for_ext = strtolower($av_type);
-    $full_pid = "info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0";
+    $id_img = 'drs-item-img-'.$data->id;
+    $id_video = 'drs-item-video-'.$data->id;
   }
 
-  $numeric_pid = str_replace(":", "-", $av_pid);
-  $id_img = 'drs-item-img-'.$numeric_pid;
-  $id_video = 'drs-item-video-'.$numeric_pid;
+  if (!isset($av_poster)){
+    $av_poster = $drs_item_img;
+  }
 
   $html = '<img id="'.$id_img.'" src="'.$drs_item_img.'" class="replace_thumbs"/>';
   $html .= '<div id="'.$id_video.'"></div>';
@@ -277,15 +370,19 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   }
   jQuery(document).ready(function($){
   $("#'.$id_img.'").hide();
-  jwplayer("'.$id_video.'").setup({
-    sources:
+  jwplayer("'.$id_video.'").setup({';
+  if (strpos($av_pid, "repository.library.northeastern.edu") !== false) {
+    $html .='sources:
     [
     { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"},
     { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':'.$full_pid.'/playlist.m3u8", type:"'.$av_for_ext.'"},
     { file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.urlencode($full_pid).'", type:"'.strtolower($av_for_ext).'"}
-    ],
-    image: "'.$av_poster.'",
-    provider: "'.$av_provider.'",
+    ],';
+  } else {
+    $html .= 'sources:[{file:"'.$av_pid.'"}],';
+  }
+  if ($av_poster != null){$html .= 'image: "'.$av_poster.'",';}
+  $html .= 'provider: "'.$av_provider.'",
     fallback: "false",
     androidhls: "true",
     primary: primary,
@@ -323,4 +420,68 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   });</script>';
 
   return $html;
+}
+
+function map_dpla_to_mods($data, $meta_options){
+  global $all_meta_options;
+  $sourceResource = $data->docs[0]->sourceResource;
+
+  if (isset($sourceResource->creator)){
+    $data->mods->Creator = $sourceResource->creator;
+  }
+  if (isset($sourceResource->contributor)){
+    $data->mods->Contributor = $sourceResource->contributor;
+  }
+  if (isset($sourceResource->publisher)){
+    $data->mods->Publisher = $sourceResource->publisher;
+  }
+  if(isset($sourceResource->date)){
+    if(isset($sourceResource->date->displayDate)){
+      $datec = "Date created";
+      $data->mods->$datec = $sourceResource->date->displayDate;
+    }
+  }
+  $type = "Type of Resource";
+  if (isset($sourceResource->type)){
+    $data->mods->$type = "";
+    $data->mods->$type = $sourceResource->type;
+  }
+  if (isset($sourceResource->description)){
+    $absname = "Abstract/Description";
+    $data->mods->$absname = implode("<br/>",$sourceResource->description);
+  }
+  if (isset($sourceResource->subject)){
+    $subjname = "Subjects and keywords";
+    $data->mods->$subjname = array();
+    foreach($sourceResource->subject as $key=>$val){
+      array_push($data->mods->$subjname, $val->name);
+    }
+  }
+  if (isset($sourceResource->format)){
+    $data->mods->Format = $sourceResource->format;
+  }
+  if (isset($sourceResource->language)){
+    $data->mods->Language = array();
+    foreach($sourceResource->language as $key=>$val){
+      array_push($data->mods->Language, $val->name);
+    }
+  }
+  $relname = "Related item";
+  if (isset($sourceResource->relation)){
+    $data->mods->$relname = array();
+    array_push($data->mods->$relname, $sourceResource->relation);
+  }
+  if (isset($sourceResource->rights)){
+    $data->mods->Rights = $sourceResource->rights;
+  }
+  $permname = "Permanent URL";
+  $data->mods->$permname = array($data->docs[0]->isShownAt);
+  if(isset($sourceResource->identifier)){
+    $data->mods->Identifier = $sourceResource->identifier;
+  }
+
+
+  //FIELDS not connected because they would have to come from the originalRecord which has incredibly unreliable JSON formatting
+  // Location, date issued, copyright date, table of contents, notes, genre, phsyical description
+  return $data->mods;
 }

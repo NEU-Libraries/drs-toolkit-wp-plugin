@@ -48,7 +48,11 @@ jQuery(document).ready(function($) {
 		} else {//no max-height is set
 			var height = 0;
 				carousel.find("img").each(function(){
-					var this_height = $(this).height();
+					if ($(this).data("src") != undefined){
+						this_height = $(this).data("height");
+					} else  {
+						this_height = $(this).prop('naturalHeight');
+					}
 					if (this_height > height) {
 						height = this_height;
 						if ($(this).parents(".carousel").find(".carousel-caption").css("position") == 'relative'){

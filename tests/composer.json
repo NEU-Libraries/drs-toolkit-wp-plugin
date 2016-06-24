@@ -1,5 +1,0 @@
-{
-    "require-dev": {
-        "phpunit/phpunit-selenium": "~3.0"
-    }
-}
