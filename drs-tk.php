@@ -159,6 +159,17 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_assoc_file_metadata' );
 }
 add_action( 'admin_init', 'register_drs_settings' );
+add_action( 'admin_init', 'add_tinymce_plugin');
+
+function add_tinymce_plugin(){
+  add_filter("mce_external_plugins", 'mce_plugin');
+}
+
+function mce_plugin($plugin_array){
+  global $DRS_PLUGIN_URL;
+  $plugin_array['drstkshortcodes'] = $DRS_PLUGIN_URL.'/assets/js/mce-button.js';
+  return $plugin_array;
+}
 
 /*helper functions for getting default values and cleaning up stored options*/
 function drstk_get_pid(){
