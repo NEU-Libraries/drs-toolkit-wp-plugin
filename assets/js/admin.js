@@ -348,6 +348,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			} else {
 				alert("Please select items before inserting a shortcode");
 			}
+			console.log(this.shortcode.items);
 		},
 
 		setDefaultSettings: function(){
@@ -1028,15 +1029,18 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					 jQuery(".dpla-items").html("");
            jQuery.each(data.docs, function(id, item){
 						 this_item = new drstk.Item;
-						 this_item.set("pid", item.id).set("thumbnail", item.object).set("repo", "dpla").set("title", item.sourceResource.title);
+						 var title = item.sourceResource.title;
+						 if (Array.isArray(title)){
+							 title = title[0];
+						 }
+						 this_item.set("pid", item.id).set("thumbnail", item.object).set("repo", "dpla").set("title", title);
 						 view = new drstk.ItemView({model:this_item});
-						 console.log(item.id);
 						 jQuery("#dpla #sortable-"+tab_name+"-list").append(view.el);
 						 if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
 							 jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
 							 short_item = self.shortcode.items.where({ pid: item.id })[0];
 							 if (!short_item.get("title")){
-								 short_item.set("title", item.sourceResource.title);
+								 short_item.set("title", title);
 							 }
 							 if (!short_item.get("thumbnail")){
 								 short_item.set("thumbnail", item.object);
@@ -1098,7 +1102,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 
 		getSelecteditems: function( ){
 			tab_name = this.tabs[this.current_tab];
-			// console.log(this.shortcode.items);
 			count = this.shortcode.items.length;
 	     if (count > 0){
 				 jQuery(".selected-items").html("");
@@ -1138,7 +1141,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								}
 								self.appendSingleItem(item);
 							});
-						 } else if (repo == "wp"){
+						} else if (repo == "local"){
 							jQuery.ajax({
 								url: item_admin_obj.ajax_url,
 		            type: "POST",
@@ -1163,6 +1166,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 	       jQuery(".selected-items").html("You haven't selected any items yet.");
 				 jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 	     }
+			 console.log(this.shortcode.items);
 		},
 
 		appendSingleItem: function( item ) {
