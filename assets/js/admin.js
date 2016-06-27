@@ -80,7 +80,6 @@ drstk.ItemView = Backbone.View.extend({
 drstk.SettingView = Backbone.View.extend({
 	checkbox_template: wp.template( "drstk-setting-checkbox" ),
 	select_template: wp.template( "drstk-setting-select" ),
-	url_template: wp.template( "drstk-setting-url" ),
 	text_template: wp.template( "drstk-setting-text" ),
 	number_template: wp.template( "drstk-setting-number" ),
 	tagName: 'tr',
@@ -92,8 +91,6 @@ drstk.SettingView = Backbone.View.extend({
 			this.$el.html( this.select_template(this.model.toJSON()));
 		} else if (this.model.attributes.tag == 'checkbox'){
 			this.$el.html( this.checkbox_template(this.model.toJSON()));
-		} else if (this.model.attributes.tag == 'url'){
-			this.$el.html( this.url_template(this.model.toJSON()));
 		} else if (this.model.attributes.tag == 'text'){
 			this.$el.html( this.text_template(this.model.toJSON()));
 		} else if (this.model.attributes.tag == 'number'){
@@ -176,6 +173,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				e.currentTarget = "<a href='#"+word+"'></a>";
 				this.navigate(e);
 				this.current_tab = num;
+				this.shortcode.type = this.tabs[this.current_tab];
 			} else {
 				this.current_tab = 1;
 			}
@@ -290,7 +288,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				end_date = this.shortcode.get('settings').where({name:'end-date'})[0];
 				if (end_date != undefined) {end_date = end_date.attributes.value[0];}
 				if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || (this.current_tab == 6 && start_date == undefined && end_date == undefined) || (this.current_tab == 5 && this.validMap() == true) || (this.current_tab == 1 && this.shortcode.items.length == 1) || (this.current_tab != 6 && this.current_tab != 1 && this.current_tab != 5)){
-					shortcode = '[drstk_'+this.tabs[this.current_tab];
+					shortcode = '<p>[drstk_'+this.tabs[this.current_tab];
 					ids = []
 					jQuery.each(items.models, function(i, item){
 						if (item.attributes.repo == 'dpla'){
@@ -326,12 +324,14 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					}
 					_.each(this.shortcode.get('settings').models, function(setting, i){
 						vals = setting.get('value');
-						if (vals.length > 0){
+						if (Array.isArray(vals) && vals.length > 0){
 							vals = vals.join(",");
+							shortcode += ' '+setting.get('name')+'="'+vals+'"';
+						} else if (vals != "") {
 							shortcode += ' '+setting.get('name')+'="'+vals+'"';
 						}
 					});
-					shortcode += ']';
+					shortcode += ']</p>';
 					window.wp.media.editor.insert(shortcode);
 					this.closeModal( e );
 				} else if (this.current_tab == 1 && this.shortcode.items.length > 1){
@@ -348,43 +348,48 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			} else {
 				alert("Please select items before inserting a shortcode");
 			}
-			console.log(this.shortcode.items);
 		},
 
-		setDefaultSettings: function(){
+		setDefaultSettings: function(options_settings){
 			type = this.shortcode.get('type');
 			settings = this.shortcode.get('settings');
+			if (this.options && this.options.settings){
+				options = this.options.settings;
+			} else {
+				options = {};
+			}
 			if (type == 'tile'){
+				var tile_type = options["tile-type"] ? options["tile-type"] : options['type'];
 				settings.add({
 					'name': 'tile-type',//previously called type
-					'value':['pinterest-hover'],
+					'value': tile_type ? [tile_type] : ['pinterest-hover'],
 					'choices':{'pinterest-below':"Pinterest style with caption below", 'pinterest-hover':"Pinterest style with caption on hover", 'even-row':"Even rows with caption on hover", 'square':"Even Squares with caption on hover"},
 					'label': 'Layout Type',
 					'tag': 'select'
 				});
 				settings.add({
 					'name': 'text-align',
-					'value':['left'],
+					'value': options["text-align"] ? [options["text-align"]] : ['left'],
 					'choices':{'center':"Center", 'left':"Left", 'right':"Right"},
 					'label':'Caption Alignment',
 					'tag':'select'
 				});
 				settings.add({
 					'name': 'cell-height',
-					'value':[200],
+					'value': options["cell-height"] ? [options["cell-height"]] : [200],
 					'label':'Cell Height (auto for Pinterest style)',
 					'tag':'number'
 				});
 				settings.add({
 					'name':'cell-width',
-					'value':[200],
+					'value': options["cell-width"] ? [options["cell-width"]] : [200],
 					'label':'Cell Width',
 					'tag':'number',
 					'helper':'Make the height and width the same for squares'
 				});
 				settings.add({
 					'name':'image-size',
-					'value':[4],
+					'value': options["image-size"] ? [options["image-size"]] : [4],
 					'label':'Image Size',
 					'tag':'select',
 					'choices':{1:'Largest side is 85px', 2:'Largest side is 170px', 3:'Largest side is 340px', 4:'Largest side is 500px', 5:'Largest side is 1000px'}
@@ -393,134 +398,147 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					'name':'metadata',
 					'label':'Metadata for Captions',
 					'tag':'checkbox',
-					'value':['full_title_ssi','creator_tesim'],
+					'value': options["metadata"] ? options["metadata"] : ['full_title_ssi','creator_tesim'],
 					'choices':{'full_title_ssi':'Title','creator_tesim':'Creator,Contributor','date_ssi':'Date Created','abstract_tesim':'Abstract/Description'},
 				});
 				this.shortcode.set('settings', settings);
 			} else if (type == 'single'){
 				settings.add({
 					'name':'image-size',
-					'value':[4],
+					'value': options["image-size"] ? [options["image-size"]] : [4],
 					'label':'Image Size',
 					'tag':'select',
 					'choices':{1:'Largest side is 85px', 2:'Largest side is 170px', 3:'Largest side is 340px', 4:'Largest side is 500px', 5:'Largest side is 1000px'}
 				});
 				settings.add({
 					'name':'display-video',
-					'value':['true'],
+					'value': options["display-video"] ? [options["display-video"]] : ['true'],
 					'label':'Display Audio/Video',
 					'tag':'checkbox',
 					'choices':{0:'true'},
 				});
 				settings.add({
 					'name':'align',
-					'value':['center'],
+					'value': options['align'] ? [options['align']] : ['center'],
 					'label':'Image Alignment',
 					'tag':'select',
 					'choices':{'center':'Center','left':'Left','right':'Right'}
 				});
 				settings.add({
 					'name': 'caption-align',
-					'value':['left'],
+					'value': options['caption-align'] ? [options['caption-align']] : ['left'],
 					'choices':{'center':"Center", 'left':"Left", 'right':"Right"},
 					'label':'Caption Alignment',
 					'tag':'select'
 				});
 				settings.add({
 					'name':'caption-position',
-					'value':['below'],
+					'value': options['caption-position'] ? [options['caption-position']] : ['below'],
 					'label':'Caption Position',
 					'choices':{'below':'Below','hover':'Over Image on Hover'},
 					'tag':'select'
 				});
 				settings.add({
 					'name':'zoom',
-					'value':['on'],
+					'value': options['zoom'] ? [options['zoom']] : ['on'],
 					'label':'Enable Zoom',
 					'choices':{0:'on'},
 					'tag':'checkbox'
 				});
 				settings.add({
 					'name':'zoom-position',
-					'value':[1],
+					'value': options['zoom-position'] ? [options['zoom-position']] : [1],
 					'label':'Zoom Position',
 					'helper':'Recommended and Default position:Top Right',
 					'choices':{1:'Top Right',2:'Middle Right',3:'Bottom Right',4:'Bottom Corner Right',5:'Under Right',6:'Under Middle',7:'Under Left',8:'Bottom Corner Left',9:'Bottom Left',10:'Middle Left',11:'Top Left',12:'Top Corner Left',13:'Above Left',14:'Above Middle',15:'Above Right',16:'Top Right Corner','inner':"Over image itself"},
 					'tag':'select'
 				});
+				if (options["metadata"]){
+					var choices = {}
+					_.each(options['metadata'], function(val){
+						choices[val] = val;
+					});
+					settings.add({
+						'name':'metadata',
+						'label':'Metadata',
+						'tag':'checkbox',
+						'value': options['metadata'] ? options['metadata'] : [],
+						'choices':choices,
+					});
+				}
 				this.shortcode.set('settings', settings);
 			} else if (type == 'slider'){
 				settings.add({
 					'name':'image-size',
-					'value':[4],
+					'value':options["image-size"] ? [options["image-size"]] : [4],
 					'label':'Image Size',
 					'tag':'select',
 					'choices':{1:'Largest side is 85px', 2:'Largest side is 170px', 3:'Largest side is 340px', 4:'Largest side is 500px', 5:'Largest side is 1000px'}
 				});
 				settings.add({
 					'name':'auto',
-					'value':['on'],
+					'value': options['auto'] ? [options['auto']] : ['on'],
 					'label':'Auto rotate',
 					'choices':{0:'on'},
 					'tag':'checkbox'
 				});
 				settings.add({
 					'name':'nav',
-					'value':['on'],
+					'value':options['nav'] ? [options['nav']] : ['on'],
 					'label':'Next/Prev Buttons',
 					'choices':{0:'on'},
 					'tag':'checkbox'
 				});
 				settings.add({
 					'name':'pager',
-					'value':['on'],
+					'value':options['pager'] ? [options['pager']] : ['on'],
 					'label':'Dot pager',
 					'choices':{0:'on'},
 					'tag':'checkbox'
 				});
 				settings.add({
 					'name':'speed',
-					'value':[],
+					'value': options['speed'] ? [options['speed']] : [],
 					'label':'Rotation Speed',
 					'tag':'number',
 					'helper':'Speed is in milliseconds. 5000 milliseconds = 5 seconds'
 				});
 				settings.add({
 					'name': 'max-height',
-					'value':[],
+					'value': options['max-height'] ? [options['max-height']] : [],
 					'label':'Max Height',
 					'tag':'number'
 				});
 				settings.add({
 					'name':'max-width',
-					'value':[],
+					'value': options['max-width'] ? [options['max-width']] : [],
 					'label':'Max Width',
 					'tag':'number',
 				});
 				settings.add({
 					'name':'caption',
-					'value':['on'],
+					'value': options['caption'] ? [options['caption']] : ['on'],
 					'label':'Enable captions',
 					'choices':{0:'on'},
 					'tag':'checkbox'
 				});
 				settings.add({
 					'name': 'caption-align',
-					'value':['center'],
+					'value': options['caption-align'] ? [options['caption-align']] : ['center'],
 					'choices':{'center':"Center", 'left':"Left", 'right':"Right"},
 					'label':'Caption Alignment',
 					'tag':'select'
 				});
 				settings.add({
 					'name':'caption-position',
-					'value':['relative'],
+					'value': options['caption-position'] ? [options['caption-position']] : ['relative'],
 					'label':'Caption Position',
 					'choices':{'absolute':'Over Image','relative':'Below Image'},
 					'tag':'select'
 				});
 				settings.add({
 					'name':'caption-width',
-					'value':['below'],
+					'value': options['caption-width'] ? [options['caption-width']] : ['below'],
 					'label':'Caption Width',
 					'choices':{'100%':'Width of gallery','image':'Width of image'},
 					'tag':'select'
@@ -529,7 +547,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					'name':'metadata',
 					'label':'Metadata for Captions',
 					'tag':'checkbox',
-					'value':['full_title_ssi','creator_tesim'],
+					'value': options['metadata'] ? options['metadata'] : ['full_title_ssi','creator_tesim'],
 					'choices':{'full_title_ssi':'Title','creator_tesim':'Creator,Contributor','date_ssi':'Date Created','abstract_tesim':'Abstract/Description'},
 				});
 
@@ -537,14 +555,14 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			} else if (type == 'timeline') {
 				settings.add({
 					'name':'start-date',
-					'value':[],
+					'value': options['start-date'] ? [options['start-date']] : [],
 					'label':'Start Date Boundary',
 					'tag':'number',
 					'helper':'year eg:1960'
 				});
 				settings.add({
 					'name':'end-date',
-					'value':[],
+					'value': options['end-date'] ? [options['end-date']] : [],
 					'label':'End Date Boundary',
 					'tag':'number',
 					'helper':'year eg:1990'
@@ -553,37 +571,38 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					'name':'metadata',
 					'label':'Metadata',
 					'tag':'checkbox',
-					'value':['Creator,Contributor'],
+					'value': options['metadata'] ? options['metadata'] : ['Creator,Contributor'],
 					'choices':{'Creator,Contributor':'Creator,Contributor','Abstract/Description':'Abstract/Description'},
 				});
 				settings.add({
 					'name':'increments',
 					'label':'Scale Increments',
 					'tag':'select',
-					'value':[5],
+					'value': options['increments'] ? [options['increments']] : [5],
 					'choices':{.5:'Very Low',2:'Low',5:'Medium',8:'High',13:'Very High'},
 					'helper':'Specifies the granularity to represent items on the timeline'
 				});
 				_.each(this.colors, function(color){
+					var desc = options[color+'_desc'] ? options[color+'_desc'] : options[color+'_legend_desc'];
 					settings.add({
 						'name':color+'_desc',
 						'label':color.charAt(0).toUpperCase()+color.slice(1)+" Description",
 						'tag':'text',
-						'value':''
+						'value': desc ? desc : ''
 					});
 				});
 				this.shortcode.set('settings', settings);
 			} else if (type == 'media') {
 				settings.add({
 					'name': 'height',
-					'value':["270"],
+					'value': options['height'] ? [options['height']] : ["270"],
 					'label':'Height',
 					'helper':'(Enter in pixels or %, Default is 270)',
 					'tag':'text'
 				});
 				settings.add({
 					'name':'width',
-					'value':["100%"],
+					'value': options['width'] ? [options['width']] : ["100%"],
 					'label':'Width',
 					'tag':'text',
 					'helper':'(Enter in pixels or %, Default is 100%)'
@@ -593,7 +612,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			} else if (type == 'map'){
 				settings.add({
 					'name':'story',
-					'value':['yes'],
+					'value': options['story'] ? options['story'] : ['yes'],
 					'label':'Story',
 					'tag':'checkbox',
 					'choices':{0:'yes'},
@@ -602,31 +621,32 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					'name':'metadata',
 					'label':'Metadata',
 					'tag':'checkbox',
-					'value':['Creator,Contributor'],
+					'value': options['metadata'] ? options['metadata'] : ['Creator,Contributor'],
 					'choices':{'Creator,Contributor':'Creator,Contributor','Date Created':'Date Created','Abstract/Description':'Abstract/Description'},
 				});
 				_.each(this.colors, function(color){
+					var desc = options[color+'_desc'] ? options[color+'_desc'] : options[color+'_legend_desc'];
 					settings.add({
 						'name':color+'_desc',
 						'label':color.charAt(0).toUpperCase()+color.slice(1)+" Description",
 						'tag':'text',
-						'value':''
+						'value': desc != undefined ? desc : ''
 					});
 				});
 				this.shortcode.set('settings', settings);
 			} else {
-				//handle old types? tile -> plural, slider -> gallery, single -> item, media -> collection_playlist
+				console.log(type);
+				console.log("not a known shortcode type");
 			}
 		},
 
 		/* navigation between shortcode types */
 		navigate: function ( e ) {
 			"use strict";
-			//e.preventDefault();
 			this.search_params.page = 1;
 			this.geo_count = 0;
 			this.time_count = 0;
-			this.shortcode.set('settings',  new drstk.Settings()); //TODO - may need to change how this works when we are pulling values from an existing shortcode
+			this.shortcode.set('settings',  new drstk.Settings());
 			jQuery(".navigation-bar a").removeClass("active");
 			this.showTab(jQuery(e.currentTarget).attr("href"));
 		},
@@ -1166,7 +1186,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 	       jQuery(".selected-items").html("You haven't selected any items yet.");
 				 jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 	     }
-			 console.log(this.shortcode.items);
 		},
 
 		appendSingleItem: function( item ) {
@@ -1179,6 +1198,14 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				colors = "";
 				_.each(this.colors, function(color){
 					colors += "<option value='"+color+"'";
+					preset_colors = this.options[color+"_id"] ? this.options[color+"_id"] : this.options[color];
+					if (preset_colors){
+						preset_colors = preset_colors.split(",");
+					}
+					if (preset_colors != undefined && preset_colors.indexOf(item.attributes.pid) > -1){
+						item.set("color",color);
+					}
+
 					if (item.attributes.color == color){ colors += " selected='selected'"; }
 					colors += ">"+color.charAt(0).toUpperCase()+color.slice(1)+"</option>";
 				});
