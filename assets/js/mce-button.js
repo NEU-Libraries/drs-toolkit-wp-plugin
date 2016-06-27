@@ -22,7 +22,7 @@
           repo = item.split(":")[0];
           if (repo == "wp"){ repo = "local";}
           if (repo == "neu"){ repo = "drs";} else { item = item.split(":")[1]; } //non drs pids don't need prefix
-          this_item.set("pid", item).set("repo", repo); //TODO- set color here too if color_id or what not
+          this_item.set("pid", item).set("repo", repo);
           items.push(this_item);
         });
         delete params.id;

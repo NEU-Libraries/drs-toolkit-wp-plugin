@@ -9,7 +9,7 @@ function drstk_item( $atts ){
       return $cache;
   }
   $repo = drstk_get_repo_from_pid($atts['id']);
-  if ($repo != "drs"){$pid = explode(":",$atts['id'])[1];} else {$pid = $atts['id'];}
+  if ($repo != "drs"){$pid = explode(":",$atts['id']); $pid = $pid[1];} else {$pid = $atts['id'];}
   if (isset($atts['image-size'])){
     $num = $atts['image-size']-1;
   } else {
