@@ -53,7 +53,7 @@ function drstk_map( $atts ){
 
   foreach($items as $item){
     $repo = drstk_get_repo_from_pid($item);
-    if ($repo != "drs"){$pid = explode(":",$item)[1];} else {$pid = $item;}
+    if ($repo != "drs"){$pid = explode(":",$item); $pid = $pid[1];} else {$pid = $item;}
     if ($repo == "drs"){
       $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item;
       $data = get_response($url);

@@ -43,7 +43,7 @@ function drstk_timeline( $atts ){
   foreach($neu_ids as $current_key => $neu_id){
 
     $repo = drstk_get_repo_from_pid($neu_id);
-    if ($repo != "drs"){$pid = explode(":",$neu_id)[1];} else {$pid = $neu_id;}
+    if ($repo != "drs"){$pid = explode(":",$neu_id); $pid = $pid[1];} else {$pid = $neu_id;}
     if($repo == "drs"){
       $url = "https://repository.library.northeastern.edu/api/v1/files/" . $neu_id;
       $data = get_response($url);

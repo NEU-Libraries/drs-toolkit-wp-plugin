@@ -35,7 +35,7 @@ function drstk_collection_playlist($atts){
     }
     foreach($collection as $video){
       $repo = drstk_get_repo_from_pid($video);
-      if ($repo != "drs"){$pid = explode(":",$video)[1];} else {$pid = $video;}
+      if ($repo != "drs"){$pid = explode(":",$video); $pid = $pid[1];} else {$pid = $video;}
       $poster;
       if ($repo == "drs"){
         $url = "https://repository.library.northeastern.edu/api/v1/files/" . $video;

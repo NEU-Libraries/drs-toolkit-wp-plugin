@@ -18,7 +18,7 @@ function drstk_tiles( $atts ){
   }
   foreach($imgs as $img){
     $repo = drstk_get_repo_from_pid($img);
-    if ($repo != "drs"){$pid = explode(":",$img)[1];} else {$pid = $img;}
+    if ($repo != "drs"){$pid = explode(":",$img); $pid = $pid[1];} else {$pid = $img;}
     if ($repo == "drs"){
       $url = "https://repository.library.northeastern.edu/api/v1/files/" . $img . "?solr_only=true";
       $data = get_response($url);

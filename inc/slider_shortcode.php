@@ -21,7 +21,7 @@ function drstk_gallery( $atts ){
     }
    foreach($images as $id){
      $repo = drstk_get_repo_from_pid($id);
-     if ($repo != "drs"){$pid = explode(":",$id)[1];} else {$pid = $id;}
+     if ($repo != "drs"){$pid = explode(":",$id); $pid = $pid[1];} else {$pid = $id;}
      if ($repo == "drs"){
        $url = "https://repository.library.northeastern.edu/api/v1/files/" . $id . "?solr_only=true";
        $data = get_response($url);
