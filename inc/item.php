@@ -131,7 +131,8 @@ function get_item_title(){
     $data->mods->Title = $title;
     echo $title[0];
   } else if ($repo == "wp"){
-    $item_pid = explode(":",$item_pid)[1];
+    $item_pid = explode(":",$item_pid);
+    $item_pid = $item_pid[1];
     $data = get_post($item_pid);
     $data->mods = new StdClass;
     $data->mods->Title = array($data->post_title);
