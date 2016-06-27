@@ -53,6 +53,8 @@
 }
 .leaflet-tile-loaded {
     visibility: inherit;
+    max-height: none;
+    max-width: none;
 }
 .leaflet-zoom-box {
     width: 0;
