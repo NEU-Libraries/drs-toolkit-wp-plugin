@@ -8,6 +8,10 @@
       if (shortcode.charAt(0) == "[" && shortcode.charAt(shortcode.length-1) == "]"){
         type = shortcode.split("id=")[0].trim();
         type = type.split("_")[1].trim();
+				if (type == 'tiles'){type = 'tile'}
+				if (type == 'item'){type = 'single'}
+				if (type == 'gallery'){type = 'slider'}
+				if (type == 'collection'){type = 'media'}
         ids = [];
         params = getShortcodeParams(shortcode);
         params.id = params.id.split(",");
@@ -21,8 +25,10 @@
           this_item.set("pid", item).set("repo", repo); //TODO- set color here too if color_id or what not
           items.push(this_item);
         });
+        delete params.id;
+        if (params.metadata) {params.metadata = params.metadata.split(",");}
         editor.dom.remove(e.srcElement);
-        drstk.backbone_modal.__instance = new drstk.backbone_modal.Application({current_tab:type, items: items, old_shortcode:old_shortcode});
+        drstk.backbone_modal.__instance = new drstk.backbone_modal.Application({current_tab:type, items: items, old_shortcode:old_shortcode, settings:params});
       }
     });
 	});
