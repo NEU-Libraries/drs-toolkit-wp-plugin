@@ -26,7 +26,12 @@
           items.push(this_item);
         });
         delete params.id;
-        if (params.metadata) {params.metadata = params.metadata.split(",");}
+        if (params.metadata) {
+					params.metadata = params.metadata.split(",");
+					for (var i = 0; i < params.metadata.length; i++) {
+						params.metadata[i] = params.metadata[i].trim();
+					}
+				}
         editor.dom.remove(e.srcElement);
         drstk.backbone_modal.__instance = new drstk.backbone_modal.Application({current_tab:type, items: items, old_shortcode:old_shortcode, settings:params});
       }

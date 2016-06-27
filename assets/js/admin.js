@@ -1201,6 +1201,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					preset_colors = this.options[color+"_id"] ? this.options[color+"_id"] : this.options[color];
 					if (preset_colors){
 						preset_colors = preset_colors.split(",");
+						for (var i = 0; i < preset_colors.length; i++) {
+    					preset_colors[i] = preset_colors[i].trim();
+						}
 					}
 					if (preset_colors != undefined && preset_colors.indexOf(item.attributes.pid) > -1){
 						item.set("color",color);
