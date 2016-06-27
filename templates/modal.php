@@ -126,21 +126,20 @@
 	<td><h5>{{data.label}}</h5></td>
 	<td>
 		<# if (_.size(data.choices) == 1) { #>
-			<label><input type="checkbox" name="{{data.choices[0]}}" <# if (data.value == data.choices[0]) { #> checked="checked" <# } #>/> </label><br/>
+				<# if (jQuery.isNumeric(Object.keys(data.choices)[0])) { #>
+					<label><input type="checkbox" name="{{data.choices[0]}}" <# if (data.value == data.choices[0]) { #> checked="checked" <# } #>/> </label><br/>
+				<# } else { #>
+					<label><input type="checkbox" name="{{Object.keys(data.choices)[0]}}" <# if (data.value == Object.keys(data.choices)[0]) { #> checked="checked" <# } #>/> {{data.value}} </label><br/>
+				<# } #>
 		<# } else { #>
-			<# _.each(data.choices, function(choice, key) { #>
-				<label><input type="checkbox" name="{{key}}" <# if (data.value.indexOf(key) > -1) { #> checked="checked" <# } #>/> {{choice}} </label><br/>
+			<# _.each(data.choices, function(choice, key) {
+				var key_array = key.split(",");
+				#>
+				<label><input type="checkbox" name="{{key}}" <# if (data.value.indexOf(key) > -1 || (key_array && data.value.indexOf(key_array[0]) > -1) || (key_array.length > 1 &&  data.value.indexOf(key_array[1]) > -1)) { #> checked="checked" <# } #>/> {{choice}} </label><br/>
 			<# }); #>
 		<# } #>
 	</td>
 	<td>{{data.helper}}</td>
-</script>
-
-<?php
-/* a template for url settings */
-?>
-<script type='text/html' id='tmpl-drstk-setting-url'>
-
 </script>
 <?php
 /* a template for number settings */
@@ -162,7 +161,11 @@
 		<label for="{{data.name}}">{{data.label}}</label>
 	</td>
 	<td>
-		<input type="text" value="{{data.value[0]}}" name="{{data.name}}"/>
+		<# if (Array.isArray(data.value)){ #>
+			<input type="text" value="{{data.value[0]}}" name="{{data.name}}"/>
+		<# } else { #>
+			<input type="text" value="{{data.value}}" name="{{data.name}}"/>
+		<# } #>
 	</td>
 	<td>{{data.helper}}</td>
 </script>
