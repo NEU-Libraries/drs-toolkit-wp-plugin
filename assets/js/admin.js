@@ -333,7 +333,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					});
 					shortcode += ']</p>';
 					window.wp.media.editor.insert(shortcode);
+					console.log(shortcode);
 					this.closeModal( e );
+					console.log("should have closed");
 				} else if (this.current_tab == 1 && this.shortcode.items.length > 1){
 					alert("There are more than 1 items selected for a single item shortcode.");
 			  } else if (this.current_tab == 6){
