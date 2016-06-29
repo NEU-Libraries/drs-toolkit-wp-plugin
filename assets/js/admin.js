@@ -657,9 +657,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			jQuery(".nav-tab").removeClass("nav-tab-active");
 			jQuery(e.currentTarget).addClass("nav-tab-active");
 			this.search_params.page = 1;
+			this.search_params.q = "";
 			jQuery(".pane").hide();
 			if (path == '#drs'){
-				this.search_params.q = "";
 				jQuery("#drs").show();
 				jQuery("#drs input[name='search']").val(this.search_params.q);
 				this.getDRSitems();
@@ -895,15 +895,15 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						'repo':repo
 					})
 				}
+				var self = this;
+				//single items can only have one items so we'll clear the rest out
+				item.parents("ol").find("input:checked").not(item).each(function(){
+					jQuery(this).prop( "checked", false );
+					pid = jQuery(this).val();
+					var remove = self.shortcode.items.where({ pid: pid });
+					self.shortcode.items.remove(remove);
+				});
 				if (this.shortcode.get('type') == 'single' && parent == 'drs'){ //if type is single then get the metadata options for the settings
-					var self = this;
-					//single items can only have one items so we'll clear the rest out
-					item.parents("ol").find("input:checked").not(item).each(function(){
-						jQuery(this).prop( "checked", false );
-						pid = jQuery(this).val();
-						var remove = self.shortcode.items.where({ pid: pid });
-						self.shortcode.items.remove(remove);
-					});
 					jQuery.ajax({
 						url: item_admin_obj.ajax_url,
             type: "POST",
@@ -932,6 +932,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						}
 					});
 				} else if (this.shortcode.get('type') == 'single' && parent == 'dpla'){
+					old_search = this.search_params;
 					local_params = this.search_params;
 					var self = this;
 					local_params.q = pid;
@@ -969,6 +970,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 							self.shortcode.set('settings', settings);
 						}
 					});
+					this.search_params = old_search;
 				}
 			} else {
 				var remove = this.shortcode.items.where({ pid: pid });
