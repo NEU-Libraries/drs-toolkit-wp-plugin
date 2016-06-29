@@ -895,14 +895,16 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						'repo':repo
 					})
 				}
-				var self = this;
-				//single items can only have one items so we'll clear the rest out
-				item.parents("ol").find("input:checked").not(item).each(function(){
-					jQuery(this).prop( "checked", false );
-					pid = jQuery(this).val();
-					var remove = self.shortcode.items.where({ pid: pid });
-					self.shortcode.items.remove(remove);
-				});
+				if (this.shortcode.get('type') == 'single'){
+					var self = this;
+					//single items can only have one items so we'll clear the rest out
+					item.parents("ol").find("input:checked").not(item).each(function(){
+						jQuery(this).prop( "checked", false );
+						pid = jQuery(this).val();
+						var remove = self.shortcode.items.where({ pid: pid });
+						self.shortcode.items.remove(remove);
+					});
+				}
 				if (this.shortcode.get('type') == 'single' && parent == 'drs'){ //if type is single then get the metadata options for the settings
 					jQuery.ajax({
 						url: item_admin_obj.ajax_url,
