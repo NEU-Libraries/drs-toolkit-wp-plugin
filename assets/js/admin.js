@@ -163,7 +163,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 
 			_.bindAll( this, 'render', 'preserveFocus', 'closeModal', 'insertShortcode', 'navigate', 'showTab', 'getDRSitems', 'selectItem', 'paginate', 'navigateShortcode', 'search', 'setDefaultSettings', 'appendSingleItem' );
 			this.initialize_templates();
-			this.render();
 			this.shortcode = new drstk.Shortcode({});
 			if (this.options && this.options.current_tab != ""){
 				var e = {currentTarget:""};
@@ -190,6 +189,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			if (this.options && this.options.old_shortcode){
 				this.old_shortcode = this.options.old_shortcode
 			}
+			this.render();
+			console.log(this);
 		},
 
 
