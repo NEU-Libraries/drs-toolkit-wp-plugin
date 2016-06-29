@@ -58,6 +58,7 @@ function drstk_tiles( $atts ){
       $master = $post->guid;
       $data->full_title_ssi = $post->post_title;
       $data->abstract_tesim = array($post->post_excerpt);
+      $pid = "wp:".$pid;
     }
     if ($repo == "dpla"){
       $url = "http://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
@@ -81,6 +82,7 @@ function drstk_tiles( $atts ){
       $data->abstract_tesim = array($description);
       $data->creator_tesim = array($dpla->docs[0]->sourceResource->creator);
       $data->date_ssi = array($dpla->docs[0]->sourceResource->date->displayDate);
+      $pid = "dpla:".$pid;
     }
     $type = isset($atts['type']) ? $atts['type'] : $atts['tile-type'];
     if (!isset($data->error)){
