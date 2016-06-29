@@ -659,6 +659,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			this.search_params.page = 1;
 			jQuery(".pane").hide();
 			if (path == '#drs'){
+				this.search_params.q = "";
 				jQuery("#drs").show();
 				jQuery("#drs input[name='search']").val(this.search_params.q);
 				this.getDRSitems();
