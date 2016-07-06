@@ -426,6 +426,14 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					'choices':{0:'true'},
 				});
 				settings.add({
+					'name':'display-issuu',
+					'value': options["display-issuu"] ? [options["display-issuu"]] : ['true'],
+					'label':'Display Embedded Page Turner',
+					'helper':'Note: Only for DRS items. Requires special metadata.',
+					'tag':'checkbox',
+					'choices':{0:'true'},
+				});
+				settings.add({
 					'name':'align',
 					'value': options['align'] ? [options['align']] : ['center'],
 					'label':'Image Alignment',

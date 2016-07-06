@@ -124,7 +124,7 @@ function drstk_item( $atts ){
   }
 
   if (!$jwplayer) {
-    if (isset($data->mods->Location) && strpos($data->mods->Location[0], "issuu") !== FALSE){
+    if (isset($atts['display-issuu']) && isset($data->mods->Location) && strpos($data->mods->Location[0], "issuu") !== FALSE){
       $location_href = explode("'", strval(htmlentities($data->mods->Location[0])));
       if (count($location_href) == 1){
         $location_href = explode('"', strval(htmlentities($data->mods->Location[0])));
