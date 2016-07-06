@@ -421,6 +421,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					'name':'display-video',
 					'value': options["display-video"] ? [options["display-video"]] : ['true'],
 					'label':'Display Audio/Video',
+					'helper':'Note: DPLA items cannot be used as embedded media',
 					'tag':'checkbox',
 					'choices':{0:'true'},
 				});
@@ -680,7 +681,11 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			} else if ( path == '#dpla' ){
 				jQuery("#dpla input[name='search']").val(this.search_params.q);
 				jQuery("#dpla").show();
-				this.getDPLAitems();
+				if (this.current_tab == 4) {
+					jQuery("#dpla").html("<div class='notice notice-warning'><p>DPLA items cannot be used in embedded media. If you would like to use a media item from the DPLA, consider downloading it and upload it using the 'Local Items' tab.</p></div>");
+				} else {
+					this.getDPLAitems();
+				}
 			} else if (path == '#local'){
 				jQuery("#local").show();
 				this.getMediaitems();
