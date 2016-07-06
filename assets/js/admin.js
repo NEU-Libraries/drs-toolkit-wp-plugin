@@ -188,6 +188,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						self.shortcode.items.add(item);
 					}
 				});
+				e.currentTarget = jQuery(".nav-tab[href='#selected']");
+				this.navigateShortcode(e);
 			}
 			if (this.options && this.options.old_shortcode){
 				this.old_shortcode = this.options.old_shortcode
