@@ -684,7 +684,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				if (this.current_tab == 4) {
 					jQuery("#dpla").html("<div class='notice notice-warning'><p>DPLA items cannot be used in embedded media. If you would like to use a media item from the DPLA, consider downloading it and upload it using the 'Local Items' tab.</p></div>");
 				} else {
-					this.getDPLAitems();
+					jQuery("#dpla ol").children("li").remove();
+					jQuery(".dpla-items").html("<div class='notice notice-info'><p>Perform a search or enter a DPLA ID to select items.</p></div>");
 				}
 			} else if (path == '#local'){
 				jQuery("#local").show();
