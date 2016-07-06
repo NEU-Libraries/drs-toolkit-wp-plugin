@@ -1086,7 +1086,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 							 }
 						 }
 						 if (self.current_tab == 6){
-							jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: "+item.sourceResource.date.dislpayDate+"</p>");
+							jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: "+item.sourceResource.date.displayDate+"</p>");
 						 }
            });
 					 if (self.search_params.q != ""){//too much pagination if there isn't a query
