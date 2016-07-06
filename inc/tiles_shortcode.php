@@ -80,7 +80,8 @@ function drstk_tiles( $atts ){
       $data = new StdClass;
       $data->full_title_ssi = array($title);
       $data->abstract_tesim = array($description);
-      $data->creator_tesim = array($dpla->docs[0]->sourceResource->creator);
+      $data->creator_tesim = is_array($dpla->docs[0]->sourceResource->creator) ? $dpla->docs[0]->sourceResource->creator : array($dpla->docs[0]->sourceResource->creator);
+
       $data->date_ssi = array($dpla->docs[0]->sourceResource->date->displayDate);
       $pid = "dpla:".$pid;
     }

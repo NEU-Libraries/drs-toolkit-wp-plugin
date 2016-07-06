@@ -97,7 +97,7 @@ function drstk_item( $atts ){
     $abs = "Abstract/Description";
     $data->mods->$abs = $description;
     if (isset($dpla->docs[0]->sourceResource->creator)){
-      $data->mods->Creator = array($dpla->docs[0]->sourceResource->creator);
+      $data->mods->Creator = is_array($dpla->docs[0]->sourceResource->creator) ? $dpla->docs[0]->sourceResource->creator : array($dpla->docs[0]->sourceResource->creator);
     }
     $dat = "Date Created";
     $data->mods->$dat = array($dpla->docs[0]->sourceResource->date->displayDate);

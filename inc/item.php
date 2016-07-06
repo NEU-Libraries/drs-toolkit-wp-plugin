@@ -477,7 +477,7 @@ function map_dpla_to_mods($data, $meta_options){
     $data->mods->Rights = $sourceResource->rights;
   }
   $permname = "Permanent URL";
-  $data->mods->$permname = array($data->docs[0]->isShownAt);
+  $data->mods->$permname = is_array($data->docs[0]->isShownAt) ? $data->docs[0]->isShownAt : array($data->docs[0]->isShownAt);
   if(isset($sourceResource->identifier)){
     $data->mods->Identifier = $sourceResource->identifier;
   }
