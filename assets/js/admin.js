@@ -549,6 +549,13 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					'tag':'select'
 				});
 				settings.add({
+					'name':'transition',
+					'value': options['transition'] ? [options['transition']] : ['slide'],
+					'label':'Transition Type',
+					'choices':{'slide':'Slide', 'fade':'Fade'},
+					'tag':'select'
+				});
+				settings.add({
 					'name':'metadata',
 					'label':'Metadata for Captions',
 					'tag':'checkbox',

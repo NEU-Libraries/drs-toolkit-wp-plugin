@@ -19,6 +19,13 @@ function drstk_gallery( $atts ){
     } else {
       $num = 4;
     }
+    if ($atts['transition'] == 'slide'){
+      $transition_class = "";
+    } elseif ($atts['transition'] == 'fade'){
+      $transition_class = "carousel-fade";
+    } else {
+      $transition_class = "";
+    }
    foreach($images as $id){
      $repo = drstk_get_repo_from_pid($id);
      if ($repo != "drs"){$pid = explode(":",$id); $pid = $pid[1];} else {$pid = $id;}
@@ -184,7 +191,7 @@ function drstk_gallery( $atts ){
      $interval = 'false';
    }
    $rand = rand();
-   $gallery_html = '<div class="carousel slide" id="carousel-'.$rand.'" data-height="'.$height.'" data-width="'.$width.'" data-interval="'.$interval.'"';
+   $gallery_html = '<div class="carousel slide '.$transition_class.'" id="carousel-'.$rand.'" data-height="'.$height.'" data-width="'.$width.'" data-interval="'.$interval.'"';
    if (isset($atts['max-height'])){
      $gallery_html .= " data-max-height='".$atts['max-height']."'";
    }
