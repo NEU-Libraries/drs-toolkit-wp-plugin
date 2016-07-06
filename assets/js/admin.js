@@ -171,6 +171,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				var words = {1:"one",2:"two",3:"three",4:"four",5:"five",6:"six"}
 				var word = words[num];
 				e.currentTarget = "<a href='#"+word+"'></a>";
+				this.search_params.q = "";
+				this.search_params.page = 1;
 				this.navigate(e);
 				this.current_tab = num;
 				this.shortcode.type = this.tabs[this.current_tab];
