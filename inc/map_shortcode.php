@@ -121,7 +121,12 @@ function drstk_map( $atts ){
       $title = $post->post_title;
       $description = $post->post_excerpt;
       $custom = get_post_custom($pid);
-      $coordinates = $custom['_map_coords'][0];
+      if (isset($custom['_map_coords'])){
+        $coordinates = $custom['_map_coords'][0];
+      } else {
+        $coordinates = "";
+        continue;
+      }
       $data = new StdClass;
       $data->mods = new StdClass;
       $data->mods->Title = array($post->post_title);
@@ -199,6 +204,10 @@ function drstk_map( $atts ){
       $data->mods->$date = array($data->docs[0]->sourceResource->date->displayDate);
       $data->canonical_object = new StdClass;
       $data->canonical_object->$url = "Master Image";
+      if (!isset($data->docs[0]->sourceResource->spatial)){
+        $coordinates = "";
+        continue;
+      }
       if(!isset($data->docs[0]->sourceResource->spatial[0]->coordinates)) {
         $location = $data->docs[0]->sourceResource->spatial[0]->name;// . $data->docs[0]->sourceResource->spatial[0]->state;
         $locationUrl = "http://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
