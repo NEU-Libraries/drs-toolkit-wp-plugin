@@ -64,7 +64,7 @@ function drstk_map( $atts ){
         $coordinates = "";
         if(isset($data->coordinates)) {
           $coordinates = $data->coordinates;
-        } else {
+        } else if (isset($data->geographic)){
           $location = $data->geographic[0];
           $locationUrl = "http://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
           $locationData = get_response($locationUrl);
@@ -72,6 +72,11 @@ function drstk_map( $atts ){
           if (!isset($locationData->error)) {
             $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
           }
+        } else { //no geo data, skip it
+          $coordinates = "";
+        }
+        if ($coordinates == ""){
+          continue;
         }
 
         $title = $data->mods->Title[0];
