@@ -51,6 +51,9 @@ function drstk_timeline( $atts ){
 
       if (!isset($data->error)){
         $pid = $data->pid;
+        if (!isset($data->key_date)){
+          continue;
+        }
         $key_date = $data->key_date;
         $current_array = array();
         $breadcrumbs = $data->breadcrumbs;
@@ -105,6 +108,9 @@ function drstk_timeline( $atts ){
       $title = $post->post_title;
       $description = $post->post_excerpt;
       $custom = get_post_custom($pid);
+      if (!isset($custom['_timeline_date'])){
+        continue;
+      }
       $date = $custom['_timeline_date'][0];
       if ($date != ""){
         $date = explode("/", $date);
@@ -119,6 +125,7 @@ function drstk_timeline( $atts ){
         $timeline_custom_html .= "></div>";
       } else {
         //no date
+        continue;
       }
     }
     if ($repo == "dpla"){
@@ -189,6 +196,7 @@ function drstk_timeline( $atts ){
         $timeline_custom_html .= "></div>";
       } else {
         //no date
+        continue;
       }
     }
   }
