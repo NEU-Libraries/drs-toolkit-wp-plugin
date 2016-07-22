@@ -85,11 +85,29 @@
 		<br/>
 		<div class="pane" id="drs">
 			<label for="search">Search for an item: </label><input type="text" name="search" id="search-{{data.type}}" /><button class="themebutton search-button">Search</button>
+			<div class="drs-facets"></div>
 			<div class="drs-items">Loading...</div><ol id="sortable-{{data.type}}-list"></ol><div class="drs-pagination"></div>
 		</div>
 		<div class="pane" id="dpla">
 			<label for="search">Search for an item: </label><input type="text" name="search" id="search-{{data.type}}" /><button class="themebutton search-button">Search</button>
-			<div class="dpla-items">Loading...</div><ol id="sortable-{{data.type}}-list"></ol><div id="dpla-pagination"><span class="tablenav"></span></div>
+			<br/>
+			<br/>
+			<button class="dpla-facets-button">Toggle Filtering Options</button>
+			<br/>
+			<br/>
+			<div class="dpla-items">Loading...</div>
+			<div class="dpla-facets hidden">
+				<label for="dpla-sort">Sort By: </label><select name="dpla-sort"><option value="">Relevance</option><option value="title">Title</option><option value="creator">Creator</option><option value="date">Date Created</option></select>
+				<div class="dpla-creator">
+				</div>
+				<div class="dpla-date">
+				</div>
+				<div class="dpla-subject">
+				</div>
+				<div class="dpla-type">
+				</div>
+			</div>
+			<ol id="sortable-{{data.type}}-list" class="fullwidth"></ol><div id="dpla-pagination"><span class="tablenav"></span></div>
 		</div>
 		<div class="pane" id="local">
 		</div>

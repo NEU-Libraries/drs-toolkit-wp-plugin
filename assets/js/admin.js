@@ -119,6 +119,11 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			"change #settings select": "settingsChange",
 			"change #selected select[name='color']": "changeColor",
 			"click #local #wp_media": "addMediaItems",
+			"change select[name='dpla-sort']": "dplaSort",
+			"change select[name='drs-sort']": "drsSort",
+			"click .dpla-facets-button": "dplaFacetToggle",
+			"click .drs-facets-button": "drsFacetToggle",
+			"click .dpla-facets a": "dplaFacet",
 		},
 
 		/**
@@ -142,7 +147,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 
 		search_q: '',
 		search_page: 1,
-		search_params: {q:this.search_q, page:this.search_page},
+		search_params: {q:this.search_q, page:this.search_page, facets: {}, sort: ""},
 		current_tab: 0,  // store our current tab as a variable for easy lookup
 		tabs: {        // dictionary of key/value pairs for our tabs
 			1: 'single',
@@ -180,6 +185,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				this.current_tab = 1;
 			}
 			if (this.options && this.options.items.length > 0){
+				console.log("items from existing is ");
+				console.log(this.options.items);
 				var self = this;
 				_.each(this.options.items, function(item, i){
 					if (i == 0){
@@ -190,6 +197,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				});
 				e.currentTarget = jQuery(".nav-tab[href='#selected']");
 				this.navigateShortcode(e);
+				console.log("items after load");
+				console.log(this.shortcode.items);
 			}
 			if (this.options && this.options.old_shortcode){
 				this.old_shortcode = this.options.old_shortcode
@@ -406,7 +415,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					'label':'Metadata for Captions',
 					'tag':'checkbox',
 					'value': options["metadata"] ? options["metadata"] : ['full_title_ssi','creator_tesim'],
-					'choices':{'full_title_ssi':'Title','creator_tesim':'Creator,Contributor','date_ssi':'Date Created','abstract_tesim':'Abstract/Description'},
+					'choices':{'full_title_ssi':'Title','creator_tesim':'Creator,creator','date_ssi':'Date Created','abstract_tesim':'Abstract/Description'},
 				});
 				this.shortcode.set('settings', settings);
 			} else if (type == 'single'){
@@ -981,7 +990,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						if (data.sourceResource.description){
 							choices["Abstract/Description"] = "Abstract/Description"
 						}
-						if (data.sourceResource.creator){
+						if (data.sourceResource.contributor){
 							choices["Creator"] = "Creator"
 						}
 						if (data.sourceResource.date.displayDate){
@@ -1106,6 +1115,40 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					 if (self.search_params.q != ""){//too much pagination if there isn't a query
 						 self.updateDPLAPagination(data);
 					 }
+					 if (self.search_params.facets != {}){
+						 _.each(data.facets, function(facet, facet_name) {
+							 if (facet_name == "sourceResource.contributor"){
+								 this_facet = "creator";
+							 }
+							 if (facet_name == "sourceResource.subject.name"){
+								 this_facet = "subject";
+							 }
+							 if (facet_name == "sourceResource.type"){
+								 this_facet = "type";
+							 }
+							 jQuery(".dpla-"+this_facet).html("");
+							 jQuery(".dpla-"+this_facet).html("<b>"+this_facet.charAt(0).toUpperCase() + this_facet.slice(1)+"</b><table>");
+							 if (facet.terms != undefined){
+								 if (facet.terms.length > 0){
+									 for (var i = 0; i <= 4; i++){
+										 if (facet.terms[i] != undefined){
+											 facet_val = facet.terms[i].term;
+											 facet_count = facet.terms[i].count;
+											 jQuery(".dpla-"+this_facet+" table").append("<tr><td><a href='' data-facet-val='"+facet_val+"' data-facet-name='"+this_facet+"'>"+facet_val+"</a></td><td><a href=''>"+facet_count+"</a></td></tr>");
+										 }
+									 }
+								 }
+							 }
+							 jQuery(".dpla-"+this_facet).append("</table>");
+						 });
+						 jQuery(".dpla-date").html("<div class='dpla-date-slider'></div>");
+						 jQuery(".dpla-date-slider").slider({
+							 range: true,
+							 min: 1000,
+							 max: new Date().getFullYear(),
+							 values: self.search_params.facets.date ? self.search_params.facets.date : [1000, new Date().getFullYear()]
+						 });
+					 }
          } else {
            jQuery(".dpla-items").html("<div class='notice notice-warning'><p>No results were retrieved for your query. Please try a different query.</p></div>");
 					 jQuery("#dpla-pagination").html("");
@@ -1160,6 +1203,12 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				 jQuery(".selected-items").html("");
 	       jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 				 var self = this;
+				 console.log("in the selected items function")
+				 console.log(this.shortcode.items)
+				 _.each(this.shortcode.items, function(item, i) {
+					 console.log(item.attributes('pid'))
+				 });
+
 	       jQuery.each(this.shortcode.items.models, function(i, item) {
 					 if (!item.get("title")){
 						 count=parseInt(count)+1;
@@ -1462,6 +1511,24 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					}
 				});
 			}).open();
+		},
+
+		dplaSort: function(e) {
+			e.preventDefault();
+			this.search_params.sort = jQuery("select[name='dpla-sort']").val();
+			this.getDPLAitems();
+		},
+
+		dplaFacet: function(e) {
+			e.preventDefault();
+			link = jQuery(e.currentTarget);
+			this.search_params.facets[link.data("facet-name")] = link.data("facet-val");
+			this.getDPLAitems();
+		},
+
+		dplaFacetToggle: function(e) {
+			jQuery(".dpla-facets").toggleClass("hidden");
+			jQuery("#dpla ol").toggleClass("fullwidth");
 		}
 	} );
 

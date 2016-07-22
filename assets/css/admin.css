@@ -214,3 +214,18 @@
 	width:100%;
 	text-align:center;
 }
+
+.dpla-facets, .drs-facets {
+	width: 19%;
+	display: inline-block;
+	border-right: 1px solid #999;
+	float: left;
+}
+#dpla ol {
+	width: 78%;
+	display: inline-block;
+	float: right;
+}
+#dpla ol.fullwidth{
+	width: 100%;
+}

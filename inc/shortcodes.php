@@ -106,7 +106,41 @@ function drstk_get_dpla_items(){
     if (isset($_POST['params']['page'])) {
       $url .= "&page=" . $_POST['params']['page'];
     }
-
+    if (isset($_POST['params']['sort'])) {
+      $sort = $_POST['params']['sort'];
+      switch ($sort) {
+        case "title":
+            $sort = "sourceResource.title";
+            break;
+        case "creator":
+            $sort = "sourceResource.contributor";
+            break;
+        case "date":
+            $sort = "sourceResource.date.begin";
+            break;
+      }
+      if ($sort != ""){
+        $url .= "&sort_by=".$sort;
+      }
+    }
+    if (isset($_POST['params']['facets'])){
+      $facets = $_POST['params']['facets'];
+      foreach($facets as $facet_name=>$facet_val){
+        if ($facet_name == "creator"){
+          $url .= "&sourceResource.contributor=\"".urlencode($facet_val)."\"";
+        }
+        if ($facet_name == "type"){
+          $url .= "&sourceResource.type=\"".urlencode($facet_val)."\"";
+        }
+        if ($facet_name == "subject"){
+          $url .= "&sourceResource.subject.name=\"".urlencode($facet_val)."\"";
+        }
+        if ($facet_name == "date"){
+          // $url .= "&sourceResource.date.=\"".urlencode($facet_val)."\"";  
+        }
+      }
+    }
+    $url .= "&facets=sourceResource.contributor,sourceResource.date.begin,sourceResource.subject.name,sourceResource.type";
     $data = get_response($url);
     $json = json_decode($data);
     if (isset($json->error)) {
