@@ -98,11 +98,12 @@
 			<div class="dpla-items">Loading...</div>
 			<div class="dpla-facets hidden">
 				<label for="dpla-sort">Sort By: </label><select name="dpla-sort"><option value="">Relevance</option><option value="title">Title</option><option value="creator">Creator</option><option value="date">Date Created</option></select>
-				<div class="dpla-creator">
-				</div>
+				<div class="dpla-chosen"></div>
 				<div class="dpla-date">
 				</div>
 				<div class="dpla-subject">
+				</div>
+				<div class="dpla-creator">
 				</div>
 				<div class="dpla-type">
 				</div>

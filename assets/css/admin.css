@@ -229,3 +229,34 @@
 #dpla ol.fullwidth{
 	width: 100%;
 }
+.dpla-date-slider.ui-slider {
+	width: 85%;
+	margin: 5%;
+}
+.dpla-date {
+	overflow: auto;
+}
+.dpla-sort, .dpla-creator, .dpla-date, .dpla-subject, .dpla-type {
+	border-top: 1px solid #999;
+	margin-bottom: 5px;
+}
+.tablenav .tablenav-pages {
+	clear: both;
+}
+.dpla-facets a {
+	text-decoration: none;
+}
+.dpla-chosen {
+	margin: 5px;
+}
+.dpla-chosen .button {
+	margin: 5px;
+	position: relative;
+  max-width: 184px;
+  white-space: normal;
+  height: auto;
+  line-height: 19px;
+}
+.dpla-update-date {
+	float: right;
+}

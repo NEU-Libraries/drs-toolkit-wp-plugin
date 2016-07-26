@@ -123,7 +123,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			"change select[name='drs-sort']": "drsSort",
 			"click .dpla-facets-button": "dplaFacetToggle",
 			"click .drs-facets-button": "drsFacetToggle",
-			"click .dpla-facets a": "dplaFacet",
+			"click .dpla-facet-add": "dplaFacet",
+			"click .dpla-update-date": "dplaUpdateDate",
+			"click .dpla-facet-remove": "dplaFacetRemove",
 		},
 
 		/**
@@ -1116,38 +1118,74 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						 self.updateDPLAPagination(data);
 					 }
 					 if (self.search_params.facets != {}){
+						 jQuery(".dpla-type, .dpla-subject").html("");
 						 _.each(data.facets, function(facet, facet_name) {
-							 if (facet_name == "sourceResource.contributor"){
-								 this_facet = "creator";
+							 if (facet_name == "sourceResource.contributor" || facet_name == "sourceResource.subject.name" || facet_name == "sourceResource.type"){
+								 if (facet_name == "sourceResource.contributor"){
+  								 this_facet = "creator";
+  							 }
+  							 if (facet_name == "sourceResource.subject.name"){
+  								 this_facet = "subject";
+  							 }
+  							 if (facet_name == "sourceResource.type"){
+  								 this_facet = "type";
+  							 }
+  							 jQuery(".dpla-"+this_facet).html("<b>"+this_facet.charAt(0).toUpperCase() + this_facet.slice(1)+"</b>");
+  							 if (facet.terms != undefined){
+  								 if (facet.terms.length > 0){
+  									 for (var i = 0; i <= 4; i++){
+  										 if (facet.terms[i] != undefined){
+  											 facet_val = facet.terms[i].term;
+  											 facet_count = facet.terms[i].count;
+  											 facet_html = "<tr><td><a href='' data-facet-val='"+facet_val+"' data-facet-name='"+this_facet+"' class='dpla-facet-add'>"+facet_val+"</a></td><td><a href=''>"+facet_count+"</a></td></tr>";
+  											 jQuery(".dpla-"+this_facet).append(facet_html);
+  											//  console.log(this_facet + " should have " + facet_html);
+  											//creator doesn't seem to be working;
+  											// if (this_facet == "creator"){
+  												// console.log("its the creator facet");
+  												// jQuery(".dpla-creator").append("WEEEEEEE");
+  												// jQuery(".dpla-facets div:first-of-type").append("attempt two");
+  											// }
+  											 //need to do view all
+  										 }
+  									 }
+  								 }
+  							 }
 							 }
-							 if (facet_name == "sourceResource.subject.name"){
-								 this_facet = "subject";
-							 }
-							 if (facet_name == "sourceResource.type"){
-								 this_facet = "type";
-							 }
-							 jQuery(".dpla-"+this_facet).html("");
-							 jQuery(".dpla-"+this_facet).html("<b>"+this_facet.charAt(0).toUpperCase() + this_facet.slice(1)+"</b><table>");
-							 if (facet.terms != undefined){
-								 if (facet.terms.length > 0){
-									 for (var i = 0; i <= 4; i++){
-										 if (facet.terms[i] != undefined){
-											 facet_val = facet.terms[i].term;
-											 facet_count = facet.terms[i].count;
-											 jQuery(".dpla-"+this_facet+" table").append("<tr><td><a href='' data-facet-val='"+facet_val+"' data-facet-name='"+this_facet+"'>"+facet_val+"</a></td><td><a href=''>"+facet_count+"</a></td></tr>");
-										 }
-									 }
-								 }
-							 }
-							 jQuery(".dpla-"+this_facet).append("</table>");
 						 });
-						 jQuery(".dpla-date").html("<div class='dpla-date-slider'></div>");
+						 jQuery(".dpla-date").html("<b>Date Created</b><br/><div class='dpla-date-slider'></div><span class='start'></span> - <span class='end'> </span><a class='button dpla-update-date'>Update</a>");
+						 dates = [1000, new Date().getFullYear()];
+						 var min = 1000;
+						 var max = new Date().getFullYear();
+						 if (self.search_params.facets.date != undefined){
+							 dates = self.search_params.facets.date;
+							 jQuery('.start').text(self.search_params.facets.date[0]);
+							 jQuery('.end').text(self.search_params.facets.date[1]);
+						 }
 						 jQuery(".dpla-date-slider").slider({
 							 range: true,
-							 min: 1000,
-							 max: new Date().getFullYear(),
-							 values: self.search_params.facets.date ? self.search_params.facets.date : [1000, new Date().getFullYear()]
+							 min: parseInt(min),
+							 max: parseInt(max),
+							 values: dates,
+							slide: function( event, ui ) {
+								self.search_params.facets.date = [ui.values[ 0 ], ui.values[ 1 ]];
+								jQuery('.start').text(ui.values[0]);
+								jQuery('.end').text(ui.values[1]);
+				      }
 						 });
+						 facet_buttons = ""
+						 _.each(self.search_params.facets, function(facet_val, facet_name){
+							 if (facet_name != "date"){
+								if (typeof facet_val == "string"){
+									facet_buttons += "<a href='' data-facet-name='"+facet_name+"' data-facet-val='"+facet_val+"' class='button dpla-facet-remove'>"+facet_name.charAt(0).toUpperCase()+facet_name.slice(1)+" : "+facet_val+" <span class='dashicons dashicons-trash'> </span></a>";
+								} else {
+									_.each(facet_val, function(facet_value){
+										facet_buttons += "<a href='' data-facet-name='"+facet_name+"' data-facet-val='"+facet_value+"' class='button dpla-facet-remove'>"+facet_name.charAt(0).toUpperCase()+facet_name.slice(1)+" : "+facet_value+" <span class='dashicons dashicons-trash'> </span></a>";
+									});
+								}
+							}
+						});
+						 jQuery(".dpla-chosen").html(facet_buttons);
 					 }
          } else {
            jQuery(".dpla-items").html("<div class='notice notice-warning'><p>No results were retrieved for your query. Please try a different query.</p></div>");
@@ -1522,13 +1560,49 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		dplaFacet: function(e) {
 			e.preventDefault();
 			link = jQuery(e.currentTarget);
-			this.search_params.facets[link.data("facet-name")] = link.data("facet-val");
+			if (this.search_params.facets[link.data("facet-name")] == undefined){
+				this.search_params.facets[link.data("facet-name")] = link.data("facet-val");
+			} else if (this.search_params.facets[link.data("facet-name")].length > 0){
+				orig_value = this.search_params.facets[link.data("facet-name")]
+				if (typeof orig_value == "string"){
+					this.search_params.facets[link.data("facet-name")] = [orig_value, link.data("facet-val")];
+				} else {
+					this.search_params.facets[link.data("facet-name")].push(link.data("facet-val"));
+				}
+			}
 			this.getDPLAitems();
 		},
 
 		dplaFacetToggle: function(e) {
 			jQuery(".dpla-facets").toggleClass("hidden");
 			jQuery("#dpla ol").toggleClass("fullwidth");
+		},
+
+		dplaUpdateDate: function(e){
+			e.preventDefault();
+			this.getDPLAitems();
+		},
+
+		dplaFacetRemove: function(e){
+			e.preventDefault();
+			link = jQuery(e.currentTarget);
+			values = this.search_params.facets[link.data("facet-name")];
+			if (link.data("facet-name") != "date"){
+				new_values = [];
+				if (typeof values != "string"){
+					_.each(values, function(val){
+						if (val != link.data("facet-val")){
+							new_values.push(val);
+						}
+					});
+				}
+				if (new_values.length == 0){
+					delete this.search_params.facets[link.data("facet-name")];
+				} else {
+					this.search_params.facets[link.data("facet-name")] = new_values;
+				}
+				this.getDPLAitems();
+			}
 		}
 	} );
 

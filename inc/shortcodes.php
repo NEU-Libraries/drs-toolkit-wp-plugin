@@ -15,6 +15,7 @@ function drstk_enqueue_page_scripts( $hook ) {
       include $DRS_PLUGIN_PATH.'templates/modal.php';
       wp_enqueue_script( 'drstk_admin_js', $DRS_PLUGIN_URL . '/assets/js/admin.js', array(
         'jquery',
+        'jquery-ui-core',
         'backbone',
         'underscore',
         'wp-util',
@@ -25,6 +26,7 @@ function drstk_enqueue_page_scripts( $hook ) {
           'replace_message' => __( 'Choose a method of embedding DRS and/or DPLA item(s).<br/><br/><table><tr><td><a class="button" href="#one">Single Item</a></td><td><a class="button" href="#four">Media Playlist</a></td></tr><tr><td><a class="button" href="#two">Tile Gallery</a></td><td><a class="button" href="#five">Map</a></td></tr><tr><td><a class="button" href="#three">Gallery Slider</a></td><td><a class="button" href="#six">Timeline</a></td></tr></table>', 'backbone_modal' )
         ) );
       wp_enqueue_style( 'drstk_admin_js', $DRS_PLUGIN_URL . '/assets/css/admin.css' );
+      wp_enqueue_style( 'drstk_jquery_ui', 'http://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css');
 
    //this creates a unique nonce to pass back and forth from js/php to protect
    $item_admin_nonce = wp_create_nonce( 'item_admin_nonce' );
@@ -127,20 +129,40 @@ function drstk_get_dpla_items(){
       $facets = $_POST['params']['facets'];
       foreach($facets as $facet_name=>$facet_val){
         if ($facet_name == "creator"){
-          $url .= "&sourceResource.contributor=\"".urlencode($facet_val)."\"";
+          if (is_array($facet_val)){
+            foreach($facet_val as $facet_value){
+              $url .= "&sourceResource.contributor=\"".urlencode($facet_value)."\"";
+            }
+          } else {
+            $url .= "&sourceResource.contributor=\"".urlencode($facet_val)."\"";
+          }
         }
         if ($facet_name == "type"){
-          $url .= "&sourceResource.type=\"".urlencode($facet_val)."\"";
+          if (is_array($facet_val)){
+            foreach($facet_val as $facet_value){
+              $url .= "&sourceResource.type=\"".urlencode($facet_value)."\"";
+            }
+          } else {
+            $url .= "&sourceResource.type=\"".urlencode($facet_val)."\"";
+          }
         }
         if ($facet_name == "subject"){
-          $url .= "&sourceResource.subject.name=\"".urlencode($facet_val)."\"";
+          if (is_array($facet_val)){
+            foreach($facet_val as $facet_value){
+              $url .= "&sourceResource.subject.name=\"".urlencode($facet_value)."\"";
+            }
+          } else {
+            $url .= "&sourceResource.subject.name=\"".urlencode($facet_val)."\"";
+          }
         }
         if ($facet_name == "date"){
-          // $url .= "&sourceResource.date.=\"".urlencode($facet_val)."\"";  
+          if (is_array($facet_val)){
+            $url .= "&sourceResource.date.after=". urlencode($facet_val[0]). "-01-01&sourceResource.date.before=". urlencode($facet_val[1]). "-01-01";
+          }
         }
       }
     }
-    $url .= "&facets=sourceResource.contributor,sourceResource.date.begin,sourceResource.subject.name,sourceResource.type";
+    $url .= "&facets=sourceResource.contributor,sourceResource.date.begin,sourceResource.date.end,sourceResource.subject.name,sourceResource.type";
     $data = get_response($url);
     $json = json_decode($data);
     if (isset($json->error)) {
