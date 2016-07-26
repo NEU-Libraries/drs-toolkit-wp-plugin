@@ -91,14 +91,13 @@
 		<div class="pane" id="dpla">
 			<label for="search">Search for an item: </label><input type="text" name="search" id="search-{{data.type}}" /><button class="themebutton search-button">Search</button>
 			<br/>
+			<div class="dpla-chosen"></div>
 			<br/>
-			<button class="dpla-facets-button">Toggle Filtering Options</button>
-			<br/>
-			<br/>
+			<button class="dpla-facets-button hidden">Show Filtering Options</button>
 			<div class="dpla-items">Loading...</div>
 			<div class="dpla-facets hidden">
-				<label for="dpla-sort">Sort By: </label><select name="dpla-sort"><option value="">Relevance</option><option value="title">Title</option><option value="creator">Creator</option><option value="date">Date Created</option></select>
-				<div class="dpla-chosen"></div>
+				<b class="dpla-facet-title">Filters <a href='' class="dpla-close-facets"><span class="dashicons dashicons-no"> </span></a></b>
+				<div class="dpla-sort"><label for="dpla-sort">Sort By: </label><select name="dpla-sort"><option value="">Relevance</option><option value="title">Title</option><option value="creator">Creator</option><option value="date">Date Created</option></select></div>
 				<div class="dpla-date">
 				</div>
 				<div class="dpla-subject">

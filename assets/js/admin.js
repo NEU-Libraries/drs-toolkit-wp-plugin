@@ -122,6 +122,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			"change select[name='dpla-sort']": "dplaSort",
 			"change select[name='drs-sort']": "drsSort",
 			"click .dpla-facets-button": "dplaFacetToggle",
+			"click .dpla-close-facets": "dplaFacetToggle",
 			"click .drs-facets-button": "drsFacetToggle",
 			"click .dpla-facet-add": "dplaFacet",
 			"click .dpla-update-date": "dplaUpdateDate",
@@ -1139,14 +1140,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
   											 facet_count = facet.terms[i].count;
   											 facet_html = "<tr><td><a href='' data-facet-val='"+facet_val+"' data-facet-name='"+this_facet+"' class='dpla-facet-add'>"+facet_val+"</a></td><td><a href=''>"+facet_count+"</a></td></tr>";
   											 jQuery(".dpla-"+this_facet).append(facet_html);
-  											//  console.log(this_facet + " should have " + facet_html);
-  											//creator doesn't seem to be working;
-  											// if (this_facet == "creator"){
-  												// console.log("its the creator facet");
-  												// jQuery(".dpla-creator").append("WEEEEEEE");
-  												// jQuery(".dpla-facets div:first-of-type").append("attempt two");
-  											// }
-  											 //need to do view all
+  											 //TODO - need to do view all
   										 }
   									 }
   								 }
@@ -1192,6 +1186,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					 jQuery("#dpla-pagination").html("");
          }
        });
+			 if (jQuery(".dpla-facets-button").hasClass("hidden") && jQuery(".dpla-facets").hasClass("hidden")){
+				 jQuery(".dpla-facets-button").removeClass("hidden");
+			 }
 		},
 
 		updateDPLAPagination: function( data ){
@@ -1574,8 +1571,14 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		},
 
 		dplaFacetToggle: function(e) {
+			e.preventDefault();
 			jQuery(".dpla-facets").toggleClass("hidden");
 			jQuery("#dpla ol").toggleClass("fullwidth");
+			if (!jQuery(".dpla-facets").hasClass("hidden")){
+				jQuery(".dpla-facets-button").addClass("hidden");
+			} else {
+				jQuery(".dpla-facets-button").removeClass("hidden");
+			}
 		},
 
 		dplaUpdateDate: function(e){
