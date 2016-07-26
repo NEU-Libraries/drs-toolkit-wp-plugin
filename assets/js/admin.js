@@ -1251,7 +1251,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				 console.log("in the selected items function")
 				 console.log(this.shortcode.items)
 				 _.each(this.shortcode.items, function(item, i) {
-					 console.log(item.attributes('pid'))
+					 console.log(item);
+					//  console.log(item.attributes('pid'))
 				 });
 
 	       jQuery.each(this.shortcode.items.models, function(i, item) {
