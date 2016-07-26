@@ -127,6 +127,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			"click .dpla-facet-add": "dplaFacet",
 			"click .dpla-update-date": "dplaUpdateDate",
 			"click .dpla-facet-remove": "dplaFacetRemove",
+			"click .dpla-expand-facet": "dplaFacetExpand",
 		},
 
 		/**
@@ -1140,9 +1141,18 @@ drstk.backbone_modal.Application = Backbone.View.extend(
   											 facet_count = facet.terms[i].count;
   											 facet_html = "<tr><td><a href='' data-facet-val='"+facet_val+"' data-facet-name='"+this_facet+"' class='dpla-facet-add'>"+facet_val+"</a></td><td><a href=''>"+facet_count+"</a></td></tr>";
   											 jQuery(".dpla-"+this_facet).append(facet_html);
-  											 //TODO - need to do view all
   										 }
   									 }
+										 if (facet.terms.length > 5){
+											 facet_html = "<a href='' class='dpla-expand-facet' data-facet-name='"+this_facet+"'>View More</a><div class='dpla-expanded-facet-"+this_facet+" hidden'><table>";
+											 _.each(facet.terms, function(facet_obj, i){
+												 if (i > 4){ //don't repeat already displayed facets
+													 facet_html += "<tr><td><a href='' data-facet-val='"+facet_obj.term+"' data-facet-name='"+this_facet+"' class='dpla-facet-add'>"+facet_obj.term+"</a></td><td><a href=''>"+facet_obj.count+"</a></td></tr>";
+												 }
+											 });
+											 facet_html += "</table></div>";
+											 jQuery(".dpla-"+this_facet).append(facet_html);
+										 }
   								 }
   							 }
 							 }
@@ -1605,6 +1615,18 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					this.search_params.facets[link.data("facet-name")] = new_values;
 				}
 				this.getDPLAitems();
+			}
+		},
+
+		dplaFacetExpand: function(e){
+			e.preventDefault();
+			link = jQuery(e.currentTarget);
+			facet_name = link.data("facet-name");
+			jQuery(".dpla-expanded-facet-"+facet_name).toggleClass("hidden");
+			if (!jQuery(".dpla-expanded-facet-"+facet_name).hasClass("hidden")){
+				link.text("View Less");
+			} else {
+				link.text("View More");
 			}
 		}
 	} );
