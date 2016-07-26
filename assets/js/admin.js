@@ -1243,8 +1243,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 
 		getSelecteditems: function( ){
 			tab_name = this.tabs[this.current_tab];
-			count = this.shortcode.items.length;
-	     if (count > 0){
+	     if (this.shortcode.items != undefined){
+				 count = this.shortcode.items.length;
+				 if (count > 0){
 				 jQuery(".selected-items").html("");
 	       jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 				 var self = this;
@@ -1310,8 +1311,12 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						 self.appendSingleItem(item);
 					 }
 	        });
+				} else {
+					jQuery(".selected-items").html("<div class='notice notice-warning'><p>You haven't selected any items yet.</p></div>");
+ 				 	jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
+				}
 	     } else {
-	       jQuery(".selected-items").html("You haven't selected any items yet.");
+	       jQuery(".selected-items").html("<div class='notice notice-warning'><p>You haven't selected any items yet.</p></div>");
 				 jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 	     }
 		},
