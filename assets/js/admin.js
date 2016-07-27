@@ -285,10 +285,10 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			this.undelegateEvents();
 			jQuery( document ).off( "focusin" );
 			jQuery( "body" ).css( {"overflow": "auto"} );
+			this.remove();
 			if (this.old_shortcode && jQuery(e.currentTarget).attr("id") != "btn-ok"){
 				window.wp.media.editor.insert(this.old_shortcode);
 			}
-			this.remove();
 			drstk.backbone_modal.__instance = undefined;
 		},
 
@@ -300,7 +300,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				if (start_date != undefined) {start_date = start_date.attributes.value[0];}
 				end_date = this.shortcode.get('settings').where({name:'end-date'})[0];
 				if (end_date != undefined) {end_date = end_date.attributes.value[0];}
-				if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || (this.current_tab == 6 && start_date == undefined && end_date == undefined) || (this.current_tab == 5 && this.validMap() == true) || (this.current_tab == 1 && this.shortcode.items.length == 1) || (this.current_tab != 6 && this.current_tab != 1 && this.current_tab != 5)){
+				if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || (this.current_tab == 6 && start_date == undefined && end_date == undefined && this.validTime() == true) || (this.current_tab == 5 && this.validMap() == true) || (this.current_tab == 1 && this.shortcode.items.length == 1) || (this.current_tab != 6 && this.current_tab != 1 && this.current_tab != 5)){
 					shortcode = '<p>[drstk_'+this.tabs[this.current_tab];
 					ids = []
 					jQuery.each(items.models, function(i, item){
@@ -345,16 +345,16 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						}
 					});
 					shortcode += ']</p>';
+					this.closeModal( e );
 					window.wp.media.editor.insert(shortcode);
 					console.log(shortcode);
-					this.closeModal( e );
 					console.log("should have closed");
 				} else if (this.current_tab == 1 && this.shortcode.items.length > 1){
 					alert("There are more than 1 items selected for a single item shortcode.");
 			  } else if (this.current_tab == 6){
 					titles = this.validTime();
 					titles = titles.join("\n");
-					alert("The following item(s) are outside the specified date range or custom items may not have date values: \n"+titles);
+					alert("The following item(s) are outside the specified date range or do not have date values: \n"+titles);
 				} else if (this.current_tab == 5){
 					titles = this.validMap();
 					titles = titles.join("\n");
@@ -807,7 +807,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				 jQuery(".drs-pagination").html("");
 				 if (jQuery.type(data) === "string"){
 					 jQuery(".drs-items").html("<div class='notice notice-warning'><p>No results were retrieved for your query. Please try a different query.</p></div>");
-				 } else if (data.response.response.numFound > 0){
+				 } else if (data.response != undefined && data.response.response.numFound > 0){
            jQuery.each(data.response.response.docs, function(id, item){
 						 if (id === 19) {// this is the last one
 							 last = true;
@@ -1308,6 +1308,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						 interval = setInterval(function(){
 							 if (new_items.length === self.shortcode.items.models.length){
 								 clearInterval(interval);
+								 jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 								_.each(self.shortcode.items.models, function(item){
 									self.appendSingleItem(item);
 								});
@@ -1427,14 +1428,41 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					}
 				});
 			});
+			_.each(_.clone(this.shortcode.items.where({repo:'dpla'})), function(item){
+				jQuery.ajax({
+					url: dpla_ajax_obj.ajax_url,
+					type: "POST",
+					async: false,
+					data: {
+						action: "get_dpla_code",
+						_ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
+						params: {q:item.get("pid")},
+					}, success: function(data){
+						var data = jQuery.parseJSON(data);
+						if (data.docs[0].sourceResource.date == undefined || data.docs[0].sourceResource.date.displayDate == undefined || data.docs[0].sourceResource.date.displayDate[0] == undefined){
+							no_year.push(item.get('title'));
+						} else {
+							var key_date_begin = data.docs[0].sourceResource.date.begin;
+							var key_date_end = data.docs[0].sourceResource.date.end;
+							key_date_list.push({year:[key_date_begin, key_date_end], name:item.get('title')});
+						}
+					}
+				});
+			});
 			var self = this;
 			key_date_list.forEach(function(each_key){
 				start_date = self.shortcode.get('settings').where({name:'start-date'})[0];
 				start_date = start_date.attributes.value[0];
 				end_date = self.shortcode.get('settings').where({name:'end-date'})[0];
 				end_date = end_date.attributes.value[0];
-				if(each_key.year < start_date || each_key.year > end_date){
-          return_arr.push(each_key.name);
+				if (typeof each_key.year == "array"){
+					if (each_key.year[0] < start_date && each_key.year[1] > end_date){
+						return_arr.push(each_key.name);
+					}
+				} else {
+					if(each_key.year < start_date || each_key.year > end_date){
+	          return_arr.push(each_key.name);
+					}
 				}
 			});
 			if (return_arr.length > 0 || no_year.length > 0){
@@ -1458,6 +1486,23 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						pid: item.get('pid'),
 					}, success: function(data){
 						if (data._map_coords == undefined || data._map_coords == ""){
+							no_map.push(item.get('title'));
+						}
+					}
+				});
+			});
+			_.each(_.clone(this.shortcode.items.where({repo:'dpla'})), function(item){
+				jQuery.ajax({
+					url: dpla_ajax_obj.ajax_url,
+					type: "POST",
+					async: false,
+					data: {
+						action: "get_dpla_code",
+						_ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
+						params: {q:item.get("pid")},
+					}, success: function(data){
+						var data = jQuery.parseJSON(data);
+						if (data.docs[0].sourceResource.spatial == undefined || data.docs[0].sourceResource.spatial == "" || (data.docs[0].sourceResource.spatial[0].name == undefined && data.docs[0].sourceResource.spatial[0].coordinates == undefined)){
 							no_map.push(item.get('title'));
 						}
 					}

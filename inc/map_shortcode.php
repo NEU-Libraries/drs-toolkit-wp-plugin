@@ -201,7 +201,7 @@ function drstk_map( $atts ){
       $cre = "Creator,Contributor";
       $data->mods->$cre = $data->docs[0]->sourceResource->creator;
       $date = "Date Created";
-      $data->mods->$date = array($data->docs[0]->sourceResource->date->displayDate);
+      $data->mods->$date = isset($data->docs[0]->sourceResource->date->displayDate) ? $data->docs[0]->sourceResource->date->displayDate : array();
       $data->canonical_object = new StdClass;
       $data->canonical_object->$url = "Master Image";
       if (!isset($data->docs[0]->sourceResource->spatial)){
@@ -220,7 +220,7 @@ function drstk_map( $atts ){
         $coordinates = $data->docs[0]->sourceResource->spatial[0]->coordinates;
       }
       $permanentUrl = drstk_home_url() . "item/dpla:".$pid;
-      $map_html .= "<div class='coordinates' data-pid='".$pid."' data-url='".$permanentUrl."' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."'";
+      $map_html .= "<div class='coordinates' data-pid='".$pid."' data-url='".$permanentUrl."' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title[0], ENT_QUOTES, 'UTF-8')."'";
 
       if (isset($atts['metadata'])){
         $map_metadata = '';
