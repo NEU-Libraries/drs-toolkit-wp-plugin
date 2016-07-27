@@ -2,6 +2,7 @@ jQuery(document).ready(function($) {
 
 	if($().carousel) {
 		$(".carousel").each(function(){
+			var this_carousel = $(this);
 			$(this).carousel({
 				interval: false
 			});
@@ -30,10 +31,11 @@ jQuery(document).ready(function($) {
 					$nextImage.data('src', '');
 					$nextImage.on('load', function(){
 						fix_caption($nextImage);
+						fix_dimensions(this_carousel);
 					});
 				}
 			});
-		}):
+		});
 	}
 
 
@@ -63,6 +65,8 @@ jQuery(document).ready(function($) {
 						} else {
 							if (height > 0) {$(this).parents(".carousel").find("img").css("max-height", height);}
 						}
+					} else {
+						$(this).parents(".carousel").find("img").css("max-height", this_height);
 					}
 				});
 		}
