@@ -1242,6 +1242,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				 count = this.shortcode.items.length;
 				 if (count > 0){
 				 jQuery(".selected-items").html("");
+				 if (tab_name == "tile" || tab_name == "slider" || tab_name == "media"){
+					 jQuery(".selected-items").append("<div class='notice notice-info'><p>Drag and drop items to reorder.</p></div>");
+				 }
 	       jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 				 var self = this;
 				 new_items = [];
