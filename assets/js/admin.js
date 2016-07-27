@@ -189,8 +189,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				this.current_tab = 1;
 			}
 			if (this.options && this.options.items.length > 0){
-				console.log("items from existing is ");
-				console.log(this.options.items);
 				var self = this;
 				_.each(this.options.items, function(item, i){
 					if (i == 0){
@@ -201,13 +199,10 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				});
 				e.currentTarget = jQuery(".nav-tab[href='#selected']");
 				this.navigateShortcode(e);
-				console.log("items after load");
-				console.log(this.shortcode.items);
 			}
 			if (this.options && this.options.old_shortcode){
 				this.old_shortcode = this.options.old_shortcode
 			}
-			console.log(this);
 		},
 
 
@@ -1249,13 +1244,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				 jQuery(".selected-items").html("");
 	       jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 				 var self = this;
-				 console.log("in the selected items function")
-				 console.log(this.shortcode.items)
-				 _.each(this.shortcode.items, function(item, i) {
-					 console.log(item);
-					//  console.log(item.attributes('pid'))
-				 });
-
+				 new_items = [];
 	       jQuery.each(this.shortcode.items.models, function(i, item) {
 					 if (!item.get("title")){
 						 count=parseInt(count)+1;
@@ -1274,7 +1263,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 									if (!item.get("thumbnail")){
 										item.set("thumbnail", data.thumbnails[0]);
 									}
-									self.appendSingleItem(item);
+									new_items.push(item.get("pid"));
 								}
 							});
 						 } else if (repo == "dpla"){
@@ -1288,7 +1277,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								if (data.docs[0].object){
 									item.set("thumbnail", data.docs[0].object);
 								}
-								self.appendSingleItem(item);
+								new_items.push(item.get("pid"));
 							});
 						} else if (repo == "local"){
 							jQuery.ajax({
@@ -1303,12 +1292,26 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 									if (!data.post_mime_type.includes("audio") && !data.post_mime_type.includes("video")){
 										item.set("thumbnail",data.guid);
 									}
-									self.appendSingleItem(item);
+									new_items.push(item.get("pid"));
 								}
 							});
 						 }
 					 } else {
 						 self.appendSingleItem(item);
+					 }
+					 //if its the last item then put it on a 1 second loop to see if all of the ajax calls have completed, then if they have, append the items so the order is preserved
+					 var interval;
+					 if (i === self.shortcode.items.models.length-1) {
+						 interval = setInterval(function(){
+							 if (new_items.length === self.shortcode.items.models.length){
+								 clearInterval(interval);
+								_.each(self.shortcode.items.models, function(item){
+									self.appendSingleItem(item);
+								});
+							 } else {
+								 //do nothing
+							 }
+						 }, 1000);
 					 }
 	        });
 				} else {
