@@ -19,9 +19,9 @@ function drstk_gallery( $atts ){
     } else {
       $num = 4;
     }
-    if ($atts['transition'] == 'slide'){
+    if (isset($atts['transition']) && $atts['transition'] == 'slide'){
       $transition_class = "";
-    } elseif ($atts['transition'] == 'fade'){
+    } elseif (isset($atts['transition']) && $atts['transition'] == 'fade'){
       $transition_class = "carousel-fade";
     } else {
       $transition_class = "";
@@ -104,6 +104,9 @@ function drstk_gallery( $atts ){
            $width = $this_width;
          }
         $title = $data->full_title_ssi;
+        if (is_array($title)){
+          $title = $title[0];
+        }
          $img_html .= "<div class='item";
          if ($i == 0){
            $img_html .= " active";
