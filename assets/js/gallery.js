@@ -8,7 +8,7 @@ jQuery(document).ready(function($) {
 			});
 
 			$(window).on('load', function(){
-				fix_dimensions($(this));
+				fix_dimensions(this_carousel);
 				fix_caption($('.carousel .item:first-of-type img'));
 			});
 
