@@ -52,8 +52,7 @@ add_action('wp_ajax_wp_search', 'ajax_wp_search');
 add_action('wp_ajax_nopriv_wp_search', 'ajax_wp_search');
 
 function ajax_wp_search(){
-  global $wp_query;
-  global $paged;
+  global $wp_query, $paged, $post;
   $query_string = isset($_GET['query']) ? $_GET['query'] : "";
   $paged = $_GET['page'];
   if (isset($_GET['query']) && $query_string != ''){
@@ -61,10 +60,16 @@ function ajax_wp_search(){
     $wp_query = new WP_Query( $query_args );
     $rel_query = relevanssi_do_query($wp_query);
     if (count($rel_query) > 0){
-        get_template_part( 'partials/content', 'normal' );
-      } else {
-        echo "No related content was found";
+      foreach($rel_query as $r_post){
+        $post = $r_post;
+        echo "<article class='post-normal'><header><h1 class='post-title'><a href='".$r_post->guid."'>".$r_post->post_title."</a></h1></header><div class='entry-content'><p>";
+        echo relevanssi_do_excerpt($post, $query_string);
+        echo "</p></div><footer><div class='read-more'><a href='".$r_post->guid."'>Read More <i class='fa fa-angle-double-right'> </i> </a></div></footer></article>";
       }
+        // get_template_part( 'partials/content', 'normal' );
+    } else {
+        echo "No related content was found";
+    }
   } else {
     echo "Please enter a search term to retrieve related content";
   }
