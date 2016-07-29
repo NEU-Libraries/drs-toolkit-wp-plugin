@@ -10,6 +10,7 @@ add_action('media_buttons', 'add_drs_button', 1000);
 /*enques extra js*/
 function drstk_enqueue_page_scripts( $hook ) {
   global $errors, $DRS_PLUGIN_PATH, $DRS_PLUGIN_URL;
+    wp_enqueue_style( 'drstk_admin_js', $DRS_PLUGIN_URL . '/assets/css/admin.css' );
     if ($hook == 'post.php' || $hook == 'post-new.php') {
 
       include $DRS_PLUGIN_PATH.'templates/modal.php';
@@ -25,7 +26,6 @@ function drstk_enqueue_page_scripts( $hook ) {
         array(
           'replace_message' => __( 'Choose a method of embedding DRS and/or DPLA item(s).<br/><br/><table><tr><td><a class="button" href="#one">Single Item</a></td><td><a class="button" href="#four">Media Playlist</a></td></tr><tr><td><a class="button" href="#two">Tile Gallery</a></td><td><a class="button" href="#five">Map</a></td></tr><tr><td><a class="button" href="#three">Gallery Slider</a></td><td><a class="button" href="#six">Timeline</a></td></tr></table>', 'backbone_modal' )
         ) );
-      wp_enqueue_style( 'drstk_admin_js', $DRS_PLUGIN_URL . '/assets/css/admin.css' );
       wp_enqueue_style( 'drstk_jquery_ui', 'http://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css');
 
    //this creates a unique nonce to pass back and forth from js/php to protect
