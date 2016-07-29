@@ -271,6 +271,6 @@
 .dpla-facet-title .dashicons {
 	float:right;
 }
-[href~=delFile]{
+[href*=delFile]{
 	display:none;
 }
