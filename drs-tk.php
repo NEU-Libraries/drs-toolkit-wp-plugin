@@ -157,6 +157,8 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_assoc_title' );
   add_settings_field('drstk_assoc_file_metadata', 'Metadata to Display', 'drstk_assoc_file_metadata_callback', 'drstk_options', 'drstk_single_settings', array('class'=>'assoc'));
   register_setting( 'drstk_options', 'drstk_assoc_file_metadata' );
+  add_settings_field('drstk_annotations', 'Display Annotations', 'drstk_annotations_callback', 'drstk_options', 'drstk_single_settings');
+  register_setting( 'drstk_options', 'drstk_annotations' );
 }
 add_action( 'admin_init', 'register_drs_settings' );
 add_action( 'admin_init', 'add_tinymce_plugin');
@@ -420,6 +422,12 @@ function drstk_assoc_file_metadata_callback(){
     if (is_array($assoc_options) && in_array($option, $assoc_options)){echo'checked="checked"';}
     echo'/> '.titleize($option).'</label><br/>';
   }
+}
+
+function drstk_annotations_callback(){
+  echo '<input type="checkbox" name="drstk_annotations" ';
+  if (get_option('drstk_annotations') == 'on'){ echo 'checked="checked"';}
+  echo '/>Display</label>';
 }
 
 
@@ -727,4 +735,23 @@ function drstk_get_repo_from_pid($pid){
     $repo = NULL;
   }
   return $repo;
+}
+
+
+add_action('wp', 'drstk_add_hypothesis');
+function drstk_add_hypothesis($param) {
+  global $wp_query;
+  $annotations = get_option('drstk_annotations');
+  if ( isset($wp_query->query_vars['drstk_template_type']) ) {
+    $template_type = $wp_query->query_vars['drstk_template_type'];
+  } else {
+    $template_type = "";
+  }
+	if (is_single() && !is_front_page() && !is_home() && $annotations == "on"):
+		wp_enqueue_script( 'hypothesis', '//hypothes.is/embed.js', '', false, true );
+	elseif (is_page() && !is_front_page() && !is_home() && $annotations == "on"):
+		wp_enqueue_script( 'hypothesis', '//hypothes.is/embed.js', '', false, true );
+  elseif ($template_type == 'item' && $annotations == "on"):
+    wp_enqueue_script( 'hypothesis', '//hypothes.is/embed.js', '', false, true );
+	endif;
 }
