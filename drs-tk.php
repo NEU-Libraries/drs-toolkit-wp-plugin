@@ -1,10 +1,10 @@
 <?php
 /**
- * Plugin Name: DRS Toolkit Plugin
+ * Plugin Name: CERES: Exhibit Toolkit Plugin
  * Plugin URI:
  * Version: 1.1.1
  * Author: Eli Zoller
- * Description: This plugin provides the core functionality of the DRS Project Toolkit and brings the content of a project from the DRS into Wordpress using the DRS API.
+ * Description: This plugin provides the core functionality of the CERES: Exhibit Toolkit and brings the content of a project from the DRS into Wordpress using the DRS API.
  */
 
 require_once( plugin_dir_path( __FILE__ ) . 'inc/errors.php' );
@@ -86,7 +86,7 @@ $TEMPLATE_THEME = array(
 //This function creates the settings page for entering the pid
  add_action('admin_menu', 'drs_admin_add_page');
  function drs_admin_add_page() {
-   $hook = add_options_page('Settings for DRS Toolkit Plugin', 'DRS Toolkit', 'manage_options', 'drstk_admin_menu', 'drstk_display_settings');
+   $hook = add_options_page('Settings for CERES: Exhibit Toolkit Plugin', 'CERES: Exhibit Toolkit', 'manage_options', 'drstk_admin_menu', 'drstk_display_settings');
    add_action('load-'.$hook,'drstk_plugin_settings_save');
  }
 
