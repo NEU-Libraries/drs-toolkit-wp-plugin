@@ -755,19 +755,3 @@ function drstk_add_hypothesis($param) {
     wp_enqueue_script( 'hypothesis', '//hypothes.is/embed.js', '', false, true );
 	endif;
 }
-
-function drstk_update_meta() {
-  global $post, $wp_query;
-  if( is_a( $post, 'WP_Post' ) && !isset($wp_query->query_vars['drstk_template_type']) ) {
-    $ids = array();
-    $pattern = get_shortcode_regex();
-    if (   preg_match_all( '/'. $pattern .'/s', $post->post_content, $matches ) && array_key_exists( 2, $matches ) ){
-      foreach($matches[3] as $shortcode){
-        preg_match_all('/id="([^\"]+)"/', $shortcode, $these_ids);
-        array_push($ids, $these_ids[1][0]);
-      }
-    }
-    echo '<meta name="description" content="'.implode(", ", $ids).'"/>';
-  }
-}
-add_action( 'wp_head', 'drstk_update_meta');
