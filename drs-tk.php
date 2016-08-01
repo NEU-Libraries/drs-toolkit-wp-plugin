@@ -767,7 +767,7 @@ function drstk_update_meta() {
         array_push($ids, $these_ids[1][0]);
       }
     }
-    echo '<meta name="id" content="'.implode(", ", $ids).'"/>';
+    echo '<meta name="description" content="'.implode(", ", $ids).'"/>';
   }
 }
 add_action( 'wp_head', 'drstk_update_meta');
