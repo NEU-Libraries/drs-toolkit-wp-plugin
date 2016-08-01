@@ -1,7 +1,7 @@
 {
   "name": "drs-tk",
   "version": "0.0.0",
-  "description": "Plugin that provides functionality and templates for bringing DRS data into WP for the DRS Toolkit.",
+  "description": "Plugin that provides functionality and templates for bringing DRS data into WP for the CERES: Exhibit Toolkit.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -3,7 +3,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/NEU-Libraries/drs-toolkit-wp-plugin/badge.svg?branch=master)](https://coveralls.io/github/NEU-Libraries/drs-toolkit-wp-plugin?branch=master)
 --->
 
-Plugin that provides functionality and templates for bringing DRS data into WP for the DRS Toolkit.
+Plugin that provides functionality and templates for bringing DRS data into WP for the CERES: Exhibit Toolkit.
 
 Should be cloned into wp-content/plugins with
 ```
@@ -75,15 +75,15 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
 
 9. Go to /wp-admin/plugins.php in your browser. Install dependent plugins: Relevanssi, Page Builder by SiteOrigin, Black Studio TinyMCE Widget, and Widget Context and activate them.
 
-10. Go to /wp-admin/plugins.php in your browser. Activate DRS Toolkit Plugin
+10. Go to /wp-admin/plugins.php in your browser. Activate CERES: Exhibit Toolkit Plugin
 
 11. Go to Settings > Reading and set Front Page Displays to a static page then choose a static page.
 
 12. Go to Settings > Discussion and uncheck the box that says 'Allow people to post comments on new articles' to disable comments by default
 
-13. Go to Settings > DRS Toolkit and enter collection URL and click Update
+13. Go to Settings > CERES: Exhibit Toolkit and enter collection URL and click Update
 
-14. Go to Appearance > Themes and activate DRS Toolkit (Quest Child Theme)
+14. Go to Appearance > Themes and activate CERES: Exhibit Toolkit (Quest Child Theme)
 
 15. Go to Appearance > Customize > Layout > Search Results. Change sidebar to none.
 
