@@ -268,7 +268,7 @@
   margin: 10px;
   font-size: 16px;
 }
-.dpla-facet-title .dashicons, .drs-facet-title {
+.dpla-facet-title .dashicons, .drs-facet-title .dashicons{
 	float:right;
 }
 [href*=delFile]{
