@@ -85,8 +85,24 @@
 		<br/>
 		<div class="pane" id="drs">
 			<label for="search">Search for an item: </label><input type="text" name="search" id="search-{{data.type}}" /><button class="themebutton search-button">Search</button>
-			<div class="drs-facets"></div>
-			<div class="drs-items">Loading...</div><ol id="sortable-{{data.type}}-list"></ol><div class="drs-pagination"></div>
+			<br/>
+			<div class="drs-chosen"></div>
+			<br/>
+			<button class="drs-facets-button">Show Filtering Options</button>
+			<div class="drs-items">Loading...</div>
+			<div class="drs-facets hidden">
+				<b class="drs-facet-title">Filters <a href='' class="drs-close-facets"><span class="dashicons dashicons-no"> </span></a></b>
+				<div class="drs-sort"><label for="drs-sort">Sort By: </label><select name="drs-sort"><option value="">Relevance</option><option value="title">Title</option><option value="creator">Creator</option><option value="date">Date Created</option></select></div>
+				<div class="drs-date">
+				</div>
+				<div class="drs-subject">
+				</div>
+				<div class="drs-creator">
+				</div>
+				<div class="drs-type">
+				</div>
+			</div>
+			<ol id="sortable-{{data.type}}-list" class="fullwidth"></ol><div class="drs-pagination"></div>
 		</div>
 		<div class="pane" id="dpla">
 			<label for="search">Search for an item: </label><input type="text" name="search" id="search-{{data.type}}" /><button class="themebutton search-button">Search</button>

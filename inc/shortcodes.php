@@ -77,6 +77,64 @@ function drstk_get_drs_items(){
     if (isset($_POST['params']['page'])) {
       $url .= "&page=" . $_POST['params']['page'];
     }
+    if (isset($_POST['params']['sort'])) {
+      $sort = $_POST['params']['sort'];
+      switch ($sort) {
+        case "title":
+            $sort = "title_ssi";
+            break;
+        case "creator":
+            $sort = "creator_ssi";
+            break;
+        case "date":
+            $sort = "date_ssi";
+            break;
+      }
+      if ($sort != ""){
+        $url .= "&sort=".$sort."+asc";
+      } else {
+        $url .= "&sort=score+desc";
+      }
+    } else {
+      $url .= "&sort=score+desc";
+    }
+    if (isset($_POST['params']['facets'])){
+      $facets = $_POST['params']['facets'];
+      foreach($facets as $facet_name=>$facet_val){
+        if ($facet_name == "creator"){
+          if (is_array($facet_val)){
+            foreach($facet_val as $facet_value){
+              $url .= "&".urlencode("f[creator_sim][]")."=".urlencode($facet_value);
+            }
+          } else {
+            $url .= "&".urlencode("f[creator_sim][]")."=".urlencode($facet_val);
+          }
+        }
+        if ($facet_name == "type"){
+          if (is_array($facet_val)){
+            foreach($facet_val as $facet_value){
+              $url .= "&".urlencode("f[type_sim][]")."=".urlencode($facet_value);
+            }
+          } else {
+            $url .= "&".urlencode("f[type_sim][]")."=".urlencode($facet_val);
+          }
+        }
+        if ($facet_name == "subject"){
+          if (is_array($facet_val)){
+            foreach($facet_val as $facet_value){
+              $url .= "&".urlencode("f[subject_sim][]")."=".urlencode($facet_value);
+            }
+          } else {
+            $url .= "&".urlencode("f[subject_sim][]")."=".urlencode($facet_val);
+          }
+        }
+        if ($facet_name == "date"){
+          if (!is_array($facet_val)){
+            $url .= "&".urlencode("f[creation_year_sim][]")."=".urlencode($facet_val);
+          }
+        }
+      }
+    }
     $data = get_response($url);
     $json = json_decode($data);
     if (isset($json->error)) {
