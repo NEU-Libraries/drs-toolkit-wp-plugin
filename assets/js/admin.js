@@ -122,12 +122,16 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			"change select[name='dpla-sort']": "dplaSort",
 			"change select[name='drs-sort']": "drsSort",
 			"click .dpla-facets-button": "dplaFacetToggle",
-			"click .dpla-close-facets": "dplaFacetToggle",
 			"click .drs-facets-button": "drsFacetToggle",
+			"click .dpla-close-facets": "dplaFacetToggle",
+			"click .drs-close-facets": "drsFacetToggle",
 			"click .dpla-facet-add": "dplaFacet",
+			"click .drs-facet-add": "drsFacet",
 			"click .dpla-update-date": "dplaUpdateDate",
 			"click .dpla-facet-remove": "dplaFacetRemove",
+			"click .drs-facet-remove": "drsFacetRemove",
 			"click .dpla-expand-facet": "dplaFacetExpand",
+			"click .drs-expand-facet": "drsFacetExpand",
 		},
 
 		/**
@@ -838,6 +842,75 @@ drstk.backbone_modal.Application = Backbone.View.extend(
              }
            });
            self.updateDRSPagination(data);
+					 if (self.search_params.facets != {}){
+						 jQuery(".drs-type, .drs-subject").html("");
+						 _.each(data.response.facet_counts.facet_fields, function(facet_vals, facet_name) {
+							 if (facet_name == "creator_sim" || facet_name == "subject_sim" || facet_name == "type_sim" || facet_name == "creation_year_sim"){
+								 if (facet_name == "creator_sim"){
+									 this_facet = "creator";
+								 }
+								 if (facet_name == "subject_sim"){
+									 this_facet = "subject";
+								 }
+								 if (facet_name == "type_sim"){
+									 this_facet = "type";
+								 }
+								 if (facet_name == "creation_year_sim"){
+									 this_facet = "date";
+								 }
+								 jQuery(".drs-"+this_facet).html("<b>"+this_facet.charAt(0).toUpperCase() + this_facet.slice(1)+"</b>");
+								 if (facet_vals != undefined){
+									 if (Object.keys(facet_vals).length > 0){
+										 var sorted = [];
+										 _.each(facet_vals, function(facet_count, facet_val){
+											var obj = {};
+											obj[facet_val] = facet_count;
+											sorted.push(obj);
+										 });
+										 sorted.sort(function(a, b){
+											  if (a[Object.keys(a)[0]] > b[Object.keys(b)[0]]) {
+											    return -1;
+											  }
+											  if (a[Object.keys(a)[0]] < b[Object.keys(b)[0]]) {
+											    return 1;
+											  }
+											  return 0;// a must be equal to b
+										 });
+										 var i = 0;
+										 for (var i = 0; i <= 4; i++){
+											if (sorted[i] != undefined){
+												key = Object.keys(sorted[i])[0];
+												facet_html = "<tr><td><a href='' data-facet-val='"+key+"' data-facet-name='"+this_facet+"' class='drs-facet-add'>"+key+"</a></td><td><a href=''>"+sorted[i][key]+"</a></td></tr>";
+											  jQuery(".drs-"+this_facet).append(facet_html);
+											}
+										 }
+										 if (sorted.length > 5){
+											 facet_html = "<a href='' class='drs-expand-facet' data-facet-name='"+this_facet+"'>View More</a><div class='drs-expanded-facet-"+this_facet+" hidden'><table>";
+											 _.each(sorted, function(facet_obj, i){
+												 if (i > 4){ //don't repeat already displayed facets
+													key = Object.keys(facet_obj)[0];
+													facet_html += "<tr><td><a href='' data-facet-val='"+key+"' data-facet-name='"+this_facet+"' class='drs-facet-add'>"+key+"</a></td><td><a href=''>"+facet_obj[key]+"</a></td></tr>";
+												 }
+											 });
+											 facet_html += "</table></div>";
+											 jQuery(".drs-"+this_facet).append(facet_html);
+										 }
+									 }
+								 }
+							 }
+						 });
+						 facet_buttons = "";
+						 _.each(self.search_params.facets, function(facet_val, facet_name){
+								if (typeof facet_val == "string" || typeof facet_val == "number"){
+									facet_buttons += "<a href='' data-facet-name='"+facet_name+"' data-facet-val='"+facet_val+"' class='button drs-facet-remove'>"+facet_name.charAt(0).toUpperCase()+facet_name.slice(1)+" : "+facet_val+" <span class='dashicons dashicons-trash'> </span></a>";
+								} else {
+									_.each(facet_val, function(facet_value){
+										facet_buttons += "<a href='' data-facet-name='"+facet_name+"' data-facet-val='"+facet_value+"' class='button drs-facet-remove'>"+facet_name.charAt(0).toUpperCase()+facet_name.slice(1)+" : "+facet_value+" <span class='dashicons dashicons-trash'> </span></a>";
+									});
+								}
+						});
+						 jQuery(".drs-chosen").html(facet_buttons);
+					 }
          } else {
            jQuery(".drs-items").html("<div class='notice notice-warning'><p>No results were retrieved for your query. Please try a different query.</p></div>");
          }
@@ -1158,8 +1231,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						 var max = new Date().getFullYear();
 						 if (self.search_params.facets.date != undefined){
 							 dates = self.search_params.facets.date;
-							 jQuery('.start').text(self.search_params.facets.date[0]);
-							 jQuery('.end').text(self.search_params.facets.date[1]);
 						 }
 						 jQuery(".dpla-date-slider").slider({
 							 range: true,
@@ -1168,9 +1239,18 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 							 values: dates,
 							slide: function( event, ui ) {
 								self.search_params.facets.date = [ui.values[ 0 ], ui.values[ 1 ]];
-								jQuery('.start').text(ui.values[0]);
-								jQuery('.end').text(ui.values[1]);
-				      }
+								jQuery('.dpla-date .start').text(ui.values[0]);
+								jQuery('.dpla-date .end').text(ui.values[1]);
+				      },
+							create: function(event){
+								if (self.search_params.facets.date != undefined){
+									jQuery('.dpla-date .start').text(self.search_params.facets.date[0]);
+									jQuery('.dpla-date .end').text(self.search_params.facets.date[1]);
+								} else {
+									jQuery('.dpla-date .start').text(parseInt(min));
+									jQuery('.dpla-date .end').text(parseInt(max));
+								}
+							}
 						 });
 						 facet_buttons = ""
 						 _.each(self.search_params.facets, function(facet_val, facet_name){
@@ -1250,6 +1330,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				 new_items = [];
 	       jQuery.each(this.shortcode.items.models, function(i, item) {
 					 if (!item.get("title")){
+						 jQuery(".selected-items").html("Loading...");
 						 count=parseInt(count)+1;
 						 repo = item.get("repo");
 						 if (repo == "drs"){
@@ -1308,6 +1389,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						 interval = setInterval(function(){
 							 if (new_items.length === self.shortcode.items.models.length){
 								 clearInterval(interval);
+								 jQuery(".selected-items").html("");
 								 jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 								_.each(self.shortcode.items.models, function(item){
 									self.appendSingleItem(item);
@@ -1681,6 +1763,71 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			facet_name = link.data("facet-name");
 			jQuery(".dpla-expanded-facet-"+facet_name).toggleClass("hidden");
 			if (!jQuery(".dpla-expanded-facet-"+facet_name).hasClass("hidden")){
+				link.text("View Less");
+			} else {
+				link.text("View More");
+			}
+		},
+
+		drsSort: function(e) {
+			e.preventDefault();
+			this.search_params.sort = jQuery("select[name='drs-sort']").val();
+			this.getDRSitems();
+		},
+
+		drsFacet: function(e) {
+			e.preventDefault();
+			link = jQuery(e.currentTarget);
+			if (this.search_params.facets[link.data("facet-name")] == undefined){
+				this.search_params.facets[link.data("facet-name")] = link.data("facet-val");
+			} else if (this.search_params.facets[link.data("facet-name")].length > 0){
+				orig_value = this.search_params.facets[link.data("facet-name")]
+				if (typeof orig_value == "string"){
+					this.search_params.facets[link.data("facet-name")] = [orig_value, link.data("facet-val")];
+				} else {
+					this.search_params.facets[link.data("facet-name")].push(link.data("facet-val"));
+				}
+			}
+			this.getDRSitems();
+		},
+
+		drsFacetToggle: function(e) {
+			e.preventDefault();
+			jQuery(".drs-facets").toggleClass("hidden");
+			jQuery("#drs ol").toggleClass("fullwidth");
+			if (!jQuery(".drs-facets").hasClass("hidden")){
+				jQuery(".drs-facets-button").addClass("hidden");
+			} else {
+				jQuery(".drs-facets-button").removeClass("hidden");
+			}
+		},
+
+		drsFacetRemove: function(e){
+			e.preventDefault();
+			link = jQuery(e.currentTarget);
+			values = this.search_params.facets[link.data("facet-name")];
+			new_values = [];
+			if (typeof values != "string"){
+				_.each(values, function(val){
+					if (val != link.data("facet-val")){
+						new_values.push(val);
+					}
+				});
+			}
+			if (new_values.length == 0){
+				delete this.search_params.facets[link.data("facet-name")];
+			} else {
+				this.search_params.facets[link.data("facet-name")] = new_values;
+			}
+			this.getDRSitems();
+		},
+
+		drsFacetExpand: function(e){
+			e.preventDefault();
+			link = jQuery(e.currentTarget);
+			facet_name = link.data("facet-name");
+			jQuery(".drs-expanded-facet-"+facet_name).toggleClass("hidden");
+			if (!jQuery(".drs-expanded-facet-"+facet_name).hasClass("hidden")){
 				link.text("View Less");
 			} else {
 				link.text("View More");

@@ -215,41 +215,41 @@
 	text-align:center;
 }
 
-.dpla-facets{
+.dpla-facets, .drs-facets{
 	width: 18%;
   display: inline-block;
   float: left;
   border: 1px solid #999;
 }
-#dpla ol {
+#dpla ol, #drs ol {
 	width: 78%;
 	display: inline-block;
 	float: right;
 }
-#dpla ol.fullwidth{
+#dpla ol.fullwidth, #drs ol.fullwidth{
 	width: 100%;
 }
-.dpla-date-slider.ui-slider {
+.dpla-date-slider.ui-slider, .drs-date-slider.ui-slider {
 	width: 85%;
 	margin: 5%;
 }
-.dpla-date {
+.dpla-date, .drs-date {
 	overflow: auto;
 }
-.dpla-sort, .dpla-creator, .dpla-date, .dpla-subject, .dpla-type {
+.dpla-sort, .dpla-creator, .dpla-date, .dpla-subject, .dpla-type, .drs-sort, .drs-creator, .drs-date, .drs-subject, .drs-type {
 	border-top: 1px solid #999;
 	padding: 5px;
 }
 .tablenav .tablenav-pages {
 	clear: both;
 }
-.dpla-facets a {
+.dpla-facets a, .drs-facets a {
 	text-decoration: none;
 }
-.dpla-chosen {
+.dpla-chosen, .drs-chosen {
 	margin: 5px;
 }
-.dpla-chosen .button {
+.dpla-chosen .button, .drs-chosen .button {
 	margin: 5px;
 	position: relative;
   max-width: 184px;
@@ -257,18 +257,18 @@
   height: auto;
   line-height: 19px;
 }
-.dpla-update-date {
+.dpla-update-date, .drs-update-date {
 	float: right;
 }
-.dpla-facets-button {
+.dpla-facets-button, .drs-facets-button {
 	margin-bottom: 20px;
 }
-.dpla-facet-title{
+.dpla-facet-title, .drs-facet-title{
 	display: block;
   margin: 10px;
   font-size: 16px;
 }
-.dpla-facet-title .dashicons {
+.dpla-facet-title .dashicons, .drs-facet-title {
 	float:right;
 }
 [href*=delFile]{
