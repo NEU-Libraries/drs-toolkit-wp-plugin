@@ -1040,6 +1040,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								'choices':choices,
 							});
 							self.shortcode.set('settings', settings);
+							console.log(self.shortcode.get('settings'));
 						}
 					});
 				} else if (this.shortcode.get('type') == 'single' && parent == 'dpla'){
