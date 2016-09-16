@@ -1,12 +1,12 @@
 <?php
-global $item_pid, $data, $collection, $meta_options, $errors, $repo, $all_meta_options;
+global $item_pid, $data, $collection, $errors, $repo, $all_meta_options;
 $collection = drstk_get_pid();
 $meta_options = get_option('drstk_item_page_metadata');
 $assoc_meta_options = drstk_get_assoc_meta_options();
 $errors = drstk_get_errors();
 
-function get_item_details($data, $meta_options){
-  global $errors, $repo;
+function get_item_details($data){
+  global $errors, $repo, $meta_options;
   if (check_for_bad_data($data)){
     return false;
   }
@@ -18,9 +18,9 @@ function get_item_details($data, $meta_options){
     $data->mods->$datec = $data->post_date;
   }
   if (isset($data->mods)){ //mods
-    $html .= parse_metadata($data->mods, $meta_options, $html);
+    $html .= parse_metadata($data->mods, $html);
   } else if (isset($data->_source)){//solr_only = true
-    $html .= parse_metadata($data->_source, $meta_options, $html, true);
+    $html .= parse_metadata($data->_source, $html, true);
   }
   if ($repo == "dpla"){
     $html = parse_metadata($data, $meta_options, "", false, true);
@@ -38,7 +38,8 @@ function get_item_details($data, $meta_options){
   return $html;
 }
 
-function parse_metadata($data, $meta_options, $html, $solr=false, $dpla=false){
+function parse_metadata($data, $html, $solr=false, $dpla=false){
+  global $meta_options;
   if ($solr){//this is necessary to not use default solr ordering
     $arr1 = (array) $data;
     $arr2 = $meta_options;
@@ -48,7 +49,7 @@ function parse_metadata($data, $meta_options, $html, $solr=false, $dpla=false){
     }
   }
   if ($dpla){
-    $data = map_dpla_to_mods($data, $meta_options);
+    $data = map_dpla_to_mods($data);
   }
   foreach($data as $key => $value){
     if (($meta_options == NULL) || array_key_exists($key, $meta_options) || in_array($key, $meta_options)){
@@ -70,10 +71,14 @@ function parse_metadata($data, $meta_options, $html, $solr=false, $dpla=false){
             preg_match_all($link_pattern, $string, $link_matches);
             preg_match_all($email_pattern, $string, $email_matches);
             foreach($link_matches as $match){
-              $string = str_ireplace($match[0], "<a href='".$match[0]."'>".$match[0]."</a>", $string);
+              if (count($match) > 0) {
+                $string = str_ireplace($match[0], "<a href='".$match[0]."'>".$match[0]."</a>", $string);
+              }
             }
             foreach($email_matches as $match){
-              $string = str_ireplace($match[0], "<a href='mailto:".$match[0]."'>".$match[0]."</a>", $string);
+              if (count($match) > 0) {
+                $string = str_ireplace($match[0], "<a href='mailto:".$match[0]."'>".$match[0]."</a>", $string);
+              }
             }
             $html .= $string;
           }
@@ -435,8 +440,8 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   return $html;
 }
 
-function map_dpla_to_mods($data, $meta_options){
-  global $all_meta_options;
+function map_dpla_to_mods($data){
+  global $all_meta_options, $meta_options;
   $sourceResource = $data->docs[0]->sourceResource;
 
   if (isset($sourceResource->creator)){
