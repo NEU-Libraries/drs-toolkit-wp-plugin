@@ -153,6 +153,8 @@ function register_drs_settings() {
   add_settings_section('drstk_single_settings', 'Single Item Page Settings', null, 'drstk_options');
   add_settings_field('drstk_item_page_metadata', 'Metadata to Display<br/><small>If none are selected, all metadata will display.</small>', 'drstk_item_page_metadata_callback', 'drstk_options', 'drstk_single_settings');
   register_setting( 'drstk_options', 'drstk_item_page_metadata' );
+  add_settings_field('drstk_item_page_custom_metadata', 'Additional Metadata<br/><small>Add additional metadata from your DRS records by recording the label here. Separate each label by a line break.</small>', 'drstk_item_page_custom_metadata_callback', 'drstk_options', 'drstk_single_settings');
+  register_setting( 'drstk_options', 'drstk_item_page_custom_metadata' );
   add_settings_field('drstk_assoc', 'Display Associated Files', 'drstk_assoc_callback', 'drstk_options', 'drstk_single_settings');
   register_setting( 'drstk_options', 'drstk_assoc' );
   add_settings_field('drstk_assoc_title', 'Associated Files Block Title', 'drstk_assoc_title_callback', 'drstk_options', 'drstk_single_settings', array('class'=>'assoc'));
@@ -406,6 +408,11 @@ function drstk_item_page_metadata_callback(){
     if (is_array($item_options) && in_array($option, $item_options)){echo'checked="checked"';}
     echo'/> '.$option.'</label><br/>';
   }
+}
+
+function drstk_item_page_custom_metadata_callback(){
+  $custom_meta = get_option('drstk_item_page_custom_metadata');
+  echo '<textarea name="drstk_item_page_custom_metadata" rows="5" cols="50">' . $custom_meta . '</textarea>';
 }
 
 function drstk_assoc_callback(){

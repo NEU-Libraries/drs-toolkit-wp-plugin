@@ -2,11 +2,18 @@
 global $item_pid, $data, $collection, $errors, $repo, $all_meta_options;
 $collection = drstk_get_pid();
 $meta_options = get_option('drstk_item_page_metadata');
+$custom_meta = explode("\n", get_option('drstk_item_page_custom_metadata'));
+foreach($custom_meta as $i=>$option){
+  $custom_meta[$i] = trim($option);
+}
+if (is_array($meta_options)){
+  $meta_options = array_merge($meta_options, $custom_meta);
+}
 $assoc_meta_options = drstk_get_assoc_meta_options();
 $errors = drstk_get_errors();
 
 function get_item_details($data){
-  global $errors, $repo, $meta_options;
+  global $errors, $repo;
   if (check_for_bad_data($data)){
     return false;
   }
@@ -23,7 +30,7 @@ function get_item_details($data){
     $html .= parse_metadata($data->_source, $html, true);
   }
   if ($repo == "dpla"){
-    $html = parse_metadata($data, $meta_options, "", false, true);
+    $html = parse_metadata($data, "", false, true);
   }
   $niec_facets = get_option('drstk_niec_metadata');
   $niec_facets_to_display = array();
@@ -33,13 +40,16 @@ function get_item_details($data){
     }
   }
   if (get_option('drstk_niec') == 'on' && count($niec_facets_to_display) > 0 && isset($data->niec)){
-    $html = parse_metadata($data->niec, $niec_facets_to_display, $html);
+    $html = parse_metadata($data->niec, $html, false, false, $niec_facets_to_display);
   }
   return $html;
 }
 
-function parse_metadata($data, $html, $solr=false, $dpla=false){
+function parse_metadata($data, $html, $solr=false, $dpla=false, $special_options=NULL){
   global $meta_options;
+  if ($special_options != NULL){
+    $meta_options = $special_options;
+  }
   if ($solr){//this is necessary to not use default solr ordering
     $arr1 = (array) $data;
     $arr2 = $meta_options;
