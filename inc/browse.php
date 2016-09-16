@@ -53,6 +53,7 @@ add_action('wp_ajax_nopriv_wp_search', 'ajax_wp_search');
 
 function ajax_wp_search(){
   global $wp_query, $paged, $post;
+  $related_content_title = get_option('drstk_search_related_content_title');
   $query_string = isset($_GET['query']) ? $_GET['query'] : "";
   $paged = $_GET['page'];
   if (isset($_GET['query']) && $query_string != ''){
@@ -68,10 +69,10 @@ function ajax_wp_search(){
       }
         // get_template_part( 'partials/content', 'normal' );
     } else {
-        echo "No related content was found";
+        echo "No ".strtolower($related_content_title)." was found";
     }
   } else {
-    echo "Please enter a search term to retrieve related content";
+    echo "Please enter a search term to retrieve ".strtolower($related_content_title);
   }
   wp_reset_postdata();
   die();

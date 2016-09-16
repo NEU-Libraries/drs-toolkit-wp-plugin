@@ -113,6 +113,8 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_search_page_title' );
   add_settings_field('drstk_search_metadata', 'Metadata to Display', 'drstk_search_metadata_callback', 'drstk_options', 'drstk_search_settings');
   register_setting( 'drstk_options', 'drstk_search_metadata' );
+  add_settings_field('drstk_search_related_content_title', 'Related Content Title', 'drstk_search_related_content_title_callback', 'drstk_options', 'drstk_search_settings');
+  register_setting( 'drstk_options', 'drstk_search_related_content_title' );
 
   add_settings_section('drstk_browse_settings', 'Browse Settings', null, 'drstk_options');
   add_settings_field('drstk_browse_page_title', 'Browse Page Title', 'drstk_browse_page_title_callback', 'drstk_options', 'drstk_browse_settings');
@@ -286,6 +288,12 @@ function drstk_search_metadata_callback(){
     if (is_array($options) && in_array($option, $options)){ echo 'checked="checked"';}
     echo '/> '.$option.'</label><br/>';
   }
+}
+
+function drstk_search_related_content_title_callback(){
+  echo '<input type="text" name="drstk_search_related_content_title" value="';
+  if (get_option('drstk_search_related_content_title') == ''){ echo 'Related Content';} else { echo get_option('drstk_search_related_content_title'); }
+  echo '" />';
 }
 
 function drstk_browse_page_title_callback(){
@@ -544,6 +552,7 @@ function drstk_browse_script() {
     $browse_options = get_option('drstk_browse_metadata');
     $default_sort = get_option('drstk_default_sort');
     $default_facet_sort = get_option('drstk_facet_sort_order');
+    $related_content_title = get_option('drstk_search_related_content_title');
     //this creates a unique nonce to pass back and forth from js/php to protect
     $browse_nonce = wp_create_nonce( 'browse_drs' );
     $facets = drstk_get_facets_to_display();
@@ -566,6 +575,7 @@ function drstk_browse_script() {
       'home_url' => drstk_home_url(),
       'sub_collection_pid' => $sub_collection_pid,
       'search_options' => json_encode($search_options),
+      'related_content_title' => $related_content_title,
       'browse_options' => json_encode($browse_options),
       'errors' => json_encode($errors),
       'facets_to_display' => $facets_to_display,
