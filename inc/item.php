@@ -64,7 +64,18 @@ function parse_metadata($data, $meta_options, $html, $solr=false, $dpla=false){
           if (substr($value[$i], 0, 4) == "http"){
             $html .= '<a href="'.$value[$i].'" target="_blank">'.$value[$i].'</a>';
           } else {
-            $html .= $value[$i];
+            $string = $value[$i];
+            $link_pattern = "/(?i)\\b(?:https?:\\/\\/|www\\d{0,3}[.]|[a-z0-9.\\-]+[.][a-z]{2,4}\\/)(?:[^\\s()<>]+|\\([^\\s()<>]+|\\([^\\s()<>]+\\)*\\))+(?:\\([^\\s()<>]+|\\([^\\s()<>]+\\)*\\)|[^\\s`!()\\[\\]{};:'\".,<>?«»“”‘’])/i";
+            $email_pattern = "/[A-Z0-9_\\.%\\+\\-\\']+@(?:[A-Z0-9\\-]+\\.)+(?:[A-Z]{2,4}|museum|travel)/i";
+            preg_match_all($link_pattern, $string, $link_matches);
+            preg_match_all($email_pattern, $string, $email_matches);
+            foreach($link_matches as $match){
+              $string = str_ireplace($match[0], "<a href='".$match[0]."'>".$match[0]."</a>", $string);
+            }
+            foreach($email_matches as $match){
+              $string = str_ireplace($match[0], "<a href='mailto:".$match[0]."'>".$match[0]."</a>", $string);
+            }
+            $html .= $string;
           }
           if ($i != count($value)-1){
             $html .= "<br/> ";
