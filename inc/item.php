@@ -12,8 +12,8 @@ if (is_array($meta_options)){
 $assoc_meta_options = drstk_get_assoc_meta_options();
 $errors = drstk_get_errors();
 
-function get_item_details($data){
-  global $errors, $repo;
+function get_item_details($data, $assoc=false){
+  global $errors, $repo, $assoc_meta_options;
   if (check_for_bad_data($data)){
     return false;
   }
@@ -27,7 +27,11 @@ function get_item_details($data){
   if (isset($data->mods)){ //mods
     $html .= parse_metadata($data->mods, $html);
   } else if (isset($data->_source)){//solr_only = true
-    $html .= parse_metadata($data->_source, $html, true);
+    if ($assoc == 1){
+      $html .= parse_metadata($data->_source, $html, true, false, $assoc_meta_options);
+    } else {
+      $html .= parse_metadata($data->_source, $html, true);
+    }
   }
   if ($repo == "dpla"){
     $html = parse_metadata($data, "", false, true);
@@ -324,13 +328,15 @@ function get_associated_files(){
         if (isset($assoc_data->_source->fields_thumbnail_list_tesim)){
           $associated_html .= "<a href='".drstk_home_url()."item/".$assoc_data->_source->id."'><img src='https://repository.library.northeastern.edu".$assoc_data->_source->fields_thumbnail_list_tesim[1]."'/></a>";
         }
-        $associated_html .= get_item_details($assoc_data, $assoc_meta_options);
+        $assoc = true;
+        $associated_html .= get_item_details($assoc_data, $assoc);
       }
     // }
     $associated_html .= "</div></div>";
     echo $associated_html;
   }
 }
+
 
 function check_for_bad_data($data){
   global $errors;
