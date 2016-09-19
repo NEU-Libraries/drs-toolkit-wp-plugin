@@ -337,6 +337,30 @@ function get_associated_files(){
   }
 }
 
+function get_related_content(){
+  global $wp_query, $post, $item_pid;
+  $pidnum = explode(":", $item_pid)[1];
+  $title = get_option('drstk_search_related_content_title');
+  $query_args = array( 's' => $pidnum, 'post_type'=>array('post', 'page'), 'posts_per_page'=>3);
+
+  $wp_query = new WP_Query( $query_args );
+
+  $rel_query = relevanssi_do_query($wp_query);
+  if (count($rel_query) > 0){
+    $related_html = '<div class="panel panel-default related_content"><div class="panel-heading">'.$title.'</div><div class="panel-body">';
+    foreach($rel_query as $r_post){
+      $post = $r_post;
+      // write_log($r_post);
+      $related_html .= "<a href='".$r_post->guid."'>".$r_post->post_title."</a>";
+      $related_html .= "<p>".$r_post->post_excerpt."</p>";
+      $related_html .= "<div class='read-more small'><a href='".$r_post->guid."'>Read More <i class='fa fa-angle-double-right'> </i> </a></div>";
+    }
+    $related_html .= "</div></div>";
+    echo $related_html;
+  } else {
+    //no associated files;
+  }
+}
 
 function check_for_bad_data($data){
   global $errors;
