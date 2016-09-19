@@ -78,6 +78,8 @@ function parse_metadata($data, $html, $solr=false, $dpla=false, $special_options
         for ($i =0; $i<count($value); $i++){
           if (substr($value[$i], 0, 4) == "http"){
             $html .= '<a href="'.$value[$i].'" target="_blank">'.$value[$i].'</a>';
+          } elseif ((strpos($value[$i], 'Read Online') !== false) && $key == "Location") {
+            $html .= $value[$i];
           } else {
             $string = $value[$i];
             $link_pattern = "/(?i)\\b(?:https?:\\/\\/|www\\d{0,3}[.]|[a-z0-9.\\-]+[.][a-z]{2,4}\\/)(?:[^\\s()<>]+|\\([^\\s()<>]+|\\([^\\s()<>]+\\)*\\))+(?:\\([^\\s()<>]+|\\([^\\s()<>]+\\)*\\)|[^\\s`!()\\[\\]{};:'\".,<>?«»“”‘’])/i";
