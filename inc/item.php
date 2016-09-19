@@ -349,16 +349,13 @@ function get_related_content(){
 
   $rel_query = relevanssi_do_query($wp_query);
   if (count($rel_query) > 0){
-    $related_html = '<div class="panel panel-default related_content"><div class="panel-heading">'.$title.'</div><div class="panel-body">';
+    echo '<div class="panel panel-default related_content"><div class="panel-heading">'.$title.'</div><div class="panel-body">';
     foreach($rel_query as $r_post){
       $post = $r_post;
-      // write_log($r_post);
-      $related_html .= "<a href='".$r_post->guid."'>".$r_post->post_title."</a>";
-      $related_html .= "<p>".$r_post->post_excerpt."</p>";
-      $related_html .= "<div class='read-more small'><a href='".$r_post->guid."'>Read More <i class='fa fa-angle-double-right'> </i> </a></div>";
+      $the_post = $post;
+       get_template_part( 'content', 'excerpt' );
     }
-    $related_html .= "</div></div>";
-    echo $related_html;
+    echo "</div></div>";
   } else {
     //no associated files;
   }
