@@ -343,7 +343,6 @@ function get_related_content(){
   global $wp_query, $post, $item_pid;
   if (get_option('drstk_appears') == 'on'){
     $pidnum = explode(":", $item_pid)[1];
-    echo get_option('drstk_appears_title');
     $title = (get_option('drstk_appears_title') != "") ? get_option('drstk_appears_title') : "Item Appears In";
     $query_args = array( 's' => $pidnum, 'post_type'=>array('post', 'page'), 'posts_per_page'=>3);
 
