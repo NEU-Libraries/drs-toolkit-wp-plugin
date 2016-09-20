@@ -155,6 +155,10 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_item_page_metadata' );
   add_settings_field('drstk_item_page_custom_metadata', 'Additional Metadata<br/><small>Add additional metadata from your DRS records by recording the label here. Separate each label by a line break.</small>', 'drstk_item_page_custom_metadata_callback', 'drstk_options', 'drstk_single_settings');
   register_setting( 'drstk_options', 'drstk_item_page_custom_metadata' );
+  add_settings_field('drstk_appears', 'Display Item Appears In', 'drstk_appears_callback', 'drstk_options', 'drstk_single_settings');
+  register_setting('drstk_options', 'drstk_appears');
+  add_settings_field('drstk_appears_title', 'Item Appears In Block Title', 'drstk_appears_title_callback', 'drstk_options', 'drstk_single_settings', array('class'=>'appears'));
+  register_setting('drstk_options', 'drstk_appears_title');
   add_settings_field('drstk_assoc', 'Display Associated Files', 'drstk_assoc_callback', 'drstk_options', 'drstk_single_settings');
   register_setting( 'drstk_options', 'drstk_assoc' );
   add_settings_field('drstk_assoc_title', 'Associated Files Block Title', 'drstk_assoc_title_callback', 'drstk_options', 'drstk_single_settings', array('class'=>'assoc'));
@@ -413,6 +417,18 @@ function drstk_item_page_metadata_callback(){
 function drstk_item_page_custom_metadata_callback(){
   $custom_meta = get_option('drstk_item_page_custom_metadata');
   echo '<textarea name="drstk_item_page_custom_metadata" rows="5" cols="50">' . $custom_meta . '</textarea>';
+}
+
+function drstk_appears_callback(){
+  echo '<input type="checkbox" name="drstk_appears" ';
+  if (get_option('drstk_appears') == 'on'){ echo 'checked="checked"';}
+  echo '/>Display</label>';
+}
+
+function drstk_appears_title_callback(){
+  echo '<input type="text" name="drstk_appears_title" value="';
+  if (get_option('drstk_appears_title') == ''){ echo 'Iteam appears in';} else { echo get_option('drstk_appears_title'); }
+  echo '" />';
 }
 
 function drstk_assoc_callback(){
