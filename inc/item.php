@@ -354,12 +354,13 @@ function get_related_content(){
       foreach($rel_query as $r_post){
         $post = $r_post;
         $the_post = $post;
-         get_template_part( 'content', 'excerpt' );
+        get_template_part( 'content', 'excerpt' );
       }
       echo "</div></div>";
     } else {
       //no related content
     }
+    wp_reset_postdata();
   }
 }
 
