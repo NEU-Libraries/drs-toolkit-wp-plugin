@@ -36,8 +36,8 @@ $view = quest_get_view();
               <div id="drs-loading"></div>
               <div id="drs-item-left" class="col-sm-6 one_half">
 								<?php get_item_image(); ?>
-								<?php get_associated_files(); ?>
 								<?php get_related_content(); ?>
+								<?php get_associated_files(); ?>
             	</div>
               <div id="drs-item-right" class="col-sm-6 last">
             		<div id="drs-item-details"><?php echo get_item_details($data, $meta_options); ?></div>
