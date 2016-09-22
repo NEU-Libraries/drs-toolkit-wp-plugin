@@ -284,6 +284,9 @@ function addPopupsToItems(items, map, colorGroups, home_url) {
                 icon: icon
             });
         var url = item.url;
+        if (url.indexOf("hdl.handle") > -1){
+          url = home_url + 'item/' + item.pid;
+        }
         var popupContent = "<a href='" + url + "' target='_blank'>" + item.title + "</a><br/>";
 
         if (item.metadata) {
