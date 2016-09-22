@@ -419,7 +419,7 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   $html = '<img id="'.$id_img.'" src="'.$drs_item_img.'" class="replace_thumbs"/>';
   $html .= '<div id="'.$id_video.'"></div>';
   $html .= '<script type="text/javascript">
-  jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A==";
+  jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc=";
   var primary = "flash";
   if (typeof swfobject == "undefined" || swfobject.getFlashPlayerVersion().major == 0) {
     primary = "html5";

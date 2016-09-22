@@ -105,7 +105,7 @@ function drstk_collection_playlist($atts){
         <img style="width: 100%;" src="' . $poster[0] .'" />
       </div>
       <script type="text/javascript">
-        jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A==";
+        jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc=";
         var primary = "flash";
         if (typeof swfobject == "undefined" || swfobject.getFlashPlayerVersion().major == 0) {
           primary = "html5";
