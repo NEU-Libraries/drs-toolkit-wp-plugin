@@ -342,7 +342,7 @@ function get_associated_files(){
 function get_related_content(){
   global $wp_query, $post, $item_pid;
   if (get_option('drstk_appears') == 'on'){
-    $pidnum = explode(":", $item_pid)
+    $pidnum = explode(":", $item_pid);
     if (count($pidnum) > 1){
       $pidnum = $pidnum[1];
       $title = (get_option('drstk_appears_title') != "") ? get_option('drstk_appears_title') : "Item Appears In";
