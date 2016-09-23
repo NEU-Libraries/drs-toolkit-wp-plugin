@@ -339,30 +339,33 @@ function get_associated_files(){
   }
 }
 
-// function get_related_content(){
-//   global $wp_query, $post, $item_pid;
-//   if (get_option('drstk_appears') == 'on'){
-//     $pidnum = explode(":", $item_pid)[1];
-//     $title = (get_option('drstk_appears_title') != "") ? get_option('drstk_appears_title') : "Item Appears In";
-//     $query_args = array( 's' => $pidnum, 'post_type'=>array('post', 'page'), 'posts_per_page'=>3);
-//
-//     $wp_query = new WP_Query( $query_args );
-//
-//     $rel_query = relevanssi_do_query($wp_query);
-//     if (count($rel_query) > 0){
-//       echo '<div class="panel panel-default related_content"><div class="panel-heading">'.$title.'</div><div class="panel-body">';
-//       foreach($rel_query as $r_post){
-//         $post = $r_post;
-//         $the_post = $post;
-//         get_template_part( 'content', 'excerpt' );
-//       }
-//       echo "</div></div>";
-//     } else {
-//       //no related content
-//     }
-//     wp_reset_postdata();
-//   }
-// }
+function get_related_content(){
+  global $wp_query, $post, $item_pid;
+  if (get_option('drstk_appears') == 'on'){
+    $pidnum = explode(":", $item_pid)
+    if (count($pidnum) > 1){
+      $pidnum = $pidnum[1];
+      $title = (get_option('drstk_appears_title') != "") ? get_option('drstk_appears_title') : "Item Appears In";
+      $query_args = array( 's' => $pidnum, 'post_type'=>array('post', 'page'), 'posts_per_page'=>3);
+
+      $wp_query = new WP_Query( $query_args );
+
+      $rel_query = relevanssi_do_query($wp_query);
+      if (count($rel_query) > 0){
+        echo '<div class="panel panel-default related_content"><div class="panel-heading">'.$title.'</div><div class="panel-body">';
+        foreach($rel_query as $r_post){
+          $post = $r_post;
+          $the_post = $post;
+          get_template_part( 'content', 'excerpt' );
+        }
+        echo "</div></div>";
+      } else {
+        //no related content
+      }
+      wp_reset_postdata();
+    }
+  }
+}
 
 function check_for_bad_data($data){
   global $errors;
