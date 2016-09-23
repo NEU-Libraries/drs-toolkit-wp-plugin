@@ -64,7 +64,7 @@ function ajax_wp_search(){
       foreach($rel_query as $r_post){
         $post = $r_post;
         echo "<article class='post-normal'><header><h1 class='post-title'><a href='".$r_post->guid."'>".$r_post->post_title."</a></h1></header><div class='entry-content'><p>";
-        echo relevanssi_do_excerpt($post, $query_string);
+        echo the_excerpt();
         echo "</p></div><footer><div class='read-more'><a href='".$r_post->guid."'>Read More <i class='fa fa-angle-double-right'> </i> </a></div></footer></article>";
       }
         // get_template_part( 'partials/content', 'normal' );
