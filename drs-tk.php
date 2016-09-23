@@ -427,7 +427,7 @@ function drstk_appears_callback(){
 
 function drstk_appears_title_callback(){
   echo '<input type="text" name="drstk_appears_title" value="';
-  if (get_option('drstk_appears_title') == ''){ echo 'Iteam appears in';} else { echo get_option('drstk_appears_title'); }
+  if (get_option('drstk_appears_title') == ''){ echo 'Item Appears In';} else { echo get_option('drstk_appears_title'); }
   echo '" />';
 }
 
