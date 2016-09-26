@@ -66,9 +66,8 @@ function ajax_wp_search(){
         $the_post = $post;
         get_template_part( 'content', 'excerpt' );
       }
-        // get_template_part( 'partials/content', 'normal' );
     } else {
-        echo "No ".strtolower($related_content_title)." was found";
+      echo "No ".strtolower($related_content_title)." was found";
     }
   } else {
     echo "Please enter a search term to retrieve ".strtolower($related_content_title);
