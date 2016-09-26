@@ -63,9 +63,8 @@ function ajax_wp_search(){
     if (count($rel_query) > 0){
       foreach($rel_query as $r_post){
         $post = $r_post;
-        echo "<article class='post-normal'><header><h1 class='post-title'><a href='".$r_post->guid."'>".$r_post->post_title."</a></h1></header><div class='entry-content'><p>";
-        echo the_excerpt();
-        echo "</p></div><footer><div class='read-more'><a href='".$r_post->guid."'>Read More <i class='fa fa-angle-double-right'> </i> </a></div></footer></article>";
+        $the_post = $post;
+        get_template_part( 'content', 'excerpt' );
       }
         // get_template_part( 'partials/content', 'normal' );
     } else {
