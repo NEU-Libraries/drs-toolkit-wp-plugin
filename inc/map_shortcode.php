@@ -80,9 +80,8 @@ function drstk_map( $atts ){
         }
 
         $title = $data->mods->Title[0];
-        $permanentUrl = 'Permanent URL';
-        $permanentUrl = $data->mods->$permanentUrl;
-        $map_html .= "<div class='coordinates' data-pid='".$pid."' data-url='".$permanentUrl[0]."' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."'";
+        $permanentUrl = drstk_home_url() . "item/".$pid;
+        $map_html .= "<div class='coordinates' data-pid='".$pid."' data-url='".$permanentUrl."' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."'";
 
         if (isset($atts['metadata'])){
           $map_metadata = '';

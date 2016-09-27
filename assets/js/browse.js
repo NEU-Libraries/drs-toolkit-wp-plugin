@@ -10,6 +10,7 @@ jQuery(document).ready(function($) {
   var template = browse_obj.template;
   var search_options = browse_obj.search_options;
   var browse_options = browse_obj.browse_options;
+  var related_content_title = browse_obj.related_content_title;
   var facets_to_display = browse_obj.facets_to_display;
   var niec_facets = 'niec_facets_to_display' in browse_obj ? browse_obj.niec_facets_to_display : null;
   if ((q) && (q != '')){
@@ -375,11 +376,11 @@ jQuery(document).ready(function($) {
   			},
   			beforeSend: function ()
   			{
-          $("#secondary").html("Looking for related content...");
+          $("#secondary").html("Looking for "+related_content_title.toLowerCase()+"...");
   			},
   			success: function(data)
   			{
-          $("#secondary").html("<div class='panel panel-default'><div class='panel-heading'><b>Related Content</b></div><div class='panel-body'>"+data+"</div></div>");
+          $("#secondary").html("<div class='panel panel-default'><div class='panel-heading'><b>"+related_content_title+"</b></div><div class='panel-body'>"+data+"</div></div>");
           $("#secondary").addClass('drs-sidebar');
           $("#primary").addClass('drs-main');
           $("#secondary #title-container").hide();

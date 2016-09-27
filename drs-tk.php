@@ -113,6 +113,8 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_search_page_title' );
   add_settings_field('drstk_search_metadata', 'Metadata to Display', 'drstk_search_metadata_callback', 'drstk_options', 'drstk_search_settings');
   register_setting( 'drstk_options', 'drstk_search_metadata' );
+  add_settings_field('drstk_search_related_content_title', 'Related Content Title', 'drstk_search_related_content_title_callback', 'drstk_options', 'drstk_search_settings');
+  register_setting( 'drstk_options', 'drstk_search_related_content_title' );
 
   add_settings_section('drstk_browse_settings', 'Browse Settings', null, 'drstk_options');
   add_settings_field('drstk_browse_page_title', 'Browse Page Title', 'drstk_browse_page_title_callback', 'drstk_options', 'drstk_browse_settings');
@@ -151,6 +153,12 @@ function register_drs_settings() {
   add_settings_section('drstk_single_settings', 'Single Item Page Settings', null, 'drstk_options');
   add_settings_field('drstk_item_page_metadata', 'Metadata to Display<br/><small>If none are selected, all metadata will display.</small>', 'drstk_item_page_metadata_callback', 'drstk_options', 'drstk_single_settings');
   register_setting( 'drstk_options', 'drstk_item_page_metadata' );
+  add_settings_field('drstk_item_page_custom_metadata', 'Additional Metadata<br/><small>Add additional metadata from your DRS records by recording the label here. Separate each label by a line break.</small>', 'drstk_item_page_custom_metadata_callback', 'drstk_options', 'drstk_single_settings');
+  register_setting( 'drstk_options', 'drstk_item_page_custom_metadata' );
+  add_settings_field('drstk_appears', 'Display Item Appears In', 'drstk_appears_callback', 'drstk_options', 'drstk_single_settings');
+  register_setting('drstk_options', 'drstk_appears');
+  add_settings_field('drstk_appears_title', 'Item Appears In Block Title', 'drstk_appears_title_callback', 'drstk_options', 'drstk_single_settings', array('class'=>'appears'));
+  register_setting('drstk_options', 'drstk_appears_title');
   add_settings_field('drstk_assoc', 'Display Associated Files', 'drstk_assoc_callback', 'drstk_options', 'drstk_single_settings');
   register_setting( 'drstk_options', 'drstk_assoc' );
   add_settings_field('drstk_assoc_title', 'Associated Files Block Title', 'drstk_assoc_title_callback', 'drstk_options', 'drstk_single_settings', array('class'=>'assoc'));
@@ -290,6 +298,12 @@ function drstk_search_metadata_callback(){
   }
 }
 
+function drstk_search_related_content_title_callback(){
+  echo '<input type="text" name="drstk_search_related_content_title" value="';
+  if (get_option('drstk_search_related_content_title') == ''){ echo 'Related Content';} else { echo get_option('drstk_search_related_content_title'); }
+  echo '" />';
+}
+
 function drstk_browse_page_title_callback(){
   echo '<input type="text" name="drstk_browse_page_title" value="';
   if (get_option('drstk_browse_page_title') == ''){ echo 'Browse';} else { echo get_option('drstk_browse_page_title'); }
@@ -400,6 +414,23 @@ function drstk_item_page_metadata_callback(){
     if (is_array($item_options) && in_array($option, $item_options)){echo'checked="checked"';}
     echo'/> '.$option.'</label><br/>';
   }
+}
+
+function drstk_item_page_custom_metadata_callback(){
+  $custom_meta = get_option('drstk_item_page_custom_metadata');
+  echo '<textarea name="drstk_item_page_custom_metadata" rows="5" cols="50">' . $custom_meta . '</textarea>';
+}
+
+function drstk_appears_callback(){
+  echo '<input type="checkbox" name="drstk_appears" ';
+  if (get_option('drstk_appears') == 'on'){ echo 'checked="checked"';}
+  echo '/>Display</label>';
+}
+
+function drstk_appears_title_callback(){
+  echo '<input type="text" name="drstk_appears_title" value="';
+  if (get_option('drstk_appears_title') == ''){ echo 'Item Appears In';} else { echo get_option('drstk_appears_title'); }
+  echo '" />';
 }
 
 function drstk_assoc_callback(){
@@ -552,6 +583,7 @@ function drstk_browse_script() {
     $browse_options = get_option('drstk_browse_metadata');
     $default_sort = get_option('drstk_default_sort');
     $default_facet_sort = get_option('drstk_facet_sort_order');
+    $related_content_title = get_option('drstk_search_related_content_title');
     //this creates a unique nonce to pass back and forth from js/php to protect
     $browse_nonce = wp_create_nonce( 'browse_drs' );
     $facets = drstk_get_facets_to_display();
@@ -574,6 +606,7 @@ function drstk_browse_script() {
       'home_url' => drstk_home_url(),
       'sub_collection_pid' => $sub_collection_pid,
       'search_options' => json_encode($search_options),
+      'related_content_title' => $related_content_title,
       'browse_options' => json_encode($browse_options),
       'errors' => json_encode($errors),
       'facets_to_display' => $facets_to_display,
