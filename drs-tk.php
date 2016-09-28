@@ -629,6 +629,9 @@ function drstk_item_script() {
     global $wp_query;
     global $item_pid;
     global $errors;
+
+    $item_nonce = wp_create_nonce( 'item_drs' );
+
     //this enqueues the JS file
     wp_register_script('drstk_jwplayer', plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__), array(), $VERSION, false );
     wp_enqueue_script('drstk_jwplayer');
@@ -638,6 +641,16 @@ function drstk_item_script() {
     wp_enqueue_script('swfobject');
     wp_register_script('drstk_item_gallery', plugins_url('/assets/js/item_gallery.js', __FILE__), array(), $VERSION, false );
     wp_enqueue_script('drstk_item_gallery');
+
+    //this allows an ajax call from browse.js
+    $assoc_obj = array(
+      'ajax_url' => admin_url('admin-ajax.php'),
+      'nonce'    => $item_nonce,
+      'template' => $wp_query->query_vars['drstk_template_type'],
+      'home_url' => drstk_home_url(),
+    );
+
+    wp_localize_script( 'drstk_item_gallery', 'assoc_obj', $assoc_obj );
 }
 
 function drstk_breadcrumb_script(){

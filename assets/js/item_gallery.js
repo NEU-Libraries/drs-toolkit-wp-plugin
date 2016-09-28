@@ -62,4 +62,23 @@ jQuery(document).ready(function($) {
 			$("#drs_item_modal .modal-body .pagination li:last").removeClass("disabled");
 		}
 	}
+
+	get_associated_files();
+	function get_associated_files(){
+		$(".associated-next, .associated-prev").on("click", function(e){
+			e.preventDefault();
+			$(".assoc_files .panel-body").html("Loading...<br/><span class='fa fa-spinner fa-spin'></span>");
+			$.post(assoc_obj.ajax_url, {
+				 _ajax_nonce: assoc_obj.nonce,
+					action: "get_associated_item",
+					pid: $(this).data('pid'),
+					all_pids: $(this).data('all_pids')
+			}, function(data) {
+					var data = $.parseJSON(data);
+					$(".assoc_files .panel-body").html(data.html);
+					get_associated_files();
+			}).fail(function(data) {
+			});
+		});
+	}
 });

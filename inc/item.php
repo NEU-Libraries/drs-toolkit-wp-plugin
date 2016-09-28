@@ -318,22 +318,24 @@ function get_associated_files(){
     $associated_html = '';
     $title = (get_option('drstk_assoc_title') != '') ? get_option('drstk_assoc_title') : 'Associated Files';
     $associated_html .= "<div class='panel panel-default assoc_files'><div class='panel-heading'>".$title."</div><div class='panel-body'>";
-    // foreach($data->associated as $assoc_pid => $assoc_title){ //disabling multivalued associated files until a new less resource intensive api call for associated files exists
       $assoc_pid = key(get_object_vars($data->associated)); //using this just to get the first title
-      $assoc_title = $data->associated->$assoc_pid; //using this just to get the first title
-      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $assoc_pid . "?solr_only=true";
-      $assoc_data = get_response($url);
-      $assoc_data = json_decode($assoc_data);
-      if (check_for_bad_data($assoc_data)){
-        return false;
-      } else {
-        if (isset($assoc_data->_source->fields_thumbnail_list_tesim)){
-          $associated_html .= "<a href='".drstk_home_url()."item/".$assoc_data->_source->id."'><img src='https://repository.library.northeastern.edu".$assoc_data->_source->fields_thumbnail_list_tesim[1]."'/></a>";
-        }
-        $assoc = true;
-        $associated_html .= get_item_details($assoc_data, $assoc);
+    $assoc_title = $data->associated->$assoc_pid; //using this just to get the first title
+    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $assoc_pid . "?solr_only=true";
+    $assoc_data = get_response($url);
+    $assoc_data = json_decode($assoc_data);
+    if (check_for_bad_data($assoc_data)){
+      return false;
+    } else {
+      if (isset($assoc_data->_source->fields_thumbnail_list_tesim)){
+        $associated_html .= "<a href='".drstk_home_url()."item/".$assoc_data->_source->id."'><img src='https://repository.library.northeastern.edu".$assoc_data->_source->fields_thumbnail_list_tesim[1]."'/></a>";
       }
-    // }
+      $assoc = true;
+      $associated_html .= get_item_details($assoc_data, $assoc);
+    }
+    if (count(get_object_vars($data->associated)) > 1){
+      $pids = array_keys(get_object_vars($data->associated));
+      $associated_html .= "<a href='' class='button associated-next btn-sm' data-pid='".$pids[1]."' data-all_pids='".implode(",", $pids)."'>Next</a>";
+    }
     $associated_html .= "</div></div>";
     echo $associated_html;
   }
@@ -547,4 +549,45 @@ function map_dpla_to_mods($data){
   //FIELDS not connected because they would have to come from the originalRecord which has incredibly unreliable JSON formatting
   // Location, date issued, copyright date, table of contents, notes, genre, phsyical description
   return $data->mods;
+}
+
+add_action( 'wp_ajax_get_associated_item', 'associated_ajax_handler' ); //for auth users
+add_action( 'wp_ajax_nopriv_get_associated_item', 'associated_ajax_handler' ); //for nonauth users
+function associated_ajax_handler() {
+  // Handle the ajax request
+  global $errors, $assoc_meta_options;
+  check_ajax_referer( 'item_drs' );
+  if (isset($_POST['pid']) && ($_POST['pid'] != NULL) && (get_option('drstk_assoc') == 'on')){
+    $associated_html = '';
+    $title = (get_option('drstk_assoc_title') != '') ? get_option('drstk_assoc_title') : 'Associated Files';
+    $associated_html .= "";
+    $assoc_pid = $_POST['pid']; //using this just to get the first title
+    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $assoc_pid . "?solr_only=true";
+    $assoc_data = get_response($url);
+    $assoc_data = json_decode($assoc_data);
+    if (check_for_bad_data($assoc_data)){
+      return false;
+    } else {
+      if (isset($assoc_data->_source->fields_thumbnail_list_tesim)){
+        $associated_html .= "<a href='".drstk_home_url()."item/".$assoc_data->_source->id."'><img src='https://repository.library.northeastern.edu".$assoc_data->_source->fields_thumbnail_list_tesim[1]."'/></a>";
+      }
+      $assoc = true;
+      $associated_html .= get_item_details($assoc_data, $assoc);
+    }
+    if (isset($_POST['all_pids'])){
+      $all_pids = explode(",",$_POST['all_pids']);
+      $key = array_search($assoc_pid, $all_pids);
+      if ($key > 0){
+        $associated_html .= "<a href='' class='button associated-prev btn-sm' data-pid='".$all_pids[$key-1]."' data-all_pids='".$_POST['all_pids']."'>Previous</a>";
+      }
+      if ($key == 0 || $key != (count($all_pids)-1)){
+        $associated_html .= "<a href='' class='button associated-next btn-sm' data-pid='".$all_pids[$key+1]."' data-all_pids='".$_POST['all_pids']."'>Next</a>";
+      }
+    }
+    $data = array('html'=>$associated_html);
+  } else {
+    $data = array('error'=>"There was an error retrieving the associated file. Please try again.");
+  }
+  wp_send_json(json_encode($data));
+  wp_die();
 }
