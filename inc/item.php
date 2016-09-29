@@ -1,6 +1,7 @@
 <?php
 global $item_pid, $data, $collection, $errors, $repo, $all_meta_options;
 $collection = drstk_get_pid();
+$errors = drstk_get_errors();
 $meta_options = get_option('drstk_item_page_metadata');
 $custom_meta = explode("\n", get_option('drstk_item_page_custom_metadata'));
 foreach($custom_meta as $i=>$option){
@@ -8,12 +9,13 @@ foreach($custom_meta as $i=>$option){
 }
 if (is_array($meta_options)){
   $meta_options = array_merge($meta_options, $custom_meta);
+} else {
+  $meta_options = NULL;
 }
 $assoc_meta_options = drstk_get_assoc_meta_options();
-$errors = drstk_get_errors();
 
 function get_item_details($data, $assoc=false){
-  global $errors, $repo, $assoc_meta_options;
+  global $errors, $repo, $meta_options, $assoc_meta_options;
   if (check_for_bad_data($data)){
     return false;
   }
@@ -50,13 +52,15 @@ function get_item_details($data, $assoc=false){
 }
 
 function parse_metadata($data, $html, $solr=false, $dpla=false, $special_options=NULL){
-  global $meta_options;
+  global $meta_options, $assoc_meta_options;
   if ($special_options != NULL){
-    $meta_options = $special_options;
+    $temp_meta_options = $special_options;
+  } else {
+    $temp_meta_options = $meta_options;
   }
   if ($solr){//this is necessary to not use default solr ordering
     $arr1 = (array) $data;
-    $arr2 = $meta_options;
+    $arr2 = $temp_meta_options;
     $data = array();
     foreach ($arr2 as $key=>$val) {
       $data[$val] = $arr1[$val];
@@ -66,12 +70,12 @@ function parse_metadata($data, $html, $solr=false, $dpla=false, $special_options
     $data = map_dpla_to_mods($data);
   }
   foreach($data as $key => $value){
-    if (($meta_options == NULL) || array_key_exists($key, $meta_options) || in_array($key, $meta_options)){
+    if (($temp_meta_options == NULL) || array_key_exists($key, $temp_meta_options) || in_array($key, $temp_meta_options)){
       $html .= "<div class='drs-field-label'><b>";
-      if (!isset($meta_options[$key])){
+      if (!isset($temp_meta_options[$key])){
         $html .= titleize($key);
       } else {
-        $html .= $meta_options[$key];
+        $html .= $temp_meta_options[$key];
       }
       $html .= "</b></div><div class='drs-field-value'>";
       if (is_array($value)){

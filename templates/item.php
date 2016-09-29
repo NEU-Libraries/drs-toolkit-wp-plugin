@@ -40,7 +40,7 @@ $view = quest_get_view();
 								<?php get_associated_files(); ?>
             	</div>
               <div id="drs-item-right" class="col-sm-6 last">
-            		<div id="drs-item-details"><?php echo get_item_details($data, $meta_options); ?></div>
+            		<div id="drs-item-details"><?php echo get_item_details($data); ?></div>
 								<?php get_download_links(); ?>
             	</div>
             </div><!-- #drs-content -->
