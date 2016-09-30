@@ -66,6 +66,7 @@ function ajax_wp_search(){
         $the_post = $post;
         get_template_part( 'content', 'excerpt' );
       }
+      echo the_posts_pagination( array( 'mid_size'  => 2 ) );
     } else {
       echo "No ".strtolower($related_content_title)." was found";
     }

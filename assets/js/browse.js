@@ -398,9 +398,11 @@ jQuery(document).ready(function($) {
   }
 
   function fix_wp_pagination() {
-    $('#secondary .pagination li a').on("click", function(e) {
+    $('#secondary .pagination a').on("click", function(e) {
       e.preventDefault();
-      var wp_page = GetURLParameter($(this).attr('href'), 'paged');
+      var wp_page = $(this).attr('href').split("/");
+      wp_page = wp_page[wp_page.length -1];
+      wp_page = wp_page.split("?")[0];
       get_wp_data(params.q, wp_page);
     });
   }
