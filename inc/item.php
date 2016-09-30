@@ -397,7 +397,7 @@ function get_related_content(){
     if (count($pidnum) > 1){
       $pidnum = $pidnum[1];
       $title = (get_option('drstk_appears_title') != "") ? get_option('drstk_appears_title') : "Item Appears In";
-      $query_args = array( 's' => $pidnum, 'post_type'=>array('post', 'page'), 'posts_per_page'=>3);
+      $query_args = array( 's' => $pidnum, 'post_type'=>array('post', 'page'), 'posts_per_page'=>3, 'post_status'=>'publish');
 
       $wp_query = new WP_Query( $query_args );
 
