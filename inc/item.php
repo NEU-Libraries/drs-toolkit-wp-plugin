@@ -3,13 +3,7 @@ global $item_pid, $data, $collection, $errors, $repo, $all_meta_options;
 $collection = drstk_get_pid();
 $errors = drstk_get_errors();
 $meta_options = get_option('drstk_item_page_metadata');
-$custom_meta = explode("\n", get_option('drstk_item_page_custom_metadata'));
-foreach($custom_meta as $i=>$option){
-  $custom_meta[$i] = trim($option);
-}
-if (is_array($meta_options)){
-  $meta_options = array_merge($meta_options, $custom_meta);
-} else {
+if (!is_array($meta_options)){
   $meta_options = NULL;
 }
 $assoc_meta_options = drstk_get_assoc_meta_options();
@@ -69,8 +63,12 @@ function parse_metadata($data, $html, $solr=false, $dpla=false, $special_options
   if ($dpla){
     $data = map_dpla_to_mods($data);
   }
-  foreach($data as $key => $value){
-    if (($temp_meta_options == NULL) || array_key_exists($key, $temp_meta_options) || in_array($key, $temp_meta_options)){
+  if ($temp_meta_options != NULL){
+    foreach($temp_meta_options as $key => $value){
+      $value = property_exists($data, $value) ? $data->$value : NULL;
+      if ($value == NULL){
+        continue;//skip to next in each loop
+      }
       $html .= "<div class='drs-field-label'><b>";
       if (!isset($temp_meta_options[$key])){
         $html .= titleize($key);
@@ -110,6 +108,50 @@ function parse_metadata($data, $html, $solr=false, $dpla=false, $special_options
         $html .= $value;
       }
       $html .= "</div>";
+    }
+  } else {
+    foreach($data as $key => $value){
+      if (($temp_meta_options == NULL) || array_key_exists($key, $temp_meta_options) || in_array($key, $temp_meta_options)){
+        $html .= "<div class='drs-field-label'><b>";
+        if (!isset($temp_meta_options[$key])){
+          $html .= titleize($key);
+        } else {
+          $html .= $temp_meta_options[$key];
+        }
+        $html .= "</b></div><div class='drs-field-value'>";
+        if (is_array($value)){
+          for ($i =0; $i<count($value); $i++){
+            if (substr($value[$i], 0, 4) == "http"){
+              $html .= '<a href="'.$value[$i].'" target="_blank">'.$value[$i].'</a>';
+            } elseif ((strpos($value[$i], 'Read Online') !== false) && $key == "Location") {
+              $html .= $value[$i];
+            } else {
+              $string = $value[$i];
+              $link_pattern = "/(?i)\\b(?:https?:\\/\\/|www\\d{0,3}[.]|[a-z0-9.\\-]+[.][a-z]{2,4}\\/)(?:[^\\s()<>]+|\\([^\\s()<>]+|\\([^\\s()<>]+\\)*\\))+(?:\\([^\\s()<>]+|\\([^\\s()<>]+\\)*\\)|[^\\s`!()\\[\\]{};:'\".,<>?«»“”‘’])/i";
+              $email_pattern = "/[A-Z0-9_\\.%\\+\\-\\']+@(?:[A-Z0-9\\-]+\\.)+(?:[A-Z]{2,4}|museum|travel)/i";
+              preg_match_all($link_pattern, $string, $link_matches);
+              preg_match_all($email_pattern, $string, $email_matches);
+              foreach($link_matches as $match){
+                if (count($match) > 0) {
+                  $string = str_ireplace($match[0], "<a href='".$match[0]."'>".$match[0]."</a>", $string);
+                }
+              }
+              foreach($email_matches as $match){
+                if (count($match) > 0) {
+                  $string = str_ireplace($match[0], "<a href='mailto:".$match[0]."'>".$match[0]."</a>", $string);
+                }
+              }
+              $html .= $string;
+            }
+            if ($i != count($value)-1){
+              $html .= "<br/> ";
+            }
+          }
+        } else {
+          $html .= $value;
+        }
+        $html .= "</div>";
+      }
     }
   }
   return $html;
@@ -278,6 +320,9 @@ function get_item_image(){
       } else {
         print(insert_jwplayer($key, $val, $data, $img));
       }
+    } else {
+      //nothing special so lets just show the thumbnail
+      echo  '<img id="drs-item-img" src="'.$img.'" />';
     }
   } else {
     //case where there is no canonical_objects set
