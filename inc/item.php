@@ -410,13 +410,14 @@ function do_related_content_query($pid, $paged){
 
   $rel_query = relevanssi_do_query($wp_query);
   if (count($rel_query) > 0){
-    echo count($rel_query);
     foreach($rel_query as $r_post){
       $post = $r_post;
       $the_post = $post;
       get_template_part( 'content', 'excerpt' );
     }
-    echo the_posts_pagination( array( 'mid_size'  => 2 ) );
+    if (count($rel_query) > 2){
+      echo the_posts_pagination( array( 'mid_size'  => 2 ) );
+    }
   } else {
     //no related content
   }
