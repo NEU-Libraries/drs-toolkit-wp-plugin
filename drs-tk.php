@@ -646,14 +646,14 @@ function drstk_item_script() {
     wp_enqueue_script('drstk_item_gallery');
 
     //this allows an ajax call from browse.js
-    $assoc_obj = array(
+    $item_obj = array(
       'ajax_url' => admin_url('admin-ajax.php'),
       'nonce'    => $item_nonce,
       'template' => $wp_query->query_vars['drstk_template_type'],
       'home_url' => drstk_home_url(),
     );
 
-    wp_localize_script( 'drstk_item_gallery', 'assoc_obj', $assoc_obj );
+    wp_localize_script( 'drstk_item_gallery', 'item_obj', $item_obj );
 }
 
 function drstk_breadcrumb_script(){

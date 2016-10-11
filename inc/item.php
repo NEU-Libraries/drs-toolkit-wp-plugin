@@ -392,30 +392,48 @@ function get_associated_files(){
 
 function get_related_content(){
   global $wp_query, $post, $item_pid;
+  $title = (get_option('drstk_appears_title') != "") ? get_option('drstk_appears_title') : "Item Appears In";
   if (get_option('drstk_appears') == 'on'){
     $pidnum = explode(":", $item_pid);
-    if (count($pidnum) > 1){
-      $pidnum = $pidnum[1];
-      $title = (get_option('drstk_appears_title') != "") ? get_option('drstk_appears_title') : "Item Appears In";
-      $query_args = array( 's' => $pidnum, 'post_type'=>array('post', 'page'), 'posts_per_page'=>3, 'post_status'=>'publish');
-
-      $wp_query = new WP_Query( $query_args );
-
-      $rel_query = relevanssi_do_query($wp_query);
-      if (count($rel_query) > 0){
-        echo '<div class="panel panel-default related_content"><div class="panel-heading">'.$title.'</div><div class="panel-body">';
-        foreach($rel_query as $r_post){
-          $post = $r_post;
-          $the_post = $post;
-          get_template_part( 'content', 'excerpt' );
-        }
-        echo "</div></div>";
-      } else {
-        //no related content
-      }
-      wp_reset_postdata();
+    if (count($pidnum) > 0){
+      $pidnum = $pidnum[0];
+      echo '<div class="panel panel-default related_content"><div class="panel-heading">'.$title.'</div><div class="panel-body">';
+      do_related_content_query($pidnum, 1);
+      echo "</div></div>";
     }
   }
+}
+
+function do_related_content_query($pid, $paged){
+  global $wp_query, $post;
+  $query_args = array( 's' => $pid, 'post_type'=>array('post', 'page'), 'posts_per_page'=>2, 'paged'=>$paged, 'post_status'=>'publish');
+  $wp_query = new WP_Query( $query_args );
+
+  $rel_query = relevanssi_do_query($wp_query);
+  if (count($rel_query) > 0){
+    foreach($rel_query as $r_post){
+      $post = $r_post;
+      $the_post = $post;
+      get_template_part( 'content', 'excerpt' );
+    }
+    echo the_posts_pagination( array( 'mid_size'  => 2 ) );
+  } else {
+    //no related content
+  }
+  wp_reset_postdata();
+}
+
+
+add_action( 'wp_ajax_get_related_content_paginated', 'related_content_paginated_handler' ); //for auth users
+add_action( 'wp_ajax_nopriv_get_related_content_paginated', 'related_content_paginated_handler' ); //for nonauth users
+function related_content_paginated_handler(){
+  global $post, $errors;
+  if (isset($_GET['pid']) && isset($_GET['page']) && $_GET['page'] != null && $_GET['pid'] != NULL){
+    $pid = $_GET['pid'];
+    $page = intval($_GET['page']);
+    do_related_content_query($pid, $page);
+  }
+  die();
 }
 
 function check_for_bad_data($data){
