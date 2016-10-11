@@ -410,6 +410,7 @@ function do_related_content_query($pid, $paged){
 
   $rel_query = relevanssi_do_query($wp_query);
   if (count($rel_query) > 0){
+    echo count($rel_query);
     foreach($rel_query as $r_post){
       $post = $r_post;
       $the_post = $post;
