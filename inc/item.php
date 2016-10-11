@@ -290,7 +290,37 @@ function get_item_image(){
   if (isset($data->thumbnails)){
     $img = $data->thumbnails[count($data->thumbnails)-2];
   }
-  if (isset($data->canonical_object)){
+  if (isset($data->page_objects)){
+   $pages = $data->page_objects;
+   if (count($pages) > 0){
+     $gallery_html = '<div class="carousel slide" id="single_carousel">';
+     $img_html = "";
+     $i = 0;
+     foreach($pages as $img=>$ordinal_value){
+       $img_html .= "<div class='item";
+       if ($i == 0){
+         $img_html .= " active";
+       }
+       $img_html .= "'><a href='' data-toggle='modal' data-target='#drs_item_modal' class='drs_page_image' data-img='".$img."' data-ordinal_value='".$ordinal_value."'><img";
+       if ($i == 0){
+         $img_html .= " src='".$img."'";
+       } else {
+         $img_html .= " data-src='".$img."'";
+       }
+       $img_html .= "/></a><div class='carousel-caption'><a href='' data-toggle='modal' data-target='drs_item_modal' class='drs_item_modal' data-img='".$img."' data-ordinal_value='".$ordinal_value."'>Page ".$ordinal_value."</a></div></div>";
+       $i++;
+     }
+     $gallery_html .= '<div class="carousel-inner">'.$img_html.'</div>';
+     $gallery_html .= '<a class="left carousel-control" href="#single_carousel" role="button" data-slide="prev"><i class="glyphicon-chevron-left fa fa-chevron-left" aria-hidden="true"></i><span class="sr-only">Previous</span></a><a class="right carousel-control" href="#single_carousel" role="button" data-slide="next"><i class="glyphicon-chevron-right fa fa-chevron-right" aria-hidden="true"></i><span class="sr-only">Next</span></a>';
+     $gallery_html .= '</div>';
+     $gallery_html .= '<div class="modal fade" id="drs_item_modal"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Page Images</h4></div><div class="modal-body"><nav class="pagination"><ul class="pagination"><li><a href="#" class="drs_page_image prev"><span class="fa fa-chevron-left"></span></a></li>';
+     foreach($pages as $img=>$ordinal_value){
+       $gallery_html .= "<li><a href='#' class='drs_page_image' data-img='".$img."' data-ordinal_value='".$ordinal_value."'>".$ordinal_value."</a></li>";
+     }
+     $gallery_html .= '<li><a href="#" class="drs_page_image next"><span class="fa fa-chevron-right"></span></a></li></ul></nav><div class="body"></div></div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div><!-- /.modal-content --></div><!-- /.modal-dialog --></div><!-- /.modal -->';
+     echo $gallery_html;
+   }
+ } else if (isset($data->canonical_object)){
     $val = current($data->canonical_object);
     $key = key($data->canonical_object);
     if ($val == 'Master Image'){
@@ -327,37 +357,6 @@ function get_item_image(){
   } else {
     //case where there is no canonical_objects set
     echo  '<img id="drs-item-img" src="'.$img.'" />';
-  }
-  if (isset($data->page_objects)){
-    $pages = $data->page_objects;
-    if (count($pages) > 0){
-      $gallery_html = '<div class="carousel slide" id="single_carousel">';
-      $img_html = "";
-      $i = 0;
-      foreach($pages as $img=>$ordinal_value){
-        $img_html .= "<div class='item";
-        if ($i == 0){
-          $img_html .= " active";
-        }
-        $img_html .= "'><a href='' data-toggle='modal' data-target='#drs_item_modal' class='drs_page_image' data-img='".$img."' data-ordinal_value='".$ordinal_value."'><img";
-        if ($i == 0){
-          $img_html .= " src='".$img."'";
-        } else {
-          $img_html .= " data-src='".$img."'";
-        }
-        $img_html .= "/></a><div class='carousel-caption'><a href='' data-toggle='modal' data-target='drs_item_modal' class='drs_item_modal' data-img='".$img."' data-ordinal_value='".$ordinal_value."'>Page ".$ordinal_value."</a></div></div>";
-        $i++;
-      }
-      $gallery_html .= '<div class="carousel-inner">'.$img_html.'</div>';
-      $gallery_html .= '<a class="left carousel-control" href="#single_carousel" role="button" data-slide="prev"><i class="glyphicon-chevron-left fa fa-chevron-left" aria-hidden="true"></i><span class="sr-only">Previous</span></a><a class="right carousel-control" href="#single_carousel" role="button" data-slide="next"><i class="glyphicon-chevron-right fa fa-chevron-right" aria-hidden="true"></i><span class="sr-only">Next</span></a>';
-      $gallery_html .= '</div>';
-      $gallery_html .= '<div class="modal fade" id="drs_item_modal"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Page Images</h4></div><div class="modal-body"><nav class="pagination"><ul class="pagination"><li><a href="#" class="drs_page_image prev"><span class="fa fa-chevron-left"></span></a></li>';
-      foreach($pages as $img=>$ordinal_value){
-        $gallery_html .= "<li><a href='#' class='drs_page_image' data-img='".$img."' data-ordinal_value='".$ordinal_value."'>".$ordinal_value."</a></li>";
-      }
-      $gallery_html .= '<li><a href="#" class="drs_page_image next"><span class="fa fa-chevron-right"></span></a></li></ul></nav><div class="body"></div></div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div><!-- /.modal-content --></div><!-- /.modal-dialog --></div><!-- /.modal -->';
-      echo $gallery_html;
-    }
   }
 }
 
