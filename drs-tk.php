@@ -18,6 +18,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/tiles_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/slider_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/map_shortcode.php');
 require_once( plugin_dir_path( __FILE__ ) . 'inc/timeline_shortcode.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'inc/metabox.php' );
 
 
 
@@ -803,4 +804,18 @@ function drstk_add_hypothesis($param) {
   elseif ($template_type == 'item' && $annotations == "on"):
     wp_enqueue_script( 'hypothesis', '//hypothes.is/embed.js', '', false, true );
 	endif;
+}
+
+add_action('init', 'create_post_type');
+function create_post_type() {
+  register_post_type( 'drstk_item_extension',
+    array(
+      'labels' => array(
+        'name' => __( 'Item Extensions' ),
+        'singular_name' => __( 'Item Extension' )
+      ),
+      'public' => true,
+      'has_archive' => true,
+    )
+  );
 }

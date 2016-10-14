@@ -659,3 +659,27 @@ function associated_ajax_handler() {
   wp_send_json(json_encode($data));
   wp_die();
 }
+
+function get_item_extension(){
+  global $post, $item_pid;
+  $args = array(
+    'post_type' => 'drstk_item_extension',
+    'posts_per_page' => 1,
+    'post_status' => 'publish',
+    'meta_query' => array(
+      array(
+    		'key'     => 'item-id',
+    		'value'   => $item_pid,
+    		'compare' => '='
+    	)
+    )
+  );
+  $meta_query = new WP_Query( $args );
+  if ($meta_query->have_posts()){
+    while ($meta_query->have_posts()){
+      $meta_query->the_post();
+      the_content();
+    }
+    wp_reset_postdata();
+  }
+}
