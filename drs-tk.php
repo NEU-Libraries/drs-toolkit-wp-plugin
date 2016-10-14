@@ -166,6 +166,8 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_assoc_file_metadata' );
   add_settings_field('drstk_annotations', 'Display Annotations', 'drstk_annotations_callback', 'drstk_options', 'drstk_single_settings');
   register_setting( 'drstk_options', 'drstk_annotations' );
+  add_settings_field('drstk_item_extensions', 'Enable Item Extensions', 'drstk_item_extensions_callback', 'drstk_options', 'drstk_single_settings');
+  register_setting( 'drstk_options', 'drstk_item_extensions' );
 }
 add_action( 'admin_init', 'register_drs_settings' );
 add_action( 'admin_init', 'add_tinymce_plugin');
@@ -463,6 +465,12 @@ function drstk_annotations_callback(){
   echo '<input type="checkbox" name="drstk_annotations" ';
   if (get_option('drstk_annotations') == 'on'){ echo 'checked="checked"';}
   echo '/>Display</label>';
+}
+
+function drstk_item_extensions_callback(){
+  echo '<input type="checkbox" name="drstk_item_extensions" ';
+  if (get_option('drstk_item_extensions') == 'on'){ echo 'checked="checked"';}
+  echo '/>Enable</label>';
 }
 
 
@@ -808,14 +816,16 @@ function drstk_add_hypothesis($param) {
 
 add_action('init', 'create_post_type');
 function create_post_type() {
-  register_post_type( 'drstk_item_extension',
-    array(
-      'labels' => array(
-        'name' => __( 'Item Extensions' ),
-        'singular_name' => __( 'Item Extension' )
-      ),
-      'public' => true,
-      'has_archive' => true,
-    )
-  );
+  if (get_option('drstk_item_extensions') == "on"){
+    register_post_type( 'drstk_item_extension',
+      array(
+        'labels' => array(
+          'name' => __( 'Item Extensions' ),
+          'singular_name' => __( 'Item Extension' )
+        ),
+        'public' => true,
+        'has_archive' => true,
+      )
+    );
+  }
 }
