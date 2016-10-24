@@ -678,7 +678,16 @@ function get_item_extension(){
   if ($meta_query->have_posts()){
     while ($meta_query->have_posts()){
       $meta_query->the_post();
-      the_content();
+      $post_id = $post->ID;
+      $content = get_the_content();
+      drstk_item_shortcode_scripts();
+      drstk_map_shortcode_scripts();
+      drstk_gallery_shortcode_scripts();
+      drstk_tile_shortcode_scripts();
+      drstk_timeline_shortcode_scripts();
+      $content = siteorigin_panels_render($post_id);
+      $content = do_shortcode($content);
+      echo $content;
     }
     wp_reset_postdata();
   }

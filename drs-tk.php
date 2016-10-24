@@ -166,7 +166,7 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_assoc_file_metadata' );
   add_settings_field('drstk_annotations', 'Display Annotations', 'drstk_annotations_callback', 'drstk_options', 'drstk_single_settings');
   register_setting( 'drstk_options', 'drstk_annotations' );
-  add_settings_field('drstk_item_extensions', 'Enable Item Extensions', 'drstk_item_extensions_callback', 'drstk_options', 'drstk_single_settings');
+  add_settings_field('drstk_item_extensions', 'Enable Item Page Custom Text', 'drstk_item_extensions_callback', 'drstk_options', 'drstk_single_settings');
   register_setting( 'drstk_options', 'drstk_item_extensions' );
 }
 add_action( 'admin_init', 'register_drs_settings' );
@@ -820,8 +820,8 @@ function create_post_type() {
     register_post_type( 'drstk_item_extension',
       array(
         'labels' => array(
-          'name' => __( 'Item Extensions' ),
-          'singular_name' => __( 'Item Extension' )
+          'name' => __( 'Item Pages Custom Text' ),
+          'singular_name' => __( 'Item Page Custom Text' )
         ),
         'public' => true,
         'has_archive' => true,
