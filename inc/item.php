@@ -685,7 +685,10 @@ function get_item_extension(){
       drstk_gallery_shortcode_scripts();
       drstk_tile_shortcode_scripts();
       drstk_timeline_shortcode_scripts();
-      $content = siteorigin_panels_render($post_id);
+      $panels_data = get_post_meta( $post->ID, 'panels_data', true );
+	     if ( !empty( $panels_data ) ) {
+         $content = siteorigin_panels_render($post_id);
+       }
       $content = do_shortcode($content);
       echo $content;
     }
