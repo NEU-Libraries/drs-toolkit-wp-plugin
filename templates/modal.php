@@ -89,6 +89,14 @@
 			<div class="drs-chosen"></div>
 			<br/>
 			<button class="drs-facets-button">Show Filtering Options</button>
+			
+			<!-- Code to add Select all checkbox only for map and timeline -->
+			<# if(data.title == "Map" || data.title == "Timeline"){ #>
+            <label id="select-all-label" style="display:none">
+                <input id="drs-select-all-item" type="checkbox"> Select All </input>
+            </label>
+            <# } #>
+			
 			<div class="drs-items">Loading...</div>
 			<div class="drs-facets hidden">
 				<b class="drs-facet-title">Filters <a href='' class="drs-close-facets"><span class="dashicons dashicons-no"> </span></a></b>
