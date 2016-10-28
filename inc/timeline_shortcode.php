@@ -5,9 +5,12 @@ function drstk_timeline( $atts ){
   global $errors;
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
 
+    /* Commented as part of Development.
   if($cache) {
       return $cache;
   }
+    */
+
   $neu_ids = array_map('trim', explode(',', $atts['id']));
   $timeline_increments = $atts['increments'];
   $color_codes = array("red", "green", "blue", "yellow", "orange");
@@ -40,6 +43,34 @@ function drstk_timeline( $atts ){
   $event_list = array();
   $timeline_html = "";
   $counter = 1;
+
+    /*
+    If collection_id attribute is set, then load the DRS items directly using the search API.
+  */
+
+    $collectionItemsId = array();
+
+    if(isset($atts['collection_id'])){
+
+        $data1 = get_response("https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=20");
+        $data1 = json_decode($data1);
+        $num_pages = $data1->pagination->table->num_pages;
+        $counter = 1;
+        while($counter <= $num_pages){
+            $url_local = "https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=20&page=".$counter."";
+            $data2 = get_response($url_local);
+            $data2 = json_decode($data2);
+            $docs2 = $data2->response->response->docs;
+            $counter = $counter + 1;
+
+            foreach($docs2 as $docItem){
+                $collectionItemsId [] = $docItem->id;
+            }
+        }
+        $neu_ids = $collectionItemsId;
+    }
+
+
   foreach($neu_ids as $current_key => $neu_id){
 
     $repo = drstk_get_repo_from_pid($neu_id);
