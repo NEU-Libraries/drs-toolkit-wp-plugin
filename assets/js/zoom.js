@@ -11,6 +11,14 @@ jQuery(document).ready(function($) {
     if ($(this).data('align')){
       $(this).parent('a').css("text-align", $(this).data('align'));
     }
+    if ($(this).data('float')){
+      $(this).parents('.drs-item').css("float",$(this).data('float'));
+      if ($(this).data('float') == 'left'){
+        $(this).parents('.drs-item').css("padding", "30px 30px 30px 0");
+      } else if ($(this).data('float') == 'right'){
+        $(this).parents('.drs-item').css("padding", "30px 0 30px 30px");
+      }
+    }
     if ($(this).data('zoom') == 'on'){
       if($(this).attr('data-zoom-position') == 'inner'){
         $(this).elevateZoom({
