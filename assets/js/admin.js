@@ -307,9 +307,11 @@ drstk.backbone_modal.Application = Backbone.View.extend(
             if(jQuery("#drs-select-all-item").prop("checked")){
                 jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("checked", true);
                 jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("disabled", true);
+                jQuery(".tile").trigger("change"); //This will call the selectItem function for all the selected items.
             }else{
                 jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("checked", false);
                 jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("disabled", false);
+                this.shortcode.items.models.length = 0; //When the "Select All" checkbox is enabled, all the shortcodes should become null.
             }
         },
 
@@ -950,6 +952,13 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				success:function(data) {
 					data = jQuery.parseJSON(data);
 					key_date[key_date] = Object.keys(data.key_date)[0];
+
+					//This ensures that when the drs items loads again, items are still checked and disabled.
+					if(jQuery("#drs-select-all-item").prop("checked")){
+                            jQuery("#sortable-"+self.tabs[self.current_tab]+"-list").find("li input").prop("checked", true);
+                            jQuery("#sortable-"+self.tabs[self.current_tab]+"-list").find("li input").prop("disabled", true);
+                        }
+
 					if ((data && data.geographic && data.geographic.length && mapsBool) || data && data.coordinates && data.coordinates.length && mapsBool)  {
 						this_item = new drstk.Item;
 						thumb = "https://repository.library.northeastern.edu"+item.thumbnail_list_tesim[0];
