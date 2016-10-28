@@ -5,9 +5,11 @@ function drstk_map( $atts ){
   global $errors;
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
 
+    /* Commented for development purpose.
   if($cache) {
     return $cache;
   }
+    */
   $items = array_map('trim', explode(',', $atts['id']));
   $map_api_key = drstk_get_map_api_key();
   $map_project_key = drstk_get_map_project_key();
@@ -51,7 +53,33 @@ function drstk_map( $atts ){
     $shortcode .= " data-orange_legend_desc='".$atts['orange_legend_desc']."'";
   }
 
-  foreach($items as $item){
+  /*
+    If collection_id attribute is set, then load the DRS items directly using the search API.
+  */
+    $collectionItemsId = array();
+
+    if(isset($atts['collection_id'])){
+
+        $data1 = get_response("https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=20");
+        $data1 = json_decode($data1);
+        $num_pages = $data1->pagination->table->num_pages;
+        $counter = 1;
+        while($counter <= $num_pages){
+            $url_local = "https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=20&page=".$counter."";
+            $data2 = get_response($url_local);
+            $data2 = json_decode($data2);
+            $docs2 = $data2->response->response->docs;
+            $counter = $counter + 1;
+
+            foreach($docs2 as $docItem){
+                $collectionItemsId [] = $docItem->id;
+            }
+        }
+        $items = $collectionItemsId;
+    }
+
+
+    foreach($items as $item){
     $repo = drstk_get_repo_from_pid($item);
     if ($repo != "drs"){$pid = explode(":",$item); $pid = $pid[1];} else {$pid = $item;}
     if ($repo == "drs"){

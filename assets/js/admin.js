@@ -307,9 +307,11 @@ drstk.backbone_modal.Application = Backbone.View.extend(
             if(jQuery("#drs-select-all-item").prop("checked")){
                 jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("checked", true);
                 jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("disabled", true);
+                jQuery(".tile").trigger("change"); //This will call the selectItem function for all the selected items.
             }else{
                 jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("checked", false);
                 jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("disabled", false);
+                this.shortcode.items.models.length = 0; //When the "Select All" checkbox is enabled, all the shortcodes should become null.
             }
         },
 
@@ -323,6 +325,12 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				if (end_date != undefined) {end_date = end_date.attributes.value[0];}
 				if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || (this.current_tab == 6 && start_date == undefined && end_date == undefined && this.validTime() == true) || (this.current_tab == 5 && this.validMap() == true) || (this.current_tab == 1 && this.shortcode.items.length == 1) || (this.current_tab != 6 && this.current_tab != 1 && this.current_tab != 5)){
 					shortcode = '<p>[drstk_'+this.tabs[this.current_tab];
+
+					// If check box is checked then add collection_Id attribute to the shortcode
+					if(jQuery("#drs-select-all-item").prop("checked")){
+						shortcode += ' collection_id="neu:cj82kp79t"';
+					}
+
 					ids = []
 					jQuery.each(items.models, function(i, item){
 						if (item.attributes.repo == 'dpla'){
@@ -732,6 +740,13 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				this.getSelecteditems();
 				tab_name = this.tabs[this.current_tab]
 				var self = this;
+				
+				//Display items as disabled after switching tab between DRSItems and Selected items if the select-all 
+				//checkbox is enables
+				if(jQuery("#drs-select-all-item").prop("checked")) {
+                    jQuery("#selected #sortable-"+tab_name+"-list").find("li input").prop("disabled", true);
+ 
+                }
 				jQuery("#selected #sortable-"+tab_name+"-list").sortable({
 					update: function(event, ui){
 						_.each(_.clone(self.shortcode.items.models), function(model) {
@@ -950,6 +965,13 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				success:function(data) {
 					data = jQuery.parseJSON(data);
 					key_date[key_date] = Object.keys(data.key_date)[0];
+
+					//This ensures that when the drs items loads again, items are still checked and disabled.
+					if(jQuery("#drs-select-all-item").prop("checked")){
+                            jQuery("#sortable-"+self.tabs[self.current_tab]+"-list").find("li input").prop("checked", true);
+                            jQuery("#sortable-"+self.tabs[self.current_tab]+"-list").find("li input").prop("disabled", true);
+                        }
+
 					if ((data && data.geographic && data.geographic.length && mapsBool) || data && data.coordinates && data.coordinates.length && mapsBool)  {
 						this_item = new drstk.Item;
 						thumb = "https://repository.library.northeastern.edu"+item.thumbnail_list_tesim[0];
