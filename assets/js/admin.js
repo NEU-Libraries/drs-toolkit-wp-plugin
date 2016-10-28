@@ -106,6 +106,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 	{
 		id: "backbone_modal_dialog",
 		events: {
+			"change #drs-select-all-item": "selectAllItem",
 			"click .backbone_modal-close": "closeModal",
 			"click #btn-cancel": "closeModal",
 			"click #btn-ok": "insertShortcode",
@@ -174,7 +175,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			"use strict";
 			this.options = options;
 
-			_.bindAll( this, 'render', 'preserveFocus', 'closeModal', 'insertShortcode', 'navigate', 'showTab', 'getDRSitems', 'selectItem', 'paginate', 'navigateShortcode', 'search', 'setDefaultSettings', 'appendSingleItem' );
+			_.bindAll( this, 'render', 'preserveFocus', 'closeModal', 'insertShortcode', 'navigate', 'showTab', 'getDRSitems', 'selectItem', 'paginate', 'navigateShortcode', 'search', 'setDefaultSettings', 'appendSingleItem' , 'selectAllItem' );
 			this.initialize_templates();
 			this.render();
 			this.shortcode = new drstk.Shortcode({});
@@ -295,6 +296,22 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			}
 			drstk.backbone_modal.__instance = undefined;
 		},
+		
+		/* select all items when 'Select All' checkbox is enabled */
+
+            selectAllItem: function ( e ) {
+            "use strict";
+ 
+            e.preventDefault
+ 
+            if(jQuery("#drs-select-all-item").prop("checked")){
+                jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("checked", true);
+                jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("disabled", true);
+            }else{
+                jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("checked", false);
+                jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("disabled", false);
+            }
+        },
 
 		/* inserts shortcode and closes modal */
 		insertShortcode: function ( e ) {
@@ -962,6 +979,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					console.log(errorThrown);
 				},
 				complete: function(jqXHR, textStatus){
+					
+					jQuery("#select-all-label").show(); //Enabline the Select All checkbox after the API call completes
 					if (mapsBool){media_count = self.geo_count}
 					if (timelineBool){media_count = self.time_count}
 					if ((media_count >= (collection_data.pagination.table.current_page * 20)) && (last === true)){
