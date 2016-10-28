@@ -325,6 +325,12 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				if (end_date != undefined) {end_date = end_date.attributes.value[0];}
 				if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || (this.current_tab == 6 && start_date == undefined && end_date == undefined && this.validTime() == true) || (this.current_tab == 5 && this.validMap() == true) || (this.current_tab == 1 && this.shortcode.items.length == 1) || (this.current_tab != 6 && this.current_tab != 1 && this.current_tab != 5)){
 					shortcode = '<p>[drstk_'+this.tabs[this.current_tab];
+
+					// If check box is checked then add collection_Id attribute to the shortcode
+					if(jQuery("#drs-select-all-item").prop("checked")){
+						shortcode += ' collection_id="neu:cj82kp79t"';
+					}
+
 					ids = []
 					jQuery.each(items.models, function(i, item){
 						if (item.attributes.repo == 'dpla'){
