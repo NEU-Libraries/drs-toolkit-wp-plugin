@@ -734,6 +734,13 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				this.getSelecteditems();
 				tab_name = this.tabs[this.current_tab]
 				var self = this;
+				
+				//Display items as disabled after switching tab between DRSItems and Selected items if the select-all 
+				//checkbox is enables
+				if(jQuery("#drs-select-all-item").prop("checked")) {
+                    jQuery("#selected #sortable-"+tab_name+"-list").find("li input").prop("disabled", true);
+ 
+                }
 				jQuery("#selected #sortable-"+tab_name+"-list").sortable({
 					update: function(event, ui){
 						_.each(_.clone(self.shortcode.items.models), function(model) {
