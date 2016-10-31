@@ -825,11 +825,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 							 last = true;
 						 } else {last = false;}
              if (item.active_fedora_model_ssi == 'CoreFile'){
-               if (self.current_tab == 5){ //Maps
-                 self.get_item_geographic_or_date_handler(item, true, false, data, last);
-               } else if (self.current_tab == 6){ //Timeline
-                 self.get_item_geographic_or_date_handler(item, false, true, data, last);
-               } else { //Everything else
+               if ((self.current_tab == 5 && ((item.subject_geographic_tesim && item.subject_geographic_tesim.length) || (item.subject_cartographics_coordinates_tesim && data.subject_cartographics_coordinates_tesim.length)) ) || (self.current_tab == 6 && item.key_date_ssi) || (self.current_tab != 5 && self.current_tab != 6)){
 								this_item = new drstk.Item;
 								thumb = "https://repository.library.northeastern.edu"+item.thumbnail_list_tesim[0];
 								this_item.set("pid", item.id).set("thumbnail", thumb).set("repo", "drs").set("title", item.full_title_ssi);
@@ -844,6 +840,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 									if (!short_item.get("thumbnail")){
 										short_item.set("thumbnail", thumb);
 									}
+								}
+								if (self.current_tab == 6){
+									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: "+data.key_date_ssi+"</p>");
 								}
               }
 							jQuery(".drs-items").html("");
@@ -923,64 +922,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
            jQuery(".drs-items").html("<div class='notice notice-warning'><p>No results were retrieved for your query. Please try a different query.</p></div>");
          }
        });
-		},
-
-		get_item_geographic_or_date_handler: function(item, mapsBool, timelineBool, collection_data, last) {
-			var tab_name = this.tabs[this.current_tab]
-			var key_date = {};
-			var self = this;
-			//AJAX call will be passed to internal WP AJAX
-			jQuery.ajax({
-				type: "POST",
-				url: item_admin_obj.ajax_url,
-				data: {
-					'action':'get_item_admin',
-					'pid' : item.id,
-					'_ajax_nonce': item_admin_obj.item_admin_nonce,
-				},
-				success:function(data) {
-					data = jQuery.parseJSON(data);
-					key_date[key_date] = Object.keys(data.key_date)[0];
-					if ((data && data.geographic && data.geographic.length && mapsBool) || data && data.coordinates && data.coordinates.length && mapsBool)  {
-						this_item = new drstk.Item;
-						thumb = "https://repository.library.northeastern.edu"+item.thumbnail_list_tesim[0];
-						this_item.set("pid", item.id).set("thumbnail", thumb).set("repo", "drs").set("title", item.full_title_ssi);
-						view = new drstk.ItemView({model:this_item});
-						jQuery("#drs #sortable-"+tab_name+"-list").append(view.el);
-						if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
-							jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
-						}
-						self.geo_count = self.geo_count + 1;
-					} else if (data && data.key_date && timelineBool){
-						this_item = new drstk.Item;
-						thumb = "https://repository.library.northeastern.edu"+item.thumbnail_list_tesim[0];
-						this_item.set("pid", item.id).set("thumbnail", thumb).set("repo", "drs").set("title", item.full_title_ssi);
-						view = new drstk.ItemView({model:this_item});
-						jQuery("#drs #sortable-"+tab_name+"-list").append(view.el);
-						if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
-							jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
-						}
-						jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: "+key_date[key_date]+"</p>");
-						self.time_count = self.time_count + 1;
-					}  else {
-						console.log("no timeline or geo data found");
-					}
-				},
-				error: function(errorThrown){
-					console.log(errorThrown);
-				},
-				complete: function(jqXHR, textStatus){
-					if (mapsBool){media_count = self.geo_count}
-					if (timelineBool){media_count = self.time_count}
-					if ((media_count >= (collection_data.pagination.table.current_page * 20)) && (last === true)){
-						if (mapsBool){ self.geo_count = self.geo_count +1}
-						if (timelineBool){self.time_count = self.time_count+1}
-					}
-					if (last === true){
-						self.updateDRSPagination(collection_data);
-					}
-				}
-			});
 		},
 
 		selectItem: function( e ){
@@ -1099,12 +1040,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		},
 
 		updateDRSPagination: function (data){
-			media_count = 0;
-			if (this.current_tab == 5){media_count = this.geo_count}
-			if (this.current_tab == 6){media_count = this.time_count}
-			if ( media_count > 0){
-	      data.pagination.table.num_pages = Math.ceil(media_count / 20);
-	    }
 			if (data.pagination.table.num_pages > 1){
 	       var pagination = "";
 	       if (data.pagination.table.current_page > 1){
