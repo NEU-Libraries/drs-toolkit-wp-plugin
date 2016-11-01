@@ -116,6 +116,8 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_search_metadata' );
   add_settings_field('drstk_search_related_content_title', 'Related Content Title', 'drstk_search_related_content_title_callback', 'drstk_options', 'drstk_search_settings');
   register_setting( 'drstk_options', 'drstk_search_related_content_title' );
+  add_settings_field('drstk_default_search_per_page', 'Default Per Page', 'drstk_default_search_per_page_callback', 'drstk_options', 'drstk_search_settings');
+  register_setting( 'drstk_options', 'drstk_default_search_per_page' );
 
   add_settings_section('drstk_browse_settings', 'Browse Settings', null, 'drstk_options');
   add_settings_field('drstk_browse_page_title', 'Browse Page Title', 'drstk_browse_page_title_callback', 'drstk_options', 'drstk_browse_settings');
@@ -124,6 +126,8 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_browse_metadata' );
   add_settings_field('drstk_default_sort', 'Default Sort', 'drstk_default_sort_callback', 'drstk_options', 'drstk_browse_settings');
   register_setting( 'drstk_options', 'drstk_default_sort' );
+  add_settings_field('drstk_default_browse_per_page', 'Default Per Page', 'drstk_default_browse_per_page_callback', 'drstk_options', 'drstk_browse_settings');
+  register_setting( 'drstk_options', 'drstk_default_browse_per_page' );
 
   add_settings_section('drstk_facet_settings', 'Facets', null, 'drstk_options');
   add_settings_field('drstk_facets', 'Facets to Display<br/><small>Select which facets you would like to display on the search and browse pages. Once selected, you may enter custom names for these facets. Drag and drop the order of the facets to change the order of display.</small>', 'drstk_facets_callback', 'drstk_options', 'drstk_facet_settings');
@@ -328,6 +332,30 @@ function drstk_default_sort_callback(){
   foreach($sort_options as $val=>$option){
     echo '<option value="'.$val.'"';
     if ($default_sort == $val){ echo 'selected="true"';}
+    echo '/> '.$option.'</option>';
+  }
+  echo '</select><br/>';
+}
+
+function drstk_default_browse_per_page_callback(){
+  $per_page_options = array("10"=>"10","20"=>"20", "50"=>"50");
+  $default_per_page = get_option('drstk_default_browse_per_page');
+  echo '<select name="drstk_default_browse_per_page">';
+  foreach($per_page_options as $val=>$option){
+    echo '<option value="'.$val.'"';
+    if ($default_per_page == $val){ echo 'selected="true"';}
+    echo '/> '.$option.'</option>';
+  }
+  echo '</select><br/>';
+}
+
+function drstk_default_search_per_page_callback(){
+  $per_page_options = array("10"=>"10","20"=>"20", "50"=>"50");
+  $default_per_page = get_option('drstk_default_search_per_page');
+  echo '<select name="drstk_default_search_per_page">';
+  foreach($per_page_options as $val=>$option){
+    echo '<option value="'.$val.'"';
+    if ($default_per_page == $val){ echo 'selected="true"';}
     echo '/> '.$option.'</option>';
   }
   echo '</select><br/>';
@@ -594,6 +622,8 @@ function drstk_browse_script() {
     $search_options = get_option('drstk_search_metadata');
     $browse_options = get_option('drstk_browse_metadata');
     $default_sort = get_option('drstk_default_sort');
+    $default_browse_per_page = get_option('drstk_default_browse_per_page');
+    $default_search_per_page = get_option('drstk_default_search_per_page');
     $default_facet_sort = get_option('drstk_facet_sort_order');
     $related_content_title = get_option('drstk_search_related_content_title');
     //this creates a unique nonce to pass back and forth from js/php to protect
@@ -623,7 +653,9 @@ function drstk_browse_script() {
       'errors' => json_encode($errors),
       'facets_to_display' => $facets_to_display,
       'default_sort' => $default_sort,
-      'default_facet_sort' => $default_facet_sort
+      'default_facet_sort' => $default_facet_sort,
+      'default_browse_per_page' => $default_browse_per_page,
+      'default_search_per_page' => $default_search_per_page,
     );
     if (get_option('drstk_niec') == 'on' && count($niec_facets_to_display) > 0){
       $browse_obj['niec_facets_to_display'] = $niec_facets_to_display;

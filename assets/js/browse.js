@@ -2,11 +2,10 @@ jQuery(document).ready(function($) {
   $(".breadcrumbs").children("li").remove();
   var q = '';
   q = GetURLParameter(window.location.search.substring(1), 'q');
-  var per_page = 10;
   var page = 1;
   var f = {};
   var sort = "score+desc%2C+system_create_dtsi+desc";
-  var params = {q:q, per_page:per_page, page:page, f:f, sort:sort};
+  var params = {q:q, per_page:10, page:page, f:f, sort:sort};
   var template = browse_obj.template;
   var search_options = browse_obj.search_options;
   var browse_options = browse_obj.browse_options;
@@ -27,17 +26,21 @@ jQuery(document).ready(function($) {
     params.collection = browse_obj.sub_collection_pid;
   }
   if (template == 'search'){
+    params.per_page = browse_obj.default_search_per_page;
     $("#primary").removeClass('col-md-12').addClass('col-md-9');
     $("#secondary").show();
   } else if (template == 'browse') {
     params.sort = browse_obj.default_sort;
+    params.per_page = browse_obj.default_browse_per_page;
     $("#primary").addClass('col-md-12').removeClass('col-md-9');
     $("#secondary").hide();
   } else {
+    params.per_page = browse_obj.default_browse_per_page;
     params.sort = "title_ssi%20asc";
     $("#primary").addClass('col-md-12').removeClass('col-md-9');
     $("#secondary").hide();
   }
+  per_page = params.per_page;
   get_data(params);
   get_wp_data(params.q);
 
