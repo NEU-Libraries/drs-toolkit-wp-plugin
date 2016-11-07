@@ -18,6 +18,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/tiles_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/slider_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/map_shortcode.php');
 require_once( plugin_dir_path( __FILE__ ) . 'inc/timeline_shortcode.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'inc/metabox.php' );
 
 
 
@@ -165,6 +166,8 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_assoc_file_metadata' );
   add_settings_field('drstk_annotations', 'Display Annotations', 'drstk_annotations_callback', 'drstk_options', 'drstk_single_settings');
   register_setting( 'drstk_options', 'drstk_annotations' );
+  add_settings_field('drstk_item_extensions', 'Enable Item Page Custom Text', 'drstk_item_extensions_callback', 'drstk_options', 'drstk_single_settings');
+  register_setting( 'drstk_options', 'drstk_item_extensions' );
 }
 add_action( 'admin_init', 'register_drs_settings' );
 add_action( 'admin_init', 'add_tinymce_plugin');
@@ -462,6 +465,12 @@ function drstk_annotations_callback(){
   echo '<input type="checkbox" name="drstk_annotations" ';
   if (get_option('drstk_annotations') == 'on'){ echo 'checked="checked"';}
   echo '/>Display</label>';
+}
+
+function drstk_item_extensions_callback(){
+  echo '<input type="checkbox" name="drstk_item_extensions" ';
+  if (get_option('drstk_item_extensions') == 'on'){ echo 'checked="checked"';}
+  echo '/>Enable</label>';
 }
 
 
@@ -803,4 +812,20 @@ function drstk_add_hypothesis($param) {
   elseif ($template_type == 'item' && $annotations == "on"):
     wp_enqueue_script( 'hypothesis', '//hypothes.is/embed.js', '', false, true );
 	endif;
+}
+
+add_action('init', 'create_post_type');
+function create_post_type() {
+  if (get_option('drstk_item_extensions') == "on"){
+    register_post_type( 'drstk_item_extension',
+      array(
+        'labels' => array(
+          'name' => __( 'Item Pages Custom Text' ),
+          'singular_name' => __( 'Item Page Custom Text' )
+        ),
+        'public' => true,
+        'has_archive' => true,
+      )
+    );
+  }
 }

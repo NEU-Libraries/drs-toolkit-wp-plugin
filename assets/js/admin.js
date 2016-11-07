@@ -478,6 +478,14 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					'choices':{'center':'Center','left':'Left','right':'Right'}
 				});
 				settings.add({
+					'name':'float',
+					'value': options['float'] ? [options['float']] : ['none'],
+					'label':'Image Flow',
+					'helper':'Allow the text to float around the image by floating it to one side.',
+					'tag':'select',
+					'choices':{'none':'None','left':'Left','right':'Right'}
+				});
+				settings.add({
 					'name': 'caption-align',
 					'value': options['caption-align'] ? [options['caption-align']] : ['left'],
 					'choices':{'center':"Center", 'left':"Left", 'right':"Right"},
