@@ -43,6 +43,9 @@ $view = quest_get_view();
             		<div id="drs-item-details"><?php echo get_item_details($data); ?></div>
 								<?php get_download_links(); ?>
             	</div>
+							<div class="col-sm-12 drs-item-custom">
+								<?php get_item_extension(); ?>
+							</div>
             </div><!-- #drs-content -->
 
 					</main>

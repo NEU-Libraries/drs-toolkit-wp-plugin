@@ -140,6 +140,9 @@ function drstk_item( $atts ){
       if (isset($atts['align'])){
         $html .= " data-align='".$atts['align']."'";
       }
+      if (isset($atts['float'])){
+        $html .= " data-float='".$atts['float']."'";
+      }
 
       if (isset($atts['zoom']) && $atts['zoom'] == 'on' && $master != null){
         $html .= " data-zoom-image='".$master."' data-zoom='on'";
