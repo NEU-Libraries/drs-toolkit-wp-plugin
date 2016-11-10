@@ -3,14 +3,12 @@
  */
 
 jQuery(document).ready(function($) {
-    //console.log(check_obj.data.response.facet_counts);
     var a = facets_info_data_obj.data.response.facet_counts
-    console.log(a);
 
     create_left_pane();
 
     function create_left_pane(){
-        //alert("Test Test");
+
         html = '<div id="drs-facets-1" class="one_fourth col-md-2 hidden-phone hidden-xs hidden-sm"';
         html += '></div';
         html += '>';
