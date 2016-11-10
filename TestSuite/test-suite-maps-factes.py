@@ -1,3 +1,4 @@
+__author__ = "Atif Khan"
 import unittest
 import os
 import inspect
