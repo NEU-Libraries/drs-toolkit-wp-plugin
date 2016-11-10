@@ -2,7 +2,7 @@
 /* adds shortcode */
 add_shortcode( 'drstk_map', 'drstk_map' );
 function drstk_map( $atts ){
-  global $errors;
+  global $errors, $DRS_PLUGIN_URL;
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
 
     /* Commented for development purpose.
@@ -58,10 +58,13 @@ function drstk_map( $atts ){
   */
     $collectionItemsId = array();
 
+    $facets_info_data = array();
+
     if(isset($atts['collection_id'])){
 
         $data1 = get_response("https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=20");
         $data1 = json_decode($data1);
+        $facets_info_data = $data1;
         $num_pages = $data1->pagination->table->num_pages;
         $counter = 1;
         while($counter <= $num_pages){
@@ -303,7 +306,21 @@ function drstk_map( $atts ){
   $cache_output = $shortcode;
   $cache_time = 1000;
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
-  return $shortcode;
+
+    wp_register_script( 'drstk_map_test', $DRS_PLUGIN_URL. '/assets/js/test.js', array( 'jquery' ));
+    wp_enqueue_script('drstk_map_test');
+
+    write_log($facets_info_data);
+
+    $facets_info_data_obj = array(
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'data'    => $facets_info_data,
+        'home_url' => drstk_home_url(),
+    );
+    wp_localize_script( 'drstk_map_test', 'facets_info_data_obj', $facets_info_data_obj );
+
+
+    return $shortcode;
 }
 
 function drstk_map_shortcode_scripts() {
