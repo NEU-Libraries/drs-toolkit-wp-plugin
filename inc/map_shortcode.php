@@ -307,10 +307,8 @@ function drstk_map( $atts ){
   $cache_time = 1000;
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
 
-    wp_register_script( 'drstk_map_test', $DRS_PLUGIN_URL. '/assets/js/test.js', array( 'jquery' ));
+    wp_register_script( 'drstk_map_test', $DRS_PLUGIN_URL. '/assets/js/mapCollection.js', array( 'jquery' ));
     wp_enqueue_script('drstk_map_test');
-
-    write_log($facets_info_data);
 
     $facets_info_data_obj = array(
         'ajax_url' => admin_url('admin-ajax.php'),
