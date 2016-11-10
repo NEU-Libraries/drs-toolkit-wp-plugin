@@ -310,8 +310,6 @@ function drstk_map( $atts ){
     wp_register_script( 'drstk_map_test', $DRS_PLUGIN_URL. '/assets/js/mapCollection.js', array( 'jquery' ));
     wp_enqueue_script('drstk_map_test');
 
-    write_log($facets_info_data);
-
     $facets_info_data_obj = array(
         'ajax_url' => admin_url('admin-ajax.php'),
         'data'    => $facets_info_data,
