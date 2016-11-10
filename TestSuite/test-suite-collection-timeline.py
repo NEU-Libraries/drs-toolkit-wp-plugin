@@ -27,7 +27,7 @@ from selenium.webdriver.common.by import By
 #sudo ln -s /usr/local/share/chromedriver /usr/bin/chromedriver
 
 
-#Login Credentials
+#Login Credentials to login
 username = "admin"
 password = "tiger"
 
