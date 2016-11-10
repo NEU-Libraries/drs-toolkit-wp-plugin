@@ -1,8 +1,11 @@
 <?php
 /* adds shortcode */
+
 add_shortcode( 'drstk_timeline', 'drstk_timeline' );
 function drstk_timeline( $atts ){
   global $errors;
+  global $main_data;
+
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
 
     /* Commented as part of Development.
@@ -17,6 +20,7 @@ function drstk_timeline( $atts ){
   $current_color_code_id_values = array();
   $current_color_legend_desc_values = array();
   $index_color_pair = array();
+  $facet_options = array("creator_sim","creation_year_sim","subject_sim","type_sim","drs_department_ssim", "drs_degree_ssim", "drs_course_number_ssim", "drs_course_title_ssim");
   foreach($color_codes as $color_code){
 	  $current_color_code_id_string = $color_code . "_id";
 	  $current_color_legend_desc_string = $color_code . "_desc";
@@ -54,6 +58,7 @@ function drstk_timeline( $atts ){
 
         $data1 = get_response("https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=20");
         $data1 = json_decode($data1);
+        $test = $data1;
         $num_pages = $data1->pagination->table->num_pages;
         $counter = 1;
         while($counter <= $num_pages){
@@ -69,6 +74,12 @@ function drstk_timeline( $atts ){
         }
         $neu_ids = $collectionItemsId;
     }
+    $data0 = get_response("https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=20");
+    $data0 = json_decode($data0);
+    $main_data = array(
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'data' => $data0
+    );
 
 
   foreach($neu_ids as $current_key => $neu_id){
@@ -270,6 +281,9 @@ function drstk_timeline( $atts ){
   $shortcode .= "<div id='timeline-table'><table id='timeline-table-id' style=\" float: right; width: 200px;\">". $color_desc_html_data ."</table></div>";
   $shortcode .= "<div id='timeline'>".$timeline_html."</div>";
   $shortcode .= "<div id='timeline-increments' data-increments='".$timeline_increments."'></div>";
+  $shortcode .= "<div id=\"drs-facets\" class=\"one_fourth col-md-3 hidden-phone hidden-xs hidden-sm\"></div>";
+
+
   if (isset($timeline_custom_html)){
     $shortcode .= "<div id='timeline-custom-data'>".$timeline_custom_html."</div>";
   }
@@ -280,11 +294,18 @@ function drstk_timeline( $atts ){
   $cache_output = $shortcode;
   $cache_time = 1000;
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
+  global $DRS_PLUGIN_URL;
+  wp_register_script('drstk_timelineCollection', $DRS_PLUGIN_URL . '/assets/js/timelineCollection.js');
+  wp_enqueue_script('drstk_timelineCollection');
+  wp_localize_script('drstk_timelineCollection','main_data',$main_data);
   return $shortcode;
 }
 
+
+
 function drstk_timeline_shortcode_scripts() {
 	global $post, $wp_query, $DRS_PLUGIN_URL;
+
 	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_timeline') && !isset($wp_query->query_vars['drstk_template_type']) ) {
     wp_register_script( 'drstk_timelinejs',
         $DRS_PLUGIN_URL . '/assets/js/timeline/timeline.js',
@@ -295,7 +316,12 @@ function drstk_timeline_shortcode_scripts() {
     wp_register_script( 'drstk_timelinepage',
       $DRS_PLUGIN_URL . '/assets/js/timelinepage.js',
         array( 'jquery' ));
-    wp_enqueue_script('drstk_timelinepage');
+        wp_enqueue_script('drstk_timelinepage');
+
+
+
+
 	}
+
 }
 add_action( 'wp_enqueue_scripts', 'drstk_timeline_shortcode_scripts');
