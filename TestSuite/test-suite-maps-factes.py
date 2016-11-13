@@ -149,7 +149,7 @@ class TestMapFacetFunctions(unittest.TestCase):
         try:
             driver.get(worpress_published_page)
             xpath_text = driver.find_element(By.XPATH, "//*[@id='drs_creation_year_sim']/div/div[1]/b").text
-            self.assertEquals("Creation year", xpath_text, "The Creation Year facet is present on page")
+            self.assertEquals("Creation Year", xpath_text, "The Creation Year facet is present on page")
         except Exception as e:
             print("Error Creation Year facet is not present")
             print(e)
