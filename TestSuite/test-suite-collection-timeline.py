@@ -28,7 +28,12 @@ from selenium.webdriver.common.by import By
 username = "drstest"
 password = "drstest"
 
-driver = webdriver.Chrome()
+#driver = webdriver.Chrome()
+
+display = Display(visible=0, size=(800, 800))
+display.start()
+
+driver = webdriver.Chrome('/usr/bin/chromedriver')
 
 #Wordpress wp-admin URL
 wordpress_url = "http://54.145.136.107/blog/wp-login.php"
