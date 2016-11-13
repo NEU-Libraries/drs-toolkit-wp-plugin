@@ -34,10 +34,10 @@ display = Display(visible=0, size=(800, 800))
 display.start()
 driver = webdriver.Chrome('/usr/bin/chromedriver')
 #Wordpress wp-admin URL
-wordpress_url = "http://54.145.136.107/blog/wp-login.php"
+wordpress_url = "http://54.145.113.7/blog/wp-login.php"
 
 #Wordpress published page
-worpress_published_page ="http://54.145.136.107/blog/maps-facet-test/"
+worpress_published_page ="http://54.145.113.7/blog/maps-facet-test/"
 
 #DRS Wait tile for index to populate
 drs_page_load_wait = 14
