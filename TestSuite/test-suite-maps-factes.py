@@ -1,4 +1,4 @@
-__author__ = "Atif Khan/Abhishek Kumar"
+__author__= "Atif Khan / Abhishek Kumar"
 import unittest
 import os
 import inspect
@@ -35,10 +35,10 @@ password = "tiger"
 driver = webdriver.Chrome()
 
 #Wordpress wp-admin URL
-wordpress_url = "http://54.146.242.66/blog/wp-login.php"
+wordpress_url = "http://54.145.136.107/blog/wp-login.php"
 
 #Wordpress published page
-worpress_published_page ="http://52.23.210.229/blog/test/"
+worpress_published_page ="http://54.145.136.107/blog/test-map-facets/"
 
 #DRS Wait tile for index to populate
 drs_page_load_wait = 14
@@ -69,14 +69,14 @@ def wp_add_page():
         print("Exception produced when creating new page. Error is: ")
         print(e)
 
-class TestMapFunctions(unittest.TestCase):
+class TestMapFacetFunctions(unittest.TestCase):
     def setUp(self):
         try:
             # For headless Unix Testing, will not work on Windows as XVFB is not supported
             global driver
             driver = webdriver.Chrome()
             driver.set_window_size(1280,720)
-            driver.implicitly_wait(10) 
+            driver.implicitly_wait(10)
         except Exception as e:
             print("Error produced when setting webdriver and/or XVFB display.")
             print(e)
@@ -88,28 +88,31 @@ class TestMapFunctions(unittest.TestCase):
             print("Error produced when closing driver and display.")
             print(e)
 
-    #Search for creator facet on page"
+    #Test if create facet is present on page"
     def testCreatorFacet(self):
         try:
             driver.get(worpress_published_page)
-            xpath_text = driver.find_element(By.XPATH,"//*[@id=\"drs_creator_sim\"]/div/div[1]/b").text
-            self.assertEquals("Creator",xpath_text)
+            xpath_text = driver.find_element(By.XPATH,"//*[@id='drs_creator_sim']/div/div[1]/b").text
+            self.assertEquals("Creator",xpath_text,"The creator facet is present on page")
         except Exception as e:
             print("Error Creator facet is not present")
             print(e)
-	
+
     #Test if creator "Shwachman, Irene" is present in creator list
     def	testCreatorLinkPresent(self):
+        creator_name =[]
         try:
             driver.get(worpress_published_page)
-            xpath_text = driver.find_element(By.XPATH,"//*[@id=\"drs_creator_sim\"]/div/div[2]/a[2]/div[1]").text
-            self.assertEquals("Shwachman, Irene",xpath_text)
+            creator_list = driver.find_elements_by_xpath("//*[@id='drs_creator_sim']/div/div[2]/a")
+            for creator in creator_list:
+                creator_name.append(creator.find_elements_by_tag_name("div")[0].text)
+            self.assertIn("Shwachman, Irene",creator_name,"Creator present in facet")
         except Exception as e:
             print("Error the creator name not present on page")
             print(e)
-	
-    #Test if facet selected item present on map
-    def testCreatorFilterPositive(self):
+
+   #Test if facet selected item present on map
+    ''' def testCreatorFilterPositive(self):
         try:
             driver.get(worpress_published_page)
             driver.find_element(By.XPATH,"//*[@id=\"drs_creator_sim\"]/div/div[2]/a[2]/div[1]").click()
@@ -119,7 +122,7 @@ class TestMapFunctions(unittest.TestCase):
         except Exception as e:
             print("Error the creator name not present on page")
             print(e)
-			
+
     #Test filtered item not present on map
     def testCreatorFilterNegative(self):
         try:
@@ -131,8 +134,7 @@ class TestMapFunctions(unittest.TestCase):
         except Exception as e:
             print("Error the creator name not present on page")
             print(e)
-					
-	
+
     #Test "More Creators" button is present in Creator panel
     def	testMoreCreatorButton(self):
         try:
@@ -141,30 +143,33 @@ class TestMapFunctions(unittest.TestCase):
             self.assertEquals("More Creators",xpath_text)
         except Exception as e:
             print("Error More Creator button not present in facet")
-            print(e)
+            print(e)'''
 
     #Search for Creation Year facet on page
     def testCreationYearFacet(self):
         try:
             driver.get(worpress_published_page)
-            xpath_text = driver.find_element(By.XPATH,"//*[@id=\"drs_creation_year_sim\"]/div/div[1]/b").text
-            self.assertEquals("Creation Year",xpath_text)
+            xpath_text = driver.find_element(By.XPATH, "//*[@id='drs_creation_year_sim']/div/div[1]/b").text
+            self.assertEquals("Creation year", xpath_text, "The Creation Year facet is present on page")
         except Exception as e:
-            print("Error \"Creation Year\" facet is not present")
+            print("Error Creation Year facet is not present")
             print(e)
 
     #Test if year 1958 is present in facet list
     def	testCreationYear(self):
+        creator_name = []
         try:
             driver.get(worpress_published_page)
-            xpath_text = driver.find_element(By.XPATH,"//*[@id=\"drs_creation_year_sim\"]/div/div[2]/a[1]/div[1]").text
-            self.assertEquals("1958",xpath_text)
+            creator_list = driver.find_elements_by_xpath("//*[@id='drs_creation_year_sim']/div/div[2]/a")
+            for creator in creator_list:
+                creator_name.append(creator.find_elements_by_tag_name("div")[0].text)
+            self.assertIn("1958", creator_name, "Creation Year present in facet")
         except Exception as e:
-            print("Error the expected creation year not present")
+            print("Error the Creation Year not present on page")
             print(e)
 
     #Test if facet selected item present on map
-    def testCreationYearFilterPositive(self):
+    '''def testCreationYearFilterPositive(self):
         try:
             driver.get(worpress_published_page)
             driver.find_element(By.XPATH,"//*[@id=\"drs_creator_sim\"]/div/div[2]/a[2]/div[1]").click()
@@ -249,103 +254,8 @@ class TestMapFunctions(unittest.TestCase):
             self.assertEquals("More Subjects",xpath_text)
         except Exception as e:
             print("Error \"More Subjects\" button is not present in facet")
-            print(e)
+            print(e)'''
 
-            # Search for Type facet on page
+if __name__ == '__main__':
+    unittest.main(verbosity=2)
 
-        def testTypeFacet(self):
-            try:
-                driver.get(worpress_published_page)
-                xpath_text = driver.find_element(By.XPATH, "//*[@id=\"drs_type_sim\"]/div/div[1]/b").text
-                self.assertEquals("Type", xpath_text)
-            except Exception as e:
-                print("Error \"Type\" facet is not present")
-                print(e)
-
-        # Test if type "Image" is present in facet list
-        def testType(self):
-            try:
-                driver.get(worpress_published_page)
-                xpath_text = driver.find_element(By.XPATH, "//*[@id=\"drs_type_sim\"]/div/div[2]/a[1]/div[1]").text
-                self.assertEquals("Type", xpath_text)
-            except Exception as e:
-                print("Error the \"Image\" type not present")
-                print(e)
-
-        # Test if facet selected item present on map
-        def testTypeFilterPositive(self):
-            try:
-                driver.get(worpress_published_page)
-                driver.find_element(By.XPATH, "//*[@id=\"drs_creator_sim\"]/div/div[2]/a[2]/div[1]").click()
-                time.sleep(drs_page_load_wait)
-                filtered_text = driver.find_element(By.XPATH, "pid")
-                self.assertEquals("neu:128850", filtered_text)
-            except Exception as e:
-                print("Error type not present on map")
-                print(e)
-
-        # Test filtered item not present on map
-        def testTypeFilterNegative(self):
-            try:
-                driver.get(worpress_published_page)
-                driver.find_element(By.XPATH, "//*[@id=\"drs_creator_sim\"]/div/div[2]/a[2]/div[1]").click()
-                time.sleep(drs_page_load_wait)
-                filtered_text = driver.find_element(By.XPATH, "pid")
-                self.assertEquals("neu:182729", filtered_text)
-            except Exception as e:
-                print("Error type not present on map")
-                print(e)
-
-        # Search for Courses facet on page
-        def testCoursesFacet(self):
-            try:
-                driver.get(worpress_published_page)
-                xpath_text = driver.find_element(By.XPATH, "//*[@id=\"drs_type_sim\"]/div/div[1]/b").text
-                self.assertEquals("Courses", xpath_text)
-            except Exception as e:
-                print("Error \"Courses\" facet is not present")
-                print(e)
-
-        # Test if Course is present in facet list
-        def testCourse(self):
-            try:
-                driver.get(worpress_published_page)
-                xpath_text = driver.find_element(By.XPATH, "//*[@id=\"drs_type_sim\"]/div/div[2]/a[1]/div[1]").text
-                self.assertEquals("Course", xpath_text)
-            except Exception as e:
-                print("Error the \"Course\" not present")
-                print(e)
-
-        # Test if facet selected item present on map
-        def testCourseFilterPositive(self):
-            try:
-                driver.get(worpress_published_page)
-                driver.find_element(By.XPATH, "//*[@id=\"drs_creator_sim\"]/div/div[2]/a[2]/div[1]").click()
-                time.sleep(drs_page_load_wait)
-                filtered_text = driver.find_element(By.XPATH, "pid")
-                self.assertEquals("neu:128850", filtered_text)
-            except Exception as e:
-                print("Error course not present on map")
-                print(e)
-
-        # Test filtered item not present on map
-        def testCourseFilterNegative(self):
-            try:
-                driver.get(worpress_published_page)
-                driver.find_element(By.XPATH, "//*[@id=\"drs_creator_sim\"]/div/div[2]/a[2]/div[1]").click()
-                time.sleep(drs_page_load_wait)
-                filtered_text = driver.find_element(By.XPATH, "pid")
-                self.assertEquals("neu:182729", filtered_text)
-            except Exception as e:
-                print("Error course not present on map")
-                print(e)
-
-        # Test "More Courses" button is present in facet
-        def testMoreCoursesButton(self):
-            try:
-                driver.get(worpress_published_page)
-                xpath_text = driver.find_element(By.XPATH, "//*[@id=\"drs_subject_sim\"]/div/div[2]/button").text
-                self.assertEquals("More Courses", xpath_text)
-            except Exception as e:
-                print("Error \"More Courses\" button is not present in facet")
-                print(e)
