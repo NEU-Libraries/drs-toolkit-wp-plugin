@@ -1,12 +1,10 @@
+__author__= "Atif Khan
 import unittest
 import os
 import inspect
 import time
 from pyvirtualdisplay import Display
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 
 #Packages Requirements for headless unix testing:
@@ -28,16 +26,17 @@ from selenium.webdriver.common.by import By
 
 
 #Login Credentials
-username = "admin"
-password = "tiger"
+username = "drstest"
+password = "drstest"
 
 driver = webdriver.Chrome()
 
 #Wordpress wp-admin URL
-wordpress_url = "http://52.23.210.229/blog/wp-login.php"
+wordpress_url = "http://54.145.136.107/blog/wp-login.php"
 
 #Wordpress published page
-worpress_published_page ="http://52.23.210.229/blog/test"
+worpress_published_page ="http://54.145.136.107/blog/maps-facet-test/"
+
 
 #DRS Wait tile for index to populate
 drs_page_load_wait = 14
