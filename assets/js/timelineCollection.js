@@ -1,7 +1,7 @@
 
 jQuery(document).ready(function($) {
     //console.log(check_obj.data.response.facet_counts);
-    var a = $main_data.data.response.facet_counts
+    var a = main_data.data.response.facet_counts
     console.log(a);
 
     create_left_pane();

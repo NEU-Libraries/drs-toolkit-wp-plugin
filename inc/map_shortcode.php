@@ -1,8 +1,38 @@
 <?php
+
+add_action( 'wp_ajax_reload_filtered_set', 'reload_filtered_set_ajax_handler' ); //for auth users
+add_action( 'wp_ajax_nopriv_reload_filtered_set', 'reload_filtered_set_ajax_handler' ); //for nonauth users
+function reload_filtered_set_ajax_handler()
+{
+    if ($_POST['reloadWhat'] == "mapReload") {
+        write_log("mapReload");
+    echo drstk_map($_POST['atts'], $_POST['params']);
+    }
+    else {
+        write_log("facetReload");
+        if (isset($_POST['atts']['collection_id'])) {
+            $url = "https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=10";
+            if (isset($_POST['params']['f'])) {
+                foreach ($_POST['params']['f'] as $facet => $facet_val) {
+                    $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
+                }
+            }
+            $data1 = get_response($url);
+            $data1 = json_decode($data1);
+            $facets_info_data = $data1;
+
+            //write_log($facets_info_data);
+
+            wp_send_json($facets_info_data);
+        }
+    }
+    die();
+}
+
 /* adds shortcode */
 add_shortcode( 'drstk_map', 'drstk_map' );
-function drstk_map( $atts ){
-  global $errors, $DRS_PLUGIN_URL;
+function drstk_map( $atts , $params){
+    global $errors, $DRS_PLUGIN_URL;
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
 
     /* Commented for development purpose.
@@ -62,13 +92,27 @@ function drstk_map( $atts ){
 
     if(isset($atts['collection_id'])){
 
-        $data1 = get_response("https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=20");
+        $url = "https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=10";
+
+        if (isset($params['f'])) {
+            foreach ($params['f'] as $facet => $facet_val) {
+                $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
+            }
+        }
+
+        $data1 = get_response($url);
         $data1 = json_decode($data1);
         $facets_info_data = $data1;
         $num_pages = $data1->pagination->table->num_pages;
         $counter = 1;
-        while($counter <= $num_pages){
-            $url_local = "https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=20&page=".$counter."";
+
+        $docs2 = $data1->response->response->docs;
+        foreach($docs2 as $docItem){
+            $collectionItemsId [] = $docItem->id;
+        }
+
+        /*while($counter <= $num_pages){
+            $url_local = "https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=10&page=".$counter."";
             $data2 = get_response($url_local);
             $data2 = json_decode($data2);
             $docs2 = $data2->response->response->docs;
@@ -77,10 +121,10 @@ function drstk_map( $atts ){
             foreach($docs2 as $docItem){
                 $collectionItemsId [] = $docItem->id;
             }
-        }
+        }*/
         $items = $collectionItemsId;
+        //write_log($items);
     }
-
 
     foreach($items as $item){
     $repo = drstk_get_repo_from_pid($item);
@@ -310,20 +354,34 @@ function drstk_map( $atts ){
     wp_register_script( 'drstk_map_test', $DRS_PLUGIN_URL. '/assets/js/mapCollection.js', array( 'jquery' ));
     wp_enqueue_script('drstk_map_test');
 
-    $facets_info_data_obj = array(
+    $reload_filtered_set_drs_nonce = wp_create_nonce( 'reload_filtered_set_drs' );
+
+    $map_nonce = wp_create_nonce( 'map_nonce' );
+
+    $map_obj = array(
         'ajax_url' => admin_url('admin-ajax.php'),
-        'data'    => $facets_info_data,
+        'nonce'    => $map_nonce,
         'home_url' => drstk_home_url(),
     );
-    wp_localize_script( 'drstk_map_test', 'facets_info_data_obj', $facets_info_data_obj );
 
+    $facets_info_data_obj = array(
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'nonce' => $reload_filtered_set_drs_nonce,
+        'data'    => $facets_info_data,
+        'home_url' => drstk_home_url(),
+        "atts" => $atts,
+        "map_obj" => $map_obj
+    );
+    wp_localize_script( 'drstk_map_test', 'facets_info_data_obj', $facets_info_data_obj );
 
     return $shortcode;
 }
 
 function drstk_map_shortcode_scripts() {
+
   global $post, $wp_query, $DRS_PLUGIN_URL;
-  if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_map') && !isset($wp_query->query_vars['drstk_template_type']) ) {
+
+    if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_map') && !isset($wp_query->query_vars['drstk_template_type']) ) {
     wp_register_script('drstk_leaflet',
         $DRS_PLUGIN_URL .'/assets/js/leaflet/leaflet.js',
         array( 'jquery' ));
