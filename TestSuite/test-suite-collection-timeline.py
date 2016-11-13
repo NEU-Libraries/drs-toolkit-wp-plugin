@@ -77,7 +77,7 @@ class TestTimelineFunctions(unittest.TestCase):
         try:
             # For headless Unix Testing, will not work on Windows as XVFB is not supported
             global driver
-            driver = webdriver.Chrome()
+            driver = webdriver.Chrome('/usr/bin/chromedriver')
             driver.set_window_size(1280,720)
             driver.implicitly_wait(10)
         except Exception as e:
