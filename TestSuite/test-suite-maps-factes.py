@@ -5,7 +5,7 @@ import inspect
 import time
 from pyvirtualdisplay import Display
 from selenium import webdriver
-
+from selenium.webdriver.common.by import By
 
 #Packages Requirements for headless unix testing:
 #sudo apt-get install libxss1 libappindicator1 libindicator7
