@@ -29,7 +29,11 @@ from selenium.webdriver.common.by import By
 username = "drstest"
 password = "drstest"
 
-driver = webdriver.Chrome()
+#driver = webdriver.Chrome()
+display = Display(visible=0, size=(800, 800))
+display.start()
+
+driver = webdriver.Chrome('/usr/bin/chromedriver')
 
 #Wordpress wp-admin URL
 wordpress_url = "http://54.145.136.107/blog/wp-login.php"
@@ -74,8 +78,8 @@ class TestMapFunctions(unittest.TestCase):
     def setUp(self):
         try:
             # For headless Unix Testing, will not work on Windows as XVFB is not supported
-            #global driver
-            #driver = webdriver.Chrome()
+            global driver
+            driver = webdriver.Chrome('/usr/bin/chromedriver')
             driver.set_window_size(1280,720)
             driver.implicitly_wait(10)
         except Exception as e:
