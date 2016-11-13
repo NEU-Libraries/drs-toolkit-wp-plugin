@@ -5,14 +5,17 @@ import time
 from pyvirtualdisplay import Display
 from selenium import webdriver
 
+#driver = webdriver.Chrome()
+display = Display(visible=0, size=(800, 800))
+display.start()
+driver = webdriver.Chrome('/usr/bin/chromedriver')
 
-driver = webdriver.Chrome()
-username = "drs-test"
-password = "drs-test"
-page_url = "http://54.145.113.7/blog/10nov/"
+username = "achinta"
+password = "admin"
+page_url = "http://54.145.118.52/wordpress/timeline-facet-test"
 
 # Wordpress wp-admin URL
-wordpress_url = "http://54.145.113.7/blog/wp-login.php"
+wordpress_url = "http://54.145.118.52/wordpress/wp-login.php"
 
 # DRS Wait tile for index to populate
 drs_page_load_wait = 14
@@ -50,7 +53,8 @@ class TestTimelineFunctions(unittest.TestCase):
         try:
             # For headless Unix Testing, will not work on Windows as XVFB is not supported
             global driver
-            driver = webdriver.Chrome()
+            driver = webdriver.Chrome('/usr/bin/chromedriver')
+            driver.set_window_size(1280,720)
             driver.implicitly_wait(10)
         except Exception as e:
             print("Error produced when setting webdriver and/or XVFB display.")

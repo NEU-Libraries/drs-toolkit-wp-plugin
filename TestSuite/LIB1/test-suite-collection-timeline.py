@@ -25,8 +25,8 @@ from selenium.webdriver.common.by import By
 
 
 #Login Credentials
-username = "drstest"
-password = "drstest"
+username = "achinta"
+password = "admin"
 
 #driver = webdriver.Chrome()
 
@@ -36,10 +36,10 @@ display.start()
 driver = webdriver.Chrome('/usr/bin/chromedriver')
 
 #Wordpress wp-admin URL
-wordpress_url = "http://54.145.113.7/blog/wp-login.php"
+wordpress_url = "http://54.145.118.52/wordpress/wp-login.php"
 
 #Wordpress published page
-worpress_published_page ="http://54.145.113.7/blog/maps-facet-test/"
+worpress_published_page ="http://54.145.118.52/wordpress/maps-facet-test/"
 
 #DRS Wait tile for index to populate
 drs_page_load_wait = 14
