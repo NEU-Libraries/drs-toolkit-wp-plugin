@@ -51,24 +51,25 @@ jQuery(document).ready(function($) {
 			}
 		} else {//no max-height is set
 			var height = 0;
+			var caption_height = 0;
 				carousel.find("img").each(function(){
 					if ($(this).data("src") != undefined){
 						this_height = $(this).data("height");
 					} else  {
 						this_height = $(this).prop('naturalHeight');
 					}
+					this_caption_height = $(this).parents(".item").find(".carousel-caption").outerHeight();
 					if (this_height > height) {
 						height = this_height;
-						if ($(this).parents(".carousel").find(".carousel-caption").css("position") == 'relative'){
-							var img_height = height-$(this).parents(".carousel").find(".carousel-caption").height();
-							if (img_height > 0) {$(this).parents(".carousel").find("img").css("max-height", img_height);}
-						} else {
-							if (height > 0) {$(this).parents(".carousel").find("img").css("max-height", height);}
-						}
-					} else {
-						$(this).parents(".carousel").find("img").css("max-height", this_height);
+					}
+					if (this_caption_height > caption_height){
+						caption_height = this_caption_height;
 					}
 				});
+			carousel.find("img").css("max-height", height);
+			if (carousel.find(".carousel-caption").css("position") == 'relative'){
+				carousel.find(".carousel-caption").css("min-height", caption_height);
+			}
 		}
 		if (carousel.data("max-width") > 0){
 			carousel.css("max-width", carousel.data("max-width"));
