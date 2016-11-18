@@ -62,4 +62,49 @@ jQuery(document).ready(function($) {
 			$("#drs_item_modal .modal-body .pagination li:last").removeClass("disabled");
 		}
 	}
+
+	get_associated_files();
+	function get_associated_files(){
+		$(".associated-next, .associated-prev").on("click", function(e){
+			e.preventDefault();
+			$(".assoc_files .panel-body").html("Loading...<br/><span class='fa fa-spinner fa-spin'></span>");
+			$.post(item_obj.ajax_url, {
+				 _ajax_nonce: item_obj.nonce,
+					action: "get_associated_item",
+					pid: $(this).data('pid'),
+					all_pids: $(this).data('all_pids')
+			}, function(data) {
+					var data = $.parseJSON(data);
+					$(".assoc_files .panel-body").html(data.html);
+					get_associated_files();
+			}).fail(function(data) {
+			});
+		});
+	}
+	paginate_related_content();
+	function paginate_related_content(){
+		$(".related_content .pagination a").on("click", function(e){
+			e.preventDefault();
+      var wp_page = $(this).attr('href').split("/");
+			pid = wp_page[wp_page.length -3];
+      wp_page = wp_page[wp_page.length -1];
+			console.log(pid);
+			console.log(wp_page);
+			$(".related_content .panel-body").html("Loading...<br/><span class='fa fa-spinner fa-spin'></span>");
+			$.ajax({
+  			type: 'GET',
+  			url: item_obj.ajax_url,
+  			data: {
+  				action: 'get_related_content_paginated',
+					page: wp_page,
+					pid: pid
+  			},
+				success: function(data)
+  			{
+					$(".related_content .panel-body").html(data);
+					paginate_related_content();
+				}
+			});
+		});
+	}
 });

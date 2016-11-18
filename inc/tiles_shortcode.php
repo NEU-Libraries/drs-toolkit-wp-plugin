@@ -1,6 +1,7 @@
 <?php
 /* adds shortcode */
 add_shortcode( 'drstk_tiles', 'drstk_tiles' );
+add_shortcode( 'drstk_tile', 'drstk_tiles' );
 function drstk_tiles( $atts ){
   global $errors;
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
@@ -8,22 +9,85 @@ function drstk_tiles( $atts ){
   if($cache) {
       return $cache;
   }
-  $imgs = explode(", ",$atts['id']);
+  $imgs = array_map('trim', explode(',', $atts['id']));
   $img_html = "";
+  if (isset($atts['image-size'])){
+    $num = $atts['image-size']-1;
+  } else {
+    $num = 4;
+  }
   foreach($imgs as $img){
-    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $img . "?solr_only=true";
-    $data = get_response($url);
-    $data = json_decode($data);
-    $data = $data->_source;
-    $type = $atts['type'];
-    if (!isset($data->error)){
-      $pid = $data->id;
-      if (isset($atts['image-size'])){
-        $num = $atts['image-size']-1;
-      } else {
-        $num = 4;
-      }
+    $repo = drstk_get_repo_from_pid($img);
+    if ($repo != "drs"){$pid = explode(":",$img); $pid = $pid[1];} else {$pid = $img;}
+    if ($repo == "drs"){
+      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $img . "?solr_only=true";
+      $data = get_response($url);
+      $data = json_decode($data);
+      $data = $data->_source;
       $thumbnail = "http://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
+    }
+    if ($repo == "wp"){
+      $post = get_post($pid);
+      $data = new StdClass;
+      $meta = wp_get_attachment_metadata($pid); //get sizes
+      if (isset($meta['sizes'])){
+        $thumb_base = wp_get_attachment_thumb_url($pid);
+        $thumb_base = explode("/",$thumb_base);
+        $arr = array_pop($thumb_base);
+        $thumb_base = implode("/", $thumb_base);
+        if ($num == 1){ $thumbnail = $thumb_base."/".$meta['sizes']['thumbnail']['file'];}
+        if ($num == 2){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
+        if ($num == 3){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
+        if ($num == 4){
+         if (isset($meta['sizes']['large'])){
+           $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
+         } else {
+           $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+         }
+        }
+        if ($num == 5){
+         if (isset($meta['sizes']['large'])){
+           $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
+         } else {
+           $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+         }
+        }
+      } else {
+        $thumbnail = drstk_home_url()."/wp-includes/images/media/video.png";
+      }
+      $master = $post->guid;
+      $data->full_title_ssi = $post->post_title;
+      $data->abstract_tesim = array($post->post_excerpt);
+      $pid = "wp:".$pid;
+    }
+    if ($repo == "dpla"){
+      $url = "http://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
+      $dpla = get_response($url);
+      $dpla = json_decode($dpla);
+      if (isset($dpla->docs[0]->object)){
+        $url = $dpla->docs[0]->object;
+      } else {
+        $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+      }
+      $title = $dpla->docs[0]->sourceResource->title;
+      if (isset($dpla->docs[0]->sourceResource->description)){
+        $description = $dpla->docs[0]->sourceResource->description;
+      } else {
+        $description = "";
+      }
+      $master = $url;
+      $thumbnail = $url;
+      $data = new StdClass;
+      $data->full_title_ssi = array($title);
+      $data->abstract_tesim = array($description);
+      $data->creator_tesim = is_array($dpla->docs[0]->sourceResource->creator) ? $dpla->docs[0]->sourceResource->creator : array($dpla->docs[0]->sourceResource->creator);
+
+      $data->date_ssi = array($dpla->docs[0]->sourceResource->date->displayDate);
+      $pid = "dpla:".$pid;
+    }
+    $type = isset($atts['type']) ? $atts['type'] : $atts['tile-type'];
+    if (!isset($data->error)){
+      // $pid = $data->id;
       if (isset($atts['metadata'])){
         $img_metadata = '';
         $metadata = explode(",",$atts['metadata']);
@@ -33,7 +97,11 @@ function drstk_tiles( $atts ){
             if (isset($this_field)){
               if (is_array($this_field)){
                 foreach($this_field as $val){
-                  $img_metadata .= $val ."<br/>";
+                  if (is_array($val)){
+                    $img_metadata .= implode("<br/>",$val) . "<br/>";
+                  } else {
+                    $img_metadata .= $val ."<br/>";
+                  }
                 }
               } else {
                 $img_metadata .= $this_field . "<br/>";
@@ -82,14 +150,14 @@ function drstk_tiles( $atts ){
 }
 
 function drstk_tile_shortcode_scripts() {
-	global $post;
-	if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_tiles') ) {
+	global $post, $wp_query, $DRS_PLUGIN_URL;
+	if( is_a( $post, 'WP_Post' ) && (has_shortcode( $post->post_content, 'drstk_tiles') || has_shortcode( $post->post_content, 'drstk_tile')) && !isset($wp_query->query_vars['drstk_template_type']) ) {
     wp_register_script('drstk_freewall',
-        plugins_url('../assets/js/freewall/freewall.js', __FILE__),
+        $DRS_PLUGIN_URL . "/assets/js/freewall/freewall.js",
         array( 'jquery' ));
     wp_enqueue_script('drstk_freewall');
     wp_register_script( 'drstk_tiles',
-        plugins_url( '../assets/js/tiles.js', __FILE__ ),
+        $DRS_PLUGIN_URL . '/assets/js/tiles.js',
         array( 'jquery' ));
     wp_enqueue_script('drstk_tiles');
 	}

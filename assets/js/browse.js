@@ -10,6 +10,7 @@ jQuery(document).ready(function($) {
   var template = browse_obj.template;
   var search_options = browse_obj.search_options;
   var browse_options = browse_obj.browse_options;
+  var related_content_title = browse_obj.related_content_title;
   var facets_to_display = browse_obj.facets_to_display;
   var niec_facets = 'niec_facets_to_display' in browse_obj ? browse_obj.niec_facets_to_display : null;
   if ((q) && (q != '')){
@@ -28,8 +29,12 @@ jQuery(document).ready(function($) {
   if (template == 'search'){
     $("#primary").removeClass('col-md-12').addClass('col-md-9');
     $("#secondary").show();
+  } else if (template == 'browse') {
+    params.sort = browse_obj.default_sort;
+    $("#primary").addClass('col-md-12').removeClass('col-md-9');
+    $("#secondary").hide();
   } else {
-    params.sort = "title_ssi+asc";
+    params.sort = "title_ssi%20asc";
     $("#primary").addClass('col-md-12').removeClass('col-md-9');
     $("#secondary").hide();
   }
@@ -85,6 +90,7 @@ jQuery(document).ready(function($) {
     $("#drs-item-count").html("<h6>Displaying " + data.start + " to " + data.end + " of " + data.total_count + "</h6>");
     $("#drs-per-page-div").html("<h6>Show <select id='drs-per-page'><option val='10'>10</option><option val='20'>20</option><option val='50'>50</option></select> per page</h6>");
     $("#drs-per-page").val(params.per_page);
+    $("#drs-sort-option").val(params.sort);
     if (data.num_pages > 1) {
       var pagination = "<li class='";
       if (data.current_page > 1){
@@ -138,6 +144,7 @@ jQuery(document).ready(function($) {
       facet_html = parse_facets(data, niec_facets, facet_html);
     }
     $("#drs-facets").html(facet_html);
+    $(".drs-facet-toggle").remove();
     $("#drs-facets").before("<button class='themebutton button btn visible-phone hidden-tablet hidden-desktop drs-facet-toggle hidden-md hidden-lg visible-sm visible-xs'>Show Facets</button>");
   }//end facetize
 
@@ -154,9 +161,14 @@ jQuery(document).ready(function($) {
           facet_array.push({v:index, k:val_q});
         });
         facet_array.sort(function(a,b){
-           if(a.k > b.k){ return -1}
-            if(a.k < b.k){ return 1}
-              return 0;
+          var sortBy = (browse_obj.default_facet_sort !== "" ? browse_obj.default_facet_sort : "fc_desc");
+          var sorts = sortBy.split("_");
+          var r1 = (sorts[1] === "desc" ? -1 : 1);
+          var type = (sorts[0] === "fc" ? 'k' : 'v');
+          if(a[type] > b[type]){ return r1; }
+          if(a[type] < b[type]){ return r1 *= -1; }
+          return 0;
+
         });
         $.each(facet_array, function(index, val_q) {
             var this_facet_count = val_q.k;
@@ -312,7 +324,7 @@ jQuery(document).ready(function($) {
 
   }
 
-  $("#drs-sort").html("<h6>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance</option><option value='full_title_ssi%20asc'>Title A-Z</option><option value='full_title_ssi%20desc'>Title Z-A</option><option value='creator_tesim%20asc'>Creator A-Z</option><option value='creator_tesim%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></h6>");
+  $("#drs-sort").html("<h6>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance</option><option value='title_ssi%20asc'>Title A-Z</option><option value='title_ssi%20desc'>Title Z-A</option><option value='creator_tesim%20asc'>Creator A-Z</option><option value='creator_tesim%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></h6>");
 
   $("#drs-sort-option").on("change", function() {
     params.sort = $(this).val();
@@ -326,10 +338,16 @@ jQuery(document).ready(function($) {
   });
 
   function titleize(str){
-    str = str.replace("_tesim","").replace("_sim","").replace("_ssim","");
-    str = str.replace("_", " ");
-    str = str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-    return str;
+    if (facets_to_display[str]){
+      return facets_to_display[str];
+    } else if (niec_facets[str]){
+      return niec_facets[str];
+    } else{
+      str = str.replace("_tesim","").replace("_sim","").replace("_ssim","");
+      str = str.replace("_", " ");
+      str = str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+      return str;
+    }
   }
 
   function GetURLParameter(url, sParam){
@@ -344,7 +362,6 @@ jQuery(document).ready(function($) {
   }
 
   function get_wp_data(query, page){
-    //console.log(query);
     if (template == 'search'){
       if (!page){
         page = 1;
@@ -359,12 +376,11 @@ jQuery(document).ready(function($) {
   			},
   			beforeSend: function ()
   			{
-          $("#secondary").html("Looking for related content...");
+          $("#secondary").html("Looking for "+related_content_title.toLowerCase()+"...");
   			},
   			success: function(data)
   			{
-          // console.log(data);
-          $("#secondary").html("<div class='panel panel-default'><div class='panel-heading'><b>Related Content</b></div><div class='panel-body'>"+data+"</div></div>");
+          $("#secondary").html("<div class='panel panel-default'><div class='panel-heading'><b>"+related_content_title+"</b></div><div class='panel-body'>"+data+"</div></div>");
           $("#secondary").addClass('drs-sidebar');
           $("#primary").addClass('drs-main');
           $("#secondary #title-container").hide();
@@ -377,14 +393,16 @@ jQuery(document).ready(function($) {
   			}
   		});
     } else {
-      //console.log("we're in browse silly");
+      //we are in browse
     }
   }
 
   function fix_wp_pagination() {
-    $('#secondary .pagination li a').on("click", function(e) {
+    $('#secondary .pagination a').on("click", function(e) {
       e.preventDefault();
-      var wp_page = GetURLParameter($(this).attr('href'), 'paged');
+      var wp_page = $(this).attr('href').split("/");
+      wp_page = wp_page[wp_page.length -1];
+      wp_page = wp_page.split("?")[0];
       get_wp_data(params.q, wp_page);
     });
   }

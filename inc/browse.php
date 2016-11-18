@@ -52,21 +52,26 @@ add_action('wp_ajax_wp_search', 'ajax_wp_search');
 add_action('wp_ajax_nopriv_wp_search', 'ajax_wp_search');
 
 function ajax_wp_search(){
-  global $wp_query;
-  global $paged;
+  global $wp_query, $paged, $post;
+  $related_content_title = get_option('drstk_search_related_content_title');
   $query_string = isset($_GET['query']) ? $_GET['query'] : "";
   $paged = $_GET['page'];
   if (isset($_GET['query']) && $query_string != ''){
-    $query_args = array( 's' => $query_string, 'post_type'=>array('post', 'page'), 'posts_per_page'=>3, 'paged'=>$paged);
+    $query_args = array( 's' => $query_string, 'post_type'=>array('post', 'page'), 'posts_per_page'=>3, 'paged'=>$paged, 'post_status'=>'publish');
     $wp_query = new WP_Query( $query_args );
     $rel_query = relevanssi_do_query($wp_query);
     if (count($rel_query) > 0){
-        get_template_part( 'partials/content', 'normal' );
-      } else {
-        echo "No related content was found";
+      foreach($rel_query as $r_post){
+        $post = $r_post;
+        $the_post = $post;
+        get_template_part( 'content', 'excerpt' );
       }
+      echo the_posts_pagination( array( 'mid_size'  => 2 ) );
+    } else {
+      echo "No ".strtolower($related_content_title)." was found";
+    }
   } else {
-    echo "Please enter a search term to retrieve related content";
+    echo "Please enter a search term to retrieve ".strtolower($related_content_title);
   }
   wp_reset_postdata();
   die();

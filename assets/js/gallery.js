@@ -1,36 +1,43 @@
 jQuery(document).ready(function($) {
 
-	$('.carousel').carousel({
-		interval: false
-	});
-
-	$(window).on('load', function(){
-		fix_dimensions($('.carousel'));
-		fix_caption($('.carousel .item:first-of-type img'));
-	});
-
-	var cHeight = 0;
-	$('.carousel').on('slide.bs.carousel', function(e) {
-		var $nextImage = $(e.relatedTarget).find('img');
-		$activeItem = $('.active.item', this);
-
-		// prevents the slide decrease in height
-		if (cHeight == 0) {
-			cHeight = $(this).height();
-			$activeItem.next('.item').find("img").height(cHeight);
-		}
-
-		// prevents the loaded image if it is already loaded
-		var src = $nextImage.data('src');
-
-		if (typeof src !== "undefined" && src != "") {
-			$nextImage.attr('src', src)
-			$nextImage.data('src', '');
-			$nextImage.on('load', function(){
-				fix_caption($nextImage);
+	if($().carousel) {
+		$(".carousel").each(function(){
+			var this_carousel = $(this);
+			$(this).carousel({
+				interval: false
 			});
-		}
-	});
+
+			$(window).on('load', function(){
+				fix_dimensions(this_carousel);
+				fix_caption($('.carousel .item:first-of-type img'));
+			});
+
+			var cHeight = 0;
+			$(this).on('slide.bs.carousel', function(e) {
+				var $nextImage = $(e.relatedTarget).find('img');
+				$activeItem = $('.active.item', this);
+
+				// prevents the slide decrease in height
+				if (cHeight == 0) {
+					cHeight = $(this).height();
+					$activeItem.next('.item').find("img").height(cHeight);
+				}
+
+				// prevents the loaded image if it is already loaded
+				var src = $nextImage.data('src');
+
+				if (typeof src !== "undefined" && src != "") {
+					$nextImage.attr('src', src)
+					$nextImage.data('src', '');
+					$nextImage.on('load', function(){
+						fix_caption($nextImage);
+						fix_dimensions(this_carousel);
+					});
+				}
+			});
+		});
+	}
+
 
 	function fix_dimensions(carousel){
 		if (carousel.data("max-height") > 0){
@@ -45,7 +52,11 @@ jQuery(document).ready(function($) {
 		} else {//no max-height is set
 			var height = 0;
 				carousel.find("img").each(function(){
-					var this_height = $(this).height();
+					if ($(this).data("src") != undefined){
+						this_height = $(this).data("height");
+					} else  {
+						this_height = $(this).prop('naturalHeight');
+					}
 					if (this_height > height) {
 						height = this_height;
 						if ($(this).parents(".carousel").find(".carousel-caption").css("position") == 'relative'){
@@ -54,6 +65,8 @@ jQuery(document).ready(function($) {
 						} else {
 							if (height > 0) {$(this).parents(".carousel").find("img").css("max-height", height);}
 						}
+					} else {
+						$(this).parents(".carousel").find("img").css("max-height", this_height);
 					}
 				});
 		}

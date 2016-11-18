@@ -1,3 +1,17 @@
 .DS_Store
 */.DS_Store
 deploy.sh
+.idea/
+node_modules/
+specs/results/
+specs/reports/
+.coverage
+reports/
+reports/*
+reports/lcov/*
+reports/html/*
+.coveralls.yml
+.coveralls.yml.php
+tests/vendor/*
+vendor/*
+selenium.log
