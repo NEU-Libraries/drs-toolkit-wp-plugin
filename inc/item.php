@@ -488,39 +488,41 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   if (!isset($av_poster)){
     $av_poster = $drs_item_img;
   }
-
+  $user_agent = $_SERVER['HTTP_USER_AGENT'];
   $html = '<img id="'.$id_img.'" src="'.$drs_item_img.'" class="replace_thumbs"/>';
   $html .= '<div id="'.$id_video.'"></div>';
   $html .= '<script type="text/javascript">
-  jwplayer.key="gi5wgpwDtAXG4xdj1uuW/NyMsECyiATOBxEO7A==";
-  var primary = "flash";
-  if (typeof swfobject == "undefined" || swfobject.getFlashPlayerVersion().major == 0) {
-    primary = "html5";
-  }
+  jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc=";
+  var primary = "html5";
   var provider = "'.$av_provider.'";
-  if (provider == "sound"){
-    primary = "html5";
-  }
   jQuery(document).ready(function($){
   $("#'.$id_img.'").hide();
   jwplayer("'.$id_video.'").setup({';
-  if (strpos($av_pid, "neu") !== false) {
-    $html .='sources:
-    [
-    { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"},
-    { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':'.$full_pid.'/playlist.m3u8", type:"'.$av_for_ext.'"},
-    { file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.urlencode($full_pid).'", type:"'.strtolower($av_for_ext).'"}
-    ],';
-  } else {
-    $html .= 'sources:[{file:"'.$av_pid.'"}],';
-  }
+  $html .= 'width: "100%",
+        height: 400,
+        rtmp: {bufferlength: 5},';
   if ($av_poster != null){$html .= 'image: "'.$av_poster.'",';}
   $html .= 'provider: "'.$av_provider.'",
     fallback: "false",
     androidhls: "true",
     primary: primary,
-    width: "100%",
-    height: 400,
+    aspectratio: "16:9",';
+  if (strpos($av_pid, "neu") !== false) {
+    $html .='sources:
+    [
+    { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"},';
+    if (stripos($user_agent,'android') !== false){ //changing priority for android devices
+      $html .= '{ file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.urlencode($full_pid).'", type:"'.strtolower($av_for_ext).'"},';
+    }
+    $html .= '{ file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':'.$full_pid.'/playlist.m3u8",';
+    $html .= '},
+    { file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.m3u8"},
+    { file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.urlencode($full_pid).'", type:"'.strtolower($av_for_ext).'"}
+    ],';
+  } else {
+    $html .= 'sources:[{file:"'.$av_pid.'"}],';
+  }
+  $html .= '
   });
   var renderingMode
   jwplayer().onReady(function() {

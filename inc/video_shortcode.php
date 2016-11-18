@@ -75,8 +75,15 @@ function drstk_collection_playlist($atts){
               $provider = 'video';
             }
             $playlists .= '{ sources: [ ';
-            $playlists .= '{ file: "' .  $rtmp . '"}, { file: "' . $playlist . '"},';
-            $playlists .= ' { file: "' . $no_flash . '", type: "'.strtolower($type).'" } ], image: "' . $this_poster . '", title: "' . $title . '" },';
+            $playlists .= '{ file: "' .  $rtmp . '"},';
+            if (stripos($user_agent,'android') !== false){ //changing priority for android devices
+              $playlists .= ' { file: "' . $no_flash . '", type: "'.strtolower($type).'" }';
+              $playlists .= ' { file: "' . $playlist . '"},';
+            } else {
+              $playlists .= ' { file: "' . $playlist . '"},';
+              $playlists .= ' { file: "' . $no_flash . '", type: "'.strtolower($type).'" }';
+            }
+            $playlists .= ' ], image: "' . $this_poster . '", title: "' . $title . '" },';
           }
         } else {
           return $errors['shortcodes']['fail'];
@@ -106,10 +113,7 @@ function drstk_collection_playlist($atts){
       </div>
       <script type="text/javascript">
       jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc=";
-        var primary = "flash";
-        if (typeof swfobject == "undefined" || swfobject.getFlashPlayerVersion().major == 0) {
-          primary = "html5";
-        }
+        var primary = "html5";
         jQuery(document).ready(function($){
         jwplayer("'.$pid_selector.'").setup({
           width: "'.$width.'",
@@ -156,8 +160,6 @@ function drstk_video_shortcode_scripts() {
     if( is_a( $post, 'WP_Post' ) && (has_shortcode( $post->post_content, 'drstk_collection_playlist') || has_shortcode( $post->post_content, 'drstk_media')) && !isset($wp_query->query_vars['drstk_template_type']) ) {
       wp_register_script('drstk_jwplayer7', $DRS_PLUGIN_URL . '/assets/js/jwplayer/jwplayer.js', array(), $VERSION, false );
       wp_enqueue_script('drstk_jwplayer7');
-      wp_register_script('swfobject', '');
-      wp_enqueue_script('swfobject');
     }
 }
 add_action( 'wp_enqueue_scripts', 'drstk_video_shortcode_scripts');
