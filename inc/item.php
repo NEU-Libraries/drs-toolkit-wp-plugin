@@ -1,5 +1,5 @@
 <?php
-global $item_pid, $data, $collection, $errors, $repo, $all_meta_options;
+global $item_pid, $data, $collection, $errors, $repo, $all_meta_options, $full_pid;
 $collection = drstk_get_pid();
 $errors = drstk_get_errors();
 $meta_options = get_option('drstk_item_page_metadata');
@@ -181,7 +181,7 @@ function get_download_links(){
 }
 
 function get_item_title(){
-  global $item_pid, $data, $url, $repo;
+  global $item_pid, $data, $url, $repo, $full_pid;
   $repo = drstk_get_repo_from_pid($item_pid);
   if ($repo == "drs"){
     $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item_pid;
@@ -192,6 +192,7 @@ function get_item_title(){
     }
     echo $data->mods->Title[0];
   } else if ($repo == "dpla"){
+    $full_pid = $item_pid;
     $item_pid = explode(":",$item_pid);
     $item_pid = $item_pid[1];
     $url = "http://api.dp.la/v2/items/".$item_pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
@@ -209,6 +210,7 @@ function get_item_title(){
     $data->mods->Title = $title;
     echo $title[0];
   } else if ($repo == "wp"){
+    $full_pid = $item_pid;
     $item_pid = explode(":",$item_pid);
     $item_pid = $item_pid[1];
     $data = get_post($item_pid);
@@ -663,7 +665,12 @@ function associated_ajax_handler() {
 }
 
 function get_item_extension(){
-  global $post, $item_pid;
+  global $post, $item_pid, $repo, $full_pid;
+  if ($repo != "drs"){
+    $pid = $full_pid;
+  } else {
+    $pid = $item_pid;
+  }
   $args = array(
     'post_type' => 'drstk_item_extension',
     'posts_per_page' => 1,
@@ -671,11 +678,12 @@ function get_item_extension(){
     'meta_query' => array(
       array(
     		'key'     => 'item-id',
-    		'value'   => $item_pid,
+    		'value'   => $pid,
     		'compare' => '='
     	)
     )
   );
+  write_log($args);
   $meta_query = new WP_Query( $args );
   if ($meta_query->have_posts()){
     while ($meta_query->have_posts()){
