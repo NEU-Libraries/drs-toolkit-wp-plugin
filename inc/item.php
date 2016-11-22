@@ -684,7 +684,6 @@ function get_item_extension(){
     	)
     )
   );
-  write_log($args);
   $meta_query = new WP_Query( $args );
   if ($meta_query->have_posts()){
     while ($meta_query->have_posts()){
