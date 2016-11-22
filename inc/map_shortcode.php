@@ -6,10 +6,9 @@ function reload_filtered_set_ajax_handler()
 {
     if ($_POST['reloadWhat'] == "mapReload") {
         write_log("mapReload");
-    echo drstk_map($_POST['atts'], $_POST['params']);
+        echo drstk_map($_POST['atts'], $_POST['params']);
     }
     else {
-        write_log("facetReload");
         if (isset($_POST['atts']['collection_id'])) {
             $url = "https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=10";
             if (isset($_POST['params']['f'])) {
@@ -17,15 +16,25 @@ function reload_filtered_set_ajax_handler()
                     $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
                 }
             }
+            write_log($url);
             $data1 = get_response($url);
             $data1 = json_decode($data1);
             $facets_info_data = $data1;
-
-            //write_log($facets_info_data);
-
             wp_send_json($facets_info_data);
         }
     }
+    die();
+}
+
+
+add_action( 'wp_ajax_reloadRemainingMap', 'reloadRemainingMap_ajax_handler' ); //for auth users
+add_action( 'wp_ajax_nopriv_reloadRemainingMap', 'reloadRemainingMap_ajax_handler' ); //for nonauth users
+function reloadRemainingMap_ajax_handler()
+{
+    $a = get_post($_POST['post_id'])->post_content;
+    $parsed_a = shortcode_parse_atts($a);
+    /*write_log($parsed_a['collection_id']);*/
+    echo drstk_map($parsed_a, $_POST['page_no']);
     die();
 }
 
@@ -45,6 +54,8 @@ function drstk_map( $atts , $params){
   $map_project_key = drstk_get_map_project_key();
   $story = isset($atts['story']) ? $atts['story'] : "no";
   $map_html = "";
+  $num_pages_api = 0;
+
   if (!isset($atts['red']) && isset($atts['red_id'])){ $atts['red'] = $atts['red_id']; }
   if (!isset($atts['red_legend_desc']) && isset($atts['red_desc'])){ $atts['red_legend_desc'] = $atts['red_desc']; }
   if (!isset($atts['green']) && isset($atts['green_id'])){ $atts['green'] = $atts['green_id']; }
@@ -94,36 +105,32 @@ function drstk_map( $atts , $params){
 
         $url = "https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=10";
 
+        if(isset($params['page_no'])){
+            $url .= "&page=" . $params['page_no'];
+        }
+
         if (isset($params['f'])) {
             foreach ($params['f'] as $facet => $facet_val) {
                 $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
             }
         }
+        write_log($url);
 
         $data1 = get_response($url);
         $data1 = json_decode($data1);
         $facets_info_data = $data1;
         $num_pages = $data1->pagination->table->num_pages;
-        $counter = 1;
+
+        if(isset($params['page_no']) && $params['page_no'] > $num_pages){
+            return "All_Pages_Loaded";
+        }
 
         $docs2 = $data1->response->response->docs;
         foreach($docs2 as $docItem){
             $collectionItemsId [] = $docItem->id;
         }
 
-        /*while($counter <= $num_pages){
-            $url_local = "https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=10&page=".$counter."";
-            $data2 = get_response($url_local);
-            $data2 = json_decode($data2);
-            $docs2 = $data2->response->response->docs;
-            $counter = $counter + 1;
-
-            foreach($docs2 as $docItem){
-                $collectionItemsId [] = $docItem->id;
-            }
-        }*/
         $items = $collectionItemsId;
-        //write_log($items);
     }
 
     foreach($items as $item){
@@ -361,7 +368,7 @@ function drstk_map( $atts , $params){
     $map_obj = array(
         'ajax_url' => admin_url('admin-ajax.php'),
         'nonce'    => $map_nonce,
-        'home_url' => drstk_home_url(),
+        'home_url' => drstk_home_url()
     );
 
     $facets_info_data_obj = array(
@@ -416,6 +423,7 @@ function drstk_map_shortcode_scripts() {
       'ajax_url' => admin_url('admin-ajax.php'),
       'nonce'    => $map_nonce,
       'home_url' => drstk_home_url(),
+        'post_id' => $post->ID
     );
     wp_localize_script( 'drstk_map', 'map_obj', $map_obj );
 
