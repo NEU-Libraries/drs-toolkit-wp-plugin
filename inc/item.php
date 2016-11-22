@@ -508,6 +508,7 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
     fallback: "false",
     androidhls: "true",
     primary: primary,
+    hlshtml: "true",
     aspectratio: "16:9",';
   if (strpos($av_pid, "neu") !== false) {
     $html .='sources:

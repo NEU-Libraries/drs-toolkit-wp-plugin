@@ -123,6 +123,7 @@ function drstk_collection_playlist($atts){
           provider: "'.$provider.'",
           fallback: "false",
           androidhls: "true",
+          hlshtml: "true",
           aspectratio:"'.$aspectratio.'",';
           if (isset($skin)){
             $cache_output .= 'skin: "'.$skin.'",';
