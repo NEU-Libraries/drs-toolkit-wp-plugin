@@ -1,6 +1,6 @@
 jQuery(document).ready(function($) {
     var home_url = map_obj.home_url;
-
+    var post_id = map_obj.post_id;
     var apiKey = getApiKey($('#map'));
     var projectKey = getProjectKey($('#map'));
 
@@ -27,7 +27,94 @@ jQuery(document).ready(function($) {
         addStoryModeToMap(items, mymap, markerCluster, customItems);
     }
 
+    //do this only for collection_id (PUT CHECK)
+    reloadRemainingMap(map_obj, post_id, 2);
+    jQuery(".entry-header").append("<div id='mapLoadingElement' class='themebutton btn btn-more'>Loading Remaining Map Items...</div>");
+
 });
+
+function reloadRemainingMap(map_obj, post_id, page_no){
+    console.log("Loading Remaning Map Items...Page no. "+page_no);
+    jQuery.ajax({
+        type: 'POST',
+        url: map_obj.ajax_url,
+        data: {
+            _ajax_nonce: map_obj.nonce,
+            action: "reloadRemainingMap",
+            params: 1,
+            page_no: page_no,
+            post_id: post_id,
+            reloadWhat: "mapReload1"
+        },
+        success: function (data) {
+            page_no = page_no+1;
+            if(data == "All_Pages_Loaded"){
+                jQuery("#mapLoadingElement").remove();
+                console.log("All pages loaded ... Done .. No more Api calls");
+            }else{
+                //WILL HAVE TO INCLUDE FOR CUSTOM COORDINATES
+
+                //to grab the map div
+                var mapDiv = jQuery(data).filter("#map").empty()[0].outerHTML;
+
+                //to grab the map div innerHTML i.e. coordinates
+                var resCoordinates = jQuery(data).filter("#map")[0].innerHTML;
+
+                //to grab existing map elements
+                var existingCoordinates = jQuery("#map").find(".coordinates");
+                var existingCustomCoordinates = jQuery("#map").find(".custom-coordinates");
+                var overallCoordiates = "";
+
+                var i = 0;
+                jQuery.each(existingCoordinates, function(){
+                    overallCoordiates += existingCoordinates[i].outerHTML;
+                    i = i+1;
+                });
+
+                overallCoordiates += resCoordinates;
+
+                var i = 0;
+                jQuery.each(existingCustomCoordinates, function(){
+                    overallCoordiates += existingCustomCoordinates[i].outerHTML;
+                    i = i+1;
+                });
+
+
+                jQuery('#map').remove();
+                jQuery(".entry-content").html(mapDiv);
+                jQuery("#map").html(overallCoordiates);
+
+                var home_url = map_obj.home_url;
+                var apiKey = getApiKey(jQuery('#map'));
+                var projectKey = getProjectKey(jQuery('#map'));
+
+                var colorGroups = getColorGroups(jQuery('#map'));
+                var colorDescriptions = getColorDescriptions(jQuery('#map'));
+
+                var items = getItemsFromJqueryArray(jQuery('.coordinates'));
+
+                var mymap = createMap('map');
+
+                addTileLayerToMap(mymap, apiKey, projectKey);
+
+                var markerCluster = addPopupsToItems(items, mymap, colorGroups, home_url);
+
+                var customItems = getCustomItems(jQuery('.custom-coordinates'));
+
+                var markerCluster = addCustomItemsToMap(customItems, markerCluster, home_url);
+
+                fitToBounds(items, customItems, mymap);
+
+                addLegendToMap(colorDescriptions, mymap, home_url);
+
+                if (isStoryModeEnabled(jQuery('#map'))) {
+                    addStoryModeToMap(items, mymap, markerCluster, customItems);
+                }
+                reloadRemainingMap(map_obj, post_id, page_no);
+            }
+        }
+    });
+}
 
 function getApiKey(jqSelector) {
     return jqSelector.data('map_api_key');
@@ -75,7 +162,6 @@ function getColorGroups(jqSelector) {
     if (jqSelector.data('orange')) {
         colorGroups.orange = jqSelector.data('orange');
     }
-
     return colorGroups;
 }
 
@@ -196,7 +282,7 @@ function addPopupsToItems(items, map, colorGroups, home_url) {
     jQuery.each(items, function(index, item) {
 
         var icon = L.icon({
-            iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon.png',
+            iconUrl: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|3B7A57&chf=a,s,ee00FFFF',
             iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon-2x.png',
             iconSize: [29, 41],
             iconAnchor: [14, 41],
