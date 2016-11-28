@@ -5,8 +5,7 @@
 jQuery(document).ready(function($) {
 
     var searchBox = '<div id="search-and-facet" class="col-md-2"><form id="check1"><input id="test1" type="text" placeholder="Search ..."></form><br><br></div>';
-    console.log(facets_info_data_obj);
-
+    
     $("#search-and-facet").remove();
     $("#drs-selection").remove();
     $("#drs-facets").remove();
@@ -48,7 +47,6 @@ jQuery(document).ready(function($) {
 
 // Change the below function for the timeline changes. Did till here.
     function reload_Facets_with_Timeline (facets_info_data_obj, atts, params1, post_id){
-        console.log("I am here within ajax");
         $.ajax({
             type: 'POST',
             url: facets_info_data_obj.ajax_url,
@@ -64,7 +62,6 @@ jQuery(document).ready(function($) {
             {
                 if(data == "All_Pages_Loaded"){
                     jQuery("#timelineLoadingElement").remove();
-                    console.log("All pages loaded ... Done .. No more Api calls");
                 }
                 else {
 
@@ -233,7 +230,6 @@ jQuery(document).ready(function($) {
             search = $('#test1').val();
             if ((search) && (search != '')){
                 //params1["page_no"] = 1;
-                console.log("Inside after hitting for search");
                 params1["q"] = search;
                 $("#drs-selection a[data-type='q']").remove();
                 $("#drs-selection").append("<a class='themebutton btn btn-more' href='#' data-type='q' data-val='"+search+"'>"+search+" <span class='fa fa-close'></span></a>");
