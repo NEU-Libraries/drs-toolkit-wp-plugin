@@ -1,8 +1,13 @@
+var post_id = "";
+
 jQuery(document).ready(function($) {
     var home_url = map_obj.home_url;
-    var post_id = map_obj.post_id;
+    post_id = map_obj.post_id;
     var apiKey = getApiKey($('#map'));
     var projectKey = getProjectKey($('#map'));
+    var f = {};
+    var q= '';
+    var params = {q:q, f: f, page_no: 2};
 
     var colorGroups = getColorGroups($('#map'));
     var colorDescriptions = getColorDescriptions($('#map'));
@@ -28,26 +33,28 @@ jQuery(document).ready(function($) {
     }
 
     //do this only for collection_id (PUT CHECK)
-    reloadRemainingMap(map_obj, post_id, 2);
+    reloadRemainingMap(map_obj, params, post_id, 2);
     jQuery(".entry-header").append("<div id='mapLoadingElement' class='themebutton btn btn-more'>Loading Remaining Map Items...</div>");
 
 });
 
-function reloadRemainingMap(map_obj, post_id, page_no){
-    console.log("Loading Remaning Map Items...Page no. "+page_no);
+function reloadRemainingMap(map_obj, params, post_id){
+
+    console.log("Loading Remaning Map Items...Page no. "+params["page_no"]);
+    var page_no = params["page_no"];
+
     jQuery.ajax({
         type: 'POST',
         url: map_obj.ajax_url,
         data: {
             _ajax_nonce: map_obj.nonce,
             action: "reloadRemainingMap",
-            params: 1,
-            page_no: page_no,
-            post_id: post_id,
-            reloadWhat: "mapReload1"
+            params: params,
+            post_id: post_id
         },
         success: function (data) {
             page_no = page_no+1;
+            params["page_no"] = page_no;
             if(data == "All_Pages_Loaded"){
                 jQuery("#mapLoadingElement").remove();
                 console.log("All pages loaded ... Done .. No more Api calls");
@@ -110,7 +117,7 @@ function reloadRemainingMap(map_obj, post_id, page_no){
                 if (isStoryModeEnabled(jQuery('#map'))) {
                     addStoryModeToMap(items, mymap, markerCluster, customItems);
                 }
-                reloadRemainingMap(map_obj, post_id, page_no);
+                reloadRemainingMap(map_obj, params, post_id);
             }
         }
     });
@@ -371,7 +378,7 @@ function addPopupsToItems(items, map, colorGroups, home_url) {
             });
         var url = item.url;
         if (url.indexOf("hdl.handle") > -1){
-          url = home_url + 'item/' + item.pid;
+            url = home_url + 'item/' + item.pid;
         }
         var popupContent = "<a href='" + url + "' target='_blank'>" + item.title + "</a><br/>";
 
