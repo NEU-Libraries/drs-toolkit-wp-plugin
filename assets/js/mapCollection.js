@@ -120,7 +120,6 @@ jQuery(document).ready(function($) {
     });
 
     function reloadMap (facets_info_data_obj, atts, params1, post_id){
-        console.log("Loading Remaning Map Items...Page no. "+params1["page_no"]);
 
         var page_no = params1["page_no"];
 
@@ -138,7 +137,6 @@ jQuery(document).ready(function($) {
             {
                 if(data == "All_Pages_Loaded"){
                     jQuery("#mapLoadingElement").remove();
-                    console.log("All pages loaded ... Done .. No more Api calls");
                 }else{
                     //WILL HAVE TO INCLUDE FOR CUSTOM COORDINATES
 
