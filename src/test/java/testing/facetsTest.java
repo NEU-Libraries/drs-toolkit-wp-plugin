@@ -26,7 +26,7 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
  *
  * @author Kartik
  */
-public class facets_test {
+public class facetsTest {
     String username="achinta";
     String password = "admin";
     
