@@ -410,7 +410,7 @@ public class facets_test {
         driver.setJavascriptEnabled(true);
         try{
             driver.get(page_url);
-            Thread.sleep(14);/
+            Thread.sleep(14);
             String element_text = driver.findElement(By.xpath("//div[@id=\"drs_drs_course_title_ssim\"]/div/div[1]/b")).getText();
             System.out.println(driver.findElement(By.xpath("//div[@id=\"drs_drs_course_title_ssim\"]/div/div[1]/b")).getText());
             assertEquals(element_text, "Course Title");
