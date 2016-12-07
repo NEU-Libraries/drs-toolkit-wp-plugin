@@ -33,12 +33,14 @@ $TEMPLATE = array(
     'browse_template' => dirname(__FILE__) . '/templates/browse.php',
     'item_template' => dirname(__FILE__) . '/templates/item.php',
     'download_template' => dirname(__FILE__) . '/templates/download.php',
+    'mirador_template' => dirname(__FILE__) . '/templates/mirador.php',
 );
 
 $TEMPLATE_THEME = array(
     'browse_template' => 'overrides/drstk-browse.php',
     'item_template' => 'overrides/drstk-item.php',
     'download_template' => 'overrides/drstk-download.php',
+    'mirador_template' => 'overrides/drstk-mirador.php',
 );
 
  register_activation_hook( __FILE__, 'drstk_install' );
@@ -62,6 +64,8 @@ $TEMPLATE_THEME = array(
     add_rewrite_rule('^'.$home_url.'download/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=download&pid=$matches[1]', 'top');
     add_rewrite_rule('^'.$home_url.'collections/?$', 'index.php?post_type=drs&drstk_template_type=collections', 'top');
     add_rewrite_rule('^'.$home_url.'collection/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=collection&pid=$matches[1]', 'top');
+    $mirador_url = get_option('drstk_mirador_url') == '' ? 'mirador' : get_option('drstk_mirador_url');
+    add_rewrite_rule('^'.$home_url.$mirador_url.'/?$', 'index.php?post_type=drs&drstk_template_type=mirador', 'top');
  }
 
 /*add something like this later to override manual paths to the original wp search */
@@ -154,6 +158,14 @@ function register_drs_settings() {
   add_settings_section('drstk_collection_settings', 'Collection Page Settings', null, 'drstk_options');
   add_settings_field('drstk_collection_page_title', 'Collection Page Title', 'drstk_collection_page_title_callback', 'drstk_options', 'drstk_collection_settings');
   register_setting( 'drstk_options', 'drstk_collection_page_title' );
+
+  add_settings_section('drstk_mirador_settings', 'Mirador Page Settings', null, 'drstk_options');
+  add_settings_field('drstk_assoc', 'Allow Mirador Page Viewer<br/><small>This requires a manifest file and modifications to a javascript file. Please contact the Toolkit team if you would like to enable this feature.</small>', 'drstk_mirador_callback', 'drstk_options', 'drstk_mirador_settings');
+  register_setting( 'drstk_options', 'drstk_mirador' );
+  add_settings_field('drstk_mirador_page_title', 'Mirador Page Title', 'drstk_mirador_page_title_callback', 'drstk_options', 'drstk_mirador_settings', array('class'=>'mirador'));
+  register_setting( 'drstk_options', 'drstk_mirador_page_title' );
+  add_settings_field('drstk_mirador_url', 'Mirador URL', 'drstk_mirador_url_callback', 'drstk_options', 'drstk_mirador_settings', array('class'=>'mirador'));
+  register_setting('drstk_options', 'drstk_mirador_url');
 
   add_settings_section('drstk_single_settings', 'Single Item Page Settings', null, 'drstk_options');
   add_settings_field('drstk_item_page_metadata', 'Metadata to Display<br/><small>If none are selected, all metadata will display in the default order. To reorder or limit the fields which display, select the desired fields and drag and drop to reorder. To add custom fields, click the add button and type in the label.</small>', 'drstk_item_page_metadata_callback', 'drstk_options', 'drstk_single_settings');
@@ -435,6 +447,25 @@ function drstk_collection_page_title_callback(){
   echo '" />';
 }
 
+function drstk_mirador_callback(){
+  echo '<input type="checkbox" name="drstk_mirador" ';
+  if (get_option('drstk_mirador') == 'on'){ echo 'checked="checked"';}
+  echo '/>Display</label>';
+}
+
+function drstk_mirador_page_title_callback(){
+  echo '<input type="text" name="drstk_mirador_page_title" value="';
+  if (get_option('drstk_mirador_page_title') == ''){ echo 'Book View';} else { echo get_option('drstk_mirador_page_title'); }
+  echo '" />';
+}
+
+function drstk_mirador_url_callback() {
+  $mirador_url = get_option('drstk_mirador_url') == '' ? 'mirador' : get_option('drstk_mirador_url');
+  echo '<input name="drstk_mirador_url" type="text" value="'.$mirador_url.'"></input><br/>
+     <small>This sets the URL path for the mirador viewer<br/>
+     Currently, yours will look like: <strong>'.drstk_home_url().'mirador/</strong></small>';
+}
+
 function drstk_item_page_metadata_callback(){
   global $all_meta_options;
   $item_options = get_option('drstk_item_page_metadata') != "" ? get_option('drstk_item_page_metadata') : array();
@@ -578,9 +609,7 @@ function drstk_content_template( $template ) {
             // look for theme template first, load plugin template as fallback
             $theme_template = locate_template( array( $TEMPLATE_THEME['browse_template'] ) );
             return ($theme_template ? $theme_template : $TEMPLATE['browse_template']);
-        }
-
-        if ($template_type == 'item') {
+        } elseif ($template_type == 'item') {
             global $item_pid;
             $item_pid = get_query_var('pid');
             add_action('wp_enqueue_scripts', 'drstk_item_script');
@@ -588,15 +617,19 @@ function drstk_content_template( $template ) {
             // look for theme template first, load plugin template as fallback
             $theme_template = locate_template( array( $TEMPLATE_THEME['item_template'] ) );
             return ($theme_template ? $theme_template : $TEMPLATE['item_template']);
-        }
-
-        if ($template_type == 'download') {
+        } elseif ($template_type == 'download') {
           global $item_pid;
           $item_pid = get_query_var('pid');
 
           // look for theme template first, load plugin template as fallback
           $theme_template = locate_template( array( $TEMPLATE_THEME['download_template'] ) );
           return ($theme_template ? $theme_template : $TEMPLATE['download_template']);
+        } elseif ($template_type == 'mirador') {
+          add_action('wp_enqueue_scripts', 'drstk_mirador_script');
+
+          // look for theme template first, load plugin template as fallback
+          $theme_template = locate_template( array( $TEMPLATE_THEME['mirador_template'] ) );
+          return ($theme_template ? $theme_template : $TEMPLATE['mirador_template']);
         }
 
     } else {
@@ -717,6 +750,20 @@ function drstk_breadcrumb_script(){
      'collection_pid' => drstk_get_pid(),
      'home_url' => drstk_home_url(),
   ) );
+}
+
+function drstk_mirador_script() {
+    global $VERSION;
+    global $wp_query;
+    global $errors;
+
+    //this enqueues the JS file
+    wp_register_script('drstk_mirador', plugins_url('/assets/mirador/mirador.js', __FILE__), array(), $VERSION, false );
+    wp_enqueue_script('drstk_mirador');
+    wp_register_script('drstk_mirador_manifest',plugins_url('/assets/mirador/mirador_manifest.js', __FILE__), array());
+    wp_enqueue_script('drstk_mirador_manifest');
+    wp_register_style('drstk_mirador_style', plugins_url('/assets/mirador/css/mirador-combined.min.css', __FILE__), array());
+    wp_enqueue_style('drstk_mirador_style');
 }
 
 /*fix for weird jumpiness in wp admin menu*/
