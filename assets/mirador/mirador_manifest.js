@@ -4,13 +4,13 @@ $(function() {
    "id": "mirador_viewer",
    "layout": "1x1",
    "data": [
-      { "manifestUri": "http://localhost/~beekerz/wordpress/manifest.json", "location":"Northeastern University Digital Repository Service (DRS)"},
+      { "manifestUri": "[wordpress_url]/manifest.json", "location":"Northeastern University Digital Repository Service (DRS)"},
    ],
    "windowObjects": [
           {
-          "loadedManifest" : "http://localhost/~beekerz/wordpress/manifest.json",
+          "loadedManifest" : "[wordpress_url]/manifest.json",
           "viewType" : "BookView"}
    ],
-   'buildPath' : '/~beekerz/wordpress/wp-content/plugins/drs-tk/assets/mirador/',
+   'buildPath' : '/wp-content/plugins/drs-tk/assets/mirador/',
  });
 });
