@@ -4,13 +4,13 @@ $(function() {
    "id": "mirador_viewer",
    "layout": "1x1",
    "data": [
-      { "manifestUri": "http://dragonprayerbook.northeastern.edu/manifest.json", "location":"Northeastern University Digital Repository Service (DRS)"},
+      { "manifestUri": "http://localhost/~beekerz/wordpress/manifest.json", "location":"Northeastern University Digital Repository Service (DRS)"},
    ],
    "windowObjects": [
           {
-          "loadedManifest" : "http://dragonprayerbook.northeastern.edu/manifest.json",
+          "loadedManifest" : "http://localhost/~beekerz/wordpress/manifest.json",
           "viewType" : "BookView"}
    ],
-   'buildPath' : '/wp-content/plugins/drs-tk/assets/mirador/',
+   'buildPath' : '/~beekerz/wordpress/wp-content/plugins/drs-tk/assets/mirador/',
  });
 });

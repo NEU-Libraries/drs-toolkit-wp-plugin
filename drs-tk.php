@@ -160,9 +160,11 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_collection_page_title' );
 
   add_settings_section('drstk_mirador_settings', 'Mirador Page Settings', null, 'drstk_options');
-  add_settings_field('drstk_mirador_page_title', 'Mirador Page Title', 'drstk_mirador_page_title_callback', 'drstk_options', 'drstk_mirador_settings');
+  add_settings_field('drstk_assoc', 'Allow Mirador Page Viewer<br/><small>This requires a manifest file and modifications to a javascript file. Please contact the Toolkit team if you would like to enable this feature.</small>', 'drstk_mirador_callback', 'drstk_options', 'drstk_mirador_settings');
+  register_setting( 'drstk_options', 'drstk_mirador' );
+  add_settings_field('drstk_mirador_page_title', 'Mirador Page Title', 'drstk_mirador_page_title_callback', 'drstk_options', 'drstk_mirador_settings', array('class'=>'mirador'));
   register_setting( 'drstk_options', 'drstk_mirador_page_title' );
-  add_settings_field('drstk_mirador_url', 'Mirador URL', 'drstk_mirador_url_callback', 'drstk_options', 'drstk_mirador_settings');
+  add_settings_field('drstk_mirador_url', 'Mirador URL', 'drstk_mirador_url_callback', 'drstk_options', 'drstk_mirador_settings', array('class'=>'mirador'));
   register_setting('drstk_options', 'drstk_mirador_url');
 
   add_settings_section('drstk_single_settings', 'Single Item Page Settings', null, 'drstk_options');
@@ -443,6 +445,12 @@ function drstk_collection_page_title_callback(){
   echo '<input type="text" name="drstk_collection_page_title" value="';
   if (get_option('drstk_collection_page_title') == ''){ echo 'Browse';} else { echo get_option('drstk_collection_page_title'); }
   echo '" />';
+}
+
+function drstk_mirador_callback(){
+  echo '<input type="checkbox" name="drstk_mirador" ';
+  if (get_option('drstk_mirador') == 'on'){ echo 'checked="checked"';}
+  echo '/>Display</label>';
 }
 
 function drstk_mirador_page_title_callback(){

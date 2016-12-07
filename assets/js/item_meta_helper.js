@@ -9,12 +9,20 @@ jQuery(document).ready(function(){
 
   assoc_checked("input[name='drstk_assoc']", ".assoc");
   assoc_checked("input[name='drstk_niec']", ".niec");
+  assoc_checked("input[name='drstk_appears']", ".appears");
+  assoc_checked("input[name='drstk_mirador']", ".mirador");
 
   jQuery("input[name='drstk_assoc']").on('change', function(){
     assoc_checked("input[name='drstk_assoc']", ".assoc");
   });
   jQuery("input[name='drstk_niec']").on('change', function(){
     assoc_checked("input[name='drstk_niec']", ".niec");
+  });
+  jQuery("input[name='drstk_appears']").on('change', function(){
+    assoc_checked("input[name='drstk_appears']", ".appears");
+  });
+  jQuery("input[name='drstk_mirador']").on('change', function(){
+    assoc_checked("input[name='drstk_mirador']", ".mirador");
   });
 
   jQuery("input[name='drstk_facets[]'], input[name='drstk_niec_metadata[]']").on('change', function(){

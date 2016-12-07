@@ -17,8 +17,17 @@ $view = quest_get_view();
 
 				<div id="primary" class="content-area col-md-12">
 					<main id="main" class="site-main" role="main">
-
-						<div id="mirador_viewer"></div>
+						<?php
+							if (get_option('drstk_mirador') != "") {
+								?>
+								<div id="mirador_viewer"></div>
+							<?php
+						} else {
+							?>
+							<p>Mirador hasn't been enabled. Please contact Toolkit staff to enable this feature.</p>
+							<?php
+						}
+							 ?>
 
 					</main>
 					<!-- #main -->
