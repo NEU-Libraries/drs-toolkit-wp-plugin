@@ -1,8 +1,9 @@
 var post_id = "";
-
 jQuery(document).ready(function($) {
     var home_url = map_obj.home_url;
     post_id = map_obj.post_id;
+    var collectionSet = map_obj.collectionSet;
+
     var apiKey = getApiKey($('#map'));
     var projectKey = getProjectKey($('#map'));
     var f = {};
@@ -32,10 +33,11 @@ jQuery(document).ready(function($) {
         addStoryModeToMap(items, mymap, markerCluster, customItems);
     }
 
+    if(collectionSet == "checked"){
     //do this only for collection_id (PUT CHECK)
     reloadRemainingMap(map_obj, params, post_id, 2);
     jQuery(".entry-header").append("<div id='mapLoadingElement' class='themebutton btn btn-more'>Loading Remaining Map Items...</div>");
-
+    }
 });
 
 function reloadRemainingMap(map_obj, params, post_id){
@@ -131,8 +133,9 @@ function getProjectKey(jqSelector) {
     return jqSelector.data('map_project_key');
 }
 
+var colorDescriptions = {};
+
 function getColorDescriptions(jqSelector) {
-    var colorDescriptions = {};
     if (jqSelector.data('red_legend_desc')) {
         colorDescriptions.red = jqSelector.data('red_legend_desc');
     }
@@ -289,7 +292,7 @@ function addPopupsToItems(items, map, colorGroups, home_url) {
     jQuery.each(items, function(index, item) {
 
         var icon = L.icon({
-            iconUrl: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|3B7A57&chf=a,s,ee00FFFF',
+            iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon.png',
             iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon-2x.png',
             iconSize: [29, 41],
             iconAnchor: [14, 41],
@@ -378,7 +381,7 @@ function addPopupsToItems(items, map, colorGroups, home_url) {
             });
         var url = item.url;
         if (url.indexOf("hdl.handle") > -1){
-            url = home_url + 'item/' + item.pid;
+          url = home_url + 'item/' + item.pid;
         }
         var popupContent = "<a href='" + url + "' target='_blank'>" + item.title + "</a><br/>";
 

@@ -1,5 +1,7 @@
-jQuery(document).ready(function($) {
+var page_id= "";
 
+jQuery(document).ready(function($) {
+	console.log(timeline_obj.post_id);
     var eventsList = getItemsFromJqueryArrayTimelineArray($('.timelineclass'));
 
     var increments = $('#timeline-increments').data('increments');
