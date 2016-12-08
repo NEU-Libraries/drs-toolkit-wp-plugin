@@ -183,6 +183,7 @@
 	</td>
 	<td>{{data.helper}}</td>
 </script>
+
 <?php
 /* a template for number settings */
 ?>
@@ -211,3 +212,40 @@
 	</td>
 	<td>{{data.helper}}</td>
 </script>
+
+
+
+
+<?php
+/* a template for button settings */
+?>
+<script type='text/html' id='tmpl-drstk-setting-button'>
+	<td><h5>{{data.label}}</h5></td>
+	<td>
+		<button type="button" id ="{{data.name}}">{{data.value}} </button>
+		<button type="button" id ="save-button">Save </button>
+	</td>
+</script>
+
+<?php
+/* a template for Color headers settings */
+?>
+<script type='text/html' id='tmpl-drstk-setting-colorheader'>
+	<td><h5>Label</h5></td>
+	<td><h5>Description</h5></td>
+	<td><h5>Color Value</h5></td>
+
+</script>
+
+
+<?php
+/* a template for color input */
+?>
+<script type='text/html' id='tmpl-drstk-setting-colorinput'>
+	<td><h5>{{data.name}}</h5></td>+
+	<td><input type='text' name="{{data.name}}"  value="{{data.value}}" />&nbsp;&nbsp;
+	</td>+
+	<td><input type='color' name="{{data.colorname}}" value='{{data.colorHex}}' /></td>
+	<td><div style="cursor:pointer;font-weight:bold" class="delete-color-row" id ='delete-{{data.name}}'>X</div></td>
+</script>
+

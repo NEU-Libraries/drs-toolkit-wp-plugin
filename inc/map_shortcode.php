@@ -59,43 +59,16 @@ function drstk_map( $atts , $params){
   $story = isset($atts['story']) ? $atts['story'] : "no";
   $map_html = "";
 
-  if (!isset($atts['red']) && isset($atts['red_id'])){ $atts['red'] = $atts['red_id']; }
-  if (!isset($atts['red_legend_desc']) && isset($atts['red_desc'])){ $atts['red_legend_desc'] = $atts['red_desc']; }
-  if (!isset($atts['green']) && isset($atts['green_id'])){ $atts['green'] = $atts['green_id']; }
-  if (!isset($atts['green_legend_desc']) && isset($atts['green_desc'])){ $atts['green_legend_desc'] = $atts['green_desc']; }
-  if (!isset($atts['blue']) && isset($atts['blue_id'])){ $atts['blue'] = $atts['blue_id']; }
-  if (!isset($atts['blue_legend_desc']) && isset($atts['blue_desc'])){ $atts['blue_legend_desc'] = $atts['blue_desc']; }
-  if (!isset($atts['yellow']) && isset($atts['yellow_id'])){ $atts['yellow'] = $atts['yellow_id']; }
-  if (!isset($atts['yellow_legend_desc']) && isset($atts['yellow_desc'])){ $atts['yellow_legend_desc'] = $atts['yellow_desc']; }
-  if (!isset($atts['orange']) && isset($atts['orange_id'])){ $atts['orange'] = $atts['orange_id']; }
-  if (!isset($atts['orange_legend_desc']) && isset($atts['orange_desc'])){ $atts['orange_legend_desc'] = $atts['orange_desc']; }
 
   $shortcode = "<div id='map' data-story='".$story."' data-map_api_key='".$map_api_key."' data-map_project_key='".$map_project_key."'";
-
-  if (isset($atts['red_legend_desc']) && isset($atts['red'])) {
-    $shortcode .= " data-red='".$atts['red']."'";
-    $shortcode .= " data-red_legend_desc='".$atts['red_legend_desc']."'";
-  }
-
-  if (isset($atts['blue_legend_desc']) && isset($atts['blue'])) {
-    $shortcode .= " data-blue='".$atts['blue']."'";
-    $shortcode .= " data-blue_legend_desc='".$atts['blue_legend_desc']."'";
-  }
-
-  if (isset($atts['green_legend_desc']) && isset($atts['green'])) {
-    $shortcode .= " data-green='".$atts['green']."'";
-    $shortcode .= " data-green_legend_desc='".$atts['green_legend_desc']."'";
-  }
-
-  if (isset($atts['yellow_legend_desc']) && isset($atts['yellow'])) {
-    $shortcode .= " data-yellow='".$atts['yellow']."'";
-    $shortcode .= " data-yellow_legend_desc='".$atts['yellow_legend_desc']."'";
-  }
-
-  if (isset($atts['orange_legend_desc']) && isset($atts['orange'])) {
-    $shortcode .= " data-orange='".$atts['orange']."'";
-    $shortcode .= " data-orange_legend_desc='".$atts['orange_legend_desc']."'";
-  }
+  foreach($atts as $key => $value){
+        if(preg_match('/(.*)_color_desc_id/',$key)){
+            $shortcode .= " data-".$key."='".$atts[$key]."'";
+        }
+        if(preg_match('/(.*)_color_hex/',$key)){
+            $shortcode .= " data-".$key."='".$atts[$key]."'";
+        }
+    }
 
   /*
     If collection_id attribute is set, then load the DRS items directly using the search API.
