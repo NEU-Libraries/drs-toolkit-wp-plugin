@@ -10,7 +10,7 @@ jQuery(document).ready(function ($) {
 
     $("#content .row").prepend('<div id="search-and-facet" class="col-md-2"><form id="check1" class="search"><input id="test1" type="text" placeholder="Search timeline ..."><button id="searchTimelineItems" class="fa fa-search" style="padding-right: 45px;"></button></form><br><br></div>');
     $("#search-and-facet").append("<div id='drs-facets' class='one_fourth hidden-phone hidden-xs hidden-sm'></div>");
-    $("#content").prepend("<div id='drs-selection' class='col-md-10'></div>");
+    $("#content").prepend("<div id='drs-selection' class='col-md-10' style='padding-left: 7.5%;'></div>");
 
     var facets_recieved = facets_info_data_obj.data.response.facet_counts
     var atts = facets_info_data_obj.atts;
