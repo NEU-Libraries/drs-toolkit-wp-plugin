@@ -207,26 +207,17 @@ jQuery(document).ready(function($) {
                     var home_url = map_obj.home_url;
                     var apiKey = getApiKey(jQuery('#map'));
                     var projectKey = getProjectKey(jQuery('#map'));
-
+                    var colorHex = getColorHexArray($('#map'));
                     var colorGroups = getColorGroups(jQuery('#map'));
                     var colorDescriptions = getColorDescriptions(jQuery('#map'));
-
                     var items = getItemsFromJqueryArray(jQuery('.coordinates'));
-
                     var mymap = createMap('map');
-
                     addTileLayerToMap(mymap, apiKey, projectKey);
-
-                    var markerCluster = addPopupsToItems(items, mymap, colorGroups, home_url);
-
+                    var markerCluster = addPopupsToItems(items, mymap, colorGroups, home_url,colorHex);
                     var customItems = getCustomItems(jQuery('.custom-coordinates'));
-
                     var markerCluster = addCustomItemsToMap(customItems, markerCluster, home_url);
-
                     fitToBounds(items, customItems, mymap);
-
-                    addLegendToMap(colorDescriptions, mymap, home_url);
-
+                    addLegendToMap(colorDescriptions, mymap, home_url,colorHex);
                     if (isStoryModeEnabled(jQuery('#map'))) {
                         addStoryModeToMap(items, mymap, markerCluster, customItems);
                     }

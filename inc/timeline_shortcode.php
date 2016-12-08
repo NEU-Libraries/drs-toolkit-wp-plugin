@@ -53,29 +53,35 @@ function drstk_timeline( $atts, $params ){
       return $cache;
   }
     */
+    $color_codes = array();
+    $color_hex = array();
+
+    foreach($atts as $key => $value){
+        if(preg_match('/(.*)_color_desc_id/',$key)){
+            $color_codes[$key]=$value ;
+        }
+        if(preg_match('/(.*)_color_hex/',$key)){
+            $color_hex[$key]=$value;
+        }
+
+    }
     if(!isset($atts['collection_id'])) {
         $neu_ids = array_map('trim', explode(',', $atts['id']));
     }
 
     $timeline_increments = $atts['increments'];
-    $color_codes = array("red", "green", "blue", "yellow", "orange");
+   // $color_codes = array("red", "green", "blue", "yellow", "orange");
     $current_color_code_id_values = array();
     $current_color_legend_desc_values = array();
     $index_color_pair = array();
     $facet_options = array("creator_sim","creation_year_sim","subject_sim","type_sim","drs_department_ssim", "drs_degree_ssim", "drs_course_number_ssim", "drs_course_title_ssim");
-    foreach($color_codes as $color_code){
-        $current_color_code_id_string = $color_code . "_id";
-        $current_color_legend_desc_string = $color_code . "_desc";
-        if (isset($atts[$current_color_code_id_string])){
-            $current_color_code_id_value = $atts[$current_color_code_id_string];
-        } else {
-            $current_color_code_id_value = NULL;
-        }
-        if (isset($atts[$current_color_legend_desc_string])){
-            $current_color_legend_desc_value = $atts[$current_color_legend_desc_string];
-        } else {
-            $current_color_legend_desc_value = NULL;
-        }
+    foreach($color_codes as $color_code=>$color_code_values){
+        //$current_color_code_id_string = $color_code . "_id";
+        //$current_color_legend_desc_string = $color_code . "_desc";
+        $current_color_code_id_value =$color_code_values;
+        $current_color_legend_desc_value= substr($color_code,0,-14);
+        $current_color_legend_desc_value = str_replace('_',' ',$current_color_legend_desc_value);
+        $current_color_legend_desc_value = ucwords($current_color_legend_desc_value);
 
         if(!is_null($current_color_code_id_value)){
             $current_color_code_ids = explode(",", $current_color_code_id_value);
@@ -303,10 +309,27 @@ function drstk_timeline( $atts, $params ){
     $color_desc_html_data = '';
     $sample_id_html_data = '';
     forEach($current_color_legend_desc_values as $key => $value){
-        $color_desc_html_data .= "<tr><td width=\"1%\" bgcolor=\"". $key ."\"></td><td>" . $value ."</td></tr>";
+        $color_hex_code='#';
+        foreach ($color_hex as $hex_key => $hex_value){
+            $hex_key = substr($hex_key,0,-10);
+            $desc_key = substr($key,0,-14);;
+            if($hex_key==$desc_key){
+                $color_hex_code.= $hex_value;
+            }
+        }
+        $color_desc_html_data .= "<tr><td width=\"1%\" bgcolor=\"". $color_hex_code ."\"></td><td>" . $value ."</td></tr>";
     }
+
     forEach($index_color_pair as $key_index => $color_value){
-        $color_ids_html_data .= " data-" . str_replace('/', '', $key_index) . "='" . $color_value . "' ";
+        $color_hex_code='#';
+        foreach ($color_hex as $hex_key => $hex_value){
+            $hex_key = substr($hex_key,0,-10);
+            $desc_key = substr($color_value,0,-14);;
+            if($hex_key==$desc_key){
+                $color_hex_code.= $hex_value;
+            }
+        }
+        $color_ids_html_data .= " data-" . str_replace('/', '', $key_index) . "='" . $color_hex_code . "' ";
     }
 
     if (isset($atts['custom_timeline_urls']) && ($atts['custom_timeline_urls'] != '')) {
