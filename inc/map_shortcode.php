@@ -8,7 +8,6 @@ function reload_filtered_set_ajax_handler()
         echo drstk_map($_POST['atts'], $_POST['params']);
     }
     else if($_POST['reloadWhat'] == "facetReload") {
-        write_log($_POST['reloadWhat']);
         if (isset($_POST['atts']['collection_id'])) {
             $url = "https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=10";
             if (isset($_POST['params']['f'])) {
