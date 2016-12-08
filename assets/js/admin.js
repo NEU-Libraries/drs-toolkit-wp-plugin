@@ -343,7 +343,11 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						ids.push(pid);
 					});
 					ids.join(",");
-					shortcode += ' id="'+ids+'"';
+
+					if(!jQuery("#drs-select-all-item").prop("checked")){
+						shortcode += ' id="'+ids+'"';
+					}
+
 					if (this.current_tab == 5 || this.current_tab == 6){
 						var self = this;
 						_.each(this.colors, function(color){
@@ -1010,7 +1014,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				},
 				complete: function(jqXHR, textStatus){
 					
-					jQuery("#select-all-label").show(); //Enabline the Select All checkbox after the API call completes
+					jQuery("#select-all-label").show(); //Enable the Select All checkbox after the API call completes
 					if (mapsBool){media_count = self.geo_count}
 					if (timelineBool){media_count = self.time_count}
 					if ((media_count >= (collection_data.pagination.table.current_page * 20)) && (last === true)){
@@ -1514,6 +1518,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				});
 				setting.set('value', vals);
 			} else {
+
 				name = jQuery(e.currentTarget).attr("name");
 				setting = this.shortcode.get('settings').where({name:name})[0];
 				val = jQuery(e.currentTarget).val();

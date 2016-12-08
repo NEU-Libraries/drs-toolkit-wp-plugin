@@ -8,9 +8,9 @@ jQuery(document).ready(function($) {
     $("#drs-selection").remove();
     $("#drs-facets").remove();
 
-    $("#content .row").prepend('<div id="search-and-facet" class="col-md-2"><form id="check1"><input id="test1" type="text" placeholder="Search ..."></form><br><br></div>');
+    $("#content .row").prepend('<div id="search-and-facet" class="col-md-2"><form id="check1" class="search"><input id="test1" type="text" placeholder="Search map items..."><button id="searchMapItems" class="fa fa-search" style="padding-right: 45px;"></button></form><br><br></div>');
     $("#search-and-facet").append("<div id='drs-facets' class='one_fourth hidden-phone hidden-xs hidden-sm'></div>");
-    $("#content").prepend("<div id='drs-selection' class='col-md-10'></div>");
+    $("#content").prepend("<div id='drs-selection' class='col-md-10' style='padding-left: 7.5%;'></div>");
 
     var facets_recieved = facets_info_data_obj.data.response.facet_counts
     var atts = facets_info_data_obj.atts;
@@ -90,10 +90,12 @@ jQuery(document).ready(function($) {
             } else {
                 facet = facet.substr(4);
             }
-
+            jQuery("#mapErrorMsg").remove();
             var facet_val = $(this).children(".drs-facet-val div:first-of-type").html();
             params1.f[facet] = facet_val;
-            jQuery(".entry-header").append("<div id='mapLoadingElement' class='themebutton btn btn-more'>Loading Remaining Map Items...</div>");
+            if($("#mapLoadingElement").length <= 0){
+                jQuery(".entry-header").append("<div id='mapLoadingElement' class='themebutton btn btn-more'>Loading Remaining Map Items...</div>");
+            }
             reloadMap(facets_info_data_obj, atts, params1, post_id);
             jQuery("#drs-selection").append("<a class='themebutton btn btn-more' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize_1(facet)+" > "+facet_val+" <span class='fa fa-close'></span></a>");
             clickable_1();
@@ -106,12 +108,16 @@ jQuery(document).ready(function($) {
 
     $('#check1').on('keyup', '#test1', function(e) {
         if (e.keyCode == '13') {
+            jQuery("#mapErrorMsg").remove();
             search = $('#test1').val();
+            $('#test1').val('');
             if ((search) && (search != '')){
                 params1["page_no"] = 1;
                 params1["q"] = search;
                 $("#drs-selection a[data-type='q']").remove();
-                jQuery(".entry-header").append("<div id='mapLoadingElement' class='themebutton btn btn-more'>Loading Remaining Map Items...</div>");
+                if($("#mapLoadingElement").length <= 0){
+                    jQuery(".entry-header").append("<div id='mapLoadingElement' class='themebutton btn btn-more'>Loading Remaining Map Items...</div>");
+                }
                 $("#drs-selection").append("<a class='themebutton btn btn-more' href='#' data-type='q' data-val='"+search+"'>"+search+" <span class='fa fa-close'></span></a>");
                 reloadMap(facets_info_data_obj, atts, params1, post_id);
                 clickable_1();
@@ -119,7 +125,26 @@ jQuery(document).ready(function($) {
         }
     });
 
+    $('#searchMapItems').on('click', function (e) {
+        e.preventDefault();
+        jQuery("#mapErrorMsg").remove();
+        search = $('#test1').val();
+        $('#test1').val('');
+        if ((search) && (search != '')){
+            params1["page_no"] = 1;
+            params1["q"] = search;
+            $("#drs-selection a[data-type='q']").remove();
+            if($("#mapLoadingElement").length <= 0){
+                jQuery(".entry-header").append("<div id='mapLoadingElement' class='themebutton btn btn-more'>Loading Remaining Map Items...</div>");
+            }
+            $("#drs-selection").append("<a class='themebutton btn btn-more' href='#' data-type='q' data-val='"+search+"'>"+search+" <span class='fa fa-close'></span></a>");
+            reloadMap(facets_info_data_obj, atts, params1, post_id);
+            clickable_1();
+        }
+    });
+
     function reloadMap (facets_info_data_obj, atts, params1, post_id){
+        console.log("Loading Remaning Map Items...Page no. "+params1["page_no"]);
 
         var page_no = params1["page_no"];
 
@@ -135,10 +160,18 @@ jQuery(document).ready(function($) {
             },
             success: function(data)
             {
+                jQuery("#mapErrorMsg").remove();
                 if(data == "All_Pages_Loaded"){
                     jQuery("#mapLoadingElement").remove();
-                }else{
-                    //WILL HAVE TO INCLUDE FOR CUSTOM COORDINATES
+                    console.log("All pages loaded ... Done .. No more Api calls");
+                }
+                else if(data == "No Result"){
+                    $("#mapLoadingElement").remove();
+                    params1["q"] = '';
+                    $("#drs-selection a[data-type='q']").remove();
+                    jQuery("#check1").append("<div id='mapErrorMsg'><span style=color:red;>No Results Found.</span></div>");
+                }
+                else if(jQuery(data).find(".coordinates").length > 0){
 
                     //to grab the map div
                     var mapDiv = jQuery(data).filter("#map").empty()[0].outerHTML;
@@ -209,9 +242,16 @@ jQuery(document).ready(function($) {
                     reloadMap(facets_info_data_obj, atts, params1, post_id);
 
                 }
+                else{
+                    $("#mapLoadingElement").remove();
+                    jQuery("#check1").append("<div id='mapErrorMsg'><span style=color:red;>No Coordinates Found for Selected Item.</span></div>");
+                }
             }, error: function()
             {
                 alert("failure");
+                jQuery("#mapLoadingElement").remove();
+                jQuery("#mapErrorMsg").remove();
+                $("#drs-selection").empty();
             }
         });
     }
@@ -232,6 +272,7 @@ jQuery(document).ready(function($) {
             },
             error: function(){
                 alert("failure");
+                jQuery("#mapLoadingElement").remove();
             }
         });
     }
@@ -251,9 +292,11 @@ jQuery(document).ready(function($) {
             }
             $(this).remove();
             params1["page_no"] = 1;
-            jQuery(".entry-header").append("<div id='mapLoadingElement' class='themebutton btn btn-more'>Loading Remaining Map Items...</div>");
+            if($("#mapLoadingElement").length <= 0){
+                jQuery(".entry-header").append("<div id='mapLoadingElement' class='themebutton btn btn-more'>Loading Remaining Map Items...</div>");
+            }
             reloadMap(facets_info_data_obj, atts, params1, post_id);
-            clickable_1();
+            //clickable_1();
         });
     }
 
