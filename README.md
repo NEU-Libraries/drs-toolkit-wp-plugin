@@ -139,3 +139,18 @@ Optional Steps for Updating
     }
   ```
 3. Update the plugin by running `php composer.phar update` in the root directory of your wordpress install.
+
+---
+To Setup Mirador
+
+1. Make a IIIF compliant manifest.json file and place it under the root of the install like http://example.northeastern.edu/manifest.json
+
+2. Copy the file in plugins/drs-tk/assets/mirador/sample_manifest.js to plugins/drs-tk/assets/mirador/mirador_manifest.js
+
+   ```
+      cd wp-content/plugins/drs-tk
+      cp assets/mirador/sample_manifest.js assets/mirador/mirador_manifest.js
+   ```
+3. Modify assets/mirador/mirador_manifest.js to point the manifest.json file you created
+   change [wordpress_url] to the url for the wordpress install like http://example.northeastern.edu
+4. Go to /wp-admin in your browser and update the CERES settings to enable Mirador, set a page title, and custom URL
