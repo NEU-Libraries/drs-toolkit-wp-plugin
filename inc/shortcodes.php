@@ -24,7 +24,8 @@ function drstk_enqueue_page_scripts( $hook ) {
       ) );
       wp_localize_script( 'drstk_admin_js', 'drstk_backbone_modal_l10n',
         array(
-          'replace_message' => __( 'Choose a method of embedding DRS and/or DPLA item(s).<br/><br/><table><tr><td><a class="button" href="#one">Single Item</a></td><td><a class="button" href="#four">Media Playlist</a></td></tr><tr><td><a class="button" href="#two">Tile Gallery</a></td><td><a class="button" href="#five">Map</a></td></tr><tr><td><a class="button" href="#three">Gallery Slider</a></td><td><a class="button" href="#six">Timeline</a></td></tr></table>', 'backbone_modal' )
+          'replace_message' => __( 'Choose a method of embedding DRS and/or DPLA item(s).<br/><br/><table><tr><td><a class="button" href="#one">Single Item</a></td><td><a class="button" href="#four">Media Playlist</a></td></tr><tr><td><a class="button" href="#two">Tile Gallery</a></td><td><a class="button" href="#five">Map</a></td></tr><tr><td><a class="button" href="#three">Gallery Slider</a></td><td><a class="button" href="#six">Timeline</a></td></tr></table>', 'backbone_modal' ),
+          'collection_id' => drstk_get_pid(),
         ) );
       wp_enqueue_style( 'drstk_jquery_ui', 'http://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css');
 
