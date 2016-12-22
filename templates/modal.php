@@ -89,14 +89,14 @@
 			<div class="drs-chosen"></div>
 			<br/>
 			<button class="drs-facets-button">Show Filtering Options</button>
-			
+
 			<!-- Code to add Select all checkbox only for map and timeline -->
 			<# if(data.title == "Map" || data.title == "Timeline"){ #>
-            <label id="select-all-label" style="display:none">
-                <input id="drs-select-all-item" type="checkbox"> Select All </input>
-            </label>
-            <# } #>
-			
+	      <label id="select-all-label">
+	        <input id="drs-select-all-item" type="checkbox"> Select All </input>
+	      </label>
+      <# } #>
+
 			<div class="drs-items">Loading...</div>
 			<div class="drs-facets hidden">
 				<b class="drs-facet-title">Filters <a href='' class="drs-close-facets"><span class="dashicons dashicons-no"> </span></a></b>
@@ -248,4 +248,3 @@
 	<td><input type='color' name="{{data.colorname}}" value='{{data.colorHex}}' /></td>
 	<td><div style="cursor:pointer;font-weight:bold" class="delete-color-row" id ='delete-{{data.name}}'>X</div></td>
 </script>
-
