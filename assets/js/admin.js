@@ -24,7 +24,19 @@ drstk.Setting = Backbone.Model.extend({
 	choices: {},
 	label: '',
 	helper: '',
-	tag: ''
+	tag: '',
+	selectedId :'',
+	colorHex :'',
+	colorId :''
+});
+
+drstk.ColorSetting = Backbone.Model.extend({
+	name: '',
+	value: [],
+	label: '',
+	tag :'',
+	colorname:'',
+	colorHex:'',
 });
 
 drstk.Items = Backbone.Collection.extend({
@@ -35,19 +47,26 @@ drstk.Settings = Backbone.Collection.extend({
 	model: drstk.Setting
 });
 
+drstk.ColorSettings = Backbone.Collection.extend({
+	model: drstk.ColorSetting
+});
+
 drstk.Shortcode = Backbone.Model.extend({
 	defaults:{
 		type: '',
 		items: new drstk.Items(),
 		settings: new drstk.Settings(),
+		colorsettings: new drstk.ColorSettings(),
 	},
 	initialize: function() {
     this.set('items', new drstk.Items());
 		this.set('settings',  new drstk.Settings());
+		this.set('colorsettings',new drstk.ColorSettings());
   },
 	parse: function(response){
 		response.items = new drstk.Items(response.items);
 		response.settings = new drstk.Settings(response.settings);
+		response.colorsettings = new drstk.ColorSettings(response.colorsettings);
 		return response;
 	},
 	set: function(attributes, options) {
@@ -57,6 +76,9 @@ drstk.Shortcode = Backbone.Model.extend({
 		if (attributes.settings !== undefined && !(attributes.settings instanceof drstk.Settings)) {
         attributes.settings = new drstk.Settings(attributes.settings);
     }
+		if (attributes.colorsettings !== undefined && !(attributes.colorsettings instanceof drstk.ColorSettings)) {
+			attributes.colorsettings = new drstk.ColorSettings(attributes.colorsettings);
+		}
     return Backbone.Model.prototype.set.call(this, attributes, options);
 	}
 });
@@ -76,6 +98,8 @@ drstk.ItemView = Backbone.View.extend({
 		}
 	}
 });
+var click_counter=1;
+var colorArray = [];
 
 drstk.SettingView = Backbone.View.extend({
 	checkbox_template: wp.template( "drstk-setting-checkbox" ),
@@ -97,7 +121,23 @@ drstk.SettingView = Backbone.View.extend({
 			this.$el.html( this.number_template(this.model.toJSON()));
 		}
 	},
-})
+});
+
+drstk.ColorSettingView = Backbone.View.extend({
+	color_row_template: wp.template( "drstk-setting-colorinput" ),
+	tagName: 'tr',
+	initialize: function(){
+		this.render();
+	},
+	render: function() {
+		if (this.model.attributes.tag == 'inputcolor') {
+			this.$el.html(this.color_row_template(this.model.toJSON()));
+		}
+	},
+	remove: function(){
+		this.collection.remove(this.model);
+	},
+});
 
 /**
  * Primary Modal Application Class
@@ -106,6 +146,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 	{
 		id: "backbone_modal_dialog",
 		events: {
+			"change #drs-select-all-item": "selectAllItem",
 			"click .backbone_modal-close": "closeModal",
 			"click #btn-cancel": "closeModal",
 			"click #btn-ok": "insertShortcode",
@@ -132,6 +173,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			"click .drs-facet-remove": "drsFacetRemove",
 			"click .dpla-expand-facet": "dplaFacetExpand",
 			"click .drs-expand-facet": "drsFacetExpand",
+			"click #addcolorbutton" : "settingsAddColor",
+			"click #save-button" : "settingsSaveColor",
+			"click .delete-color-row":"deleteColorRow",
 		},
 
 		/**
@@ -165,7 +209,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			5: 'map',
 			6: 'timeline'
 		},
-		colors: ["red", "green", "blue", "yellow", "orange"],
+		colors: ["default"],
 
 		/**
 		 * Instantiates the Template object and triggers load.
@@ -174,7 +218,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			"use strict";
 			this.options = options;
 
-			_.bindAll( this, 'render', 'preserveFocus', 'closeModal', 'insertShortcode', 'navigate', 'showTab', 'getDRSitems', 'selectItem', 'paginate', 'navigateShortcode', 'search', 'setDefaultSettings', 'appendSingleItem' );
+			_.bindAll( this, 'render', 'preserveFocus', 'closeModal', 'insertShortcode', 'navigate', 'showTab', 'getDRSitems', 'selectItem', 'paginate', 'navigateShortcode', 'search', 'setDefaultSettings', 'appendSingleItem' , 'selectAllItem','settingsAddColor','settingsSaveColor','deleteColorRow');
 			this.initialize_templates();
 			this.render();
 			this.shortcode = new drstk.Shortcode({});
@@ -284,7 +328,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		/* close the modal */
 		closeModal: function ( e ) {
 			"use strict";
-
+			click_counter=1;
 			e.preventDefault
 			this.undelegateEvents();
 			jQuery( document ).off( "focusin" );
@@ -296,6 +340,24 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			drstk.backbone_modal.__instance = undefined;
 		},
 
+		/* select all items when 'Select All' checkbox is enabled */
+
+            selectAllItem: function ( e ) {
+            "use strict";
+
+            e.preventDefault
+
+            if(jQuery("#drs-select-all-item").prop("checked")){
+                jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("checked", true);
+                jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("disabled", true);
+                jQuery(".tile").trigger("change"); //This will call the selectItem function for all the selected items.
+            }else{
+                jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("checked", false);
+                jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("disabled", false);
+                this.shortcode.items.models.length = 0; //When the "Select All" checkbox is enabled, all the shortcodes should become null.
+            }
+        },
+
 		/* inserts shortcode and closes modal */
 		insertShortcode: function ( e ) {
 			var items = this.shortcode.items;
@@ -306,6 +368,12 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				if (end_date != undefined) {end_date = end_date.attributes.value[0];}
 				if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || (this.current_tab == 6 && start_date == undefined && end_date == undefined && this.validTime() == true) || (this.current_tab == 5 && this.validMap() == true) || (this.current_tab == 1 && this.shortcode.items.length == 1) || (this.current_tab != 6 && this.current_tab != 1 && this.current_tab != 5)){
 					shortcode = '<p>[drstk_'+this.tabs[this.current_tab];
+
+					// If check box is checked then add collection_Id attribute to the shortcode
+					if(jQuery("#drs-select-all-item").prop("checked")){
+						shortcode += ' collection_id="neu:cj82kp79t"';
+					}
+
 					ids = []
 					jQuery.each(items.models, function(i, item){
 						if (item.attributes.repo == 'dpla'){
@@ -318,9 +386,14 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						ids.push(pid);
 					});
 					ids.join(",");
-					shortcode += ' id="'+ids+'"';
+
+					if(!jQuery("#drs-select-all-item").prop("checked")){
+						shortcode += ' id="'+ids+'"';
+					}
+
 					if (this.current_tab == 5 || this.current_tab == 6){
 						var self = this;
+						var col_desc="";
 						_.each(this.colors, function(color){
 							arr = [];
 							items = self.shortcode.items.where({'color':color});
@@ -335,7 +408,11 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								arr.push(pid);
 							});
 							if (arr.length > 0){
-								shortcode += ' '+color+'_id="'+arr.join(",")+'"';
+								color_desc = color.split(/\s+/);
+								if(color_desc.length>1){
+									color =color_desc.join('_');
+								}
+								shortcode += ' '+color+'_color_desc_id="'+arr.join(",")+'"';
 							}
 						});
 					}
@@ -348,11 +425,21 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 							shortcode += ' '+setting.get('name')+'="'+vals+'"';
 						}
 					});
+					if (this.current_tab == 5 || this.current_tab == 6) {
+						var color_shortcode = " "
+						_.each(colorArray, function (key) {
+							color_desc = key.colorDesc.split(/\s+/);
+							if(color_desc.length>1){
+								color_desc =color_desc.join('_');
+							}
+							var hexval = key.colorLabelHexID.substring(1,key.colorLabelHexID.length);
+							color_shortcode += color_desc +'_color_hex' + '="' + hexval + '" ';
+						});
+						shortcode += color_shortcode;
+					}
 					shortcode += ']</p>';
 					this.closeModal( e );
 					window.wp.media.editor.insert(shortcode);
-					console.log(shortcode);
-					console.log("should have closed");
 				} else if (this.current_tab == 1 && this.shortcode.items.length > 1){
 					alert("There are more than 1 items selected for a single item shortcode.");
 			  } else if (this.current_tab == 6){
@@ -667,20 +754,78 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					'value': options['metadata'] ? options['metadata'] : ['Creator,Contributor'],
 					'choices':{'Creator,Contributor':'Creator,Contributor','Date Created':'Date Created','Abstract/Description':'Abstract/Description'},
 				});
-				_.each(this.colors, function(color){
-					var desc = options[color+'_desc'] ? options[color+'_desc'] : options[color+'_legend_desc'];
-					settings.add({
-						'name':color+'_desc',
-						'label':color.charAt(0).toUpperCase()+color.slice(1)+" Description",
-						'tag':'text',
-						'value': desc != undefined ? desc : ''
-					});
-				});
+
 				this.shortcode.set('settings', settings);
 			} else {
-				console.log(type);
 				console.log("not a known shortcode type");
 			}
+		},
+
+		settingsAddColor : function(e){
+			type =this.shortcode.get('type');
+			colorsettings = this.shortcode.get('colorsettings');
+			name = 'label-text-' +click_counter+ '_desc';
+			value ='label-' +click_counter;
+			label= 'label-' +click_counter;
+			colorname='label-color-' + click_counter;
+			colorsettings.add({
+				'name': name,
+				'value': value,
+				'label': label,
+				'tag' : 'inputcolor',
+				'colorname':colorname,
+				'colorHex':'#0080ff',
+			});
+			this.shortcode.set('colorsettings',colorsettings);
+			this.getSettings();
+			jQuery('#settings table').css({"float":"left"});
+			if(type=="map"){
+				jQuery('#settings .color-table').css({"float": "right","position": "relative","right": "110px","width": "515px"});
+			}
+			if(type=="timeline"){
+				jQuery('#settings .color-table').css({"right": "248px","width": "515px"});
+			}
+			click_counter = click_counter + 1;
+		},
+		settingsSaveColor : function(e){
+			e.preventDefault();
+			colorArray = [];
+			drstk.backbone_modal.Application.prototype.colors=[];
+			//drstk.backbone_modal.Application.prototype.colors.push("Default");
+			jQuery('#settings tr[class^="label-text-"]').each(function () {
+				var obj = {};
+				obj["colorLabelID"] = jQuery(this).find('h5').text();
+				obj["colorDesc"] = jQuery(this).find('input[type="text"]').val();
+				obj["colorLabelHexID"] = jQuery(this).find('input[type="color"]').val();
+				drstk.backbone_modal.Application.prototype.colors.push( jQuery(this).find('input[type="text"]').val());
+				colorArray.push(obj);
+			});
+		},
+		deleteColorRow : function(e){
+			e.preventDefault();
+			var id="";
+			var index_val=-1;
+			id =jQuery(e.currentTarget).attr("id");
+			type =this.shortcode.get('type');
+			class_name_original = id.substr(7,id.length);
+			class_name = "#settings > table.color-table > tbody > tr."+ class_name_original;
+			colorsettings = this.shortcode.get('colorsettings');
+			jQuery.each(colorsettings.models,function(index,value){
+				if(value.attributes["name"].toString()==class_name_original){
+					index_val=index;
+				}
+			});
+			colorsettings.models.splice(index_val,1);
+			this.shortcode.set('colorsettings',colorsettings);
+			this.getSettings();
+			jQuery('#settings table').css({"float":"left"});
+			if(type=="map"){
+				jQuery('#settings .color-table').css({"float": "right","position": "relative","right": "110px","width": "515px"});
+			}
+			if(type=="timeline"){
+				jQuery('#settings .color-table').css({"right": "248px","width": "515px"});
+			}
+			jQuery(class_name).remove();
 		},
 
 		/* navigation between shortcode types */
@@ -723,6 +868,13 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				this.getSelecteditems();
 				tab_name = this.tabs[this.current_tab]
 				var self = this;
+
+				//Display items as disabled after switching tab between DRSItems and Selected items if the select-all
+				//checkbox is enables
+				if(jQuery("#drs-select-all-item").prop("checked")) {
+                    jQuery("#selected #sortable-"+tab_name+"-list").find("li input").prop("disabled", true);
+
+                }
 				jQuery("#selected #sortable-"+tab_name+"-list").sortable({
 					update: function(event, ui){
 						_.each(_.clone(self.shortcode.items.models), function(model) {
@@ -754,6 +906,15 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			} else if (path == '#settings'){
 				jQuery("#settings").show();
 				this.getSettings();
+				type = this.shortcode.get('type');
+				click_counter=1;
+				jQuery('#settings table').css({"float":"left"});
+				if(type=='map'){
+					jQuery('#settings .color-table').css({"float": "right","position": "relative","right": "110px","width": "515px"});
+				}
+				if(type=='timeline'){
+					jQuery('#settings .color-table').css({"right": "248px","width": "515px"});
+				}
 			}
 		},
 
@@ -1378,7 +1539,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					if (item.attributes.color == color){ colors += " selected='selected'"; }
 					colors += ">"+color.charAt(0).toUpperCase()+color.slice(1)+"</option>";
 				});
-				jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type label").append('<br/>Color: <select name="color"><option value="">Choose one</option>'+colors+'</select>');
+				jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type label").append('<br/>Select: <select name="color"><option value="">Choose one</option>'+colors+'</select>');
 			}
 			if(this.shortcode.items.where({ pid: item.attributes.pid }).length > 0){
 				jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
@@ -1389,14 +1550,40 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			jQuery("#settings").html("<table />");
 			_.each(this.shortcode.get('settings').models, function(setting, i) {
 				var settingView = new drstk.SettingView({
-						model:setting
+					model: setting
 				});
 				jQuery("#settings table").append(settingView.el);
 				jQuery("#settings table tr:last-of-type").addClass(setting.get('name'));
 			});
+				type = this.shortcode.get('type');
+				if(type=='map'||type=='timeline'){
+					jQuery('#settings').append("<table class ='color-table'>"+
+						"<colgroup><col style='width: 25%;'>"+
+						"<col style='width: 44%;'>"+
+						"<col style='width: 20%;'></colgroup>"+
+						"<tbody>" +
+						"<tr class='buttons'><td>"+
+						"<button type='button' id ='addcolorbutton'>Add </button> &nbsp; &nbsp;"+
+						"<button type='button' id ='save-button'>Save </button></td></tr>"+
+						"<tr class='colorheader'>"+
+						"<td><h5>Label</h5></td>"+
+						"<td><h5>Description</h5></td>"+
+						"<td><h5>Color Value</h5></td>"+
+						"</tr></tbody>"+
+						"</table>");
+					_.each(this.shortcode.get('colorsettings').models,function(colorsetting,i) {
+						var colorsettingView = new drstk.ColorSettingView({
+							model:colorsetting
+						});
+						jQuery("#settings .color-table").append(colorsettingView.el);
+						jQuery(jQuery("#settings .color-table tr:last-of-type").addClass(colorsetting.get('name')));
+						});
+				}
 		},
 
 		settingsChange: function(e){
+			e.preventDefault();
+			field_name = jQuery(e.currentTarget).attr("name");
 			if (jQuery(e.currentTarget).attr("type") == "checkbox"){
 				name = jQuery(e.currentTarget).parents("tr").attr("class");
 				setting = this.shortcode.get('settings').where({name:name})[0];
@@ -1407,7 +1594,21 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					}
 				});
 				setting.set('value', vals);
-			} else {
+			}
+			else if(jQuery(e.currentTarget).attr("type")=="color"){
+				var color = jQuery(e.currentTarget).val();
+				name = jQuery(e.currentTarget).attr("name");
+				colorsetting = this.shortcode.get('colorsettings').where({colorname:name})[0];
+				colorsetting.set('colorHex',[color]);
+			}
+			else if(field_name.indexOf('label-text-') != -1) {
+				name = jQuery(e.currentTarget).attr("name");
+				colorsetting = this.shortcode.get('colorsettings').where({name:name})[0];
+				val = jQuery(e.currentTarget).val();
+				colorsetting.set('value',[val]);
+			}
+			else {
+
 				name = jQuery(e.currentTarget).attr("name");
 				setting = this.shortcode.get('settings').where({name:name})[0];
 				val = jQuery(e.currentTarget).val();

@@ -1,57 +1,122 @@
 <?php
+
+add_action( 'wp_ajax_reload_filtered_set', 'reload_filtered_set_ajax_handler' ); //for auth users
+add_action( 'wp_ajax_nopriv_reload_filtered_set', 'reload_filtered_set_ajax_handler' ); //for nonauth users
+function reload_filtered_set_ajax_handler()
+{
+    if ($_POST['reloadWhat'] == "mapReload") {
+        echo drstk_map($_POST['atts'], $_POST['params']);
+    }
+    else if($_POST['reloadWhat'] == "facetReload") {
+        if (isset($_POST['atts']['collection_id'])) {
+            $url = "https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=10";
+            if (isset($_POST['params']['f'])) {
+                foreach ($_POST['params']['f'] as $facet => $facet_val) {
+                    $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
+                }
+            }
+            if (isset($_POST['params']['q']) && $_POST['params']['q'] != ''){
+                $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
+            }
+            $data1 = get_response($url);
+            $data1 = json_decode($data1);
+            $facets_info_data = $data1;
+            wp_send_json($facets_info_data);
+        }
+    }
+    die();
+}
+
+
+add_action( 'wp_ajax_reloadRemainingMap', 'reloadRemainingMap_ajax_handler' ); //for auth users
+add_action( 'wp_ajax_nopriv_reloadRemainingMap', 'reloadRemainingMap_ajax_handler' ); //for nonauth users
+function reloadRemainingMap_ajax_handler()
+{
+    $a = get_post($_POST['post_id'])->post_content;
+    $parsed_a = shortcode_parse_atts($a);
+    echo drstk_map($parsed_a, $_POST['params']);
+    die();
+}
+
 /* adds shortcode */
 add_shortcode( 'drstk_map', 'drstk_map' );
-function drstk_map( $atts ){
-  global $errors;
+function drstk_map( $atts , $params){
+    global $errors, $DRS_PLUGIN_URL;
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
 
+    /* Commented for development purpose.
   if($cache) {
     return $cache;
   }
-  $items = array_map('trim', explode(',', $atts['id']));
+    */
+
+    if(!isset($atts['collection_id'])) {
+        $items = array_map('trim', explode(',', $atts['id']));
+    }
+
   $map_api_key = drstk_get_map_api_key();
   $map_project_key = drstk_get_map_project_key();
   $story = isset($atts['story']) ? $atts['story'] : "no";
   $map_html = "";
-  if (!isset($atts['red']) && isset($atts['red_id'])){ $atts['red'] = $atts['red_id']; }
-  if (!isset($atts['red_legend_desc']) && isset($atts['red_desc'])){ $atts['red_legend_desc'] = $atts['red_desc']; }
-  if (!isset($atts['green']) && isset($atts['green_id'])){ $atts['green'] = $atts['green_id']; }
-  if (!isset($atts['green_legend_desc']) && isset($atts['green_desc'])){ $atts['green_legend_desc'] = $atts['green_desc']; }
-  if (!isset($atts['blue']) && isset($atts['blue_id'])){ $atts['blue'] = $atts['blue_id']; }
-  if (!isset($atts['blue_legend_desc']) && isset($atts['blue_desc'])){ $atts['blue_legend_desc'] = $atts['blue_desc']; }
-  if (!isset($atts['yellow']) && isset($atts['yellow_id'])){ $atts['yellow'] = $atts['yellow_id']; }
-  if (!isset($atts['yellow_legend_desc']) && isset($atts['yellow_desc'])){ $atts['yellow_legend_desc'] = $atts['yellow_desc']; }
-  if (!isset($atts['orange']) && isset($atts['orange_id'])){ $atts['orange'] = $atts['orange_id']; }
-  if (!isset($atts['orange_legend_desc']) && isset($atts['orange_desc'])){ $atts['orange_legend_desc'] = $atts['orange_desc']; }
+
 
   $shortcode = "<div id='map' data-story='".$story."' data-map_api_key='".$map_api_key."' data-map_project_key='".$map_project_key."'";
+  foreach($atts as $key => $value){
+        if(preg_match('/(.*)_color_desc_id/',$key)){
+            $shortcode .= " data-".$key."='".$atts[$key]."'";
+        }
+        if(preg_match('/(.*)_color_hex/',$key)){
+            $shortcode .= " data-".$key."='".$atts[$key]."'";
+        }
+    }
 
-  if (isset($atts['red_legend_desc']) && isset($atts['red'])) {
-    $shortcode .= " data-red='".$atts['red']."'";
-    $shortcode .= " data-red_legend_desc='".$atts['red_legend_desc']."'";
-  }
+  /*
+    If collection_id attribute is set, then load the DRS items directly using the search API.
+  */
+    $collectionItemsId = array();
 
-  if (isset($atts['blue_legend_desc']) && isset($atts['blue'])) {
-    $shortcode .= " data-blue='".$atts['blue']."'";
-    $shortcode .= " data-blue_legend_desc='".$atts['blue_legend_desc']."'";
-  }
+    $facets_info_data = array();
 
-  if (isset($atts['green_legend_desc']) && isset($atts['green'])) {
-    $shortcode .= " data-green='".$atts['green']."'";
-    $shortcode .= " data-green_legend_desc='".$atts['green_legend_desc']."'";
-  }
+    if(isset($atts['collection_id'])){
 
-  if (isset($atts['yellow_legend_desc']) && isset($atts['yellow'])) {
-    $shortcode .= " data-yellow='".$atts['yellow']."'";
-    $shortcode .= " data-yellow_legend_desc='".$atts['yellow_legend_desc']."'";
-  }
+        $url = "https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=10";
 
-  if (isset($atts['orange_legend_desc']) && isset($atts['orange'])) {
-    $shortcode .= " data-orange='".$atts['orange']."'";
-    $shortcode .= " data-orange_legend_desc='".$atts['orange_legend_desc']."'";
-  }
+        if(isset($params['page_no'])){
+            $url .= "&page=" . $params['page_no'];
+        }
 
-  foreach($items as $item){
+        if (isset($params['f'])) {
+            foreach ($params['f'] as $facet => $facet_val) {
+                $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
+            }
+        }
+
+        if (isset($params['q']) && $params['q'] != ''){
+            $url .= "&q=". urlencode(sanitize_text_field($params['q']));
+        }
+
+        $data1 = get_response($url);
+        $data1 = json_decode($data1);
+        $facets_info_data = $data1;
+
+        $num_pages = $data1->pagination->table->num_pages;
+
+        if($num_pages == 0){
+            return "No Result";
+        }
+
+        if(isset($params['page_no']) && $params['page_no'] > $num_pages){
+            return "All_Pages_Loaded";
+        }
+
+        $docs2 = $data1->response->response->docs;
+        foreach($docs2 as $docItem){
+            $collectionItemsId [] = $docItem->id;
+        }
+        $items = $collectionItemsId;
+    }
+
+    foreach($items as $item){
     $repo = drstk_get_repo_from_pid($item);
     if ($repo != "drs"){$pid = explode(":",$item); $pid = $pid[1];} else {$pid = $item;}
     if ($repo == "drs"){
@@ -248,7 +313,6 @@ function drstk_map( $atts ){
     $custom_map_descriptions = explode(",",$atts['custom_map_descriptions']);
     $custom_map_locations = explode(",",$atts['custom_map_locations']);
     $custom_map_color_groups = explode(",",$atts['custom_map_color_groups']);
-
     foreach($custom_map_urls as $key=>$value) {
       $url = $value;
       $title = $custom_map_titles[$key];
@@ -275,12 +339,40 @@ function drstk_map( $atts ){
   $cache_output = $shortcode;
   $cache_time = 1000;
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
-  return $shortcode;
+
+    if(isset($atts['collection_id'])) {
+        wp_register_script('drstk_map_test', $DRS_PLUGIN_URL . '/assets/js/mapCollection.js', array('jquery'));
+        wp_enqueue_script('drstk_map_test');
+
+        $reload_filtered_set_drs_nonce = wp_create_nonce('reload_filtered_set_drs');
+
+        $map_nonce = wp_create_nonce('map_nonce');
+
+        $map_obj = array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => $map_nonce,
+            'home_url' => drstk_home_url()
+        );
+
+        $facets_info_data_obj = array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => $reload_filtered_set_drs_nonce,
+            'data' => $facets_info_data,
+            'home_url' => drstk_home_url(),
+            "atts" => $atts,
+            "map_obj" => $map_obj
+        );
+        wp_localize_script('drstk_map_test', 'facets_info_data_obj', $facets_info_data_obj);
+    }
+
+    return $shortcode;
 }
 
 function drstk_map_shortcode_scripts() {
+
   global $post, $wp_query, $DRS_PLUGIN_URL;
-  if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_map') && !isset($wp_query->query_vars['drstk_template_type']) ) {
+
+    if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_map') && !isset($wp_query->query_vars['drstk_template_type']) ) {
     wp_register_script('drstk_leaflet',
         $DRS_PLUGIN_URL .'/assets/js/leaflet/leaflet.js',
         array( 'jquery' ));
@@ -310,14 +402,20 @@ function drstk_map_shortcode_scripts() {
     wp_enqueue_script('drstk_map');
 
     $map_nonce = wp_create_nonce( 'map_nonce' );
+    $temp =  shortcode_parse_atts($post->post_content);
+    $collectionSet = "";
 
+    if(isset($temp['collection_id']) && $temp['collection_id'] != ''){
+        $collectionSet = "checked";
+    }
     $map_obj = array(
       'ajax_url' => admin_url('admin-ajax.php'),
       'nonce'    => $map_nonce,
       'home_url' => drstk_home_url(),
+      'post_id' => $post->ID,
+      'collectionSet' => $collectionSet
     );
     wp_localize_script( 'drstk_map', 'map_obj', $map_obj );
-
   }
 }
 add_action( 'wp_enqueue_scripts', 'drstk_map_shortcode_scripts');
