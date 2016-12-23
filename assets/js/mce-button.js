@@ -7,7 +7,7 @@
       old_shortcode = shortcode;
       if (shortcode.charAt(0) == "[" && shortcode.charAt(shortcode.length-1) == "]"){
         type = shortcode.split("id=")[0].trim();
-				type = shortcode.split("collection")[0].trim();
+				type = type.split("collection")[0].trim();
         type = type.split("_")[1].trim();
 				if (type == 'tiles'){type = 'tile'}
 				if (type == 'item'){type = 'single'}
