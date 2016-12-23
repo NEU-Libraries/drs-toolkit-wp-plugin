@@ -195,7 +195,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		shortcode: null,
 		geo_count: 0,
 		time_count: 0,
+		select_all: false,
 		old_shortcode: null,
+		collection_id: drstk_backbone_modal_l10n.collection_id,
 
 		search_q: '',
 		search_page: 1,
@@ -236,15 +238,20 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			} else {
 				this.current_tab = 1;
 			}
-			if (this.options && this.options.items.length > 0){
+			if (this.options && ((this.options.items && this.options.items.length > 0) || (this.options.collection_id && this.options.collection_id.length > 0))){
 				var self = this;
-				_.each(this.options.items, function(item, i){
-					if (i == 0){
-						self.shortcode.items = new drstk.Items(item);
-					} else {
-						self.shortcode.items.add(item);
-					}
-				});
+				if (this.options.items && this.options.items.length > 0){
+					_.each(this.options.items, function(item, i){
+						if (i == 0){
+							self.shortcode.items = new drstk.Items(item);
+						} else {
+							self.shortcode.items.add(item);
+						}
+					});
+				} else { //starting with collection_id
+					self.select_all = true;
+					jQuery(".backbone_modal-main #drs-select-all-item").prop("checked", true);
+				}
 				e.currentTarget = jQuery(".nav-tab[href='#selected']");
 				this.navigateShortcode(e);
 			}
@@ -342,21 +349,24 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 
 		/* select all items when 'Select All' checkbox is enabled */
 
-            selectAllItem: function ( e ) {
-            "use strict";
-
-            e.preventDefault
-
-            if(jQuery("#drs-select-all-item").prop("checked")){
-                jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("checked", true);
-                jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("disabled", true);
-                jQuery(".tile").trigger("change"); //This will call the selectItem function for all the selected items.
-            }else{
-                jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("checked", false);
-                jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("disabled", false);
-                this.shortcode.items.models.length = 0; //When the "Select All" checkbox is enabled, all the shortcodes should become null.
-            }
-        },
+	  selectAllItem: function ( e ) {
+      "use strict";
+      e.preventDefault
+      if(jQuery("#drs-select-all-item").prop("checked")){
+        jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("checked", true);
+        jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("disabled", true);
+        jQuery(".tile").trigger("change"); //This will call the selectItem function for all the selected items.
+      }else{
+        jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("checked", false);
+        jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("disabled", false);
+        this.shortcode.items.models.length = 0; //When the "Select All" checkbox is enabled, all the shortcodes should become null.
+      }
+			if (this.select_all == true){ //now that all the items have been selected we can navigate to the correct tab
+				e.currentTarget = jQuery(".nav-tab[href='#selected']");
+				this.navigateShortcode(e);
+			}
+			this.select_all = true;
+	  },
 
 		/* inserts shortcode and closes modal */
 		insertShortcode: function ( e ) {
@@ -371,7 +381,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 
 					// If check box is checked then add collection_Id attribute to the shortcode
 					if(jQuery("#drs-select-all-item").prop("checked")){
-						shortcode += ' collection_id="neu:cj82kp79t"';
+						shortcode += ' collection_id="'+this.collection_id+'"';
 					}
 
 					ids = []
@@ -986,7 +996,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 							 last = true;
 						 } else {last = false;}
              if (item.active_fedora_model_ssi == 'CoreFile'){
-               if ((self.current_tab == 5 && ((item.subject_geographic_tesim && item.subject_geographic_tesim.length) || (item.subject_cartographics_coordinates_tesim && data.subject_cartographics_coordinates_tesim.length)) ) || (self.current_tab == 6 && item.key_date_ssi) || (self.current_tab != 5 && self.current_tab != 6)){
+               if ((self.current_tab == 5 && ((item.subject_geographic_tesim && item.subject_geographic_tesim.length) || (item.subject_cartographics_coordinates_tesim && item.subject_cartographics_coordinates_tesim.length)) ) || (self.current_tab == 6 && item.key_date_ssi) || (self.current_tab != 5 && self.current_tab != 6)){
 								this_item = new drstk.Item;
 								thumb = "https://repository.library.northeastern.edu"+item.thumbnail_list_tesim[0];
 								this_item.set("pid", item.id).set("thumbnail", thumb).set("repo", "drs").set("title", item.full_title_ssi);
@@ -1003,7 +1013,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 									}
 								}
 								if (self.current_tab == 6){
-									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: "+data.key_date_ssi+"</p>");
+									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: "+item.key_date_ssi+"</p>");
 								}
               }
 							jQuery(".drs-items").html("");
@@ -1082,6 +1092,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
          } else {
            jQuery(".drs-items").html("<div class='notice notice-warning'><p>No results were retrieved for your query. Please try a different query.</p></div>");
          }
+				 if (self.select_all == true){
+					 jQuery(".backbone_modal-main #drs-select-all-item").trigger("change"); //This will call the selectAllItem functions
+				 }
        });
 		},
 
@@ -1505,11 +1518,15 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						 }, 1000);
 					 }
 	        });
+				} else if (this.select_all == true){
+					jQuery(".selected-items").html("<div class='notice notice-warning'><p>Selected items are loading...</p></div>");
 				} else {
 					jQuery(".selected-items").html("<div class='notice notice-warning'><p>You haven't selected any items yet.</p></div>");
  				 	jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 				}
-	     } else {
+			} else if (this.select_all == true){
+				jQuery(".selected-items").html("<div class='notice notice-warning'><p>Selected items are loading...</p></div>");
+			} else {
 	       jQuery(".selected-items").html("<div class='notice notice-warning'><p>You haven't selected any items yet.</p></div>");
 				 jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 	     }
