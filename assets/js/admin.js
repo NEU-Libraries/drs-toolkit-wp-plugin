@@ -174,7 +174,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			"click .dpla-expand-facet": "dplaFacetExpand",
 			"click .drs-expand-facet": "drsFacetExpand",
 			"click #addcolorbutton" : "settingsAddColor",
-			"click #save-button" : "settingsSaveColor",
 			"click .delete-color-row":"deleteColorRow",
 		},
 
@@ -198,7 +197,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		select_all: false,
 		old_shortcode: null,
 		collection_id: drstk_backbone_modal_l10n.collection_id,
-
+		options: {},
 		search_q: '',
 		search_page: 1,
 		search_params: {q:this.search_q, page:this.search_page, facets: {}, sort: ""},
@@ -211,7 +210,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			5: 'map',
 			6: 'timeline'
 		},
-		colors: ["default"],
 
 		/**
 		 * Instantiates the Template object and triggers load.
@@ -220,7 +218,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			"use strict";
 			this.options = options;
 
-			_.bindAll( this, 'render', 'preserveFocus', 'closeModal', 'insertShortcode', 'navigate', 'showTab', 'getDRSitems', 'selectItem', 'paginate', 'navigateShortcode', 'search', 'setDefaultSettings', 'appendSingleItem' , 'selectAllItem','settingsAddColor','settingsSaveColor','deleteColorRow');
+			_.bindAll( this, 'render', 'preserveFocus', 'closeModal', 'insertShortcode', 'navigate', 'showTab', 'getDRSitems', 'selectItem', 'paginate', 'navigateShortcode', 'search', 'setDefaultSettings', 'appendSingleItem' , 'selectAllItem','settingsAddColor','deleteColorRow');
 			this.initialize_templates();
 			this.render();
 			this.shortcode = new drstk.Shortcode({});
@@ -252,6 +250,38 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					self.select_all = true;
 					jQuery(".backbone_modal-main #drs-select-all-item").prop("checked", true);
 				}
+				var settings = this.options.settings;
+				_.each(this.options.settings, function(setting, setting_name){
+					if (setting_name.match(/([a-zA-Z_]*)_color_desc_id/)){
+						var desc = setting_name.match(/([a-zA-Z_]*)_color_desc_id/)[1];
+						var code = "#"+settings[desc+'_color_hex'];
+						if (desc && code){
+							var colorsettings = self.shortcode.get('colorsettings');
+							var name = 'label-text-' +click_counter+ '_desc';
+							var value ='label-' +click_counter;
+							var label= 'label-' +click_counter;
+							desc = desc.replace("_", " ");
+							colorsettings.add({
+								'name': name,
+								'value': value,
+								'label': label,
+								'tag' : 'inputcolor',
+								'colorname':desc,
+								'colorHex':code,
+							});
+							self.shortcode.set('colorsettings',colorsettings);
+							var colored_ids = setting.split(",");
+							for (var x = 0; x < colored_ids.length; x++){
+								colored_ids[x] = colored_ids[x].trim();
+							}
+							_.each(colored_ids, function(id){
+								var item = self.shortcode.items.where({ 'pid': id});
+								item[0].attributes["color"] = desc;
+							});
+							click_counter++;
+						}
+					}
+				});
 				e.currentTarget = jQuery(".nav-tab[href='#selected']");
 				this.navigateShortcode(e);
 			}
@@ -404,8 +434,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					if (this.current_tab == 5 || this.current_tab == 6){
 						var self = this;
 						var col_desc="";
-						_.each(this.colors, function(color){
+						_.each(this.shortcode.get('colorsettings').models, function(color){
 							arr = [];
+							color = color.attributes.colorname;
 							items = self.shortcode.items.where({'color':color});
 							_.each(items, function(i){
 								if (i.attributes.repo == 'dpla'){
@@ -418,11 +449,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								arr.push(pid);
 							});
 							if (arr.length > 0){
-								color_desc = color.split(/\s+/);
-								if(color_desc.length>1){
-									color =color_desc.join('_');
-								}
-								shortcode += ' '+color+'_color_desc_id="'+arr.join(",")+'"';
+								color_desc = color.replace(" ", "_");
+								shortcode += ' '+color_desc+'_color_desc_id="'+arr.join(",")+'"';
 							}
 						});
 					}
@@ -436,13 +464,10 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						}
 					});
 					if (this.current_tab == 5 || this.current_tab == 6) {
-						var color_shortcode = " "
-						_.each(colorArray, function (key) {
-							color_desc = key.colorDesc.split(/\s+/);
-							if(color_desc.length>1){
-								color_desc =color_desc.join('_');
-							}
-							var hexval = key.colorLabelHexID.substring(1,key.colorLabelHexID.length);
+						var color_shortcode = " ";
+						_.each(this.shortcode.get('colorsettings').models, function (color) {
+							var color_desc = color.attributes.colorname.replace(" ", "_");
+							var hexval = color.attributes.colorHex.substring(1, color.attributes.colorHex.length);
 							color_shortcode += color_desc +'_color_hex' + '="' + hexval + '" ';
 						});
 						shortcode += color_shortcode;
@@ -471,6 +496,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			settings = this.shortcode.get('settings');
 			if (this.options && this.options.settings){
 				options = this.options.settings;
+			} else if (this.options) {
+				options = this.options;
 			} else {
 				options = {};
 			}
@@ -722,15 +749,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					'choices':{.5:'Very Low',2:'Low',5:'Medium',8:'High',13:'Very High'},
 					'helper':'Specifies the granularity to represent items on the timeline'
 				});
-				_.each(this.colors, function(color){
-					var desc = options[color+'_desc'] ? options[color+'_desc'] : options[color+'_legend_desc'];
-					settings.add({
-						'name':color+'_desc',
-						'label':color.charAt(0).toUpperCase()+color.slice(1)+" Description",
-						'tag':'text',
-						'value': desc ? desc : ''
-					});
-				});
 				this.shortcode.set('settings', settings);
 			} else if (type == 'media') {
 				settings.add({
@@ -788,6 +806,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			});
 			this.shortcode.set('colorsettings',colorsettings);
 			this.getSettings();
+			// TODO - fix these hardedcoded vlaues
 			jQuery('#settings table').css({"float":"left"});
 			if(type=="map"){
 				jQuery('#settings .color-table').css({"float": "right","position": "relative","right": "110px","width": "515px"});
@@ -796,20 +815,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				jQuery('#settings .color-table').css({"right": "248px","width": "515px"});
 			}
 			click_counter = click_counter + 1;
-		},
-		settingsSaveColor : function(e){
-			e.preventDefault();
-			colorArray = [];
-			drstk.backbone_modal.Application.prototype.colors=[];
-			//drstk.backbone_modal.Application.prototype.colors.push("Default");
-			jQuery('#settings tr[class^="label-text-"]').each(function () {
-				var obj = {};
-				obj["colorLabelID"] = jQuery(this).find('h5').text();
-				obj["colorDesc"] = jQuery(this).find('input[type="text"]').val();
-				obj["colorLabelHexID"] = jQuery(this).find('input[type="color"]').val();
-				drstk.backbone_modal.Application.prototype.colors.push( jQuery(this).find('input[type="text"]').val());
-				colorArray.push(obj);
-			});
 		},
 		deleteColorRow : function(e){
 			e.preventDefault();
@@ -828,6 +833,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			colorsettings.models.splice(index_val,1);
 			this.shortcode.set('colorsettings',colorsettings);
 			this.getSettings();
+			//TODO - fix hardcoded css
 			jQuery('#settings table').css({"float":"left"});
 			if(type=="map"){
 				jQuery('#settings .color-table').css({"float": "right","position": "relative","right": "110px","width": "515px"});
@@ -845,6 +851,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			this.geo_count = 0;
 			this.time_count = 0;
 			this.shortcode.set('settings',  new drstk.Settings());
+			this.shortcode.set('colorsettings',  new drstk.ColorSettings());
 			jQuery(".navigation-bar a").removeClass("active");
 			this.showTab(jQuery(e.currentTarget).attr("href"));
 		},
@@ -1163,7 +1170,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								'choices':choices,
 							});
 							self.shortcode.set('settings', settings);
-							console.log(self.shortcode.get('settings'));
 						}
 					});
 				} else if (this.shortcode.get('type') == 'single' && parent == 'dpla'){
@@ -1540,10 +1546,16 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			jQuery("#selected #sortable-"+tab_name+"-list").append(itemView.el);
 			if (this.current_tab == 5 || this.current_tab == 6){
 				colors = "";
-				_.each(this.colors, function(color){
+				var self = this;
+				_.each(self.shortcode.get('colorsettings').models, function(color){
+					color = color.attributes.colorname;
 					colors += "<option value='"+color+"'";
-					preset_colors = this.options[color+"_id"] ? this.options[color+"_id"] : this.options[color];
-					if (preset_colors){
+					if (self.options != undefined && self.options.settings != undefined) {
+						var preset_colors = self.options.settings[color+"_color_desc_id"];
+					} else if (self.options != undefined){
+						var preset_colors = self.options[color+"_id"] ? self.options[color+"_id"] : self.options[color];
+					}
+					if (preset_colors != undefined){
 						preset_colors = preset_colors.split(",");
 						for (var i = 0; i < preset_colors.length; i++) {
     					preset_colors[i] = preset_colors[i].trim();
@@ -1552,7 +1564,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					if (preset_colors != undefined && preset_colors.indexOf(item.attributes.pid) > -1){
 						item.set("color",color);
 					}
-
 					if (item.attributes.color == color){ colors += " selected='selected'"; }
 					colors += ">"+color.charAt(0).toUpperCase()+color.slice(1)+"</option>";
 				});
@@ -1581,9 +1592,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						"<tbody>" +
 						"<tr class='buttons'><td>"+
 						"<button type='button' id ='addcolorbutton'>Add </button> &nbsp; &nbsp;"+
-						"<button type='button' id ='save-button'>Save </button></td></tr>"+
 						"<tr class='colorheader'>"+
-						"<td><h5>Label</h5></td>"+
 						"<td><h5>Description</h5></td>"+
 						"<td><h5>Color Value</h5></td>"+
 						"</tr></tbody>"+
@@ -1594,7 +1603,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						});
 						jQuery("#settings .color-table").append(colorsettingView.el);
 						jQuery(jQuery("#settings .color-table tr:last-of-type").addClass(colorsetting.get('name')));
-						});
+					});
 				}
 		},
 
@@ -1614,18 +1623,18 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			}
 			else if(jQuery(e.currentTarget).attr("type")=="color"){
 				var color = jQuery(e.currentTarget).val();
-				name = jQuery(e.currentTarget).attr("name");
-				colorsetting = this.shortcode.get('colorsettings').where({colorname:name})[0];
-				colorsetting.set('colorHex',[color]);
+				name = jQuery(e.currentTarget).parents("td").prev("td").find("input").attr("name");
+				colorsetting = this.shortcode.get('colorsettings').where({name:name})[0];
+				colorsetting.set('colorHex',color);
 			}
 			else if(field_name.indexOf('label-text-') != -1) {
 				name = jQuery(e.currentTarget).attr("name");
 				colorsetting = this.shortcode.get('colorsettings').where({name:name})[0];
 				val = jQuery(e.currentTarget).val();
-				colorsetting.set('value',[val]);
+				colorsetting.set('value',val);
+				colorsetting.set('colorname', val);
 			}
 			else {
-
 				name = jQuery(e.currentTarget).attr("name");
 				setting = this.shortcode.get('settings').where({name:name})[0];
 				val = jQuery(e.currentTarget).val();
