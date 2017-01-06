@@ -44,7 +44,7 @@
 	});
 
   function getShortcodeParams(shortcode) {
-    var re = /([a-z-_]{1,})="(.*?)"/g,
+    var re = /([a-zA-Z-_]{1,})="(.*?)"/g,
         match, params = {},
         decode = function (s) {return s};
 
