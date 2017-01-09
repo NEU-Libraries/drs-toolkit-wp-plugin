@@ -229,9 +229,9 @@
 
 <?php
 /* a template for Color headers settings */
+// TODO - is this even being used?
 ?>
 <script type='text/html' id='tmpl-drstk-setting-colorheader'>
-	<td><h5>Label</h5></td>
 	<td><h5>Description</h5></td>
 	<td><h5>Color Value</h5></td>
 
@@ -242,8 +242,7 @@
 /* a template for color input */
 ?>
 <script type='text/html' id='tmpl-drstk-setting-colorinput'>
-	<td><h5>{{data.name}}</h5></td>+
-	<td><input type='text' name="{{data.name}}"  value="{{data.value}}" />&nbsp;&nbsp;
+	<td><input type='text' name="{{data.name}}"  value="{{data.colorname}}" />&nbsp;&nbsp;
 	</td>+
 	<td><input type='color' name="{{data.colorname}}" value='{{data.colorHex}}' /></td>
 	<td><div style="cursor:pointer;font-weight:bold" class="delete-color-row" id ='delete-{{data.name}}'>X</div></td>
