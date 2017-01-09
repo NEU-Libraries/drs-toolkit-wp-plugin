@@ -18,6 +18,8 @@ function reload_filtered_set_ajax_handler()
             if (isset($_POST['params']['q']) && $_POST['params']['q'] != ''){
                 $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
             }
+            //pregeofilter - looking for solr docs which contain either subject_geographic_tesim OR subject_cartographics_coordinates_tesim
+            $url .= "&q=subject_geographic_tesim%3A%5B%20*%20TO%20*%20%5D%20OR%20subject_cartographics_coordinates_tesim%3A%5B%20*%20TO%20*%20%5D";
             $data1 = get_response($url);
             $data1 = json_decode($data1);
             $facets_info_data = $data1;
@@ -95,6 +97,9 @@ function drstk_map( $atts , $params){
             $url .= "&q=". urlencode(sanitize_text_field($params['q']));
         }
 
+        //pregeofilter - looking for solr docs which contain either subject_geographic_tesim OR subject_cartographics_coordinates_tesim
+        $url .= "&q=subject_geographic_tesim%3A%5B%20*%20TO%20*%20%5D%20OR%20subject_cartographics_coordinates_tesim%3A%5B%20*%20TO%20*%20%5D";
+
         $data1 = get_response($url);
         $data1 = json_decode($data1);
         $facets_info_data = $data1;
@@ -114,23 +119,25 @@ function drstk_map( $atts , $params){
             $collectionItemsId [] = $docItem->id;
         }
         $items = $collectionItemsId;
+        //TODO - can we change this so that it uses a big solr query instead of getting each item at a time
     }
 
     foreach($items as $item){
     $repo = drstk_get_repo_from_pid($item);
     if ($repo != "drs"){$pid = explode(":",$item); $pid = $pid[1];} else {$pid = $item;}
     if ($repo == "drs"){
-      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item;
+      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item . "?solr_only=true";
       $data = get_response($url);
       $data = json_decode($data);
       if (!isset($data->error)){
-        $pid = $data->pid;
+        $data = $data->_source;
+        $pid = $data->id;
 
         $coordinates = "";
-        if(isset($data->coordinates)) {
-          $coordinates = $data->coordinates;
-        } else if (isset($data->geographic)){
-          $location = $data->geographic[0];
+        if(isset($data->subject_cartographics_coordinates_tesim)) {
+          $coordinates = $data->subject_cartographics_coordinates_tesim[0];
+        } else if (isset($data->subject_geographic_tesim)){
+          $location = $data->subject_geographic_tesim[0];
           $locationUrl = "http://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
           $locationData = get_response($locationUrl);
           $locationData = json_decode($locationData);
@@ -144,31 +151,45 @@ function drstk_map( $atts , $params){
           continue;
         }
 
-        $title = $data->mods->Title[0];
+        $title = $data->full_title_ssi;
         $permanentUrl = drstk_home_url() . "item/".$pid;
         $map_html .= "<div class='coordinates' data-pid='".$pid."' data-url='".$permanentUrl."' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."'";
-
         if (isset($atts['metadata'])){
           $map_metadata = '';
           $metadata = explode(",",$atts['metadata']);
           foreach($metadata as $field){
-            if (isset($data->mods->$field)) {
-              $this_field = $data->mods->$field;
-              if (isset($this_field[0])) {
-                $map_metadata .= $this_field[0] . "<br/>";
+             if (isset($data->$field)){
+               $this_field = $data->$field;
+              if (isset($this_field)){
+                if (is_array($this_field)){
+                  foreach($this_field as $val){
+                    if (is_array($val)){
+                      $map_metadata .= implode("<br/>",$val) . "<br/>";
+                    } else {
+                      $map_metadata .= $val ."<br/>";
+                    }
+                  }
+                } else {
+                  $map_metadata .= $this_field . "<br/>";
+                }
               }
             }
           }
           $map_html .= " data-metadata='".$map_metadata."'";
         }
+
+
         $canonical_object = "";
-        if (isset($data->canonical_object)){
-          foreach($data->canonical_object as $key=>$val){
-            if ($val == 'Video File' || $val == 'Audio File'){
+        if (isset($data->canonical_class_tesim)){
+          if ($data->canonical_class_tesim[0] == "AudioFile" || $data->canonical_class_tesim[0] == "VideoFile"){
+            $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item;
+            $data = get_response($url);
+            $data = json_decode($data);
+            if (isset($data->canonical_object)){
               $canonical_object = insert_jwplayer($key, $val, $data, $data->thumbnails[2]);
-            } else {
-              $canonical_object = '<img src="'.$data->thumbnails[2].'"/>';
             }
+          } else {
+            $canonical_object = '<img src="http://repository.library.northeastern.edu'.$data->fields_thumbnail_list_tesim[2].'"/>';
           }
         }
         $map_html .= " data-media-content='".str_replace("'","\"", htmlentities($canonical_object))."'";
