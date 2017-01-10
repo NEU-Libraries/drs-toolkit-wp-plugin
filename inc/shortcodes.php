@@ -75,6 +75,14 @@ function drstk_get_drs_items(){
       }
     }
 
+    if (isset($_POST['params']['spatialfilter'])){
+      $url .= "&q=subject_geographic_tesim%3A%5B%20*%20TO%20*%20%5D%20OR%20subject_cartographics_coordinates_tesim%3A%5B%20*%20TO%20*%20%5D";
+    }
+
+    // if (isset($_POST['params']['timefilter'])){
+      // TODO add prefilter for key_date_ssi
+    // }
+
     if (isset($_POST['params']['page'])) {
       $url .= "&page=" . $_POST['params']['page'];
     }
