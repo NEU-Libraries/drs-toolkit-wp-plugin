@@ -199,6 +199,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		collection_id: drstk_backbone_modal_l10n.collection_id,
 		options: {},
 		search_q: '',
+		result_count: 0,
 		search_page: 1,
 		search_params: {q:this.search_q, page:this.search_page, facets: {}, sort: ""},
 		current_tab: 0,  // store our current tab as a variable for easy lookup
@@ -238,18 +239,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			}
 			if (this.options && ((this.options.items && this.options.items.length > 0) || (this.options.collection_id && this.options.collection_id.length > 0))){
 				var self = this;
-				if (this.options.items && this.options.items.length > 0){
-					_.each(this.options.items, function(item, i){
-						if (i == 0){
-							self.shortcode.items = new drstk.Items(item);
-						} else {
-							self.shortcode.items.add(item);
-						}
-					});
-				} else { //starting with collection_id
-					self.select_all = true;
-					jQuery(".backbone_modal-main #drs-select-all-item").prop("checked", true);
-				}
 				var settings = this.options.settings;
 				_.each(this.options.settings, function(setting, setting_name){
 					if (setting_name.match(/([a-zA-Z_]*)_color_desc_id/)){
@@ -282,6 +271,19 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						}
 					}
 				});
+
+				if (this.options.items && this.options.items.length > 0){
+					_.each(this.options.items, function(item, i){
+						if (i == 0){
+							self.shortcode.items = new drstk.Items(item);
+						} else {
+							self.shortcode.items.add(item);
+						}
+					});
+				} else { //starting with collection_id
+					self.select_all = true;
+					jQuery(".backbone_modal-main #drs-select-all-item").prop("checked", true);
+				}
 				e.currentTarget = jQuery(".nav-tab[href='#selected']");
 				this.navigateShortcode(e);
 			}
@@ -386,17 +388,30 @@ drstk.backbone_modal.Application = Backbone.View.extend(
         jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("checked", true);
         jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("disabled", true);
         jQuery(".tile").trigger("change"); //This will call the selectItem function for all the selected items.
+				if (jQuery(".drs-pagination .tablenav-pages").children().length > 1){
+					this.loopThroughPages();
+				}
+				this.select_all = true;
       }else{
         jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("checked", false);
         jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("disabled", false);
         this.shortcode.items.models.length = 0; //When the "Select All" checkbox is enabled, all the shortcodes should become null.
       }
-			if (this.select_all == true){ //now that all the items have been selected we can navigate to the correct tab
-				e.currentTarget = jQuery(".nav-tab[href='#selected']");
-				this.navigateShortcode(e);
-			}
-			this.select_all = true;
 	  },
+
+		loopThroughPages: function() {
+			var cur = parseInt(jQuery(".drs-pagination .tablenav-pages .current-page").text());
+			var next = jQuery(".drs-pagination .tablenav-pages .current-page").next("a");
+			if (parseInt(next.text()) == cur + 1){
+				jQuery(next.trigger('click')); //trigger paginate
+				jQuery(".drs-pagination .tablenav-pages .current-page").removeClass("current-page");
+				next.addClass("current-page");
+				this.loopThroughPages();
+			} else {
+				//if it doesn't need to paginate anymore we just send it back to the first page
+				jQuery(".drs-pagination .tablenav-pages .prev-page").next("a").trigger('click');
+			}
+		},
 
 		/* inserts shortcode and closes modal */
 		insertShortcode: function ( e ) {
@@ -816,6 +831,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			}
 			click_counter = click_counter + 1;
 		},
+
 		deleteColorRow : function(e){
 			e.preventDefault();
 			var id="";
@@ -974,13 +990,17 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			jQuery(".backbone_modal-main article").append( this.templates.tabContent( {title: title, type: this.tabs[this.current_tab]} ) );
 			jQuery(".navigation-bar a[href="+id+"]").addClass("active");
 			jQuery("#drs").show();
-			this.getDRSitems();
+			if (!this.select_all){
+				this.getDRSitems();
+			}
 			this.shortcode.set({"type": this.tabs[this.current_tab]});
 			this.setDefaultSettings();
 		},
 
 		getDRSitems: function( ){
 			if (this.current_tab == 4){ this.search_params.avfilter = true; } else { delete this.search_params.avfilter; }
+			if (this.current_tab == 5){ this.search_params.spatialfilter = true; } else { delete this.search_params.spatialfilter; }
+			if (this.current_tab == 6){ this.search_params.timefilter = true; } else { delete this.search_params.timefilter; }
 			var self = this;
 			if (self.search_params.page == 1){//reset time/geo counts when we're on the first page
 				self.geo_count = 0;
@@ -1003,7 +1023,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 							 last = true;
 						 } else {last = false;}
              if (item.active_fedora_model_ssi == 'CoreFile'){
-               if ((self.current_tab == 5 && ((item.subject_geographic_tesim && item.subject_geographic_tesim.length) || (item.subject_cartographics_coordinates_tesim && item.subject_cartographics_coordinates_tesim.length)) ) || (self.current_tab == 6 && item.key_date_ssi) || (self.current_tab != 5 && self.current_tab != 6)){
 								this_item = new drstk.Item;
 								thumb = "https://repository.library.northeastern.edu"+item.thumbnail_list_tesim[0];
 								this_item.set("pid", item.id).set("thumbnail", thumb).set("repo", "drs").set("title", item.full_title_ssi);
@@ -1011,6 +1030,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								jQuery("#drs #sortable-"+tab_name+"-list").append(view.el);
 								if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
 									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
+									if (self.select_all == true){
+										jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("disabled", true);
+									}
 									short_item = self.shortcode.items.where({ pid: item.id })[0];
 									if (!short_item.get("title")){
 										short_item.set("title", item.full_title_ssi);
@@ -1018,11 +1040,14 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 									if (!short_item.get("thumbnail")){
 										short_item.set("thumbnail", thumb);
 									}
+								} else if (self.select_all == true){ //if its a selectAll then we automatically do that selectAllItem
+									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
+									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("disabled", true);
+									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type .tile").trigger("change");
 								}
 								if (self.current_tab == 6){
 									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: "+item.key_date_ssi+"</p>");
 								}
-              }
 							jQuery(".drs-items").html("");
              }
            });
@@ -1099,9 +1124,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
          } else {
            jQuery(".drs-items").html("<div class='notice notice-warning'><p>No results were retrieved for your query. Please try a different query.</p></div>");
          }
-				 if (self.select_all == true){
-					 jQuery(".backbone_modal-main #drs-select-all-item").trigger("change"); //This will call the selectAllItem functions
-				 }
        });
 		},
 
@@ -1221,6 +1243,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 
 		updateDRSPagination: function (data){
 			if (data.pagination.table.num_pages > 1){
+				this.result_count = data.pagination.table.total_count;
 	       var pagination = "";
 	       if (data.pagination.table.current_page > 1){
 	         pagination += "<a href='#' class='prev-page'>&lt;&lt;</a>";
@@ -1241,6 +1264,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 	         pagination += "<a href='#' class='next-page disabled' data-val='"+data.pagination.table.num_pages+"'>&gt;&gt;</a>";
 	       }
 				 jQuery(".drs-pagination").html("<span class='tablenav'><span class='tablenav-pages'>" + pagination + "</span></span>");
+
 	    } else {
 				jQuery(".drs-pagination").html("");
 			}
@@ -1531,7 +1555,20 @@ drstk.backbone_modal.Application = Backbone.View.extend(
  				 	jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 				}
 			} else if (this.select_all == true){
+				//if there are no items in the list yet, lets wait 2 seconds for the drs connections to try to finish before we refresh this tab
 				jQuery(".selected-items").html("<div class='notice notice-warning'><p>Selected items are loading...</p></div>");
+				if (jQuery("#selected #sortable-"+tab_name+"-list").children().length < 1) {
+					var self = this;
+					var interval;
+					interval = setInterval(function(){
+						if (jQuery("#selected #sortable-"+tab_name+"-list").children().length < 1 || (jQuery("#selected #sortable-"+tab_name+"-list").children().length < self.result_count)){
+							jQuery("#drs #drs-select-all-item").trigger('change'); //triggers SelectAllItem
+							jQuery(".nav-tab[href='#selected']").trigger('click'); //triggers navigateShortcode
+						} else {
+							clearInterval(interval);
+						}
+					}, 2000);
+				}
 			} else {
 	       jQuery(".selected-items").html("<div class='notice notice-warning'><p>You haven't selected any items yet.</p></div>");
 				 jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
