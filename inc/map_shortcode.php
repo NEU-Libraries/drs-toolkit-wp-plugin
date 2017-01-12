@@ -213,19 +213,18 @@ function drstk_map( $atts , $params){
         continue;
       }
       $data = new StdClass;
-      $data->mods = new StdClass;
-      $data->mods->Title = array($post->post_title);
-      $abs = "Abstract/Description";
-      $data->mods->$abs = array($post->post_excerpt);
+      $data->full_title_ssi = array($post->post_title);
+      $data->abstract_tesim = array($post->post_excerpt);
       $data->canonical_object = new StdClass;
       $url = $post->guid;
       if (strpos($post->post_mime_type, "audio") !== false){
-        $type = "Audio File";
+        $type = "AudioFile";
       } else if (strpos($post->post_mime_type, "video") !== false){
-        $type = "Video File";
+        $type = "VideoFile";
       } else {
-        $type = "Master Image";
+        $type = "ImageMasterFile";
       }
+      $data->canonical_class_tesim = $type;
       $data->canonical_object->$url = $type;
       $data->id=$post->ID;
       if(!is_numeric($coordinates[0])) {
@@ -244,10 +243,20 @@ function drstk_map( $atts , $params){
         $map_metadata = '';
         $metadata = explode(",",$atts['metadata']);
         foreach($metadata as $field){
-          if (isset($data->mods->$field)) {
-            $this_field = $data->mods->$field;
-            if (isset($this_field[0])) {
-              $map_metadata .= $this_field[0] . "<br/>";
+           if (isset($data->$field)){
+             $this_field = $data->$field;
+            if (isset($this_field)){
+              if (is_array($this_field)){
+                foreach($this_field as $val){
+                  if (is_array($val)){
+                    $map_metadata .= implode("<br/>",$val) . "<br/>";
+                  } else {
+                    $map_metadata .= $val ."<br/>";
+                  }
+                }
+              } else {
+                $map_metadata .= $this_field . "<br/>";
+              }
             }
           }
         }
@@ -256,7 +265,7 @@ function drstk_map( $atts , $params){
       $canonical_object = "";
       if (isset($data->canonical_object)){
         foreach($data->canonical_object as $key=>$val){
-          if ($val == 'Video File' || $val == 'Audio File'){
+          if ($val == 'VideoFile' || $val == 'AudioFile'){
             $canonical_object = do_shortcode('[video src="'.$post->guid.'"]');
           } else {
             $canonical_object = '<img src="'.$post->guid.'"/>';
@@ -279,14 +288,12 @@ function drstk_map( $atts , $params){
       }
       $title = $data->docs[0]->sourceResource->title;
       $description = $data->docs[0]->sourceResource->description;
-      $data->mods = new StdClass;
-      $data->mods->Title = array($title);
-      $abs = "Abstract/Description";
-      $data->mods->$abs = $description;
+      $data->full_title_ssi = array($title);
+      $data->abstract_tesim = $description;
       $cre = "Creator,Contributor";
-      $data->mods->$cre = $data->docs[0]->sourceResource->creator;
+      $data->creator_tesim = $data->docs[0]->sourceResource->creator;
       $date = "Date Created";
-      $data->mods->$date = isset($data->docs[0]->sourceResource->date->displayDate) ? $data->docs[0]->sourceResource->date->displayDate : array();
+      $data->key_date_ssi = isset($data->docs[0]->sourceResource->date->displayDate) ? $data->docs[0]->sourceResource->date->displayDate : array();
       $data->canonical_object = new StdClass;
       $data->canonical_object->$url = "Master Image";
       if (!isset($data->docs[0]->sourceResource->spatial)){
@@ -311,10 +318,20 @@ function drstk_map( $atts , $params){
         $map_metadata = '';
         $metadata = explode(",",$atts['metadata']);
         foreach($metadata as $field){
-          if (isset($data->mods->$field)) {
-            $this_field = $data->mods->$field;
-            if (isset($this_field[0])) {
-              $map_metadata .= $this_field[0] . "<br/>";
+           if (isset($data->$field)){
+             $this_field = $data->$field;
+            if (isset($this_field)){
+              if (is_array($this_field)){
+                foreach($this_field as $val){
+                  if (is_array($val)){
+                    $map_metadata .= implode("<br/>",$val) . "<br/>";
+                  } else {
+                    $map_metadata .= $val ."<br/>";
+                  }
+                }
+              } else {
+                $map_metadata .= $this_field . "<br/>";
+              }
             }
           }
         }
