@@ -19,6 +19,8 @@ function reload_filtered_set_timeline_ajax_handler()
             if (isset($_POST['params']['q']) && $_POST['params']['q'] != ''){
                 $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
             }
+            //pretimefilter - looking for solr docs which contain key_date_ssi
+            $url .= "&q=key_date_ssi%3A%5B%20*%20TO%20*%20%5D";
             $data1 = get_response($url);
             $data1 = json_decode($data1);
             $facets_info_data = $data1;
@@ -121,6 +123,8 @@ function drstk_timeline( $atts, $params ){
         if (isset($params['q']) && $params['q'] != ''){
             $url .= "&q=". urlencode(sanitize_text_field($params['q']));
         }
+        //pretimefilter - looking for solr docs which contain key_date_ssi
+        $url .= "&q=key_date_ssi%3A%5B%20*%20TO%20*%20%5D";
 
         $data1 = get_response($url);
         $data1 = json_decode($data1);
@@ -150,41 +154,51 @@ function drstk_timeline( $atts, $params ){
         $repo = drstk_get_repo_from_pid($neu_id);
         if ($repo != "drs"){$pid = explode(":",$neu_id); $pid = $pid[1];} else {$pid = $neu_id;}
         if($repo == "drs"){
-            $url = "https://repository.library.northeastern.edu/api/v1/files/" . $neu_id;
+            $url = "https://repository.library.northeastern.edu/api/v1/files/" . $neu_id . "?solr_only=true";
             $data = get_response($url);
             $data = json_decode($data);
 
             if (!isset($data->error)){
-                $pid = $data->pid;
-                if (!isset($data->key_date)){
+                $data = $data->_source;
+                $pid = $data->id;
+                if (!isset($data->key_date_ssi)){
                     continue;
                 }
-                $key_date = $data->key_date;
+                $key_date = $data->key_date_ssi;
                 $current_array = array();
-                $breadcrumbs = $data->breadcrumbs;
-
-                $thumbnail_url = $data->thumbnails[2];
+                $thumbnail_url = $data->fields_thumbnail_list_tesim[2];
 
                 if (isset($atts['metadata'])){
-                    $timeline_metadata = '';
-                    $metadata = explode(",",$atts['metadata']);
-                    foreach($metadata as $field){
-                        if (isset($data->mods->$field)) {
-                            $this_field = $data->mods->$field;
-                            if (isset($this_field[0])) {
-                                $timeline_metadata .= $this_field[0] . "<br/>";
+                  $timeline_metadata = '';
+                  $metadata = explode(",",$atts['metadata']);
+                  foreach($metadata as $field){
+                     if (isset($data->$field)){
+                       $this_field = $data->$field;
+                      if (isset($this_field)){
+                        if (is_array($this_field)){
+                          foreach($this_field as $val){
+                            if (is_array($val)){
+                              $timeline_metadata .= implode("<br/>",$val) . "<br/>";
+                            } else {
+                              $timeline_metadata .= $val ."<br/>";
                             }
+                          }
+                        } else {
+                          $timeline_metadata .= $this_field . "<br/>";
                         }
+                      }
                     }
-                    $text = htmlentities($timeline_metadata);
+                  }
+                  $text = htmlentities($timeline_metadata);
                 } else {
-                    $text = "<p>&nbsp;</p>";
+                  $text = "<p>&nbsp;</p>";
                 }
+
                 if ($text == NULL || $text == ""){
                     $text = "<p>&nbsp;</p>";
                 }
                 $caption = "";
-                $headline = htmlentities($data->mods->Title[0]);
+                $headline = htmlentities($data->full_title_ssi);
 
                 $keys = (array)$key_date;
                 $just_keys = array_keys($keys);
@@ -252,26 +266,34 @@ function drstk_timeline( $atts, $params ){
                 $description = "";
             }
             $text = $description;
-            $data->mods = new StdClass;
-            $abs = "Abstract/Description";
-            $data->mods->$abs = $description;
+            $data->abstract_tesim = $description;
             if (isset($data->docs[0]->sourceResource->creator)){
-                $data->mods->Creator = $data->docs[0]->sourceResource->creator;
+                $data->creator_tesim = $data->docs[0]->sourceResource->creator;
             }
             if (isset($atts['metadata'])){
-                $timeline_metadata = '';
-                $metadata = explode(",",$atts['metadata']);
-                foreach($metadata as $field){
-                    if (isset($data->mods->$field)) {
-                        $this_field = $data->mods->$field;
-                        if (is_array($this_field)) {
-                            $timeline_metadata .= $this_field[0] . "<br/>";
+              $timeline_metadata = '';
+              $metadata = explode(",",$atts['metadata']);
+              foreach($metadata as $field){
+                 if (isset($data->$field)){
+                   $this_field = $data->$field;
+                  if (isset($this_field)){
+                    if (is_array($this_field)){
+                      foreach($this_field as $val){
+                        if (is_array($val)){
+                          $timeline_metadata .= implode("<br/>",$val) . "<br/>";
                         } else {
-                            $timeline_metadata .= $this_field . "<br/>";
+                          $timeline_metadata .= $val ."<br/>";
                         }
+                      }
+                    } else {
+                      $timeline_metadata .= $this_field . "<br/>";
                     }
+                  }
                 }
-                $text = htmlentities($timeline_metadata);
+              }
+              $text = htmlentities($timeline_metadata);
+            } else {
+              $text = "<p>&nbsp;</p>";
             }
             if (isset($data->docs[0]->sourceResource->rights)){
                 if (is_array($data->docs[0]->sourceResource->rights)){
@@ -286,7 +308,7 @@ function drstk_timeline( $atts, $params ){
                 $date = $data->docs[0]->sourceResource->date->displayDate;
                 $date = explode("-", $date);
                 $year = $date[0];
-                if (strlen($year) > 4){
+                if (strlen($year) != 4){
                     $year = $data->docs[0]->sourceResource->date->begin;
                 }
                 $month = 1;
