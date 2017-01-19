@@ -1,71 +1,143 @@
 <?php
+
+add_action( 'wp_ajax_reload_filtered_set', 'reload_filtered_set_ajax_handler' ); //for auth users
+add_action( 'wp_ajax_nopriv_reload_filtered_set', 'reload_filtered_set_ajax_handler' ); //for nonauth users
+function reload_filtered_set_ajax_handler()
+{
+    if ($_POST['reloadWhat'] == "mapReload") {
+        echo drstk_map($_POST['atts'], $_POST['params']);
+    }
+    else if($_POST['reloadWhat'] == "facetReload") {
+        if (isset($_POST['atts']['collection_id'])) {
+            $url = "https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=10";
+            if (isset($_POST['params']['f'])) {
+                foreach ($_POST['params']['f'] as $facet => $facet_val) {
+                    $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
+                }
+            }
+            if (isset($_POST['params']['q']) && $_POST['params']['q'] != ''){
+                $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
+            }
+            //pregeofilter - looking for solr docs which contain either subject_geographic_tesim OR subject_cartographics_coordinates_tesim
+            $url .= "&q=subject_geographic_tesim%3A%5B%20*%20TO%20*%20%5D%20OR%20subject_cartographics_coordinates_tesim%3A%5B%20*%20TO%20*%20%5D";
+            $data1 = get_response($url);
+            $data1 = json_decode($data1);
+            $facets_info_data = $data1;
+            wp_send_json($facets_info_data);
+        }
+    }
+    die();
+}
+
+
+add_action( 'wp_ajax_reloadRemainingMap', 'reloadRemainingMap_ajax_handler' ); //for auth users
+add_action( 'wp_ajax_nopriv_reloadRemainingMap', 'reloadRemainingMap_ajax_handler' ); //for nonauth users
+function reloadRemainingMap_ajax_handler()
+{
+    $a = get_post($_POST['post_id'])->post_content;
+    $parsed_a = shortcode_parse_atts($a);
+    echo drstk_map($parsed_a, $_POST['params']);
+    die();
+}
+
 /* adds shortcode */
 add_shortcode( 'drstk_map', 'drstk_map' );
-function drstk_map( $atts ){
-  global $errors;
+function drstk_map( $atts , $params){
+    global $errors, $DRS_PLUGIN_URL;
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
 
+    /* Commented for development purpose.
   if($cache) {
     return $cache;
   }
-  $items = array_map('trim', explode(',', $atts['id']));
+    */
+
+    if(!isset($atts['collection_id'])) {
+        $items = array_map('trim', explode(',', $atts['id']));
+    }
+
   $map_api_key = drstk_get_map_api_key();
   $map_project_key = drstk_get_map_project_key();
   $story = isset($atts['story']) ? $atts['story'] : "no";
   $map_html = "";
-  if (!isset($atts['red']) && isset($atts['red_id'])){ $atts['red'] = $atts['red_id']; }
-  if (!isset($atts['red_legend_desc']) && isset($atts['red_desc'])){ $atts['red_legend_desc'] = $atts['red_desc']; }
-  if (!isset($atts['green']) && isset($atts['green_id'])){ $atts['green'] = $atts['green_id']; }
-  if (!isset($atts['green_legend_desc']) && isset($atts['green_desc'])){ $atts['green_legend_desc'] = $atts['green_desc']; }
-  if (!isset($atts['blue']) && isset($atts['blue_id'])){ $atts['blue'] = $atts['blue_id']; }
-  if (!isset($atts['blue_legend_desc']) && isset($atts['blue_desc'])){ $atts['blue_legend_desc'] = $atts['blue_desc']; }
-  if (!isset($atts['yellow']) && isset($atts['yellow_id'])){ $atts['yellow'] = $atts['yellow_id']; }
-  if (!isset($atts['yellow_legend_desc']) && isset($atts['yellow_desc'])){ $atts['yellow_legend_desc'] = $atts['yellow_desc']; }
-  if (!isset($atts['orange']) && isset($atts['orange_id'])){ $atts['orange'] = $atts['orange_id']; }
-  if (!isset($atts['orange_legend_desc']) && isset($atts['orange_desc'])){ $atts['orange_legend_desc'] = $atts['orange_desc']; }
+
 
   $shortcode = "<div id='map' data-story='".$story."' data-map_api_key='".$map_api_key."' data-map_project_key='".$map_project_key."'";
+  foreach($atts as $key => $value){
+        if(preg_match('/(.*)_color_desc_id/',$key)){
+            $shortcode .= " data-".$key."='".$atts[$key]."'";
+        }
+        if(preg_match('/(.*)_color_hex/',$key)){
+            $shortcode .= " data-".$key."='".$atts[$key]."'";
+        }
+    }
 
-  if (isset($atts['red_legend_desc']) && isset($atts['red'])) {
-    $shortcode .= " data-red='".$atts['red']."'";
-    $shortcode .= " data-red_legend_desc='".$atts['red_legend_desc']."'";
-  }
+  /*
+    If collection_id attribute is set, then load the DRS items directly using the search API.
+  */
+    $collectionItemsId = array();
 
-  if (isset($atts['blue_legend_desc']) && isset($atts['blue'])) {
-    $shortcode .= " data-blue='".$atts['blue']."'";
-    $shortcode .= " data-blue_legend_desc='".$atts['blue_legend_desc']."'";
-  }
+    $facets_info_data = array();
 
-  if (isset($atts['green_legend_desc']) && isset($atts['green'])) {
-    $shortcode .= " data-green='".$atts['green']."'";
-    $shortcode .= " data-green_legend_desc='".$atts['green_legend_desc']."'";
-  }
+    if(isset($atts['collection_id'])){
 
-  if (isset($atts['yellow_legend_desc']) && isset($atts['yellow'])) {
-    $shortcode .= " data-yellow='".$atts['yellow']."'";
-    $shortcode .= " data-yellow_legend_desc='".$atts['yellow_legend_desc']."'";
-  }
+        $url = "https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=10";
 
-  if (isset($atts['orange_legend_desc']) && isset($atts['orange'])) {
-    $shortcode .= " data-orange='".$atts['orange']."'";
-    $shortcode .= " data-orange_legend_desc='".$atts['orange_legend_desc']."'";
-  }
+        if(isset($params['page_no'])){
+            $url .= "&page=" . $params['page_no'];
+        }
 
-  foreach($items as $item){
+        if (isset($params['f'])) {
+            foreach ($params['f'] as $facet => $facet_val) {
+                $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
+            }
+        }
+
+        if (isset($params['q']) && $params['q'] != ''){
+            $url .= "&q=". urlencode(sanitize_text_field($params['q']));
+        }
+
+        //pregeofilter - looking for solr docs which contain either subject_geographic_tesim OR subject_cartographics_coordinates_tesim
+        $url .= "&q=subject_geographic_tesim%3A%5B%20*%20TO%20*%20%5D%20OR%20subject_cartographics_coordinates_tesim%3A%5B%20*%20TO%20*%20%5D";
+
+        $data1 = get_response($url);
+        $data1 = json_decode($data1);
+        $facets_info_data = $data1;
+
+        $num_pages = $data1->pagination->table->num_pages;
+
+        if($num_pages == 0){
+            return "No Result";
+        }
+
+        if(isset($params['page_no']) && $params['page_no'] > $num_pages){
+            return "All_Pages_Loaded";
+        }
+
+        $docs2 = $data1->response->response->docs;
+        foreach($docs2 as $docItem){
+            $collectionItemsId [] = $docItem->id;
+        }
+        $items = $collectionItemsId;
+        //TODO - can we change this so that it uses a big solr query instead of getting each item at a time
+    }
+
+    foreach($items as $item){
     $repo = drstk_get_repo_from_pid($item);
     if ($repo != "drs"){$pid = explode(":",$item); $pid = $pid[1];} else {$pid = $item;}
     if ($repo == "drs"){
-      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item;
+      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item . "?solr_only=true";
       $data = get_response($url);
       $data = json_decode($data);
       if (!isset($data->error)){
-        $pid = $data->pid;
+        $data = $data->_source;
+        $pid = $data->id;
 
         $coordinates = "";
-        if(isset($data->coordinates)) {
-          $coordinates = $data->coordinates;
-        } else if (isset($data->geographic)){
-          $location = $data->geographic[0];
+        if(isset($data->subject_cartographics_coordinates_tesim)) {
+          $coordinates = $data->subject_cartographics_coordinates_tesim[0];
+        } else if (isset($data->subject_geographic_tesim)){
+          $location = $data->subject_geographic_tesim[0];
           $locationUrl = "http://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
           $locationData = get_response($locationUrl);
           $locationData = json_decode($locationData);
@@ -79,31 +151,45 @@ function drstk_map( $atts ){
           continue;
         }
 
-        $title = $data->mods->Title[0];
+        $title = $data->full_title_ssi;
         $permanentUrl = drstk_home_url() . "item/".$pid;
         $map_html .= "<div class='coordinates' data-pid='".$pid."' data-url='".$permanentUrl."' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."'";
-
         if (isset($atts['metadata'])){
           $map_metadata = '';
           $metadata = explode(",",$atts['metadata']);
           foreach($metadata as $field){
-            if (isset($data->mods->$field)) {
-              $this_field = $data->mods->$field;
-              if (isset($this_field[0])) {
-                $map_metadata .= $this_field[0] . "<br/>";
+             if (isset($data->$field)){
+               $this_field = $data->$field;
+              if (isset($this_field)){
+                if (is_array($this_field)){
+                  foreach($this_field as $val){
+                    if (is_array($val)){
+                      $map_metadata .= implode("<br/>",$val) . "<br/>";
+                    } else {
+                      $map_metadata .= $val ."<br/>";
+                    }
+                  }
+                } else {
+                  $map_metadata .= $this_field . "<br/>";
+                }
               }
             }
           }
           $map_html .= " data-metadata='".$map_metadata."'";
         }
+
+
         $canonical_object = "";
-        if (isset($data->canonical_object)){
-          foreach($data->canonical_object as $key=>$val){
-            if ($val == 'Video File' || $val == 'Audio File'){
+        if (isset($data->canonical_class_tesim)){
+          if ($data->canonical_class_tesim[0] == "AudioFile" || $data->canonical_class_tesim[0] == "VideoFile"){
+            $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item;
+            $data = get_response($url);
+            $data = json_decode($data);
+            if (isset($data->canonical_object)){
               $canonical_object = insert_jwplayer($key, $val, $data, $data->thumbnails[2]);
-            } else {
-              $canonical_object = '<img src="'.$data->thumbnails[2].'"/>';
             }
+          } else {
+            $canonical_object = '<img src="http://repository.library.northeastern.edu'.$data->fields_thumbnail_list_tesim[2].'"/>';
           }
         }
         $map_html .= " data-media-content='".str_replace("'","\"", htmlentities($canonical_object))."'";
@@ -127,19 +213,18 @@ function drstk_map( $atts ){
         continue;
       }
       $data = new StdClass;
-      $data->mods = new StdClass;
-      $data->mods->Title = array($post->post_title);
-      $abs = "Abstract/Description";
-      $data->mods->$abs = array($post->post_excerpt);
+      $data->full_title_ssi = array($post->post_title);
+      $data->abstract_tesim = array($post->post_excerpt);
       $data->canonical_object = new StdClass;
       $url = $post->guid;
       if (strpos($post->post_mime_type, "audio") !== false){
-        $type = "Audio File";
+        $type = "AudioFile";
       } else if (strpos($post->post_mime_type, "video") !== false){
-        $type = "Video File";
+        $type = "VideoFile";
       } else {
-        $type = "Master Image";
+        $type = "ImageMasterFile";
       }
+      $data->canonical_class_tesim = $type;
       $data->canonical_object->$url = $type;
       $data->id=$post->ID;
       if(!is_numeric($coordinates[0])) {
@@ -158,10 +243,20 @@ function drstk_map( $atts ){
         $map_metadata = '';
         $metadata = explode(",",$atts['metadata']);
         foreach($metadata as $field){
-          if (isset($data->mods->$field)) {
-            $this_field = $data->mods->$field;
-            if (isset($this_field[0])) {
-              $map_metadata .= $this_field[0] . "<br/>";
+           if (isset($data->$field)){
+             $this_field = $data->$field;
+            if (isset($this_field)){
+              if (is_array($this_field)){
+                foreach($this_field as $val){
+                  if (is_array($val)){
+                    $map_metadata .= implode("<br/>",$val) . "<br/>";
+                  } else {
+                    $map_metadata .= $val ."<br/>";
+                  }
+                }
+              } else {
+                $map_metadata .= $this_field . "<br/>";
+              }
             }
           }
         }
@@ -170,7 +265,7 @@ function drstk_map( $atts ){
       $canonical_object = "";
       if (isset($data->canonical_object)){
         foreach($data->canonical_object as $key=>$val){
-          if ($val == 'Video File' || $val == 'Audio File'){
+          if ($val == 'VideoFile' || $val == 'AudioFile'){
             $canonical_object = do_shortcode('[video src="'.$post->guid.'"]');
           } else {
             $canonical_object = '<img src="'.$post->guid.'"/>';
@@ -192,15 +287,21 @@ function drstk_map( $atts ){
         $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
       }
       $title = $data->docs[0]->sourceResource->title;
-      $description = $data->docs[0]->sourceResource->description;
-      $data->mods = new StdClass;
-      $data->mods->Title = array($title);
-      $abs = "Abstract/Description";
-      $data->mods->$abs = $description;
+      if (isset($data->docs[0]->sourceResource->description)){
+        $description = $data->docs[0]->sourceResource->description;
+      } else {
+        $description = "";
+      }
+      $data->full_title_ssi = array($title);
+      $data->abstract_tesim = $description;
       $cre = "Creator,Contributor";
-      $data->mods->$cre = $data->docs[0]->sourceResource->creator;
+      if (isset($data->docs[0]->sourceResource->creator)){
+        $data->creator_tesim = $data->docs[0]->sourceResource->creator;
+      } else {
+        $data->creator_tesim = "";
+      }
       $date = "Date Created";
-      $data->mods->$date = isset($data->docs[0]->sourceResource->date->displayDate) ? $data->docs[0]->sourceResource->date->displayDate : array();
+      $data->key_date_ssi = isset($data->docs[0]->sourceResource->date->displayDate) ? $data->docs[0]->sourceResource->date->displayDate : array();
       $data->canonical_object = new StdClass;
       $data->canonical_object->$url = "Master Image";
       if (!isset($data->docs[0]->sourceResource->spatial)){
@@ -225,10 +326,20 @@ function drstk_map( $atts ){
         $map_metadata = '';
         $metadata = explode(",",$atts['metadata']);
         foreach($metadata as $field){
-          if (isset($data->mods->$field)) {
-            $this_field = $data->mods->$field;
-            if (isset($this_field[0])) {
-              $map_metadata .= $this_field[0] . "<br/>";
+           if (isset($data->$field)){
+             $this_field = $data->$field;
+            if (isset($this_field)){
+              if (is_array($this_field)){
+                foreach($this_field as $val){
+                  if (is_array($val)){
+                    $map_metadata .= implode("<br/>",$val) . "<br/>";
+                  } else {
+                    $map_metadata .= $val ."<br/>";
+                  }
+                }
+              } else {
+                $map_metadata .= $this_field . "<br/>";
+              }
             }
           }
         }
@@ -248,7 +359,6 @@ function drstk_map( $atts ){
     $custom_map_descriptions = explode(",",$atts['custom_map_descriptions']);
     $custom_map_locations = explode(",",$atts['custom_map_locations']);
     $custom_map_color_groups = explode(",",$atts['custom_map_color_groups']);
-
     foreach($custom_map_urls as $key=>$value) {
       $url = $value;
       $title = $custom_map_titles[$key];
@@ -275,12 +385,40 @@ function drstk_map( $atts ){
   $cache_output = $shortcode;
   $cache_time = 1000;
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
-  return $shortcode;
+
+    if(isset($atts['collection_id'])) {
+        wp_register_script('drstk_map_test', $DRS_PLUGIN_URL . '/assets/js/mapCollection.js', array('jquery'));
+        wp_enqueue_script('drstk_map_test');
+
+        $reload_filtered_set_drs_nonce = wp_create_nonce('reload_filtered_set_drs');
+
+        $map_nonce = wp_create_nonce('map_nonce');
+
+        $map_obj = array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => $map_nonce,
+            'home_url' => drstk_home_url()
+        );
+
+        $facets_info_data_obj = array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => $reload_filtered_set_drs_nonce,
+            'data' => $facets_info_data,
+            'home_url' => drstk_home_url(),
+            "atts" => $atts,
+            "map_obj" => $map_obj
+        );
+        wp_localize_script('drstk_map_test', 'facets_info_data_obj', $facets_info_data_obj);
+    }
+
+    return $shortcode;
 }
 
 function drstk_map_shortcode_scripts() {
+
   global $post, $wp_query, $DRS_PLUGIN_URL;
-  if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_map') && !isset($wp_query->query_vars['drstk_template_type']) ) {
+
+    if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_map') && !isset($wp_query->query_vars['drstk_template_type']) ) {
     wp_register_script('drstk_leaflet',
         $DRS_PLUGIN_URL .'/assets/js/leaflet/leaflet.js',
         array( 'jquery' ));
@@ -310,14 +448,20 @@ function drstk_map_shortcode_scripts() {
     wp_enqueue_script('drstk_map');
 
     $map_nonce = wp_create_nonce( 'map_nonce' );
+    $temp =  shortcode_parse_atts($post->post_content);
+    $collectionSet = "";
 
+    if(isset($temp['collection_id']) && $temp['collection_id'] != ''){
+        $collectionSet = "checked";
+    }
     $map_obj = array(
       'ajax_url' => admin_url('admin-ajax.php'),
       'nonce'    => $map_nonce,
       'home_url' => drstk_home_url(),
+      'post_id' => $post->ID,
+      'collectionSet' => $collectionSet
     );
     wp_localize_script( 'drstk_map', 'map_obj', $map_obj );
-
   }
 }
 add_action( 'wp_enqueue_scripts', 'drstk_map_shortcode_scripts');

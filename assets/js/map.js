@@ -1,33 +1,128 @@
+var post_id = "";
 jQuery(document).ready(function($) {
     var home_url = map_obj.home_url;
+    post_id = map_obj.post_id;
+    var collectionSet = map_obj.collectionSet;
 
     var apiKey = getApiKey($('#map'));
     var projectKey = getProjectKey($('#map'));
+    var f = {};
+    var q= '';
+    var params = {q:q, f: f, page_no: 2};
 
     var colorGroups = getColorGroups($('#map'));
     var colorDescriptions = getColorDescriptions($('#map'));
-
+    var colorHex = getColorHexArray($('#map'));
     var items = getItemsFromJqueryArray($('.coordinates'));
 
     var mymap = createMap('map');
 
     addTileLayerToMap(mymap, apiKey, projectKey);
 
-    var markerCluster = addPopupsToItems(items, mymap, colorGroups, home_url);
+    var markerCluster = addPopupsToItems(items, mymap, colorGroups, home_url,colorHex);
 
     var customItems = getCustomItems($('.custom-coordinates'));
 
-    var markerCluster = addCustomItemsToMap(customItems, markerCluster, home_url);
+    var markerCluster = addCustomItemsToMap(customItems, markerCluster, home_url,colorHex);
 
     fitToBounds(items, customItems, mymap);
 
-    addLegendToMap(colorDescriptions, mymap, home_url);
+    addLegendToMap(colorDescriptions, mymap, home_url,colorHex);
 
     if (isStoryModeEnabled($('#map'))) {
         addStoryModeToMap(items, mymap, markerCluster, customItems);
     }
 
+    if(collectionSet == "checked"){
+    //do this only for collection_id (PUT CHECK)
+    reloadRemainingMap(map_obj, params, post_id, 2);
+    jQuery(".entry-header").append("<div id='mapLoadingElement' class='themebutton btn btn-more'>Loading Remaining Map Items...</div>");
+    }
 });
+
+function reloadRemainingMap(map_obj, params, post_id){
+
+    var page_no = params["page_no"];
+
+    jQuery.ajax({
+        type: 'POST',
+        url: map_obj.ajax_url,
+        data: {
+            _ajax_nonce: map_obj.nonce,
+            action: "reloadRemainingMap",
+            params: params,
+            post_id: post_id
+        },
+        success: function (data) {
+            page_no = page_no+1;
+            params["page_no"] = page_no;
+            if(data == "All_Pages_Loaded"){
+                jQuery("#mapLoadingElement").remove();
+                console.log("All pages loaded ... Done .. No more Api calls");
+            }else{
+                //WILL HAVE TO INCLUDE FOR CUSTOM COORDINATES
+
+                //to grab the map div
+                var mapDiv = jQuery(data).filter("#map").empty()[0].outerHTML;
+
+                //to grab the map div innerHTML i.e. coordinates
+                var resCoordinates = jQuery(data).filter("#map")[0].innerHTML;
+
+                //to grab existing map elements
+                var existingCoordinates = jQuery("#map").find(".coordinates");
+                var existingCustomCoordinates = jQuery("#map").find(".custom-coordinates");
+                var overallCoordiates = "";
+
+                var i = 0;
+                jQuery.each(existingCoordinates, function(){
+                    overallCoordiates += existingCoordinates[i].outerHTML;
+                    i = i+1;
+                });
+
+                overallCoordiates += resCoordinates;
+
+                var i = 0;
+                jQuery.each(existingCustomCoordinates, function(){
+                    overallCoordiates += existingCustomCoordinates[i].outerHTML;
+                    i = i+1;
+                });
+
+
+                jQuery('#map').remove();
+                jQuery(".entry-content").html(mapDiv);
+                jQuery("#map").html(overallCoordiates);
+
+                var home_url = map_obj.home_url;
+                var apiKey = getApiKey(jQuery('#map'));
+                var projectKey = getProjectKey(jQuery('#map'));
+                var colorHex = getColorHexArray(jQuery('#map'));
+                var colorGroups = getColorGroups(jQuery('#map'));
+                var colorDescriptions = getColorDescriptions(jQuery('#map'));
+
+                var items = getItemsFromJqueryArray(jQuery('.coordinates'));
+
+                var mymap = createMap('map');
+
+                addTileLayerToMap(mymap, apiKey, projectKey);
+
+                var markerCluster = addPopupsToItems(items, mymap, colorGroups, home_url,colorHex);
+
+                var customItems = getCustomItems(jQuery('.custom-coordinates'));
+
+                var markerCluster = addCustomItemsToMap(customItems, markerCluster, home_url);
+
+                fitToBounds(items, customItems, mymap);
+
+                addLegendToMap(colorDescriptions, mymap, home_url,colorHex);
+
+                if (isStoryModeEnabled(jQuery('#map'))) {
+                    addStoryModeToMap(items, mymap, markerCluster, customItems);
+                }
+                reloadRemainingMap(map_obj, params, post_id);
+            }
+        }
+    });
+}
 
 function getApiKey(jqSelector) {
     return jqSelector.data('map_api_key');
@@ -37,8 +132,22 @@ function getProjectKey(jqSelector) {
     return jqSelector.data('map_project_key');
 }
 
+var colorDescriptions = {};
+function getColorHexArray(jqSelector){
+    var colorHexArray ={}
+    jQuery.each(jqSelector.data(),function(key,value){
+        var strlength = key.length;
+        var endMatch = key.substring(strlength-14,strlength);
+        var match = endMatch.match(/color_hex/i);
+        if(match){
+            var key = key.substring(0,strlength-10)
+            colorHexArray[key]=value;
+        }
+    });
+    return colorHexArray
+}
 function getColorDescriptions(jqSelector) {
-    var colorDescriptions = {};
+    var colorDescriptions = {}
     if (jqSelector.data('red_legend_desc')) {
         colorDescriptions.red = jqSelector.data('red_legend_desc');
     }
@@ -54,7 +163,22 @@ function getColorDescriptions(jqSelector) {
     if (jqSelector.data('orange_legend_desc')) {
         colorDescriptions.orange = jqSelector.data('orange_legend_desc');
     }
-
+    jQuery.each(jqSelector.data(),function(key,value){
+        var strlength = key.length;
+        var colLegendVal=[];
+        var endMatch = key.substring(strlength-14,strlength);
+        var match = endMatch.match(/color_desc_id/i);
+        if(match)
+        {   var colLegendValTemp=[];
+            colLegendValTemp = key.substring(0,strlength-14);
+            colLegendValTemp = colLegendValTemp.split('_');
+            jQuery.each(colLegendValTemp,function(key,val){
+                colLegendVal.push(val.charAt(0).toUpperCase()+val.substring(1));
+            });
+            colLegendVal = colLegendVal.join(' ');
+            colorDescriptions[key]=colLegendVal;
+        }
+    });
     return colorDescriptions;
 }
 
@@ -75,19 +199,35 @@ function getColorGroups(jqSelector) {
     if (jqSelector.data('orange')) {
         colorGroups.orange = jqSelector.data('orange');
     }
-
+    jQuery.each(jqSelector.data(),function(key,value){
+        var strlength = key.length;
+        var endMatch = key.substring(strlength-14,strlength);
+        var match = endMatch.match(/color_desc_id/i);
+        if(match)
+        {
+            colorGroups[key]=value;
+        }
+    });
     return colorGroups;
 }
 
-function addLegendToMap(colorDescriptions, mymap, home_url) {
+function addLegendToMap(colorDescriptions, mymap, home_url,colorHex) {
 
     var isLegendRequired = false;
     var legendHtml = '<table style="margin-top: 0px; margin-bottom: 0px">';
     jQuery.each(colorDescriptions, function(key, value) {
         if (value != 'undefined') {
             isLegendRequired = true;
-            legendHtml += '<tr><td><img src="'+home_url+'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-'+ key + '-icon.png" style="height:20px"> </td><td>' + value + '</td></tr>';
-        }
+            var strlength = key.length;
+            var colLegendKey = key.substring(0,strlength-14);
+            jQuery.each(colorHex,function(colkey,hexval){
+                if(colLegendKey.toLowerCase()==colkey.toLowerCase()){
+                    iconUrl = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|"+hexval;
+                    //legendHtml += '<tr><td><img src="'+home_url+'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-'+ key + '-icon.png" style="height:20px"> </td><td>' + value + '</td></tr>';
+                    legendHtml += '<tr><td><img src='+ iconUrl+' style="height:20px"> </td><td>' + value + '</td></tr>';
+                }
+            });
+              }
     });
 
     if (!isLegendRequired) {
@@ -189,93 +329,50 @@ function fitToBounds(items, customItems, map) {
     return bounds;
 }
 
-function addPopupsToItems(items, map, colorGroups, home_url) {
+function addPopupsToItems(items, map, colorGroups, home_url,colorHex) {
     var markers = L.markerClusterGroup();
     var markerArray = [];
 
     jQuery.each(items, function(index, item) {
 
         var icon = L.icon({
-            iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon.png',
-            iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon-2x.png',
+            iconUrl: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|0080ff',
+            iconRetinalUrl:'',
             iconSize: [29, 41],
             iconAnchor: [14, 41],
             popupAnchor: [0, -41],
-            shadowUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-            shadowRetinaUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
+            shadowUrl: '',
+            shadowRetinaUrl: '',
             shadowSize: [41, 41],
             shadowAnchor: [13, 41]
         });
 
-        if (colorGroups.red && colorGroups.red.includes(item.pid)) {
-            icon = L.icon({
-                iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-red-icon.png',
-                iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-red-icon-2x.png',
-                iconSize: [29, 41],
-                iconAnchor: [14, 41],
-                popupAnchor: [0, -41],
-                shadowUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowRetinaUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowSize: [41, 41],
-                shadowAnchor: [13, 41]
-            });
-        }
 
-        if (colorGroups.blue && colorGroups.blue.includes(item.pid)) {
-            icon = L.icon({
-                iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon.png',
-                iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon-2x.png',
-                iconSize: [29, 41],
-                iconAnchor: [14, 41],
-                popupAnchor: [0, -41],
-                shadowUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowRetinaUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowSize: [41, 41],
-                shadowAnchor: [13, 41]
-            });
-        }
+        jQuery.each(colorGroups,function(key,value){
+            if(value.includes(item.pid))
+            { var strlength = key.length;
+                var colorLegendId = key.substring(0,strlength-14);
+                jQuery.each(colorHex,function(hexItem,hexVal){
+                    var match = colorLegendId.toLowerCase().match(hexItem.toLowerCase());
+                    if(match)
+                    {
+                        var iconUrlHexValue ="http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|"+hexVal;
+                        icon = L.icon({
+                            iconUrl: iconUrlHexValue,
+                            iconRetinalUrl: '',
+                            iconSize: [29, 41],
+                            iconAnchor: [14, 41],
+                            popupAnchor: [0, -41],
+                            shadowUrl: '',
+                            shadowRetinaUrl:'',
+                            shadowSize: [41, 41],
+                            shadowAnchor: [13, 41]
+                        });
+                    }
+                });
+            }
+        });
 
-        if (colorGroups.green && colorGroups.green.includes(item.pid)) {
-            icon = L.icon({
-                iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-green-icon.png',
-                iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-green-icon-2x.png',
-                iconSize: [29, 41],
-                iconAnchor: [14, 41],
-                popupAnchor: [0, -41],
-                shadowUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowRetinaUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowSize: [41, 41],
-                shadowAnchor: [13, 41]
-            });
-        }
-
-        if (colorGroups.yellow && colorGroups.yellow.includes(item.pid)) {
-            icon = L.icon({
-                iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-yellow-icon.png',
-                iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-yellow-icon-2x.png',
-                iconSize: [29, 41],
-                iconAnchor: [14, 41],
-                popupAnchor: [0, -41],
-                shadowUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowRetinaUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowSize: [41, 41],
-                shadowAnchor: [13, 41]
-            });
-        }
-
-        if (colorGroups.orange && colorGroups.orange.includes(item.pid)) {
-            icon = L.icon({
-                iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-orange-icon.png',
-                iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-orange-icon-2x.png',
-                iconSize: [29, 41],
-                iconAnchor: [14, 41],
-                popupAnchor: [0, -41],
-                shadowUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowRetinaUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowSize: [41, 41],
-                shadowAnchor: [13, 41]
-            });
-        }
 
         var marker = L.marker(
             new L.LatLng(item.coordinates[0], item.coordinates[1]),
@@ -391,7 +488,7 @@ function getCustomItems(jqArray) {
     return items;
 }
 
-function addCustomItemsToMap(items, markerCluster, home_url) {
+function addCustomItemsToMap(items, markerCluster, home_url,colorHex) {
 
     jQuery.each(items, function(index, item) {
 
@@ -406,76 +503,29 @@ function addCustomItemsToMap(items, markerCluster, home_url) {
             shadowSize: [41, 41],
             shadowAnchor: [13, 41]
         });
-
-        if (item.colorgroup === 'red') {
-            icon = L.icon({
-                iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-red-icon.png',
-                iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-red-icon-2x.png',
-                iconSize: [29, 41],
-                iconAnchor: [14, 41],
-                popupAnchor: [0, -41],
-                shadowUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowRetinaUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowSize: [41, 41],
-                shadowAnchor: [13, 41]
-            });
-        }
-
-        if (item.colorgroup === 'blue') {
-            icon = L.icon({
-                iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon.png',
-                iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-blue-icon-2x.png',
-                iconSize: [29, 41],
-                iconAnchor: [14, 41],
-                popupAnchor: [0, -41],
-                shadowUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowRetinaUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowSize: [41, 41],
-                shadowAnchor: [13, 41]
-            });
-        }
-
-        if (item.colorgroup === 'green') {
-            icon = L.icon({
-                iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-green-icon.png',
-                iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-green-icon-2x.png',
-                iconSize: [29, 41],
-                iconAnchor: [14, 41],
-                popupAnchor: [0, -41],
-                shadowUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowRetinaUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowSize: [41, 41],
-                shadowAnchor: [13, 41]
-            });
-        }
-
-        if (item.colorgroup === 'yellow') {
-            icon = L.icon({
-                iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-yellow-icon.png',
-                iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-yellow-icon-2x.png',
-                iconSize: [29, 41],
-                iconAnchor: [14, 41],
-                popupAnchor: [0, -41],
-                shadowUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowRetinaUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowSize: [41, 41],
-                shadowAnchor: [13, 41]
-            });
-        }
-
-        if (item.colorgroup === 'orange') {
-            icon = L.icon({
-                iconUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-orange-icon.png',
-                iconRetinalUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-orange-icon-2x.png',
-                iconSize: [29, 41],
-                iconAnchor: [14, 41],
-                popupAnchor: [0, -41],
-                shadowUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowRetinaUrl: home_url + 'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-shadow.png',
-                shadowSize: [41, 41],
-                shadowAnchor: [13, 41]
-            });
-        }
+        jQuery.each(colorGroups,function(key,value){
+            if(value.includes(item.pid))
+            { var strlength = key.length;
+                var colorLegendId = key.substring(0,strlength-14);
+                jQuery.each(colorHex,function(hexItem,hexVal){
+                    var match = colorLegendId.toLowerCase().match(hexItem.toLowerCase());
+                    if(match)
+                    {  var iconUrlHexValue ="http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|"+hexVal;
+                        icon = L.icon({
+                            iconUrl: iconUrlHexValue,
+                            iconRetinalUrl: '',
+                            iconSize: [29, 41],
+                            iconAnchor: [14, 41],
+                            popupAnchor: [0, -41],
+                            shadowUrl: '',
+                            shadowRetinaUrl:'',
+                            shadowSize: [41, 41],
+                            shadowAnchor: [13, 41]
+                        });
+                    }
+                });
+            }
+        });
 
         var marker = L.marker(
             new L.LatLng(item.coordinates[0], item.coordinates[1]),

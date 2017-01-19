@@ -6,6 +6,7 @@ function browse_ajax_handler() {
   global $errors;
   check_ajax_referer( 'browse_drs' );
   $collection = drstk_get_pid();
+
   if ($collection == '' || $collection == NULL) {
       $data = array('error'=>$errors['search']['missing_collection']);
       $data = json_encode($data);
@@ -18,7 +19,7 @@ function browse_ajax_handler() {
     wp_die();
   } else {
     if (isset($_POST['params']['collection'])){
-      $url = "https://repository.library.northeastern.edu/api/v1/search/".$_POST['params']['collection']."?";
+       $url = "https://repository.library.northeastern.edu/api/v1/search/".$_POST['params']['collection']."?";
     } else {
       $url = "https://repository.library.northeastern.edu/api/v1/search/".$collection."?";
     }
@@ -38,10 +39,12 @@ function browse_ajax_handler() {
       foreach($_POST['params']['f'] as $facet=>$facet_val){
         $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
       }
+
     }
     if (isset($_POST['params']['sort'])) {
       $url .= "&sort=" . $_POST['params']['sort'];
     }
+    write_log($url);
     $data = get_response($url);
     wp_send_json($data);
     wp_die();

@@ -213,6 +213,19 @@ function item_admin_ajax_handler() {
   wp_die();
 }
 
+add_action( 'wp_ajax_get_item_solr_admin', 'item_solr_admin_ajax_handler' ); //for auth users
+
+function item_solr_admin_ajax_handler() {
+  $data = array();
+  // Handle the ajax request
+  check_ajax_referer( 'item_admin_nonce' );
+  $url = "https://repository.library.northeastern.edu/api/v1/files/" . $_POST['pid'] . "?solr_only=true";
+  $data = get_response($url);
+  $data = json_decode($data);
+  wp_send_json(json_encode($data));
+  wp_die();
+}
+
 function drstk_item_shortcode_scripts() {
   global $post, $VERSION, $wp_query, $DRS_PLUGIN_URL;
   if( is_a( $post, 'WP_Post' ) && (has_shortcode( $post->post_content, 'drstk_item') || has_shortcode( $post->post_content, 'drstk_single')) && !isset($wp_query->query_vars['drstk_template_type']) ) {

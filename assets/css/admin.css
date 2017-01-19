@@ -166,6 +166,9 @@
 	width: 130px;
 	display: inline-block;
 }
+.backbone_modal-main .pane ol > li > p {
+	width: 130px;
+}
 .backbone_modal-main .tablenav-pages a.active {
   border-color: #5b9dd9;
   color: #fff;

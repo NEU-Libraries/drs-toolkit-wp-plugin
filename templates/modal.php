@@ -89,6 +89,14 @@
 			<div class="drs-chosen"></div>
 			<br/>
 			<button class="drs-facets-button">Show Filtering Options</button>
+
+			<!-- Code to add Select all checkbox only for map and timeline -->
+			<# if(data.title == "Map" || data.title == "Timeline"){ #>
+	      <label id="select-all-label">
+	        <input id="drs-select-all-item" type="checkbox"> Select All </input>
+	      </label>
+      <# } #>
+
 			<div class="drs-items">Loading...</div>
 			<div class="drs-facets hidden">
 				<b class="drs-facet-title">Filters <a href='' class="drs-close-facets"><span class="dashicons dashicons-no"> </span></a></b>
@@ -175,6 +183,7 @@
 	</td>
 	<td>{{data.helper}}</td>
 </script>
+
 <?php
 /* a template for number settings */
 ?>
@@ -202,4 +211,39 @@
 		<# } #>
 	</td>
 	<td>{{data.helper}}</td>
+</script>
+
+
+
+
+<?php
+/* a template for button settings */
+?>
+<script type='text/html' id='tmpl-drstk-setting-button'>
+	<td><h5>{{data.label}}</h5></td>
+	<td>
+		<button type="button" id ="{{data.name}}">{{data.value}} </button>
+		<button type="button" id ="save-button">Save </button>
+	</td>
+</script>
+
+<?php
+/* a template for Color headers settings */
+// TODO - is this even being used?
+?>
+<script type='text/html' id='tmpl-drstk-setting-colorheader'>
+	<td><h5>Description</h5></td>
+	<td><h5>Color Value</h5></td>
+
+</script>
+
+
+<?php
+/* a template for color input */
+?>
+<script type='text/html' id='tmpl-drstk-setting-colorinput'>
+	<td><input type='text' name="{{data.name}}"  value="{{data.colorname}}" />&nbsp;&nbsp;
+	</td>+
+	<td><input type='color' name="{{data.colorname}}" value='{{data.colorHex}}' /></td>
+	<td><div style="cursor:pointer;font-weight:bold" class="delete-color-row" id ='delete-{{data.name}}'>X</div></td>
 </script>

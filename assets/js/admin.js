@@ -15,7 +15,9 @@ drstk.Item = Backbone.Model.extend({
 	pid: '',
 	thumbnail: '',
 	repo: '',
-	color: ''
+	color: '',
+	key_date: '',
+	coords: ''
 });
 
 drstk.Setting = Backbone.Model.extend({
@@ -24,7 +26,19 @@ drstk.Setting = Backbone.Model.extend({
 	choices: {},
 	label: '',
 	helper: '',
-	tag: ''
+	tag: '',
+	selectedId :'',
+	colorHex :'',
+	colorId :''
+});
+
+drstk.ColorSetting = Backbone.Model.extend({
+	name: '',
+	value: [],
+	label: '',
+	tag :'',
+	colorname:'',
+	colorHex:'',
 });
 
 drstk.Items = Backbone.Collection.extend({
@@ -35,19 +49,26 @@ drstk.Settings = Backbone.Collection.extend({
 	model: drstk.Setting
 });
 
+drstk.ColorSettings = Backbone.Collection.extend({
+	model: drstk.ColorSetting
+});
+
 drstk.Shortcode = Backbone.Model.extend({
 	defaults:{
 		type: '',
 		items: new drstk.Items(),
 		settings: new drstk.Settings(),
+		colorsettings: new drstk.ColorSettings(),
 	},
 	initialize: function() {
     this.set('items', new drstk.Items());
 		this.set('settings',  new drstk.Settings());
+		this.set('colorsettings',new drstk.ColorSettings());
   },
 	parse: function(response){
 		response.items = new drstk.Items(response.items);
 		response.settings = new drstk.Settings(response.settings);
+		response.colorsettings = new drstk.ColorSettings(response.colorsettings);
 		return response;
 	},
 	set: function(attributes, options) {
@@ -57,6 +78,9 @@ drstk.Shortcode = Backbone.Model.extend({
 		if (attributes.settings !== undefined && !(attributes.settings instanceof drstk.Settings)) {
         attributes.settings = new drstk.Settings(attributes.settings);
     }
+		if (attributes.colorsettings !== undefined && !(attributes.colorsettings instanceof drstk.ColorSettings)) {
+			attributes.colorsettings = new drstk.ColorSettings(attributes.colorsettings);
+		}
     return Backbone.Model.prototype.set.call(this, attributes, options);
 	}
 });
@@ -76,6 +100,8 @@ drstk.ItemView = Backbone.View.extend({
 		}
 	}
 });
+var click_counter=1;
+var colorArray = [];
 
 drstk.SettingView = Backbone.View.extend({
 	checkbox_template: wp.template( "drstk-setting-checkbox" ),
@@ -97,7 +123,23 @@ drstk.SettingView = Backbone.View.extend({
 			this.$el.html( this.number_template(this.model.toJSON()));
 		}
 	},
-})
+});
+
+drstk.ColorSettingView = Backbone.View.extend({
+	color_row_template: wp.template( "drstk-setting-colorinput" ),
+	tagName: 'tr',
+	initialize: function(){
+		this.render();
+	},
+	render: function() {
+		if (this.model.attributes.tag == 'inputcolor') {
+			this.$el.html(this.color_row_template(this.model.toJSON()));
+		}
+	},
+	remove: function(){
+		this.collection.remove(this.model);
+	},
+});
 
 /**
  * Primary Modal Application Class
@@ -106,6 +148,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 	{
 		id: "backbone_modal_dialog",
 		events: {
+			"change #drs-select-all-item": "selectAllItem",
 			"click .backbone_modal-close": "closeModal",
 			"click #btn-cancel": "closeModal",
 			"click #btn-ok": "insertShortcode",
@@ -132,6 +175,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			"click .drs-facet-remove": "drsFacetRemove",
 			"click .dpla-expand-facet": "dplaFacetExpand",
 			"click .drs-expand-facet": "drsFacetExpand",
+			"click #addcolorbutton" : "settingsAddColor",
+			"click .delete-color-row":"deleteColorRow",
 		},
 
 		/**
@@ -151,9 +196,12 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		shortcode: null,
 		geo_count: 0,
 		time_count: 0,
+		select_all: false,
 		old_shortcode: null,
-
+		collection_id: drstk_backbone_modal_l10n.collection_id,
+		options: {},
 		search_q: '',
+		result_count: 0,
 		search_page: 1,
 		search_params: {q:this.search_q, page:this.search_page, facets: {}, sort: ""},
 		current_tab: 0,  // store our current tab as a variable for easy lookup
@@ -165,7 +213,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			5: 'map',
 			6: 'timeline'
 		},
-		colors: ["red", "green", "blue", "yellow", "orange"],
 
 		/**
 		 * Instantiates the Template object and triggers load.
@@ -174,7 +221,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			"use strict";
 			this.options = options;
 
-			_.bindAll( this, 'render', 'preserveFocus', 'closeModal', 'insertShortcode', 'navigate', 'showTab', 'getDRSitems', 'selectItem', 'paginate', 'navigateShortcode', 'search', 'setDefaultSettings', 'appendSingleItem' );
+			_.bindAll( this, 'render', 'preserveFocus', 'closeModal', 'insertShortcode', 'navigate', 'showTab', 'getDRSitems', 'selectItem', 'paginate', 'navigateShortcode', 'search', 'setDefaultSettings', 'appendSingleItem' , 'selectAllItem','settingsAddColor','deleteColorRow');
 			this.initialize_templates();
 			this.render();
 			this.shortcode = new drstk.Shortcode({});
@@ -192,15 +239,53 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			} else {
 				this.current_tab = 1;
 			}
-			if (this.options && this.options.items.length > 0){
+			if (this.options && ((this.options.items && this.options.items.length > 0) || (this.options.collection_id && this.options.collection_id.length > 0))){
 				var self = this;
-				_.each(this.options.items, function(item, i){
-					if (i == 0){
-						self.shortcode.items = new drstk.Items(item);
-					} else {
-						self.shortcode.items.add(item);
+				var settings = this.options.settings;
+				_.each(this.options.settings, function(setting, setting_name){
+					if (setting_name.match(/([a-zA-Z_]*)_color_desc_id/)){
+						var desc = setting_name.match(/([a-zA-Z_]*)_color_desc_id/)[1];
+						var code = "#"+settings[desc+'_color_hex'];
+						if (desc && code){
+							var colorsettings = self.shortcode.get('colorsettings');
+							var name = 'label-text-' +click_counter+ '_desc';
+							var value ='label-' +click_counter;
+							var label= 'label-' +click_counter;
+							desc = desc.replace("_", " ");
+							colorsettings.add({
+								'name': name,
+								'value': value,
+								'label': label,
+								'tag' : 'inputcolor',
+								'colorname':desc,
+								'colorHex':code,
+							});
+							self.shortcode.set('colorsettings',colorsettings);
+							var colored_ids = setting.split(",");
+							for (var x = 0; x < colored_ids.length; x++){
+								colored_ids[x] = colored_ids[x].trim();
+							}
+							_.each(colored_ids, function(id){
+								var item = self.shortcode.items.where({ 'pid': id});
+								item[0].attributes["color"] = desc;
+							});
+							click_counter++;
+						}
 					}
 				});
+
+				if (this.options.items && this.options.items.length > 0){
+					_.each(this.options.items, function(item, i){
+						if (i == 0){
+							self.shortcode.items = new drstk.Items(item);
+						} else {
+							self.shortcode.items.add(item);
+						}
+					});
+				} else { //starting with collection_id
+					self.select_all = true;
+					jQuery(".backbone_modal-main #drs-select-all-item").prop("checked", true);
+				}
 				e.currentTarget = jQuery(".nav-tab[href='#selected']");
 				this.navigateShortcode(e);
 			}
@@ -284,7 +369,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 		/* close the modal */
 		closeModal: function ( e ) {
 			"use strict";
-
+			click_counter=1;
 			e.preventDefault
 			this.undelegateEvents();
 			jQuery( document ).off( "focusin" );
@@ -294,6 +379,40 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				window.wp.media.editor.insert(this.old_shortcode);
 			}
 			drstk.backbone_modal.__instance = undefined;
+		},
+
+		/* select all items when 'Select All' checkbox is enabled */
+
+	  selectAllItem: function ( e ) {
+      "use strict";
+      e.preventDefault
+      if(jQuery("#drs-select-all-item").prop("checked")){
+        jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("checked", true);
+        jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("disabled", true);
+        jQuery(".tile").trigger("change"); //This will call the selectItem function for all the selected items.
+				if (jQuery(".drs-pagination .tablenav-pages").children().length > 1){
+					this.loopThroughPages();
+				}
+				this.select_all = true;
+      }else{
+        jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("checked", false);
+        jQuery("#sortable-"+this.tabs[this.current_tab]+"-list").find("li input").prop("disabled", false);
+        this.shortcode.items.models.length = 0; //When the "Select All" checkbox is enabled, all the shortcodes should become null.
+      }
+	  },
+
+		loopThroughPages: function() {
+			var cur = parseInt(jQuery(".drs-pagination .tablenav-pages .current-page").text());
+			var next = jQuery(".drs-pagination .tablenav-pages .current-page").next("a");
+			if (parseInt(next.text()) == cur + 1){
+				jQuery(next.trigger('click')); //trigger paginate
+				jQuery(".drs-pagination .tablenav-pages .current-page").removeClass("current-page");
+				next.addClass("current-page");
+				this.loopThroughPages();
+			} else {
+				//if it doesn't need to paginate anymore we just send it back to the first page
+				jQuery(".drs-pagination .tablenav-pages .prev-page").next("a").trigger('click');
+			}
 		},
 
 		/* inserts shortcode and closes modal */
@@ -306,6 +425,12 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				if (end_date != undefined) {end_date = end_date.attributes.value[0];}
 				if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || (this.current_tab == 6 && start_date == undefined && end_date == undefined && this.validTime() == true) || (this.current_tab == 5 && this.validMap() == true) || (this.current_tab == 1 && this.shortcode.items.length == 1) || (this.current_tab != 6 && this.current_tab != 1 && this.current_tab != 5)){
 					shortcode = '<p>[drstk_'+this.tabs[this.current_tab];
+
+					// If check box is checked then add collection_Id attribute to the shortcode
+					if(jQuery("#drs-select-all-item").prop("checked")){
+						shortcode += ' collection_id="'+this.collection_id+'"';
+					}
+
 					ids = []
 					jQuery.each(items.models, function(i, item){
 						if (item.attributes.repo == 'dpla'){
@@ -318,11 +443,17 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						ids.push(pid);
 					});
 					ids.join(",");
-					shortcode += ' id="'+ids+'"';
+
+					if(!jQuery("#drs-select-all-item").prop("checked")){
+						shortcode += ' id="'+ids+'"';
+					}
+
 					if (this.current_tab == 5 || this.current_tab == 6){
 						var self = this;
-						_.each(this.colors, function(color){
+						var col_desc="";
+						_.each(this.shortcode.get('colorsettings').models, function(color){
 							arr = [];
+							color = color.attributes.colorname;
 							items = self.shortcode.items.where({'color':color});
 							_.each(items, function(i){
 								if (i.attributes.repo == 'dpla'){
@@ -335,7 +466,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								arr.push(pid);
 							});
 							if (arr.length > 0){
-								shortcode += ' '+color+'_id="'+arr.join(",")+'"';
+								color_desc = color.replace(" ", "_");
+								shortcode += ' '+color_desc+'_color_desc_id="'+arr.join(",")+'"';
 							}
 						});
 					}
@@ -348,11 +480,18 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 							shortcode += ' '+setting.get('name')+'="'+vals+'"';
 						}
 					});
+					if (this.current_tab == 5 || this.current_tab == 6) {
+						var color_shortcode = " ";
+						_.each(this.shortcode.get('colorsettings').models, function (color) {
+							var color_desc = color.attributes.colorname.replace(" ", "_");
+							var hexval = color.attributes.colorHex.substring(1, color.attributes.colorHex.length);
+							color_shortcode += color_desc +'_color_hex' + '="' + hexval + '" ';
+						});
+						shortcode += color_shortcode;
+					}
 					shortcode += ']</p>';
 					this.closeModal( e );
 					window.wp.media.editor.insert(shortcode);
-					console.log(shortcode);
-					console.log("should have closed");
 				} else if (this.current_tab == 1 && this.shortcode.items.length > 1){
 					alert("There are more than 1 items selected for a single item shortcode.");
 			  } else if (this.current_tab == 6){
@@ -374,6 +513,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			settings = this.shortcode.get('settings');
 			if (this.options && this.options.settings){
 				options = this.options.settings;
+			} else if (this.options) {
+				options = this.options;
 			} else {
 				options = {};
 			}
@@ -625,15 +766,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					'choices':{.5:'Very Low',2:'Low',5:'Medium',8:'High',13:'Very High'},
 					'helper':'Specifies the granularity to represent items on the timeline'
 				});
-				_.each(this.colors, function(color){
-					var desc = options[color+'_desc'] ? options[color+'_desc'] : options[color+'_legend_desc'];
-					settings.add({
-						'name':color+'_desc',
-						'label':color.charAt(0).toUpperCase()+color.slice(1)+" Description",
-						'tag':'text',
-						'value': desc ? desc : ''
-					});
-				});
 				this.shortcode.set('settings', settings);
 			} else if (type == 'media') {
 				settings.add({
@@ -667,20 +799,67 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					'value': options['metadata'] ? options['metadata'] : ['Creator,Contributor'],
 					'choices':{'Creator,Contributor':'Creator,Contributor','Date Created':'Date Created','Abstract/Description':'Abstract/Description'},
 				});
-				_.each(this.colors, function(color){
-					var desc = options[color+'_desc'] ? options[color+'_desc'] : options[color+'_legend_desc'];
-					settings.add({
-						'name':color+'_desc',
-						'label':color.charAt(0).toUpperCase()+color.slice(1)+" Description",
-						'tag':'text',
-						'value': desc != undefined ? desc : ''
-					});
-				});
+
 				this.shortcode.set('settings', settings);
 			} else {
-				console.log(type);
 				console.log("not a known shortcode type");
 			}
+		},
+
+		settingsAddColor : function(e){
+			type =this.shortcode.get('type');
+			colorsettings = this.shortcode.get('colorsettings');
+			name = 'label-text-' +click_counter+ '_desc';
+			value ='label-' +click_counter;
+			label= 'label-' +click_counter;
+			colorname='label-color-' + click_counter;
+			colorsettings.add({
+				'name': name,
+				'value': value,
+				'label': label,
+				'tag' : 'inputcolor',
+				'colorname':colorname,
+				'colorHex':'#0080ff',
+			});
+			this.shortcode.set('colorsettings',colorsettings);
+			this.getSettings();
+			// TODO - fix these hardedcoded vlaues
+			jQuery('#settings table').css({"float":"left"});
+			if(type=="map"){
+				jQuery('#settings .color-table').css({"float": "right","position": "relative","right": "110px","width": "515px"});
+			}
+			if(type=="timeline"){
+				jQuery('#settings .color-table').css({"right": "248px","width": "515px"});
+			}
+			click_counter = click_counter + 1;
+		},
+
+		deleteColorRow : function(e){
+			e.preventDefault();
+			var id="";
+			var index_val=-1;
+			id =jQuery(e.currentTarget).attr("id");
+			type =this.shortcode.get('type');
+			class_name_original = id.substr(7,id.length);
+			class_name = "#settings > table.color-table > tbody > tr."+ class_name_original;
+			colorsettings = this.shortcode.get('colorsettings');
+			jQuery.each(colorsettings.models,function(index,value){
+				if(value.attributes["name"].toString()==class_name_original){
+					index_val=index;
+				}
+			});
+			colorsettings.models.splice(index_val,1);
+			this.shortcode.set('colorsettings',colorsettings);
+			this.getSettings();
+			//TODO - fix hardcoded css
+			jQuery('#settings table').css({"float":"left"});
+			if(type=="map"){
+				jQuery('#settings .color-table').css({"float": "right","position": "relative","right": "110px","width": "515px"});
+			}
+			if(type=="timeline"){
+				jQuery('#settings .color-table').css({"right": "248px","width": "515px"});
+			}
+			jQuery(class_name).remove();
 		},
 
 		/* navigation between shortcode types */
@@ -690,6 +869,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			this.geo_count = 0;
 			this.time_count = 0;
 			this.shortcode.set('settings',  new drstk.Settings());
+			this.shortcode.set('colorsettings',  new drstk.ColorSettings());
 			jQuery(".navigation-bar a").removeClass("active");
 			this.showTab(jQuery(e.currentTarget).attr("href"));
 		},
@@ -723,6 +903,13 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				this.getSelecteditems();
 				tab_name = this.tabs[this.current_tab]
 				var self = this;
+
+				//Display items as disabled after switching tab between DRSItems and Selected items if the select-all
+				//checkbox is enables
+				if(jQuery("#drs-select-all-item").prop("checked")) {
+                    jQuery("#selected #sortable-"+tab_name+"-list").find("li input").prop("disabled", true);
+
+                }
 				jQuery("#selected #sortable-"+tab_name+"-list").sortable({
 					update: function(event, ui){
 						_.each(_.clone(self.shortcode.items.models), function(model) {
@@ -754,6 +941,15 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			} else if (path == '#settings'){
 				jQuery("#settings").show();
 				this.getSettings();
+				type = this.shortcode.get('type');
+				click_counter=1;
+				jQuery('#settings table').css({"float":"left"});
+				if(type=='map'){
+					jQuery('#settings .color-table').css({"float": "right","position": "relative","right": "110px","width": "515px"});
+				}
+				if(type=='timeline'){
+					jQuery('#settings .color-table').css({"right": "248px","width": "515px"});
+				}
 			}
 		},
 
@@ -796,13 +992,17 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			jQuery(".backbone_modal-main article").append( this.templates.tabContent( {title: title, type: this.tabs[this.current_tab]} ) );
 			jQuery(".navigation-bar a[href="+id+"]").addClass("active");
 			jQuery("#drs").show();
-			this.getDRSitems();
+			if (!this.select_all){
+				this.getDRSitems();
+			}
 			this.shortcode.set({"type": this.tabs[this.current_tab]});
 			this.setDefaultSettings();
 		},
 
 		getDRSitems: function( ){
 			if (this.current_tab == 4){ this.search_params.avfilter = true; } else { delete this.search_params.avfilter; }
+			if (this.current_tab == 5){ this.search_params.spatialfilter = true; } else { delete this.search_params.spatialfilter; }
+			if (this.current_tab == 6){ this.search_params.timefilter = true; } else { delete this.search_params.timefilter; }
 			var self = this;
 			if (self.search_params.page == 1){//reset time/geo counts when we're on the first page
 				self.geo_count = 0;
@@ -825,14 +1025,19 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 							 last = true;
 						 } else {last = false;}
              if (item.active_fedora_model_ssi == 'CoreFile'){
-               if ((self.current_tab == 5 && ((item.subject_geographic_tesim && item.subject_geographic_tesim.length) || (item.subject_cartographics_coordinates_tesim && data.subject_cartographics_coordinates_tesim.length)) ) || (self.current_tab == 6 && item.key_date_ssi) || (self.current_tab != 5 && self.current_tab != 6)){
 								this_item = new drstk.Item;
 								thumb = "https://repository.library.northeastern.edu"+item.thumbnail_list_tesim[0];
 								this_item.set("pid", item.id).set("thumbnail", thumb).set("repo", "drs").set("title", item.full_title_ssi);
+								if (item.key_date_ssi){ this_item.set("key_date", item.key_date_ssi) }
+								if (item.subject_geographic_tesim){ this_item.set("coords", item.subject_geographic_tesim[0])}
+								if (item.subject_cartographics_coordinates_tesim){ this_item.set("coords", item.subject_cartographics_coordinates_tesim)}
 								view = new drstk.ItemView({model:this_item});
 								jQuery("#drs #sortable-"+tab_name+"-list").append(view.el);
 								if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
 									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
+									if (self.select_all == true){
+										jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("disabled", true);
+									}
 									short_item = self.shortcode.items.where({ pid: item.id })[0];
 									if (!short_item.get("title")){
 										short_item.set("title", item.full_title_ssi);
@@ -840,11 +1045,20 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 									if (!short_item.get("thumbnail")){
 										short_item.set("thumbnail", thumb);
 									}
+									if (!short_item.get("key_date") && item.key_date_ssi){ short_item.set("key_date", item.key_date_ssi) }
+									if (!short_item.get("coords") && item.subject_geographic_tesim){ short_item.set("coords", item.subject_geographic_tesim[0])}
+									if (item.subject_cartographics_coordinates_tesim){ short_item.set("coords", item.subject_cartographics_coordinates_tesim)}
+								} else if (self.select_all == true){ //if its a selectAll then we automatically do that selectAllItem
+									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
+									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("disabled", true);
+									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type .tile").trigger("change");
 								}
 								if (self.current_tab == 6){
-									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: "+data.key_date_ssi+"</p>");
+									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: <span class='key_date'>"+item.key_date_ssi+"</span></p>");
 								}
-              }
+								if (self.current_tab == 5){
+									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Map Info: <span class='coords'>"+this_item.get("coords")+"</span></p>");
+								}
 							jQuery(".drs-items").html("");
              }
            });
@@ -930,6 +1144,12 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			title = item.siblings(".title").text();
 			thumbnail = item.siblings("img").attr("src");
 			parent = item.parents(".pane").attr("id");
+			if (item.parents("li").find(".key_date").text()){
+				key_date = item.parents("li").find(".key_date").text();
+			} else { key_date = ''; }
+			if (item.parents("li").find(".coords").text()){
+				coords = item.parents("li").find(".coords").text();
+			} else { coords = ''; }
 			if (parent == 'drs'){
 				repo = 'drs'
 			} else if (parent == 'dpla'){
@@ -943,14 +1163,18 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						'title':title,
 						'pid':pid,
 						'thumbnail':thumbnail,
-						'repo':repo
+						'repo':repo,
+						'key_date':key_date,
+						'coords':coords
 					})
 				} else if (this.shortcode.items.where({ pid: pid }).length == 0) {
 					this.shortcode.items.add({
 						'title':title,
 						'pid':pid,
 						'thumbnail':thumbnail,
-						'repo':repo
+						'repo':repo,
+						'key_date':key_date,
+						'coords':coords
 					})
 				}
 				if (this.shortcode.get('type') == 'single'){
@@ -989,7 +1213,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								'choices':choices,
 							});
 							self.shortcode.set('settings', settings);
-							console.log(self.shortcode.get('settings'));
 						}
 					});
 				} else if (this.shortcode.get('type') == 'single' && parent == 'dpla'){
@@ -1041,6 +1264,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 
 		updateDRSPagination: function (data){
 			if (data.pagination.table.num_pages > 1){
+				this.result_count = data.pagination.table.total_count;
 	       var pagination = "";
 	       if (data.pagination.table.current_page > 1){
 	         pagination += "<a href='#' class='prev-page'>&lt;&lt;</a>";
@@ -1061,6 +1285,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 	         pagination += "<a href='#' class='next-page disabled' data-val='"+data.pagination.table.num_pages+"'>&gt;&gt;</a>";
 	       }
 				 jQuery(".drs-pagination").html("<span class='tablenav'><span class='tablenav-pages'>" + pagination + "</span></span>");
+
 	    } else {
 				jQuery(".drs-pagination").html("");
 			}
@@ -1106,27 +1331,45 @@ drstk.backbone_modal.Application = Backbone.View.extend(
          if (data.count > 0){
 					 jQuery(".dpla-items").html("");
            jQuery.each(data.docs, function(id, item){
-						 this_item = new drstk.Item;
-						 var title = item.sourceResource.title;
-						 if (Array.isArray(title)){
-							 title = title[0];
+						 date = self.getDateFromSourceResource(item.sourceResource);
+						 coords = item.sourceResource.spatial[0].name;
+						 if (item.sourceResource.spatial[0].coordinates != "" && item.sourceResource.spatial[0].coordinates != undefined){
+							 coords = item.sourceResource.spatial[0].coordinates;
 						 }
-						 this_item.set("pid", item.id).set("thumbnail", item.object).set("repo", "dpla").set("title", title);
-						 view = new drstk.ItemView({model:this_item});
-						 jQuery("#dpla #sortable-"+tab_name+"-list").append(view.el);
-						 if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
-							 jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
-							 short_item = self.shortcode.items.where({ pid: item.id })[0];
-							 if (!short_item.get("title")){
-								 short_item.set("title", title);
+						 if ((self.current_tab == 6 && date != "") || (self.current_tab == 5 && coords != "") || (self.current_tab != 5 && self.current_tab != 6)){
+							 this_item = new drstk.Item;
+							 var title = item.sourceResource.title;
+							 if (Array.isArray(title)){
+								 title = title[0];
 							 }
-							 if (!short_item.get("thumbnail")){
-								 short_item.set("thumbnail", item.object);
+							 this_item.set("pid", item.id).set("thumbnail", item.object).set("repo", "dpla").set("title", title);
+							 this_item.set("key_date", date);
+							 this_item.set("coords", coords);
+							 view = new drstk.ItemView({model:this_item});
+							 jQuery("#dpla #sortable-"+tab_name+"-list").append(view.el);
+							 if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
+								 jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
+								 short_item = self.shortcode.items.where({ pid: item.id })[0];
+								 if (!short_item.get("title")){
+									 short_item.set("title", title);
+								 }
+								 if (!short_item.get("thumbnail")){
+									 short_item.set("thumbnail", item.object);
+								 }
+								 if (!short_item.get("key_date") || short_item.get("key_date") == "" || short_item.get("key_date") == undefined || short_item.get("key_date") == []){
+									 short_item.set("key_date", date);
+								 }
+								 if (!short_item.get("coords") || short_item.get("coords") == "" || short_item.get("coords") == undefined){
+									 short_item.set("coords", coords);
+								 }
 							 }
-						 }
-						 if (self.current_tab == 6){
-							jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: "+item.sourceResource.date.displayDate+"</p>");
-						 }
+							 if (self.current_tab == 6){
+								jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: <span class='key_date hidden'>"+date.join("-")+"</span>"+item.sourceResource.date.displayDate+"</p>");
+							 }
+							 if (self.current_tab == 5){
+								jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Map Info: <span class='coords hidden'>"+this_item.get("coords")+"</span>"+this_item.get("coords")+"</p>");
+							 }
+
            });
 					 if (self.search_params.q != ""){//too much pagination if there isn't a query
 						 self.updateDPLAPagination(data);
@@ -1220,6 +1463,45 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			 }
 		},
 
+		getDateFromSourceResource: function( source ) {
+			date = "";
+			if (Array.isArray(source.date)){
+			 source.date = source.date[0];
+			}
+			date = source.date.displayDate;
+			if (date != undefined && date != ""){
+				date = date.split("-");
+				if (date[0] && date[0].length != 4 && source.date.begin != undefined){
+					begin_date = source.date.begin;
+				} else if (date[0] == undefined && source.date.begin != undefined){
+					begin_date = source.date.begin;
+				} else if (date[0] == undefined && source.date.begin == undefined){
+					begin_date = "";
+				} else {
+					begin_date = date[0];
+				}
+				begin_date = begin_date.split("-")[0];
+				if (date[1] && date[1].length != 4 && source.date.end != undefined){
+					end_date = source.date.end;
+				} else if (date[1] == undefined && source.date.end != undefined) {
+					end_date = source.date.end;
+				} else if (date[1] == undefined && source.date.end == undefined) {
+					end_date = "";
+				} else {
+					end_date = date[1];
+				}
+				end_date = end_date.split("-")[0];
+				if (!jQuery.isNumeric(begin_date)){
+					begin_date = ""
+				}
+				if (!jQuery.isNumeric(end_date)){
+					end_date = ""
+				}
+				date = [begin_date, end_date];
+			}
+			return date;
+		},
+
 		updateDPLAPagination: function( data ){
 			num_pages = Math.round(data.count/data.limit);
 			current_page = parseInt(this.search_params.page);
@@ -1282,14 +1564,22 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								url: item_admin_obj.ajax_url,
 		             type: "POST",
 		             data: {
-		               action: "get_item_admin",
+		               action: "get_item_solr_admin",
 		               _ajax_nonce: item_admin_obj.item_admin_nonce,
 		               pid: item.get("pid"),
 								 }, complete: function(data){
 									var data = jQuery.parseJSON(data.responseJSON);
-									item.set("title", data.mods.Title[0]);
+									data = data['_source'];
+									item.set("title", data.full_title_ssi);
 									if (!item.get("thumbnail")){
-										item.set("thumbnail", data.thumbnails[0]);
+										item.set("thumbnail", "http://repository.library.northeastern.edu"+data.fields_thumbnail_list_tesim[0]);
+									}
+									if (!item.get("key_date") || item.get("key_date") == "" || item.get("key_date") == undefined){
+										item.set("key_date", data.key_date_ssi);
+									}
+									if (!item.get("coords") || item.get("coords") == "" || item.get("coords") == undefined){
+										if (data.subject_geographic_tesim) {item.set("coords", data.subject_geographic_tesim[0])}
+										if (data.subject_cartographics_coordinates_tesim) {item.set("coords", data.subject_cartographics_coordinates_tesim)}
 									}
 									new_items.push(item.get("pid"));
 								}
@@ -1304,6 +1594,17 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								item.set("title", data.docs[0].sourceResource.title);
 								if (data.docs[0].object){
 									item.set("thumbnail", data.docs[0].object);
+								}
+								if (!item.get("key_date") || item.get("key_date") == "" || item.get("key_date") == undefined){
+									date = self.getDateFromSourceResource(data.docs[0].sourceResource);
+									item.set("key_date", date);
+								}
+								if (!item.get("coords") || item.get("coords") == "" || item.get("coords") == undefined){
+									coords = item.sourceResource.spatial[0].name;
+									if (item.sourceResource.spatial[0].coordinates != "" && item.sourceResource.spatial[0].coordinates != undefined){
+										coords = item.sourceResource.spatial[0].coordinates;
+									}
+									item.set("coords", coords);
 								}
 								new_items.push(item.get("pid"));
 							});
@@ -1320,6 +1621,11 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 									if (!data.post_mime_type.includes("audio") && !data.post_mime_type.includes("video")){
 										item.set("thumbnail",data.guid);
 									}
+									// TODO add key_date
+									// if (!item.get("key_date") || item.get("key_date") == "" || item.get("key_date") == undefined){
+										// item.set("key_date", data.key_date_ssi);
+									// }
+									// TODO add coords
 									new_items.push(item.get("pid"));
 								}
 							});
@@ -1344,11 +1650,28 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						 }, 1000);
 					 }
 	        });
+				} else if (this.select_all == true){
+					jQuery(".selected-items").html("<div class='notice notice-warning'><p>Selected items are loading...</p></div>");
 				} else {
 					jQuery(".selected-items").html("<div class='notice notice-warning'><p>You haven't selected any items yet.</p></div>");
  				 	jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 				}
-	     } else {
+			} else if (this.select_all == true){
+				//if there are no items in the list yet, lets wait 2 seconds for the drs connections to try to finish before we refresh this tab
+				jQuery(".selected-items").html("<div class='notice notice-warning'><p>Selected items are loading...</p></div>");
+				if (jQuery("#selected #sortable-"+tab_name+"-list").children().length < 1) {
+					var self = this;
+					var interval;
+					interval = setInterval(function(){
+						if (jQuery("#selected #sortable-"+tab_name+"-list").children().length < 1 || (jQuery("#selected #sortable-"+tab_name+"-list").children().length < self.result_count)){
+							jQuery("#drs #drs-select-all-item").trigger('change'); //triggers SelectAllItem
+							jQuery(".nav-tab[href='#selected']").trigger('click'); //triggers navigateShortcode
+						} else {
+							clearInterval(interval);
+						}
+					}, 2000);
+				}
+			} else {
 	       jQuery(".selected-items").html("<div class='notice notice-warning'><p>You haven't selected any items yet.</p></div>");
 				 jQuery("#selected #sortable-"+tab_name+"-list").children("li").remove();
 	     }
@@ -1362,10 +1685,16 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			jQuery("#selected #sortable-"+tab_name+"-list").append(itemView.el);
 			if (this.current_tab == 5 || this.current_tab == 6){
 				colors = "";
-				_.each(this.colors, function(color){
+				var self = this;
+				_.each(self.shortcode.get('colorsettings').models, function(color){
+					color = color.attributes.colorname;
 					colors += "<option value='"+color+"'";
-					preset_colors = this.options[color+"_id"] ? this.options[color+"_id"] : this.options[color];
-					if (preset_colors){
+					if (self.options != undefined && self.options.settings != undefined) {
+						var preset_colors = self.options.settings[color+"_color_desc_id"];
+					} else if (self.options != undefined){
+						var preset_colors = self.options[color+"_id"] ? self.options[color+"_id"] : self.options[color];
+					}
+					if (preset_colors != undefined){
 						preset_colors = preset_colors.split(",");
 						for (var i = 0; i < preset_colors.length; i++) {
     					preset_colors[i] = preset_colors[i].trim();
@@ -1374,11 +1703,10 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					if (preset_colors != undefined && preset_colors.indexOf(item.attributes.pid) > -1){
 						item.set("color",color);
 					}
-
 					if (item.attributes.color == color){ colors += " selected='selected'"; }
 					colors += ">"+color.charAt(0).toUpperCase()+color.slice(1)+"</option>";
 				});
-				jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type label").append('<br/>Color: <select name="color"><option value="">Choose one</option>'+colors+'</select>');
+				jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type label").append('<br/>Select: <select name="color"><option value="">Choose one</option>'+colors+'</select>');
 			}
 			if(this.shortcode.items.where({ pid: item.attributes.pid }).length > 0){
 				jQuery("#selected #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
@@ -1389,14 +1717,38 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			jQuery("#settings").html("<table />");
 			_.each(this.shortcode.get('settings').models, function(setting, i) {
 				var settingView = new drstk.SettingView({
-						model:setting
+					model: setting
 				});
 				jQuery("#settings table").append(settingView.el);
 				jQuery("#settings table tr:last-of-type").addClass(setting.get('name'));
 			});
+				type = this.shortcode.get('type');
+				if(type=='map'||type=='timeline'){
+					jQuery('#settings').append("<table class ='color-table'>"+
+						"<colgroup><col style='width: 25%;'>"+
+						"<col style='width: 44%;'>"+
+						"<col style='width: 20%;'></colgroup>"+
+						"<tbody>" +
+						"<tr class='buttons'><td>"+
+						"<button type='button' id ='addcolorbutton'>Add </button> &nbsp; &nbsp;"+
+						"<tr class='colorheader'>"+
+						"<td><h5>Description</h5></td>"+
+						"<td><h5>Color Value</h5></td>"+
+						"</tr></tbody>"+
+						"</table>");
+					_.each(this.shortcode.get('colorsettings').models,function(colorsetting,i) {
+						var colorsettingView = new drstk.ColorSettingView({
+							model:colorsetting
+						});
+						jQuery("#settings .color-table").append(colorsettingView.el);
+						jQuery(jQuery("#settings .color-table tr:last-of-type").addClass(colorsetting.get('name')));
+					});
+				}
 		},
 
 		settingsChange: function(e){
+			e.preventDefault();
+			field_name = jQuery(e.currentTarget).attr("name");
 			if (jQuery(e.currentTarget).attr("type") == "checkbox"){
 				name = jQuery(e.currentTarget).parents("tr").attr("class");
 				setting = this.shortcode.get('settings').where({name:name})[0];
@@ -1407,7 +1759,21 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					}
 				});
 				setting.set('value', vals);
-			} else {
+			}
+			else if(jQuery(e.currentTarget).attr("type")=="color"){
+				var color = jQuery(e.currentTarget).val();
+				name = jQuery(e.currentTarget).parents("td").prev("td").find("input").attr("name");
+				colorsetting = this.shortcode.get('colorsettings').where({name:name})[0];
+				colorsetting.set('colorHex',color);
+			}
+			else if(field_name.indexOf('label-text-') != -1) {
+				name = jQuery(e.currentTarget).attr("name");
+				colorsetting = this.shortcode.get('colorsettings').where({name:name})[0];
+				val = jQuery(e.currentTarget).val();
+				colorsetting.set('value',val);
+				colorsetting.set('colorname', val);
+			}
+			else {
 				name = jQuery(e.currentTarget).attr("name");
 				setting = this.shortcode.get('settings').where({name:name})[0];
 				val = jQuery(e.currentTarget).val();
@@ -1420,21 +1786,10 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			no_year = [];
 			key_date_list = [];
 			_.each(_.clone(this.shortcode.items.where({repo:'drs'})), function(item){
-				jQuery.ajax({
-					url: item_admin_obj.ajax_url,
-					type: "POST",
-					async: false,
-					data: {
-						action: "get_item_admin",
-						_ajax_nonce: item_admin_obj.item_admin_nonce,
-						pid: item.get('pid'),
-					}, success: function(data){
-						data = jQuery.parseJSON(data);
-						var key_date_year = Object.keys(data.key_date)[0].split("/")[0];
-						key_date_list.push({year:key_date_year, name:data.mods.Title[0]});
-					}
-				});
+				var key_date_year = item.get('key_date').split("/")[0];
+				key_date_list.push({year:key_date_year, name:item.get('title')});
 			});
+			//TODO - fix to remove extra ajax
 			_.each(_.clone(this.shortcode.items.where({repo:'local'})), function(item){
 				jQuery.ajax({
 					url: item_admin_obj.ajax_url,
@@ -1455,25 +1810,11 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				});
 			});
 			_.each(_.clone(this.shortcode.items.where({repo:'dpla'})), function(item){
-				jQuery.ajax({
-					url: dpla_ajax_obj.ajax_url,
-					type: "POST",
-					async: false,
-					data: {
-						action: "get_dpla_code",
-						_ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
-						params: {q:item.get("pid")},
-					}, success: function(data){
-						var data = jQuery.parseJSON(data);
-						if (data.docs[0].sourceResource.date == undefined || data.docs[0].sourceResource.date.displayDate == undefined || data.docs[0].sourceResource.date.displayDate[0] == undefined){
-							no_year.push(item.get('title'));
-						} else {
-							var key_date_begin = data.docs[0].sourceResource.date.begin;
-							var key_date_end = data.docs[0].sourceResource.date.end;
-							key_date_list.push({year:[key_date_begin, key_date_end], name:item.get('title')});
-						}
-					}
-				});
+				if (!item.get("key_date") || item.get("key_date") == undefined || item.get("key_date") == "" || item.get("key_date") == []){
+					no_year.push(item.get('title'));
+				} else {
+					key_date_list.push({year:item.get("key_date"), name:item.get('title')});
+				}
 			});
 			var self = this;
 			key_date_list.forEach(function(each_key){
@@ -1502,37 +1843,14 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			no_map = [];
 			key_date_list = [];
 			_.each(_.clone(this.shortcode.items.where({repo:'local'})), function(item){
-				jQuery.ajax({
-					url: item_admin_obj.ajax_url,
-					type: "POST",
-					async: false,
-					data: {
-						action: "get_custom_meta",
-						_ajax_nonce: item_admin_obj.item_admin_nonce,
-						pid: item.get('pid'),
-					}, success: function(data){
-						if (data._map_coords == undefined || data._map_coords == ""){
-							no_map.push(item.get('title'));
-						}
-					}
-				});
+				if (!item.get("coords") || item.get("coords") == "" || item.get("coords") == undefined){
+					no_map.push(item.get('title'));
+				}
 			});
 			_.each(_.clone(this.shortcode.items.where({repo:'dpla'})), function(item){
-				jQuery.ajax({
-					url: dpla_ajax_obj.ajax_url,
-					type: "POST",
-					async: false,
-					data: {
-						action: "get_dpla_code",
-						_ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
-						params: {q:item.get("pid")},
-					}, success: function(data){
-						var data = jQuery.parseJSON(data);
-						if (data.docs[0].sourceResource.spatial == undefined || data.docs[0].sourceResource.spatial == "" || (data.docs[0].sourceResource.spatial[0].name == undefined && data.docs[0].sourceResource.spatial[0].coordinates == undefined)){
-							no_map.push(item.get('title'));
-						}
-					}
-				});
+				if (!item.get("coords") || item.get("coords") == "" || item.get("coords") == undefined){
+					no_map.push(item.get('title'));
+				}
 			});
 			if (no_map.length > 0){
 				return no_map;
