@@ -287,11 +287,19 @@ function drstk_map( $atts , $params){
         $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
       }
       $title = $data->docs[0]->sourceResource->title;
-      $description = $data->docs[0]->sourceResource->description;
+      if (isset($data->docs[0]->sourceResource->description)){
+        $description = $data->docs[0]->sourceResource->description;
+      } else {
+        $description = "";
+      }
       $data->full_title_ssi = array($title);
       $data->abstract_tesim = $description;
       $cre = "Creator,Contributor";
-      $data->creator_tesim = $data->docs[0]->sourceResource->creator;
+      if (isset($data->docs[0]->sourceResource->creator)){
+        $data->creator_tesim = $data->docs[0]->sourceResource->creator;
+      } else {
+        $data->creator_tesim = "";
+      }
       $date = "Date Created";
       $data->key_date_ssi = isset($data->docs[0]->sourceResource->date->displayDate) ? $data->docs[0]->sourceResource->date->displayDate : array();
       $data->canonical_object = new StdClass;
