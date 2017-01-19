@@ -166,7 +166,7 @@ function drstk_timeline( $atts, $params ){
                 }
                 $key_date = $data->key_date_ssi;
                 $current_array = array();
-                $thumbnail_url = $data->fields_thumbnail_list_tesim[2];
+                $thumbnail_url = "http://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[2];
 
                 if (isset($atts['metadata'])){
                   $timeline_metadata = '';
@@ -201,11 +201,11 @@ function drstk_timeline( $atts, $params ){
                 $headline = htmlentities($data->full_title_ssi);
 
                 $keys = (array)$key_date;
-                $just_keys = array_keys($keys);
-                $key_date_explode = explode("/",$just_keys[0]);
+                $key_date_explode = explode("/",$keys[0]);
 
 
-                $timeline_html .= "<div class=\"timelineclass\" data-url=\"".$thumbnail_url."\" data-caption=\"".$caption."\" data-credit=\" \" data-year=\"".$key_date_explode[0]."\" data-month=\"".$key_date_explode[1]."\" data-day=\"".$key_date_explode[2]."\" data-headline=\"".$headline."\" data-text=\"".$text."\" data-pid=\"".$pid."\" data-full=\"".drstk_home_url()."item/".$pid."\">";
+                $timeline_html .= "<div class=\"timelineclass\" data-url=\"".$thumbnail_url."\" data-caption=\"".$caption."\" data-credit=\" \" data-year=\"".$key_date_explode[0]."\" data-month=\"".$key_date_explode[1]."\" data-day=\"".$key_date_explode[2]."\" data-headline=\"".$headline."\" data-text=\"".$text."\" data-pid=\"".$pid."\" data-full=\"";
+                $timeline_html .= drstk_home_url()."item/".$pid."\">";
                 $timeline_html .= "</div>";
             }else {
                 $timeline_html = $errors['shortcodes']['fail'];
