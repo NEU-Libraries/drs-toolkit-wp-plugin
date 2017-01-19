@@ -241,7 +241,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			}
 			var self = this;
 			this.click_counter = 1;
-			if (this.options.items && this.options.items.length > 0){
+			if (this.options && this.options.items && this.options.items.length > 0){
 				_.each(this.options.items, function(item, i){
 					if (i == 0){
 						self.shortcode.items = new drstk.Items(item);
@@ -249,7 +249,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						self.shortcode.items.add(item);
 					}
 				});
-			} else { //starting with collection_id
+			} else if (this.options){ //starting with collection_id
 				self.select_all = true;
 				jQuery(".backbone_modal-main #drs-select-all-item").prop("checked", true);
 			}
@@ -279,6 +279,10 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								colored_ids[x] = colored_ids[x].trim();
 							}
 							_.each(colored_ids, function(id){
+								repo = id.split(":")[0];
+								if (repo != "drs"){
+									id = id.split(":")[1];
+								}
 								var item = self.shortcode.items.where({ 'pid': id});
 								item[0].attributes["color"] = desc;
 							});
