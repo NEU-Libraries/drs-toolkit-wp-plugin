@@ -15,7 +15,9 @@ drstk.Item = Backbone.Model.extend({
 	pid: '',
 	thumbnail: '',
 	repo: '',
-	color: ''
+	color: '',
+	key_date: '',
+	coords: ''
 });
 
 drstk.Setting = Backbone.Model.extend({
@@ -1026,6 +1028,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								this_item = new drstk.Item;
 								thumb = "https://repository.library.northeastern.edu"+item.thumbnail_list_tesim[0];
 								this_item.set("pid", item.id).set("thumbnail", thumb).set("repo", "drs").set("title", item.full_title_ssi);
+								if (item.key_date_ssi){ this_item.set("key_date", item.key_date_ssi) }
+								if (item.subject_geographic_tesim){ this_item.set("coords", item.subject_geographic_tesim[0])}
+								if (item.subject_cartographics_coordinates_tesim){ this_item.set("coords", item.subject_cartographics_coordinates_tesim)}
 								view = new drstk.ItemView({model:this_item});
 								jQuery("#drs #sortable-"+tab_name+"-list").append(view.el);
 								if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
@@ -1040,13 +1045,19 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 									if (!short_item.get("thumbnail")){
 										short_item.set("thumbnail", thumb);
 									}
+									if (!short_item.get("key_date") && item.key_date_ssi){ short_item.set("key_date", item.key_date_ssi) }
+									if (!short_item.get("coords") && item.subject_geographic_tesim){ short_item.set("coords", item.subject_geographic_tesim[0])}
+									if (item.subject_cartographics_coordinates_tesim){ short_item.set("coords", item.subject_cartographics_coordinates_tesim)}
 								} else if (self.select_all == true){ //if its a selectAll then we automatically do that selectAllItem
 									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
 									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("disabled", true);
 									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type .tile").trigger("change");
 								}
 								if (self.current_tab == 6){
-									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: "+item.key_date_ssi+"</p>");
+									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: <span class='key_date'>"+item.key_date_ssi+"</span></p>");
+								}
+								if (self.current_tab == 5){
+									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Map Info: <span class='coords'>"+this_item.get("coords")+"</span></p>");
 								}
 							jQuery(".drs-items").html("");
              }
@@ -1133,6 +1144,12 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			title = item.siblings(".title").text();
 			thumbnail = item.siblings("img").attr("src");
 			parent = item.parents(".pane").attr("id");
+			if (item.parents("li").find(".key_date").text()){
+				key_date = item.parents("li").find(".key_date").text();
+			} else { key_date = ''; }
+			if (item.parents("li").find(".coords").text()){
+				coords = item.parents("li").find(".coords").text();
+			} else { coords = ''; }
 			if (parent == 'drs'){
 				repo = 'drs'
 			} else if (parent == 'dpla'){
@@ -1146,14 +1163,18 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						'title':title,
 						'pid':pid,
 						'thumbnail':thumbnail,
-						'repo':repo
+						'repo':repo,
+						'key_date':key_date,
+						'coords':coords
 					})
 				} else if (this.shortcode.items.where({ pid: pid }).length == 0) {
 					this.shortcode.items.add({
 						'title':title,
 						'pid':pid,
 						'thumbnail':thumbnail,
-						'repo':repo
+						'repo':repo,
+						'key_date':key_date,
+						'coords':coords
 					})
 				}
 				if (this.shortcode.get('type') == 'single'){
@@ -1310,27 +1331,45 @@ drstk.backbone_modal.Application = Backbone.View.extend(
          if (data.count > 0){
 					 jQuery(".dpla-items").html("");
            jQuery.each(data.docs, function(id, item){
-						 this_item = new drstk.Item;
-						 var title = item.sourceResource.title;
-						 if (Array.isArray(title)){
-							 title = title[0];
+						 date = self.getDateFromSourceResource(item.sourceResource);
+						 coords = item.sourceResource.spatial[0].name;
+						 if (item.sourceResource.spatial[0].coordinates != "" && item.sourceResource.spatial[0].coordinates != undefined){
+							 coords = item.sourceResource.spatial[0].coordinates;
 						 }
-						 this_item.set("pid", item.id).set("thumbnail", item.object).set("repo", "dpla").set("title", title);
-						 view = new drstk.ItemView({model:this_item});
-						 jQuery("#dpla #sortable-"+tab_name+"-list").append(view.el);
-						 if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
-							 jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
-							 short_item = self.shortcode.items.where({ pid: item.id })[0];
-							 if (!short_item.get("title")){
-								 short_item.set("title", title);
+						 if ((self.current_tab == 6 && date != "") || (self.current_tab == 5 && coords != "") || (self.current_tab != 5 && self.current_tab != 6)){
+							 this_item = new drstk.Item;
+							 var title = item.sourceResource.title;
+							 if (Array.isArray(title)){
+								 title = title[0];
 							 }
-							 if (!short_item.get("thumbnail")){
-								 short_item.set("thumbnail", item.object);
+							 this_item.set("pid", item.id).set("thumbnail", item.object).set("repo", "dpla").set("title", title);
+							 this_item.set("key_date", date);
+							 this_item.set("coords", coords);
+							 view = new drstk.ItemView({model:this_item});
+							 jQuery("#dpla #sortable-"+tab_name+"-list").append(view.el);
+							 if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
+								 jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
+								 short_item = self.shortcode.items.where({ pid: item.id })[0];
+								 if (!short_item.get("title")){
+									 short_item.set("title", title);
+								 }
+								 if (!short_item.get("thumbnail")){
+									 short_item.set("thumbnail", item.object);
+								 }
+								 if (!short_item.get("key_date") || short_item.get("key_date") == "" || short_item.get("key_date") == undefined || short_item.get("key_date") == []){
+									 short_item.set("key_date", date);
+								 }
+								 if (!short_item.get("coords") || short_item.get("coords") == "" || short_item.get("coords") == undefined){
+									 short_item.set("coords", coords);
+								 }
 							 }
-						 }
-						 if (self.current_tab == 6){
-							jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: "+item.sourceResource.date.displayDate+"</p>");
-						 }
+							 if (self.current_tab == 6){
+								jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: <span class='key_date hidden'>"+date.join("-")+"</span>"+item.sourceResource.date.displayDate+"</p>");
+							 }
+							 if (self.current_tab == 5){
+								jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Map Info: <span class='coords hidden'>"+this_item.get("coords")+"</span>"+this_item.get("coords")+"</p>");
+							 }
+
            });
 					 if (self.search_params.q != ""){//too much pagination if there isn't a query
 						 self.updateDPLAPagination(data);
@@ -1424,6 +1463,45 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			 }
 		},
 
+		getDateFromSourceResource: function( source ) {
+			date = "";
+			if (Array.isArray(source.date)){
+			 source.date = source.date[0];
+			}
+			date = source.date.displayDate;
+			if (date != undefined && date != ""){
+				date = date.split("-");
+				if (date[0] && date[0].length != 4 && source.date.begin != undefined){
+					begin_date = source.date.begin;
+				} else if (date[0] == undefined && source.date.begin != undefined){
+					begin_date = source.date.begin;
+				} else if (date[0] == undefined && source.date.begin == undefined){
+					begin_date = "";
+				} else {
+					begin_date = date[0];
+				}
+				begin_date = begin_date.split("-")[0];
+				if (date[1] && date[1].length != 4 && source.date.end != undefined){
+					end_date = source.date.end;
+				} else if (date[1] == undefined && source.date.end != undefined) {
+					end_date = source.date.end;
+				} else if (date[1] == undefined && source.date.end == undefined) {
+					end_date = "";
+				} else {
+					end_date = date[1];
+				}
+				end_date = end_date.split("-")[0];
+				if (!jQuery.isNumeric(begin_date)){
+					begin_date = ""
+				}
+				if (!jQuery.isNumeric(end_date)){
+					end_date = ""
+				}
+				date = [begin_date, end_date];
+			}
+			return date;
+		},
+
 		updateDPLAPagination: function( data ){
 			num_pages = Math.round(data.count/data.limit);
 			current_page = parseInt(this.search_params.page);
@@ -1486,14 +1564,22 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								url: item_admin_obj.ajax_url,
 		             type: "POST",
 		             data: {
-		               action: "get_item_admin",
+		               action: "get_item_solr_admin",
 		               _ajax_nonce: item_admin_obj.item_admin_nonce,
 		               pid: item.get("pid"),
 								 }, complete: function(data){
 									var data = jQuery.parseJSON(data.responseJSON);
-									item.set("title", data.mods.Title[0]);
+									data = data['_source'];
+									item.set("title", data.full_title_ssi);
 									if (!item.get("thumbnail")){
-										item.set("thumbnail", data.thumbnails[0]);
+										item.set("thumbnail", "http://repository.library.northeastern.edu"+data.fields_thumbnail_list_tesim[0]);
+									}
+									if (!item.get("key_date") || item.get("key_date") == "" || item.get("key_date") == undefined){
+										item.set("key_date", data.key_date_ssi);
+									}
+									if (!item.get("coords") || item.get("coords") == "" || item.get("coords") == undefined){
+										if (data.subject_geographic_tesim) {item.set("coords", data.subject_geographic_tesim[0])}
+										if (data.subject_cartographics_coordinates_tesim) {item.set("coords", data.subject_cartographics_coordinates_tesim)}
 									}
 									new_items.push(item.get("pid"));
 								}
@@ -1508,6 +1594,17 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								item.set("title", data.docs[0].sourceResource.title);
 								if (data.docs[0].object){
 									item.set("thumbnail", data.docs[0].object);
+								}
+								if (!item.get("key_date") || item.get("key_date") == "" || item.get("key_date") == undefined){
+									date = self.getDateFromSourceResource(data.docs[0].sourceResource);
+									item.set("key_date", date);
+								}
+								if (!item.get("coords") || item.get("coords") == "" || item.get("coords") == undefined){
+									coords = item.sourceResource.spatial[0].name;
+									if (item.sourceResource.spatial[0].coordinates != "" && item.sourceResource.spatial[0].coordinates != undefined){
+										coords = item.sourceResource.spatial[0].coordinates;
+									}
+									item.set("coords", coords);
 								}
 								new_items.push(item.get("pid"));
 							});
@@ -1524,6 +1621,11 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 									if (!data.post_mime_type.includes("audio") && !data.post_mime_type.includes("video")){
 										item.set("thumbnail",data.guid);
 									}
+									// TODO add key_date
+									// if (!item.get("key_date") || item.get("key_date") == "" || item.get("key_date") == undefined){
+										// item.set("key_date", data.key_date_ssi);
+									// }
+									// TODO add coords
 									new_items.push(item.get("pid"));
 								}
 							});
@@ -1684,21 +1786,10 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			no_year = [];
 			key_date_list = [];
 			_.each(_.clone(this.shortcode.items.where({repo:'drs'})), function(item){
-				jQuery.ajax({
-					url: item_admin_obj.ajax_url,
-					type: "POST",
-					async: false,
-					data: {
-						action: "get_item_admin",
-						_ajax_nonce: item_admin_obj.item_admin_nonce,
-						pid: item.get('pid'),
-					}, success: function(data){
-						data = jQuery.parseJSON(data);
-						var key_date_year = Object.keys(data.key_date)[0].split("/")[0];
-						key_date_list.push({year:key_date_year, name:data.mods.Title[0]});
-					}
-				});
+				var key_date_year = item.get('key_date').split("/")[0];
+				key_date_list.push({year:key_date_year, name:item.get('title')});
 			});
+			//TODO - fix to remove extra ajax
 			_.each(_.clone(this.shortcode.items.where({repo:'local'})), function(item){
 				jQuery.ajax({
 					url: item_admin_obj.ajax_url,
@@ -1719,25 +1810,11 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				});
 			});
 			_.each(_.clone(this.shortcode.items.where({repo:'dpla'})), function(item){
-				jQuery.ajax({
-					url: dpla_ajax_obj.ajax_url,
-					type: "POST",
-					async: false,
-					data: {
-						action: "get_dpla_code",
-						_ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
-						params: {q:item.get("pid")},
-					}, success: function(data){
-						var data = jQuery.parseJSON(data);
-						if (data.docs[0].sourceResource.date == undefined || data.docs[0].sourceResource.date.displayDate == undefined || data.docs[0].sourceResource.date.displayDate[0] == undefined){
-							no_year.push(item.get('title'));
-						} else {
-							var key_date_begin = data.docs[0].sourceResource.date.begin;
-							var key_date_end = data.docs[0].sourceResource.date.end;
-							key_date_list.push({year:[key_date_begin, key_date_end], name:item.get('title')});
-						}
-					}
-				});
+				if (!item.get("key_date") || item.get("key_date") == undefined || item.get("key_date") == "" || item.get("key_date") == []){
+					no_year.push(item.get('title'));
+				} else {
+					key_date_list.push({year:item.get("key_date"), name:item.get('title')});
+				}
 			});
 			var self = this;
 			key_date_list.forEach(function(each_key){
@@ -1766,37 +1843,14 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			no_map = [];
 			key_date_list = [];
 			_.each(_.clone(this.shortcode.items.where({repo:'local'})), function(item){
-				jQuery.ajax({
-					url: item_admin_obj.ajax_url,
-					type: "POST",
-					async: false,
-					data: {
-						action: "get_custom_meta",
-						_ajax_nonce: item_admin_obj.item_admin_nonce,
-						pid: item.get('pid'),
-					}, success: function(data){
-						if (data._map_coords == undefined || data._map_coords == ""){
-							no_map.push(item.get('title'));
-						}
-					}
-				});
+				if (!item.get("coords") || item.get("coords") == "" || item.get("coords") == undefined){
+					no_map.push(item.get('title'));
+				}
 			});
 			_.each(_.clone(this.shortcode.items.where({repo:'dpla'})), function(item){
-				jQuery.ajax({
-					url: dpla_ajax_obj.ajax_url,
-					type: "POST",
-					async: false,
-					data: {
-						action: "get_dpla_code",
-						_ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
-						params: {q:item.get("pid")},
-					}, success: function(data){
-						var data = jQuery.parseJSON(data);
-						if (data.docs[0].sourceResource.spatial == undefined || data.docs[0].sourceResource.spatial == "" || (data.docs[0].sourceResource.spatial[0].name == undefined && data.docs[0].sourceResource.spatial[0].coordinates == undefined)){
-							no_map.push(item.get('title'));
-						}
-					}
-				});
+				if (!item.get("coords") || item.get("coords") == "" || item.get("coords") == undefined){
+					no_map.push(item.get('title'));
+				}
 			});
 			if (no_map.length > 0){
 				return no_map;
