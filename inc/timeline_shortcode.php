@@ -221,7 +221,7 @@ function drstk_timeline( $atts, $params ){
             if (!isset($timeline_custom_html)){$timeline_custom_html = "";}
             $post = get_post($pid);
             $url = $post->guid;
-            if (strpos($data->post_mime_type, "audio") !== false || strpos($data->post_mime_type, "video") !== false){
+            if (strpos($post->post_mime_type, "audio") !== false || strpos($post->post_mime_type, "video") !== false){
                 $url = drstk_home_url()."/wp-includes/images/media/video.png";
             }
             $title = $post->post_title;
