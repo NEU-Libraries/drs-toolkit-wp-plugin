@@ -239,8 +239,21 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			} else {
 				this.current_tab = 1;
 			}
+			var self = this;
+			this.click_counter = 1;
+			if (this.options.items && this.options.items.length > 0){
+				_.each(this.options.items, function(item, i){
+					if (i == 0){
+						self.shortcode.items = new drstk.Items(item);
+					} else {
+						self.shortcode.items.add(item);
+					}
+				});
+			} else { //starting with collection_id
+				self.select_all = true;
+				jQuery(".backbone_modal-main #drs-select-all-item").prop("checked", true);
+			}
 			if (this.options && ((this.options.items && this.options.items.length > 0) || (this.options.collection_id && this.options.collection_id.length > 0))){
-				var self = this;
 				var settings = this.options.settings;
 				_.each(this.options.settings, function(setting, setting_name){
 					if (setting_name.match(/([a-zA-Z_]*)_color_desc_id/)){
@@ -273,19 +286,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						}
 					}
 				});
-
-				if (this.options.items && this.options.items.length > 0){
-					_.each(this.options.items, function(item, i){
-						if (i == 0){
-							self.shortcode.items = new drstk.Items(item);
-						} else {
-							self.shortcode.items.add(item);
-						}
-					});
-				} else { //starting with collection_id
-					self.select_all = true;
-					jQuery(".backbone_modal-main #drs-select-all-item").prop("checked", true);
-				}
 				e.currentTarget = jQuery(".nav-tab[href='#selected']");
 				this.navigateShortcode(e);
 			}
@@ -942,7 +942,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				jQuery("#settings").show();
 				this.getSettings();
 				type = this.shortcode.get('type');
-				click_counter=1;
 				jQuery('#settings table').css({"float":"left"});
 				if(type=='map'){
 					jQuery('#settings .color-table').css({"float": "right","position": "relative","right": "110px","width": "515px"});
@@ -1369,7 +1368,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 							 if (self.current_tab == 5){
 								jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Map Info: <span class='coords hidden'>"+this_item.get("coords")+"</span>"+this_item.get("coords")+"</p>");
 							 }
-
+						 }
            });
 					 if (self.search_params.q != ""){//too much pagination if there isn't a query
 						 self.updateDPLAPagination(data);
