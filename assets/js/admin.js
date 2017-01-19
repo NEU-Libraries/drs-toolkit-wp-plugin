@@ -1599,9 +1599,9 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 									item.set("key_date", date);
 								}
 								if (!item.get("coords") || item.get("coords") == "" || item.get("coords") == undefined){
-									coords = item.sourceResource.spatial[0].name;
-									if (item.sourceResource.spatial[0].coordinates != "" && item.sourceResource.spatial[0].coordinates != undefined){
-										coords = item.sourceResource.spatial[0].coordinates;
+									coords = data.docs[0].sourceResource.spatial[0].name;
+									if (data.docs[0].sourceResource.spatial[0].coordinates != "" && data.docs[0].sourceResource.spatial[0].coordinates != undefined){
+										coords = data.docs[0].sourceResource.spatial[0].coordinates;
 									}
 									item.set("coords", coords);
 								}
