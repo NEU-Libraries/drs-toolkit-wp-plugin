@@ -215,6 +215,7 @@ function drstk_map( $atts , $params){
       $data = new StdClass;
       $data->full_title_ssi = array($post->post_title);
       $data->abstract_tesim = array($post->post_excerpt);
+      $data->date_ssi = array($custom['_timeline_date'][0]);
       $data->canonical_object = new StdClass;
       $url = $post->guid;
       if (strpos($post->post_mime_type, "audio") !== false){
@@ -292,7 +293,8 @@ function drstk_map( $atts , $params){
       } else {
         $description = "";
       }
-      $data->full_title_ssi = array($title);
+      $title = array($title);
+      $data->full_title_ssi = $title;
       $data->abstract_tesim = $description;
       $cre = "Creator,Contributor";
       if (isset($data->docs[0]->sourceResource->creator)){
