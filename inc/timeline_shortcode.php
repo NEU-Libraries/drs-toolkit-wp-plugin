@@ -37,7 +37,6 @@ function reloadRemainingTimeline_ajax_handler()
 {
     $a = get_post($_POST['post_id'])->post_content;
     $parsed_a = shortcode_parse_atts($a);
-    /*write_log($parsed_a['collection_id']);*/
     echo drstk_timeline($parsed_a, $_POST['page_no']);
     die();
 }
@@ -310,9 +309,21 @@ function drstk_timeline( $atts, $params ){
                 $year = $date[0];
                 if (strlen($year) != 4){
                     $year = $data->docs[0]->sourceResource->date->begin;
+                    if (strlen($year) != 4){
+                      $date = explode("-", $year);
+                        $year = $date[0];
+                    }
                 }
-                $month = 1;
-                $day = 1;
+                if (isset($date[1])){
+                  $month = $date[1];
+                } else {
+                  $month = 1;
+                }
+                if (isset($date[2])){
+                  $day = $date[2];
+                } else {
+                  $day = 1;
+                }
                 if (isset($current_color_code_id_values["dpla:".$pid])){
                     $colorGroup = $current_color_code_id_values["dpla:".$pid];
                     $index_color_pair["dpla".$pid] = $colorGroup;
