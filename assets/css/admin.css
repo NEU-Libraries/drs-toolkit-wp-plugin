@@ -277,3 +277,11 @@
 [href*=delFile]{
 	display:none;
 }
+.backbone_modal-main .toolkitcolors{
+	float: right;
+	width: 50%;
+}
+.backbone_modal-main #settings > table {
+	float: left;
+	width: 50%;
+}
