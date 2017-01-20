@@ -3,14 +3,14 @@
 add_action( 'wp_ajax_reload_filtered_set_timeline', 'reload_filtered_set_timeline_ajax_handler' ); //for auth users
 add_action( 'wp_ajax_nopriv_reload_filtered_set_timeline', 'reload_filtered_set_timeline_ajax_handler' ); //for nonauth users
 function reload_filtered_set_timeline_ajax_handler()
-{   $test = get_response("https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t");
+{   $test = get_response("https://repository.library.northeastern.edu/api/v1/search/".drstk_get_pid());
     $test = json_decode($test);
     if ($_POST['reloadWhat'] == "timelineReload") {
         echo drstk_timeline($_POST['atts'], $_POST['params']);
     }
     else if($_POST['reloadWhat'] == "facetReload") {
         if (isset($_POST['atts']['collection_id'])) {
-            $url = "https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=".count($test->pagination->table->total_count);
+            $url = "https://repository.library.northeastern.edu/api/v1/search/".drstk_get_pid()."?per_page=".count($test->pagination->table->total_count);
             if (isset($_POST['params']['f'])) {
                 foreach ($_POST['params']['f'] as $facet => $facet_val) {
                     $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
@@ -105,13 +105,13 @@ function drstk_timeline( $atts, $params ){
 
     $facets_info_data = array();
 
-    $test = get_response("https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t");
+    $test = get_response("https://repository.library.northeastern.edu/api/v1/search/".drstk_get_pid());
     $test = json_decode($test);
 
     $collectionCheck =null;
     if(isset($atts['collection_id'])){
 
-        $url = "https://repository.library.northeastern.edu/api/v1/search/neu:cj82kp79t?per_page=".$test->pagination->table->total_count; //?per_page=10
+        $url = "https://repository.library.northeastern.edu/api/v1/search/".drstk_get_pid()."?per_page=".$test->pagination->table->total_count; //?per_page=10
 
         if (isset($params['f'])) {
             foreach ($params['f'] as $facet => $facet_val) {
