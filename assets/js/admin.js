@@ -859,6 +859,10 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			this.time_count = 0;
 			this.shortcode.set('settings',  new drstk.Settings());
 			this.shortcode.set('colorsettings',  new drstk.ColorSettings());
+			if (this.shortcode.items){
+				this.select_all = false;
+				this.shortcode.items = new drstk.Items();
+			}
 			jQuery(".navigation-bar a").removeClass("active");
 			this.showTab(jQuery(e.currentTarget).attr("href"));
 		},
@@ -1012,6 +1016,12 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								if (item.subject_cartographics_coordinates_tesim){ this_item.set("coords", item.subject_cartographics_coordinates_tesim)}
 								view = new drstk.ItemView({model:this_item});
 								jQuery("#drs #sortable-"+tab_name+"-list").append(view.el);
+								if (self.current_tab == 6){
+									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: <span class='key_date'>"+item.key_date_ssi+"</span></p>");
+								}
+								if (self.current_tab == 5){
+									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Map Info: <span class='coords'>"+this_item.get("coords")+"</span></p>");
+								}
 								if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
 									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
 									if (self.select_all == true){
@@ -1031,12 +1041,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
 									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("disabled", true);
 									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type .tile").trigger("change");
-								}
-								if (self.current_tab == 6){
-									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: <span class='key_date'>"+item.key_date_ssi+"</span></p>");
-								}
-								if (self.current_tab == 5){
-									jQuery("#drs #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Map Info: <span class='coords'>"+this_item.get("coords")+"</span></p>");
 								}
 							jQuery(".drs-items").html("");
              }
@@ -1330,6 +1334,12 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 							 if (self.current_tab == 5){this_item.set("coords", coords);}
 							 view = new drstk.ItemView({model:this_item});
 							 jQuery("#dpla #sortable-"+tab_name+"-list").append(view.el);
+							 if (self.current_tab == 6){
+								jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: <span class='key_date hidden'>"+date.join("-")+"</span>"+item.sourceResource.date.displayDate+"</p>");
+							 }
+							 if (self.current_tab == 5){
+								jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Map Info: <span class='coords hidden'>"+this_item.get("coords")+"</span>"+this_item.get("coords")+"</p>");
+							 }
 							 if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: item.id }).length > 0){
 								 jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type input").prop("checked", true);
 								 short_item = self.shortcode.items.where({ pid: item.id })[0];
@@ -1345,12 +1355,6 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 								 if ((!short_item.get("coords") || short_item.get("coords") == "" || short_item.get("coords") == undefined) && self.current_tab == 5){
 									 short_item.set("coords", coords);
 								 }
-							 }
-							 if (self.current_tab == 6){
-								jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Date: <span class='key_date hidden'>"+date.join("-")+"</span>"+item.sourceResource.date.displayDate+"</p>");
-							 }
-							 if (self.current_tab == 5){
-								jQuery("#dpla #sortable-"+tab_name+"-list").find("li:last-of-type").append("<p>Map Info: <span class='coords hidden'>"+this_item.get("coords")+"</span>"+this_item.get("coords")+"</p>");
 							 }
 						 }
            });
@@ -1895,14 +1899,14 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 					}
 					view = new drstk.ItemView({model:this_item});
 					jQuery("#local").append(view.el);
-					if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: pid }).length > 0){
-						jQuery("#local").find("li:last-of-type input").prop("checked", true);
-					}
 					if (self.current_tab == 6){
 						jQuery("#local").find("li:last-of-type").append("<p>Date: <span class='key_date'>"+this_item.get("key_date")+"</span></p>");
 					}
 					if (self.current_tab == 5){
 						jQuery("#local").find("li:last-of-type").append("<p>Map Info: <span class='coords'>"+this_item.get("coords")+"</span></p>");
+					}
+					if(self.shortcode.items != undefined && self.shortcode.items.where({ pid: pid }).length > 0){
+						jQuery("#local").find("li:last-of-type input").prop("checked", true);
 					}
 				});
 
