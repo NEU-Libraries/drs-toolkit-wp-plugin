@@ -240,7 +240,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 				this.current_tab = 1;
 			}
 			var self = this;
-			this.click_counter = 1;
+			click_counter = 1;
 			if (this.options && this.options.items && this.options.items.length > 0){
 				_.each(this.options.items, function(item, i){
 					if (i == 0){
@@ -280,7 +280,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 							}
 							_.each(colored_ids, function(id){
 								repo = id.split(":")[0];
-								if (repo != "drs"){
+								if (repo != "neu"){
 									id = id.split(":")[1];
 								}
 								var item = self.shortcode.items.where({ 'pid': id});
