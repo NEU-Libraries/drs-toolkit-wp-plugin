@@ -294,7 +294,9 @@ function drstk_map( $atts , $params){
       } else {
         $description = "";
       }
-      $title = array($title);
+      if (!is_array($title)){
+        $title = array($title);
+      }
       $data->full_title_ssi = $title;
       $data->abstract_tesim = $description;
       $cre = "Creator,Contributor";
