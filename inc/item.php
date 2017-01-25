@@ -65,7 +65,7 @@ function parse_metadata($data, $html, $solr=false, $dpla=false, $special_options
   }
   if ($temp_meta_options != NULL){
     foreach($temp_meta_options as $key => $value){
-      $value = property_exists($data, $value) ? $data->$value : NULL;
+      $value = isset($data->$value) ? $data->$value : NULL;
       if ($value == NULL){
         continue;//skip to next in each loop
       }

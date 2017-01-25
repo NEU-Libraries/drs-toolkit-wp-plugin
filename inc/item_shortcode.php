@@ -161,13 +161,15 @@ function drstk_item( $atts ){
     $metadata = explode(",",$atts['metadata']);
     foreach($metadata as $field){
       $this_field = $data->mods->$field;
-      if (is_array($this_field)){
-        foreach($this_field as $field_val){
-          $img_metadata .= $field_val . "<br/>";
-        }
-      } else {
-        if (isset($this_field[0])){
-          $img_metadata .= $this_field[0] . "<br/>";
+      if (isset($this_field)){
+        if (is_array($this_field)){
+          foreach($this_field as $field_val){
+            $img_metadata .= $field_val . "<br/>";
+          }
+        } else {
+          if (isset($this_field[0])){
+            $img_metadata .= $this_field[0] . "<br/>";
+          }
         }
       }
     }
