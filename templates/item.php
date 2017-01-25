@@ -4,7 +4,6 @@
  */
 
 get_header();
-$view = quest_get_view();
 ?>
 
 <div id="content">
