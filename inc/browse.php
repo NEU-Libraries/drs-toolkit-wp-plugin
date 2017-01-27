@@ -44,7 +44,6 @@ function browse_ajax_handler() {
     if (isset($_POST['params']['sort'])) {
       $url .= "&sort=" . $_POST['params']['sort'];
     }
-    write_log($url);
     $data = get_response($url);
     wp_send_json($data);
     wp_die();

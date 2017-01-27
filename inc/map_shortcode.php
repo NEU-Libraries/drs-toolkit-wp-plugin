@@ -313,14 +313,18 @@ function drstk_map( $atts , $params){
         $coordinates = "";
         continue;
       }
+
       if(!isset($data->docs[0]->sourceResource->spatial[0]->coordinates)) {
-        $location = $data->docs[0]->sourceResource->spatial[0]->name;// . $data->docs[0]->sourceResource->spatial[0]->state;
+        // write_log("no coordinates");
+        // write_log($data->docs[0]->sourceResource->spatial);
+        $location = $data->docs[0]->sourceResource->spatial[count($data->docs[0]->sourceResource->spatial)-1]->name;// . $data->docs[0]->sourceResource->spatial[0]->state;
         $locationUrl = "http://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
         $locationData = get_response($locationUrl);
         $locationData = json_decode($locationData);
         if (!isset($locationData->error)) {
           $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
         }
+        // write_log($location);
       } else {
         $coordinates = $data->docs[0]->sourceResource->spatial[0]->coordinates;
       }
