@@ -112,12 +112,6 @@ $TEMPLATE_THEME = array(
    add_action('load-'.$hook,'drstk_plugin_settings_save');
  }
 
- add_filter('rewrite_rules_array', 'test_rewrite');
- function test_rewrite($rules){
-   write_log($rules);
-   return $rules;
- }
-
 //This registers the settings
 function register_drs_settings() {
   global $facet_options, $niec_facet_options;
