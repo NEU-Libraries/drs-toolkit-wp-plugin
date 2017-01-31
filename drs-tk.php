@@ -56,7 +56,7 @@ $TEMPLATE_THEME = array(
   */
  add_action('init', 'drstk_rewrite_rule');
  function drstk_rewrite_rule() {
-
+    global $post;
     $home_url = get_option('drstk_home_url');
     add_rewrite_rule('^'.$home_url.'browse/?$', 'index.php?post_type=drs&drstk_template_type=browse', 'top');
     add_rewrite_rule('^'.$home_url.'search/?$', 'index.php?post_type=drs&drstk_template_type=search', 'top');
@@ -66,6 +66,23 @@ $TEMPLATE_THEME = array(
     add_rewrite_rule('^'.$home_url.'collection/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=collection&pid=$matches[1]', 'top');
     $mirador_url = get_option('drstk_mirador_url') == '' ? 'mirador' : get_option('drstk_mirador_url');
     add_rewrite_rule('^'.$home_url.$mirador_url.'/?$', 'index.php?post_type=drs&drstk_template_type=mirador', 'top');
+    $args = array(
+      'post_type' => 'drstk_item_extension',
+      'posts_per_page' => 1,
+      'post_status' => 'publish',
+    );
+    $meta_query = new WP_Query( $args );
+    if ($meta_query->have_posts()){
+      while ($meta_query->have_posts()){
+        $meta_query->the_post();
+        $post_id = $post->ID;
+        $item_url = get_post_meta($post_id, 'item-url', true);
+        $item_id = get_post_meta($post_id, 'item-id', true);
+        if (isset($item_url) && isset($item_id)){
+          add_rewrite_rule($item_url.'/?$', 'index.php?post_type=drs&drstk_template_type=item&pid='.$item_id, 'top');
+        }
+      }
+    }
  }
 
 /*add something like this later to override manual paths to the original wp search */
@@ -93,6 +110,12 @@ $TEMPLATE_THEME = array(
  function drs_admin_add_page() {
    $hook = add_options_page('Settings for CERES: Exhibit Toolkit Plugin', 'CERES: Exhibit Toolkit', 'manage_options', 'drstk_admin_menu', 'drstk_display_settings');
    add_action('load-'.$hook,'drstk_plugin_settings_save');
+ }
+
+ add_filter('rewrite_rules_array', 'test_rewrite');
+ function test_rewrite($rules){
+   write_log($rules);
+   return $rules;
  }
 
 //This registers the settings
