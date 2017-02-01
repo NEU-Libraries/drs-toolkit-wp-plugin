@@ -66,20 +66,22 @@ $TEMPLATE_THEME = array(
     add_rewrite_rule('^'.$home_url.'collection/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=collection&pid=$matches[1]', 'top');
     $mirador_url = get_option('drstk_mirador_url') == '' ? 'mirador' : get_option('drstk_mirador_url');
     add_rewrite_rule('^'.$home_url.$mirador_url.'/?$', 'index.php?post_type=drs&drstk_template_type=mirador', 'top');
-    $args = array(
-      'post_type' => 'drstk_item_extension',
-      'posts_per_page' => 1,
-      'post_status' => 'publish',
-    );
-    $meta_query = new WP_Query( $args );
-    if ($meta_query->have_posts()){
-      while ($meta_query->have_posts()){
-        $meta_query->the_post();
-        $post_id = $post->ID;
-        $item_url = get_post_meta($post_id, 'item-url', true);
-        $item_id = get_post_meta($post_id, 'item-id', true);
-        if (isset($item_url) && isset($item_id)){
-          add_rewrite_rule($item_url.'/?$', 'index.php?post_type=drs&drstk_template_type=item&pid='.$item_id, 'top');
+    if (get_option('drstk_item_extensions') == "on"){
+      $args = array(
+        'post_type' => 'drstk_item_extension',
+        'posts_per_page' => 1,
+        'post_status' => 'publish',
+      );
+      $meta_query = new WP_Query( $args );
+      if ($meta_query->have_posts()){
+        while ($meta_query->have_posts()){
+          $meta_query->the_post();
+          $post_id = $post->ID;
+          $item_url = get_post_meta($post_id, 'item-url', true);
+          $item_id = get_post_meta($post_id, 'item-id', true);
+          if (isset($item_url) && isset($item_id)){
+            add_rewrite_rule($item_url.'/?$', 'index.php?post_type=drs&drstk_template_type=item&pid='.$item_id, 'top');
+          }
         }
       }
     }
@@ -139,6 +141,8 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_search_related_content_title' );
   add_settings_field('drstk_default_search_per_page', 'Default Per Page', 'drstk_default_search_per_page_callback', 'drstk_options', 'drstk_search_settings');
   register_setting( 'drstk_options', 'drstk_default_search_per_page' );
+  add_settings_field('drstk_search_show_facets', 'Show Facets', 'drstk_search_show_facets_callback', 'drstk_options', 'drstk_search_settings');
+  register_setting( 'drstk_options', 'drstk_search_show_facets' );
 
   add_settings_section('drstk_browse_settings', 'Browse Settings', null, 'drstk_options');
   add_settings_field('drstk_browse_page_title', 'Browse Page Title', 'drstk_browse_page_title_callback', 'drstk_options', 'drstk_browse_settings');
@@ -149,6 +153,8 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_default_sort' );
   add_settings_field('drstk_default_browse_per_page', 'Default Per Page', 'drstk_default_browse_per_page_callback', 'drstk_options', 'drstk_browse_settings');
   register_setting( 'drstk_options', 'drstk_default_browse_per_page' );
+  add_settings_field('drstk_browse_show_facets', 'Show Facets', 'drstk_browse_show_facets_callback', 'drstk_options', 'drstk_browse_settings');
+  register_setting( 'drstk_options', 'drstk_browse_show_facets' );
 
   add_settings_section('drstk_facet_settings', 'Facets', null, 'drstk_options');
   add_settings_field('drstk_facets', 'Facets to Display<br/><small>Select which facets you would like to display on the search and browse pages. Once selected, you may enter custom names for these facets. Drag and drop the order of the facets to change the order of display.</small>', 'drstk_facets_callback', 'drstk_options', 'drstk_facet_settings');
@@ -378,6 +384,12 @@ function drstk_default_browse_per_page_callback(){
   echo '</select><br/>';
 }
 
+function drstk_browse_show_facets_callback(){
+  echo '<input type="checkbox" name="drstk_browse_show_facets" ';
+  if (get_option('drstk_browse_show_facets') == 'on'){ echo 'checked="checked"';}
+  echo '/>Yes</label>';
+}
+
 function drstk_default_search_per_page_callback(){
   $per_page_options = array("10"=>"10","20"=>"20", "50"=>"50");
   $default_per_page = get_option('drstk_default_search_per_page');
@@ -388,6 +400,12 @@ function drstk_default_search_per_page_callback(){
     echo '/> '.$option.'</option>';
   }
   echo '</select><br/>';
+}
+
+function drstk_search_show_facets_callback(){
+  echo '<input type="checkbox" name="drstk_search_show_facets" ';
+  if (get_option('drstk_search_show_facets') == 'on'){ echo 'checked="checked"';}
+  echo '/>Yes</label>';
 }
 
 function drstk_facets_callback(){
@@ -428,6 +446,7 @@ function drstk_niec_callback(){
   if (get_option('drstk_niec') == 'on'){ echo 'checked="checked"';}
   echo '/>Yes</label>';
 }
+
 
 function drstk_niec_metadata_callback(){
   global $niec_facet_options;
@@ -706,6 +725,8 @@ function drstk_browse_script() {
       'default_facet_sort' => $default_facet_sort,
       'default_browse_per_page' => $default_browse_per_page,
       'default_search_per_page' => $default_search_per_page,
+      'search_show_facets' => get_option('drstk_search_show_facets'),
+      'browse_show_facets' => get_option('drstk_browse_show_facets'),
     );
     if (get_option('drstk_niec') == 'on' && count($niec_facets_to_display) > 0){
       $browse_obj['niec_facets_to_display'] = $niec_facets_to_display;

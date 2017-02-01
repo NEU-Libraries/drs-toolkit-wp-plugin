@@ -5,7 +5,7 @@ jQuery(document).ready(function($) {
   var page = 1;
   var f = {};
   var sort = "score+desc%2C+system_create_dtsi+desc";
-  var params = {q:q, per_page:10, page:page, f:f, sort:sort};
+  var params = {q:q, per_page:10, page:page, f:f, sort:sort, show_facets:false};
   var template = browse_obj.template;
   var search_options = browse_obj.search_options;
   var browse_options = browse_obj.browse_options;
@@ -29,11 +29,17 @@ jQuery(document).ready(function($) {
     params.per_page = browse_obj.default_search_per_page;
     $("#primary").removeClass('col-md-12').addClass('col-md-9');
     $("#secondary").show();
+    if (browse_obj.search_show_facets == "on"){
+      params.show_facets = true;
+    }
   } else if (template == 'browse') {
     params.sort = browse_obj.default_sort;
     params.per_page = browse_obj.default_browse_per_page;
     $("#primary").addClass('col-md-12').removeClass('col-md-9');
     $("#secondary").hide();
+    if (browse_obj.browse_show_facets == "on"){
+      params.show_facets = true;
+    }
   } else {
     params.per_page = browse_obj.default_browse_per_page;
     params.sort = "title_ssi%20asc";
@@ -71,7 +77,12 @@ jQuery(document).ready(function($) {
           }
         } else if (data.response.response.numFound > 0) {
           paginate(data.pagination.table);//send to paginate function
-          facetize(data.response.facet_counts);//send to facetize function
+          if (params.show_facets == true){
+            facetize(data.response.facet_counts);//send to facetize function
+          } else {
+            $("#drs-facets").hide();
+            $("#drs-docs").addClass("col-md-12").removeClass("col-md-9");
+          }
           resultize(data.response.response);//send to resultize function
           clickable(data);
           $("#drs-sort").show();
