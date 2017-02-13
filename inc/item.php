@@ -98,6 +98,9 @@ function parse_metadata($data, $html, $solr=false, $dpla=false, $special_options
                 $string = str_ireplace($match[0], "<a href='mailto:".$match[0]."'>".$match[0]."</a>", $string);
               }
             }
+            if (titleize($key) == "Table of contents" || $temp_meta_options[$key] == "Table of contents"){
+              $string = str_replace("--", "<br/>", $string);
+            }
             $html .= $string;
           }
           if ($i != count($value)-1){
