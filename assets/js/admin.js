@@ -256,8 +256,8 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 			if (this.options && ((this.options.items && this.options.items.length > 0) || (this.options.collection_id && this.options.collection_id.length > 0))){
 				var settings = this.options.settings;
 				_.each(this.options.settings, function(setting, setting_name){
-					if (setting_name.match(/([a-zA-Z_]*)_color_desc_id/)){
-						var desc = setting_name.match(/([a-zA-Z_]*)_color_desc_id/)[1];
+					if (setting_name.match(/([a-zA-Z_0-9-]*)_color_desc_id/)){
+						var desc = setting_name.match(/([a-zA-Z_0-9-]*)_color_desc_id/)[1];
 						var code = "#"+settings[desc+'_color_hex'];
 						if (desc && code){
 							var colorsettings = self.shortcode.get('colorsettings');
