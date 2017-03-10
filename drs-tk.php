@@ -135,6 +135,8 @@ function register_drs_settings() {
   add_settings_section('drstk_search_settings', 'Search Settings', null, 'drstk_options');
   add_settings_field('drstk_search_page_title', 'Search Page Title', 'drstk_search_page_title_callback', 'drstk_options', 'drstk_search_settings');
   register_setting( 'drstk_options', 'drstk_search_page_title' );
+  add_settings_field('drstk_search_placeholder', 'Search Box Placeholder Text', 'drstk_search_placeholder_callback', 'drstk_options', 'drstk_search_settings');
+  register_setting( 'drstk_options', 'drstk_search_placeholder' );
   add_settings_field('drstk_search_metadata', 'Metadata to Display', 'drstk_search_metadata_callback', 'drstk_options', 'drstk_search_settings');
   register_setting( 'drstk_options', 'drstk_search_metadata' );
   add_settings_field('drstk_search_related_content_title', 'Related Content Title', 'drstk_search_related_content_title_callback', 'drstk_options', 'drstk_search_settings');
@@ -325,6 +327,12 @@ function leaflet_project_key_callback(){
 function drstk_search_page_title_callback(){
   echo '<input type="text" name="drstk_search_page_title" value="';
   if (get_option('drstk_search_page_title') == ''){ echo 'Search';} else { echo get_option('drstk_search_page_title'); }
+  echo '" />';
+}
+
+function drstk_search_placeholder_callback(){
+  echo '<input type="text" name="drstk_search_placeholder" value="';
+  if (get_option('drstk_search_placeholder') == ''){ echo 'Search ...';} else { echo get_option('drstk_search_placeholder'); }
   echo '" />';
 }
 
