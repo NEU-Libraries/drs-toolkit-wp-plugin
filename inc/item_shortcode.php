@@ -243,7 +243,7 @@ function drstk_item_shortcode_scripts() {
 function check_master($master){
   // Create a cURL handle
   $ch = curl_init($master);
-  curl_setopt($ch, CURLOPT_MUTE, 1);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
   // Execute
   curl_exec($ch);
   // Check HTTP status code
