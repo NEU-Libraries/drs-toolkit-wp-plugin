@@ -144,7 +144,7 @@ function drstk_item( $atts ){
         $html .= " data-float='".$atts['float']."'";
       }
 
-      if (isset($atts['zoom']) && $atts['zoom'] == 'on' && $master != null){
+      if (isset($atts['zoom']) && $atts['zoom'] == 'on' && $master != null && check_master($master) == true){
         $html .= " data-zoom-image='".$master."' data-zoom='on'";
         if (isset($atts['zoom_position'])){
           $html .= " data-zoom-position='".$atts['zoom_position']."'";
@@ -238,5 +238,24 @@ function drstk_item_shortcode_scripts() {
     wp_register_script('drstk_jwplayer', $DRS_PLUGIN_URL.'/assets/js/jwplayer/jwplayer.js', array(), $VERSION, false );
     wp_enqueue_script('drstk_jwplayer');
   }
+}
+
+function check_master($master){
+  // Create a cURL handle
+  $ch = curl_init($master);
+  curl_setopt($ch, CURLOPT_MUTE, 1);
+  // Execute
+  curl_exec($ch);
+  // Check HTTP status code
+  if (!curl_errno($ch)) {
+    switch ($http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
+      case 200:  # OK
+        return true;
+        break;
+      default:
+        return false;
+    }
+  }
+  curl_close($ch);
 }
 add_action( 'wp_enqueue_scripts', 'drstk_item_shortcode_scripts');
