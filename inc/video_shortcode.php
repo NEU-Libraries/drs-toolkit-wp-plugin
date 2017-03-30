@@ -74,7 +74,7 @@ function drstk_collection_playlist($atts){
               $type = 'MP4';
               $provider = 'video';
             }
-            $playlists .= '{ sources: [ ';
+            $playlists .= '{ sources: [ { file: "' . $no_flash . '", type: "'.strtolower($type).'" },';
             $playlists .= '{ file: "' .  $rtmp . '"},';
             if (stripos($user_agent,'android') !== false){ //changing priority for android devices
               $playlists .= ' { file: "' . $no_flash . '", type: "'.strtolower($type).'" }';
@@ -114,6 +114,10 @@ function drstk_collection_playlist($atts){
       <script type="text/javascript">
       jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc=";
         var primary = "html5";
+        var provider = "'.$av_provider.'";
+        var is_chrome = navigator.userAgent.indexOf(\'Chrome\') > -1;
+        var is_safari = navigator.userAgent.indexOf("Safari") > -1;
+        if ((is_chrome)&&(is_safari)) {is_safari=false;}
         jQuery(document).ready(function($){
         jwplayer("'.$pid_selector.'").setup({
           width: "'.$width.'",
@@ -121,7 +125,6 @@ function drstk_collection_playlist($atts){
           rtmp: { bufferlength: 5 } ,
           image: "'.$this_poster.'",
           provider: "'.$provider.'",
-          fallback: "false",
           androidhls: "true",
           hlshtml: "true",
           aspectratio:"'.$aspectratio.'",';
@@ -138,16 +141,31 @@ function drstk_collection_playlist($atts){
     }
       $cache_output .= 'playlist: [ '. $playlists . ']
         });
-        var errorMessage = function(e) {
+        jwplayer().on("ready", function() {
+         if (is_safari){
+          //defaulting to m3u8 stream for safari since it functions better
+          jwplayer().load([{image: "#{poster}", sources:[{ file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/#{dir}/#{type}:" + encodeURIComponent("info%3Afedora%2F#{encoded}%2Fcontent%2Fcontent.0") + "/playlist.m3u8"}]}]);
+          // Set poster image for video element to avoid black background for audio-only programs.
+          $("#player video").attr("poster", "#{poster}");
+         }
+        });
+        function errorMessage() {
           $("#drs-item-video").before("<div class=\'alert alert-warning\'>'.$errors['item']['jwplayer_fail'].'<br /><strong>Error Message:</strong> "+e.message+"</div>");
-        };
-       jwplayer().onError(errorMessage);
-       jwplayer().onSetupError(errorMessage);
-       jwplayer().onBuffer(function() {
-         theTimeout = setTimeout(function(e) {
-           errorMessage(e);
-         }, 5000);
-       });
+        }
+        jwplayer().on(\'error\', function(){
+          errorMessage();
+        });
+        jwplayer().on(\'setupError\', function(){
+          errorMessage();
+        });
+        jwplayer().on(\'buffer\', function() {
+          theTimeout = setTimeout(function(e) {
+            errorMessage(e);
+          }, 5000);
+        });
+        jwplayer().on("play", function(){
+           clearTimeout(theTimeout);
+         });
       });
       </script>';
     $cache_time = 1000;

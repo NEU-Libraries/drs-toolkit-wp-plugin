@@ -400,7 +400,11 @@ function get_related_content(){
   if (get_option('drstk_appears') == 'on'){
     $pidnum = explode(":", $item_pid);
     if (count($pidnum) > 0){
-      $pidnum = $pidnum[0];
+      if (count($pidnum) > 1){
+        $pidnum = $pidnum[1];
+      } else {
+        $pidnum = "dpla:".$item_pid;
+      }
       echo '<div class="panel panel-default related_content"><div class="panel-heading">'.$title.'</div><div class="panel-body">';
       do_related_content_query($pidnum, 1);
       echo "</div></div>";
@@ -500,6 +504,9 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc=";
   var primary = "html5";
   var provider = "'.$av_provider.'";
+  var is_chrome = navigator.userAgent.indexOf(\'Chrome\') > -1;
+  var is_safari = navigator.userAgent.indexOf("Safari") > -1;
+  if ((is_chrome)&&(is_safari)) {is_safari=false;}
   jQuery(document).ready(function($){
   $("#'.$id_img.'").hide();
   jwplayer("'.$id_video.'").setup({';
@@ -508,52 +515,51 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
         rtmp: {bufferlength: 5},';
   if ($av_poster != null){$html .= 'image: "'.$av_poster.'",';}
   $html .= 'provider: "'.$av_provider.'",
-    fallback: "false",
     androidhls: "true",
     primary: primary,
     hlshtml: "true",
     aspectratio: "16:9",';
   if (strpos($av_pid, "neu") !== false) {
     $html .='sources:
-    [
-    { file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"},';
+    [{ file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.urlencode($full_pid).'", type:"'.strtolower($av_for_ext).'"},';
     if (stripos($user_agent,'android') !== false){ //changing priority for android devices
       $html .= '{ file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.urlencode($full_pid).'", type:"'.strtolower($av_for_ext).'"},';
     }
-    $html .= '{ file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':'.$full_pid.'/playlist.m3u8",';
+    $html .= '{ file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"}, { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':'.$full_pid.'/playlist.m3u8",';
     $html .= '},
-    { file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.m3u8"},
-    { file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.urlencode($full_pid).'", type:"'.strtolower($av_for_ext).'"}
+    { file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.m3u8"}
     ],';
   } else {
     $html .= 'sources:[{file:"'.$av_pid.'"}],';
   }
   $html .= '
   });
-  var renderingMode
-  jwplayer().onReady(function() {
-    renderingMode = jwplayer().getRenderingMode()
-  })
-
-  var errorMessage = function(e) {
+  jwplayer().on("ready", function() {
+   if (is_safari){
+    //defaulting to m3u8 stream for safari since it functions better
+    jwplayer().load([{image: "#{poster}", sources:[{ file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/#{dir}/#{type}:" + encodeURIComponent("info%3Afedora%2F#{encoded}%2Fcontent%2Fcontent.0") + "/playlist.m3u8"}]}]);
+    // Set poster image for video element to avoid black background for audio-only programs.
+    $("#player video").attr("poster", "#{poster}");
+   }
+  });
+  function errorMessage() {
     $("#'.$id_img.'").before("<div class=\'alert alert-warning\'>'.$errors['item']['jwplayer_fail'].'<br /><strong>Error Message:</strong> "+e.message+"</div>");
     $("#'.$id_img.'").show();
     $("#'.$id_video.'").hide();
-  };
-  jwplayer().onError(errorMessage);
-  jwplayer().onSetupError(errorMessage);
-  jwplayer().onBuffer(function() {
+  }
+  jwplayer().on(\'error\', function(){
+    errorMessage();
+  });
+  jwplayer().on(\'setupError\', function(){
+    errorMessage();
+  });
+  jwplayer().on(\'buffer\', function() {
     theTimeout = setTimeout(function(e) {
       errorMessage(e);
     }, 5000);
   });
-  jwplayer().onPlay( function(){
+  jwplayer().on("play", function(){
      clearTimeout(theTimeout);
-     if (provider == \'sound\' && renderingMode == \'flash\') {
-       jwplayer().resize(\'100%\', 50);
-       $(".replace_thumbs").show().css("height", 440).css("display","block").css("margin-left","auto").css("margin-right","auto");
-       $("#drs-item-left").css("background", "#000");
-     }
    });
    $(".replace_thumbs").click(function() {
      jwplayer().play()
