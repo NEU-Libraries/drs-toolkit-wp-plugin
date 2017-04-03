@@ -76,13 +76,7 @@ function drstk_collection_playlist($atts){
             }
             $playlists .= '{ sources: [ { file: "' . $no_flash . '", type: "'.strtolower($type).'" },';
             $playlists .= '{ file: "' .  $rtmp . '"},';
-            if (stripos($user_agent,'android') !== false){ //changing priority for android devices
-              $playlists .= ' { file: "' . $no_flash . '", type: "'.strtolower($type).'" }';
-              $playlists .= ' { file: "' . $playlist . '"},';
-            } else {
-              $playlists .= ' { file: "' . $playlist . '"},';
-              $playlists .= ' { file: "' . $no_flash . '", type: "'.strtolower($type).'" }';
-            }
+            $playlists .= ' { file: "' . $playlist . '"},';
             $playlists .= ' ], image: "' . $this_poster . '", title: "' . $title . '" },';
           }
         } else {
@@ -102,6 +96,7 @@ function drstk_collection_playlist($atts){
           $provider = 'audio';
         }
         $playlists .= '{sources:[{file:"'.$post->guid.'",title:"'.$title.'"}],title:"'.$title.'"}';
+        $playlist = $post->guid;
       }
 
       $download = 'download';
@@ -143,10 +138,10 @@ function drstk_collection_playlist($atts){
         });
         jwplayer().on("ready", function() {
          if (is_safari){
-          //defaulting to m3u8 stream for safari since it functions better
-          jwplayer().load([{image: "#{poster}", sources:[{ file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/#{dir}/#{type}:" + encodeURIComponent("info%3Afedora%2F#{encoded}%2Fcontent%2Fcontent.0") + "/playlist.m3u8"}]}]);
-          // Set poster image for video element to avoid black background for audio-only programs.
-          $("#player video").attr("poster", "#{poster}");
+           //defaulting to m3u8 stream for safari since it functions better
+           jwplayer().load([{image: "'.$this_poster.'", sources:[{ file: '.$playlist.'}]}]);
+           // Set poster image for video element to avoid black background for audio-only programs.
+           $("'.$pid_selector.' video").attr("poster", "'.$this_poster.'");
          }
         });
         function errorMessage() {

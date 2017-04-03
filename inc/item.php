@@ -522,10 +522,7 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   if (strpos($av_pid, "neu") !== false) {
     $html .='sources:
     [{ file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.urlencode($full_pid).'", type:"'.strtolower($av_for_ext).'"},';
-    if (stripos($user_agent,'android') !== false){ //changing priority for android devices
-      $html .= '{ file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.urlencode($full_pid).'", type:"'.strtolower($av_for_ext).'"},';
-    }
-    $html .= '{ file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"}, { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':'.$full_pid.'/playlist.m3u8",';
+    $html .= '{ file: "rtmp://libwowza.neu.edu:1935/vod/_definst_/'.$av_type.':datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.0"}, { file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':"+encodeURIComponent("'.$full_pid.'")+"/playlist.m3u8",';
     $html .= '},
     { file: "http://libwowza.neu.edu/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/info%3Afedora%2F'.$encoded_av_pid.'%2Fcontent%2Fcontent.m3u8"}
     ],';
@@ -537,9 +534,9 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   jwplayer().on("ready", function() {
    if (is_safari){
     //defaulting to m3u8 stream for safari since it functions better
-    jwplayer().load([{image: "#{poster}", sources:[{ file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/#{dir}/#{type}:" + encodeURIComponent("info%3Afedora%2F#{encoded}%2Fcontent%2Fcontent.0") + "/playlist.m3u8"}]}]);
+    jwplayer().load([{image: "'.$av_poster.'", sources:[{ file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':" + encodeURIComponent("'.$full_pid.'") + "/playlist.m3u8"}]}]);
     // Set poster image for video element to avoid black background for audio-only programs.
-    $("#player video").attr("poster", "#{poster}");
+    $("'.$id_video.' video").attr("poster", "'.$av_poster.'");
    }
   });
   function errorMessage() {
