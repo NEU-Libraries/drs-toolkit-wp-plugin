@@ -211,6 +211,7 @@ function get_item_title(){
       $title = array($data->docs[0]->sourceResource->title);
     }
     $data->mods->Title = $title;
+    $title = str_replace('"','\"', $title);
     echo $title[0];
   } else if ($repo == "wp"){
     $full_pid = $item_pid;

@@ -46,6 +46,7 @@ function drstk_collection_playlist($atts){
           $poster[] = $data->thumbnails[4];
           $this_poster = $data->thumbnails[4];
           $title = $data->mods->Title[0];
+          $title = str_replace('"','\"', $title);
           foreach($data->canonical_object as $key=>$val){
             $pid = $key;
             $pid = explode("/", $pid);
@@ -89,6 +90,7 @@ function drstk_collection_playlist($atts){
         $this_poster = "";
         $poster[0] = "";
         $title = $post->post_title;
+        $title = str_replace('"','\"', $title);
         if (strpos($post->post_mime_type, "video") !== false){
           $provider = 'sound';
         }
