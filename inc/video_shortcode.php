@@ -139,7 +139,7 @@ function drstk_collection_playlist($atts){
         jwplayer().on("ready", function() {
          if (is_safari){
            //defaulting to m3u8 stream for safari since it functions better
-           jwplayer().load([{image: "'.$this_poster.'", sources:[{ file: '.$playlist.'}]}]);
+           jwplayer().load([{image: "'.$this_poster.'", sources:[{ file: "'.$playlist.'"}]}]);
            // Set poster image for video element to avoid black background for audio-only programs.
            $("'.$pid_selector.' video").attr("poster", "'.$this_poster.'");
          }
