@@ -480,9 +480,6 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
     if (stripos( $user_agent, 'Chrome') !== false){
       $av_for_ext = $av_type;
       $full_pid = "info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0";
-    } elseif (stripos( $user_agent, 'Safari') !== false) {
-      $av_for_ext = strtolower($av_type);
-      $full_pid = urlencode("info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0");
     } else {
       $av_for_ext = strtolower($av_type);
       $full_pid = "info%3Afedora%2F".$encoded_av_pid."%2Fcontent%2Fcontent.0";

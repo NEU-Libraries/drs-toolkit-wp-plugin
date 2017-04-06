@@ -53,14 +53,7 @@ function drstk_collection_playlist($atts){
             $pid = end($pid);
             $encoded = str_replace(':','%3A', $pid);
             $dir = substr(md5("info:fedora/".$pid."/content/content.0"), 0, 2);
-            $user_agent = $_SERVER['HTTP_USER_AGENT'];
-            if (stripos( $user_agent, 'Chrome') !== false){
-              $full_pid = "info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0";
-            } elseif (stripos( $user_agent, 'Safari') !== false) {
-              $full_pid = urlencode("info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0");
-            } else {
-              $full_pid = "info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0";
-            }
+            $full_pid = "info%3Afedora%2F".$encoded."%2Fcontent%2Fcontent.0";
             if ($val == 'Audio File'){
               $rtmp = 'rtmp://libwowza.neu.edu:1935/vod/_definst_/MP3:datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/info%3Afedora%2F'.$encoded.'%2Fcontent%2Fcontent.0';
               $playlist = 'http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$dir.'/MP3:"+encodeURIComponent("'. $full_pid .'")+"/playlist.m3u8';
