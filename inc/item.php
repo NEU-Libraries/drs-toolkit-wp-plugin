@@ -1,5 +1,5 @@
 <?php
-global $item_pid, $data, $collection, $errors, $repo, $all_meta_options, $full_pid;
+global $item_pid, $data, $collection, $errors, $repo, $all_meta_options, $full_pid, $title;
 $collection = drstk_get_pid();
 $errors = drstk_get_errors();
 $meta_options = get_option('drstk_item_page_metadata');
@@ -184,7 +184,7 @@ function get_download_links(){
 }
 
 function get_item_title(){
-  global $item_pid, $data, $url, $repo, $full_pid;
+  global $item_pid, $data, $url, $repo, $full_pid, $title;
   $repo = drstk_get_repo_from_pid($item_pid);
   if ($repo == "drs"){
     $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item_pid;
@@ -193,7 +193,8 @@ function get_item_title(){
     if (check_for_bad_data($data)){
       return false;
     }
-    echo $data->mods->Title[0];
+    $title = $data->mods->Title[0];
+    echo $title;
   } else if ($repo == "dpla"){
     $full_pid = $item_pid;
     $item_pid = explode(":",$item_pid);
@@ -212,7 +213,8 @@ function get_item_title(){
     }
     $data->mods->Title = $title;
     $title = str_replace('"','\"', $title);
-    echo $title[0];
+    $title = $title[0];
+    echo $title;
   } else if ($repo == "wp"){
     $full_pid = $item_pid;
     $item_pid = explode(":",$item_pid);
@@ -220,12 +222,13 @@ function get_item_title(){
     $data = get_post($item_pid);
     $data->mods = new StdClass;
     $data->mods->Title = array($data->post_title);
-    echo $data->post_title;
+    $title = $data->post_title;
+    echo $title;
   }
 }
 
 function get_item_breadcrumbs(){
-  global $item_pid, $data, $breadcrumb_html, $collection;
+  global $item_pid, $data, $breadcrumb_html, $collection, $title;
   if (check_for_bad_data($data)){
     return false;
   }
@@ -237,19 +240,19 @@ function get_item_breadcrumbs(){
     $breadcrumbs = new StdClass;
   }
   if (array_key_exists($collection,$breadcrumbs)){
-    foreach($breadcrumbs as $pid=>$title){
+    foreach($breadcrumbs as $pid=>$this_title){
       if ($pid == $item_pid){
-        $breadcrumb_html[]= "<a href='".drstk_home_url()."item/".$pid."'> ".$title."</a>";
+        $breadcrumb_html[]= "<a href='".drstk_home_url()."item/".$pid."'> ".$this_title."</a>";
       } else if ($pid == $collection){
         $breadcrumb_html[]= "<a href='".drstk_home_url()."browse'>Browse</a>";
         $end = true;
       } else if ($end == true) {
       } else {
-        $breadcrumb_html[]= "<a href='".drstk_home_url()."collection/".$pid."'> ".$title."</a>";
+        $breadcrumb_html[]= "<a href='".drstk_home_url()."collection/".$pid."'> ".$this_title."</a>";
       }
     }
   } else {
-    $breadcrumb_html[]= "<a href='".drstk_home_url()."item/".$item_pid."'> ".$data->mods->Title[0]."</a>";
+    $breadcrumb_html[]= "<a href='".drstk_home_url()."item/".$item_pid."'> ".$title."</a>";
     $breadcrumb_html[] = "<a href='".drstk_home_url()."browse'>Browse</a>";
   }
   echo implode(" > ", array_reverse($breadcrumb_html));
@@ -473,7 +476,7 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
     $av_pid = end($av_pid);
     $encoded_av_pid = str_replace(':','%3A', $av_pid);
     $av_dir = substr(md5("info:fedora/".$av_pid."/content/content.0"), 0, 2);
-    if ($data->thumbnails){
+    if (isset($data->thumbnails)){
       $av_poster = $data->thumbnails[3];
     }
     $user_agent = $_SERVER['HTTP_USER_AGENT'];
