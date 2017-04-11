@@ -38,14 +38,19 @@ function drstk_collection_playlist($atts){
       if ($repo != "drs"){$pid = explode(":",$video); $pid = $pid[1];} else {$pid = $video;}
       $poster;
       if ($repo == "drs"){
-        $url = "https://repository.library.northeastern.edu/api/v1/files/" . $video;
+        $url = "https://repository.library.northeastern.edu/api/v1/files/" . $video . "?solr_only=true";
         $data = get_response($url);
         $data = json_decode($data);
+        $data = $data->_source;
+        $objects_url = "https://repository.library.northeastern.edu/api/v1/files/" . $video . "/content_objects";
+        $objects_data = get_response($objects_url);
+        $objects_data = json_decode($objects_data);
+        $data = (object) array_merge((array) $data, (array) $objects_data);
         if (!isset($data->error)){
 
-          $poster[] = $data->thumbnails[4];
-          $this_poster = $data->thumbnails[4];
-          $title = $data->mods->Title[0];
+          $poster[] = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[4];
+          $this_poster = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[4];
+          $title = $data->title_info_title_ssi;
           $title = str_replace('"','\"', $title);
           foreach($data->canonical_object as $key=>$val){
             $pid = $key;
@@ -104,7 +109,7 @@ function drstk_collection_playlist($atts){
       <script type="text/javascript">
       jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc=";
         var primary = "html5";
-        var provider = "'.$av_provider.'";
+        var provider = "'.$provider.'";
         var is_chrome = navigator.userAgent.indexOf(\'Chrome\') > -1;
         var is_safari = navigator.userAgent.indexOf("Safari") > -1;
         if ((is_chrome)&&(is_safari)) {is_safari=false;}
