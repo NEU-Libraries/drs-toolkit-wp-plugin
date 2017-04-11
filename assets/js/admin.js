@@ -1170,34 +1170,23 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 						self.shortcode.items.remove(remove);
 					});
 				}
-				if (this.shortcode.get('type') == 'single' && parent == 'drs'){ //if type is single then get the metadata options for the settings
-					jQuery.ajax({
-						url: item_admin_obj.ajax_url,
-            type: "POST",
-            data: {
-              action: "get_item_admin",
-              _ajax_nonce: item_admin_obj.item_admin_nonce,
-              pid: pid,
-		        }, complete: function(data){
-							var data = jQuery.parseJSON(data.responseJSON);
-							settings = self.shortcode.get('settings');
-							choices_array = Object.keys(data.mods);
-							choices = {}
-							jQuery.each(choices_array, function(i, choice){
-								choices[choice] = choice;
-							});
-							oldmeta = settings.where({name:'metadata'});
-							settings.remove(oldmeta);
-							settings.add({
-								'name':'metadata',
-								'label':'Metadata to Display',
-								'tag':'checkbox',
-								'value':[],
-								'choices':choices,
-							});
-							self.shortcode.set('settings', settings);
-						}
+				if (this.shortcode.get('type') == 'single' && parent == 'drs'){
+					settings = self.shortcode.get('settings');
+					choices_array = ["Title","Abstract/Description","Creator","Date Created"];
+					choices = {}
+					jQuery.each(choices_array, function(i, choice){
+						choices[choice] = choice;
 					});
+					oldmeta = settings.where({name:'metadata'});
+					settings.remove(oldmeta);
+					settings.add({
+						'name':'metadata',
+						'label':'Metadata to Display',
+						'tag':'checkbox',
+						'value':[],
+						'choices':choices,
+					});
+					self.shortcode.set('settings', settings);
 				} else if (this.shortcode.get('type') == 'single' && parent == 'dpla'){
 					old_search = this.search_params;
 					local_params = this.search_params;
