@@ -47,11 +47,9 @@ function drstk_map( $atts , $params){
     global $errors, $DRS_PLUGIN_URL;
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
 
-    /* Commented for development purpose.
   if($cache) {
     return $cache;
   }
-    */
 
     if(!isset($atts['collection_id'])) {
         $items = array_map('trim', explode(',', $atts['id']));
@@ -183,11 +181,12 @@ function drstk_map( $atts , $params){
         $canonical_object = "";
         if (isset($data->canonical_class_tesim)){
           if ($data->canonical_class_tesim[0] == "AudioFile" || $data->canonical_class_tesim[0] == "VideoFile"){
-            $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item;
-            $data = get_response($url);
-            $data = json_decode($data);
-            if (isset($data->canonical_object)){
-              $canonical_object = insert_jwplayer($key, $val, $data, $data->thumbnails[2]);
+            $objects_url = "https://repository.library.northeastern.edu/api/v1/files/" . $item . "/content_objects";
+            $objects_data = get_response($objects_url);
+            $objects_data = json_decode($objects_data);
+            $data = (object) array_merge((array) $data, (array) $objects_data);
+            if (isset($objects_data->canonical_object)){
+              $canonical_object = insert_jwplayer($key, $val, $data, $data->fields_thumbnail_list_tesim[2]);
             }
           } else {
             $canonical_object = '<img src="http://repository.library.northeastern.edu'.$data->fields_thumbnail_list_tesim[2].'"/>';
