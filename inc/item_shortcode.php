@@ -16,15 +16,34 @@ function drstk_item( $atts ){
     $num = 3;
   }
   if ($repo == "drs"){
-    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $pid;
+    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $pid . "?solr_only=true";
     $data = get_response($url);
     $data = json_decode($data);
-    $thumbnail = $data->thumbnails[$num];
-    $master = $data->thumbnails[4];
+    $data = $data->_source;
+    $thumbnail = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
+    $master = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[4];
+
+    $objects_url = "https://repository.library.northeastern.edu/api/v1/files/" . $pid . "/content_objects";
+    $objects_data = get_response($objects_url);
+    $objects_data = json_decode($objects_data);
+    $data = (object) array_merge((array) $data, (array) $objects_data);
+
     foreach($data->content_objects as $key=>$val){
       if ($val == 'Large Image'){
         $master = $key;
       }
+    }
+    $data->mods = new StdClass;
+    $data->mods->Title = $data->title_info_title_tesim;
+    $abs = "Abstract/Description";
+    $data->mods->$abs = $data->abstract_tesim;
+    $data->mods->Creator = $data->creator_tesim;
+    $dat = "Date Created";
+    if (isset($data->key_date_ssi)){
+      $data->mods->$dat = array($data->key_date_ssi);
+    }
+    if (isset($data->date_ssi)){
+      $data->mods->$dat = array($data->date_ssi);
     }
   }
   if ($repo == "wp"){
@@ -124,6 +143,7 @@ function drstk_item( $atts ){
   }
 
   if (!$jwplayer) {
+    // TODO - change this to read from SOLR once the Location field has been indexed
     if (isset($atts['display-issuu']) && isset($data->mods->Location) && strpos($data->mods->Location[0], "issuu") !== FALSE){
       $location_href = explode("'", strval(htmlentities($data->mods->Location[0])));
       if (count($location_href) == 1){
@@ -185,14 +205,15 @@ function drstk_item( $atts ){
 
   // start hidden fields
   $html .= "<div class=\"hidden\">";
-  $meta = $data->mods;
-  foreach($meta as $field){
-    if (is_array($field)){
-      foreach($field as $field_val){
+  foreach($data as $field => $val){
+    if (is_array($val)){
+      foreach($val as $field_val){
         $html .= $field_val . "<br/>";
       }
+    } elseif(is_object($val)){
+      // do nothing with objects
     } else {
-      $html .= $field[0] . "<br/>";
+      $html .= $val . "<br/>";
     }
   }
   $html .= "</div></div>";
@@ -200,19 +221,6 @@ function drstk_item( $atts ){
   $cache_time = 1000;
   set_transient(md5('DRSTK'.serialize($atts)) , $cache_output, $cache_time * 60);
   return $html;
-}
-
-add_action( 'wp_ajax_get_item_admin', 'item_admin_ajax_handler' ); //for auth users
-
-function item_admin_ajax_handler() {
-  $data = array();
-  // Handle the ajax request
-  check_ajax_referer( 'item_admin_nonce' );
-  $url = "https://repository.library.northeastern.edu/api/v1/files/" . $_POST['pid'];
-  $data = get_response($url);
-  $data = json_decode($data);
-  wp_send_json(json_encode($data));
-  wp_die();
 }
 
 add_action( 'wp_ajax_get_item_solr_admin', 'item_solr_admin_ajax_handler' ); //for auth users
