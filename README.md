@@ -69,8 +69,8 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
   ```
     cd wp-content/themes
     rm -rf twentyfifteen
-    rm -rf twentyfourteen
-    rm -rf twentythirteen
+    rm -rf twentysixteen
+    rm -rf twentyseventeen
   ```
 
 9. Go to /wp-admin/plugins.php in your browser. Install dependent plugins: Relevanssi, Page Builder by SiteOrigin, Black Studio TinyMCE Widget, and Widget Context and activate them.
@@ -81,7 +81,7 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
 
 12. Go to Settings > Discussion and uncheck the box that says 'Allow people to post comments on new articles' to disable comments by default
 
-13. Go to Settings > CERES: Exhibit Toolkit and enter collection URL and click Update
+13. Go to Settings > CERES: Exhibit Toolkit and enter collection URL and add modify any other settings then click Update.
 
 14. Go to Appearance > Themes and activate CERES: Exhibit Toolkit (Quest Child Theme)
 
@@ -89,7 +89,7 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
 
 16. Go to Appearance > Customize > Colors > Global. Change Accent Color and  Accent Shade Color to #c00
 
-17. Click the '<' arrow then Header. Change Secondary Header > Background Color to #494949, Text Color and Social Icon Color to #AFAFAF, Top Border Color to #3C3C3C and Social Icon Hover Color to #EFEFEF
+17. Click the '<' arrow then Header. Change Secondary Header > Background Color to #494949, Text Color and Social Icon Color to #AFAFAF, Top Border Color to #3C3C3C and Social Icon Hover Color and Social Icon Hover background Color to #EFEFEF
 
 18. Click the '<' arrow then Main Menu. Change Menu Items > Text Hover/Focus Color and SubMenu Items Hover/Focus Text Color to #c00.
 
@@ -97,8 +97,23 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
 
 20. Go to Pages > Delete the 'Sample Page'. Go to Posts > Delete the 'Hello World'.
 
+21. Add site to deploy script (deploy.sh) - see [secret gist](https://gist.github.com/elizoller/2412436c2148d694efc1)
+
+22. Add users based on requests from project team
+
 ---
 If you would like breadcrumbs on single pages/posts (not drs items) that reflect hierarchy, simply drag and drop the pages in the wp-admin pages screen to nest.
+
+---
+Moving a site to Production
+
+1. Install additional plugins - WP Super Cache, Google XML Sitemaps, Warm Cache and enable all three
+
+2. Go to Settings > WP Super Cache and select Caching on then Update Status
+
+3. Go to Settings > XML-Sitemap and copy the URL for the sitemap
+
+4. Go to Plugins > Warm cache and paste in the URL from above. This will generate a URL something like `http://domain.library.northeastern.edu/?warm_cache=jfido908234` Copy this URL and place it in the warm_cache.sh script located in /mnt/wordpressdata/warm_cache.sh on the production server. This is triggered on a cron job to warm the cache on production sites. (as root user - `00 1 * * * /mnt/wordpressdata/warm_cache.sh`)
 
 ---
 If you have trouble with the loading DRS content after initial install. Here are a few things to check:
