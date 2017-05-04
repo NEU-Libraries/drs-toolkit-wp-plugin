@@ -144,7 +144,7 @@ jQuery(document).ready(function($) {
     });
 
     function reloadMap (facets_info_data_obj, atts, params1, post_id){
-        console.log("Loading Remaning Map Items...Page no. "+params1["page_no"]);
+        console.log("Loading Remaining Map Items...Page no. "+params1["page_no"]);
 
         var page_no = params1["page_no"];
 

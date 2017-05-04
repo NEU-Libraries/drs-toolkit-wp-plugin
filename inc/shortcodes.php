@@ -63,24 +63,22 @@ add_action( 'wp_ajax_get_drs_code', 'drstk_get_drs_items' ); //for auth users
 function drstk_get_drs_items(){
   check_ajax_referer( 'drs_ajax_nonce' );
   $col_pid = drstk_get_pid();
-    $url = "https://repository.library.northeastern.edu/api/v1/search/".$col_pid."?per_page=20";
+    $url = "https://repository.library.northeastern.edu/api/v1/search";
+    if (isset($_POST['params']['spatialfilter'])){
+      $url .= "/geo";
+    }
+    if (isset($_POST['params']['avfilter'])){
+      $url .= "/av";
+    }
+    if (isset($_POST['params']['timefilter'])){
+      $url .= "/date";
+    }
+
+
+    $url .= "/".$col_pid."?per_page=20";
+
     if (isset($_POST['params']['q'])){
       $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
-      if (isset($_POST['params']['avfilter'])){
-        $url .= 'AND%20canonical_class_tesim%3A"AudioFile"%20OR%20canonical_class_tesim%3A"VideoFile"';
-      }
-    } else {
-      if (isset($_POST['params']['avfilter'])){
-        $url .= '&q=%20canonical_class_tesim%3A"AudioFile"%20OR%20canonical_class_tesim%3A"VideoFile"';
-      }
-    }
-
-    if (isset($_POST['params']['spatialfilter'])){
-      $url .= "&q=subject_geographic_tesim%3A%5B%20*%20TO%20*%20%5D%20OR%20subject_cartographics_coordinates_tesim%3A%5B%20*%20TO%20*%20%5D";
-    }
-
-    if (isset($_POST['params']['timefilter'])){
-      $url .= "&q=key_date_ssi%3A%5B%20*%20TO%20*%20%5D";
     }
 
     if (isset($_POST['params']['page'])) {

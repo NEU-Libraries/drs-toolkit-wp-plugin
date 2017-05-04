@@ -10,7 +10,7 @@ function reload_filtered_set_ajax_handler()
     }
     else if($_POST['reloadWhat'] == "facetReload") {
         if (isset($_POST['atts']['collection_id'])) {
-            $url = "https://repository.library.northeastern.edu/api/v1/search/".$collection_pid."?per_page=10";
+            $url = "https://repository.library.northeastern.edu/api/v1/search/geo/".$collection_pid."?per_page=10";
             if (isset($_POST['params']['f'])) {
                 foreach ($_POST['params']['f'] as $facet => $facet_val) {
                     $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
@@ -19,8 +19,6 @@ function reload_filtered_set_ajax_handler()
             if (isset($_POST['params']['q']) && $_POST['params']['q'] != ''){
                 $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
             }
-            //pregeofilter - looking for solr docs which contain either subject_geographic_tesim OR subject_cartographics_coordinates_tesim
-            $url .= "&q=subject_geographic_tesim%3A%5B%20*%20TO%20*%20%5D%20OR%20subject_cartographics_coordinates_tesim%3A%5B%20*%20TO%20*%20%5D";
             $data1 = get_response($url);
             $data1 = json_decode($data1);
             $facets_info_data = $data1;
@@ -80,7 +78,7 @@ function drstk_map( $atts , $params){
 
     if(isset($atts['collection_id'])){
 
-        $url = "https://repository.library.northeastern.edu/api/v1/search/".drstk_get_pid()."?per_page=10";
+        $url = "https://repository.library.northeastern.edu/api/v1/search/geo/".drstk_get_pid()."?per_page=10";
 
         if(isset($params['page_no'])){
             $url .= "&page=" . $params['page_no'];
@@ -95,9 +93,6 @@ function drstk_map( $atts , $params){
         if (isset($params['q']) && $params['q'] != ''){
             $url .= "&q=". urlencode(sanitize_text_field($params['q']));
         }
-
-        //pregeofilter - looking for solr docs which contain either subject_geographic_tesim OR subject_cartographics_coordinates_tesim
-        $url .= "&q=subject_geographic_tesim%3A%5B%20*%20TO%20*%20%5D%20OR%20subject_cartographics_coordinates_tesim%3A%5B%20*%20TO%20*%20%5D";
 
         $data1 = get_response($url);
         $data1 = json_decode($data1);
