@@ -44,15 +44,14 @@ add_shortcode( 'drstk_map', 'drstk_map' );
 function drstk_map( $atts , $params){
     global $errors, $DRS_PLUGIN_URL;
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
-
-  if($cache) {
-    return $cache;
-  }
+  // write_log($cache);
+  // if($cache != NULL) {
+  //   return $cache;
+  // }
 
     if(!isset($atts['collection_id'])) {
         $items = array_map('trim', explode(',', $atts['id']));
     }
-
   $map_api_key = drstk_get_map_api_key();
   $map_project_key = drstk_get_map_project_key();
   $story = isset($atts['story']) ? $atts['story'] : "no";
@@ -113,7 +112,6 @@ function drstk_map( $atts , $params){
             $collectionItemsId [] = $docItem->id;
         }
         $items = $collectionItemsId;
-        //TODO - can we change this so that it uses a big solr query instead of getting each item at a time
     }
 
     foreach($items as $item){
@@ -388,6 +386,7 @@ function drstk_map( $atts , $params){
   $cache_output = $shortcode;
   $cache_time = 1000;
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
+  // write_log($cache_output);
 
     if(isset($atts['collection_id'])) {
         wp_register_script('drstk_map_test', $DRS_PLUGIN_URL . '/assets/js/mapCollection.js', array('jquery'));
