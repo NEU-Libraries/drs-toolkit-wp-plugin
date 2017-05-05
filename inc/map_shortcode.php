@@ -43,12 +43,10 @@ function reloadRemainingMap_ajax_handler()
 add_shortcode( 'drstk_map', 'drstk_map' );
 function drstk_map( $atts , $params){
     global $errors, $DRS_PLUGIN_URL;
-    write_log($atts);
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
-  // write_log($cache);
-  // if($cache != NULL) {
-  //   return $cache;
-  // }
+  if($cache != NULL && !(isset($params))) {
+    return $cache;
+  }
 
     if(!isset($atts['collection_id'])) {
         $items = array_map('trim', explode(',', $atts['id']));
@@ -103,7 +101,6 @@ function drstk_map( $atts , $params){
         if($num_pages == 0){
             return "No Result";
         }
-
         if(isset($params['page_no']) && $params['page_no'] > $num_pages){
             return "All_Pages_Loaded";
         }
@@ -308,8 +305,6 @@ function drstk_map( $atts , $params){
       }
 
       if(!isset($data->docs[0]->sourceResource->spatial[0]->coordinates)) {
-        // write_log("no coordinates");
-        // write_log($data->docs[0]->sourceResource->spatial);
         $location = $data->docs[0]->sourceResource->spatial[count($data->docs[0]->sourceResource->spatial)-1]->name;// . $data->docs[0]->sourceResource->spatial[0]->state;
         $locationUrl = "http://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
         $locationData = get_response($locationUrl);
@@ -317,7 +312,6 @@ function drstk_map( $atts , $params){
         if (!isset($locationData->error)) {
           $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
         }
-        // write_log($location);
       } else {
         $coordinates = $data->docs[0]->sourceResource->spatial[0]->coordinates;
       }
@@ -387,11 +381,10 @@ function drstk_map( $atts , $params){
   $cache_output = $shortcode;
   $cache_time = 1000;
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
-  // write_log($cache_output);
 
     if(isset($atts['collection_id'])) {
-        wp_register_script('drstk_map_test', $DRS_PLUGIN_URL . '/assets/js/mapCollection.js', array('jquery'));
-        wp_enqueue_script('drstk_map_test');
+        wp_register_script('drstk_map_col', $DRS_PLUGIN_URL . '/assets/js/mapCollection.js', array('jquery'));
+        wp_enqueue_script('drstk_map_col');
 
         $reload_filtered_set_drs_nonce = wp_create_nonce('reload_filtered_set_drs');
 
@@ -411,7 +404,7 @@ function drstk_map( $atts , $params){
             "atts" => $atts,
             "map_obj" => $map_obj
         );
-        wp_localize_script('drstk_map_test', 'facets_info_data_obj', $facets_info_data_obj);
+        wp_localize_script('drstk_map_col', 'facets_info_data_obj', $facets_info_data_obj);
     }
 
     return $shortcode;
