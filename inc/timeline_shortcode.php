@@ -3,14 +3,15 @@
 add_action( 'wp_ajax_reload_filtered_set_timeline', 'reload_filtered_set_timeline_ajax_handler' ); //for auth users
 add_action( 'wp_ajax_nopriv_reload_filtered_set_timeline', 'reload_filtered_set_timeline_ajax_handler' ); //for nonauth users
 function reload_filtered_set_timeline_ajax_handler()
-{   $test = get_response("https://repository.library.northeastern.edu/api/v1/search/".drstk_get_pid());
-    $test = json_decode($test);
+{
     if ($_POST['reloadWhat'] == "timelineReload") {
         echo drstk_timeline($_POST['atts'], $_POST['params']);
     }
     else if($_POST['reloadWhat'] == "facetReload") {
         if (isset($_POST['atts']['collection_id'])) {
-            $url = "https://repository.library.northeastern.edu/api/v1/search/date/".drstk_get_pid()."?per_page=".count($test->pagination->table->total_count);
+          $test = get_response("https://repository.library.northeastern.edu/api/v1/search/".$_POST['atts']['collection_id']);
+              $test = json_decode($test);
+            $url = "https://repository.library.northeastern.edu/api/v1/search/date/".$_POST['atts']['collection_id']."?per_page=".count($test->pagination->table->total_count);
             if (isset($_POST['params']['f'])) {
                 foreach ($_POST['params']['f'] as $facet => $facet_val) {
                     $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
@@ -44,15 +45,12 @@ function reloadRemainingTimeline_ajax_handler()
 add_shortcode( 'drstk_timeline', 'drstk_timeline' );
 function drstk_timeline( $atts, $params ){
     global $errors;
-    write_log($atts);
 
     $cache = get_transient(md5('PREFIX'.serialize($atts)));
-
-    /* Commented as part of Development.
-  if($cache) {
-      return $cache;
+  if($cache != NULL && (!(isset($params)) || $params == NULL) && !(isset($atts['collection_id']))) {
+    return $cache;
   }
-    */
+
     $color_codes = array();
     $color_hex = array();
 
@@ -104,13 +102,14 @@ function drstk_timeline( $atts, $params ){
 
     $facets_info_data = array();
 
-    $test = get_response("https://repository.library.northeastern.edu/api/v1/search/".drstk_get_pid());
-    $test = json_decode($test);
+
 
     $collectionCheck =null;
     if(isset($atts['collection_id'])){
+      $test = get_response("https://repository.library.northeastern.edu/api/v1/search/".$atts['collection_id']);
+      $test = json_decode($test);
 
-        $url = "https://repository.library.northeastern.edu/api/v1/search/date/".drstk_get_pid()."?per_page=".$test->pagination->table->total_count; //?per_page=10
+        $url = "https://repository.library.northeastern.edu/api/v1/search/date/".$atts['collection_id']."?per_page=".$test->pagination->table->total_count; //?per_page=10
 
         if (isset($params['f'])) {
             foreach ($params['f'] as $facet => $facet_val) {
@@ -121,6 +120,10 @@ function drstk_timeline( $atts, $params ){
         if (isset($params['q']) && $params['q'] != ''){
             $url .= "&q=". urlencode(sanitize_text_field($params['q']));
         }
+
+        if(isset($params['page_no'])){
+            $url .= "&page=" . $params['page_no'];
+         }
 
         $data1 = get_response($url);
         $data1 = json_decode($data1);

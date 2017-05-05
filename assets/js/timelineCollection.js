@@ -90,7 +90,7 @@ jQuery(document).ready(function ($) {
 
         $("#drs-facets a").bind("click", function (e) {
             e.preventDefault();
-            //params1["page_no"] = 1;
+            params1["page_no"] = 1;
             var facet = $(this).parents('.drs-facet').attr("id");
             if ($(this).parent().hasClass('modal-body')) {
                 facet = $(this).parents('.modal').attr('id').substr(10);
@@ -121,7 +121,7 @@ jQuery(document).ready(function ($) {
             search = $('#test1').val();
             $('#test1').val('');
             if ((search) && (search != '')) {
-                //params1["page_no"] = 1;
+                params1["page_no"] = 1;
                 params1["q"] = search;
                 $("#drs-selection a[data-type='q']").remove();
                 $("#drs-selection").append("<a class='themebutton btn btn-more' href='#' data-type='q' data-val='" + search + "'>" + search + " <span class='fa fa-close'></span></a>");
@@ -140,7 +140,7 @@ jQuery(document).ready(function ($) {
         search = $('#test1').val();
         $('#test1').val('');
         if ((search) && (search != '')) {
-            //params1["page_no"] = 1;
+            params1["page_no"] = 1;
             params1["q"] = search;
             $("#drs-selection a[data-type='q']").remove();
             $("#drs-selection").append("<a class='themebutton btn btn-more' href='#' data-type='q' data-val='" + search + "'>" + search + " <span class='fa fa-close'></span></a>");
@@ -259,7 +259,7 @@ jQuery(document).ready(function ($) {
             }
             jQuery("#test1").val('');
             $(this).remove();
-            //params1["page_no"] = 1;
+            params1["page_no"] = 1;
             if($("#timelineLoadingElement").length <= 0) {
                 jQuery(".entry-header").append("<div id='timelineLoadingElement' class='themebutton btn btn-more'>Loading Timeline Items...</div>");
             }
