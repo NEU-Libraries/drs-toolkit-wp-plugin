@@ -44,7 +44,7 @@ add_shortcode( 'drstk_map', 'drstk_map' );
 function drstk_map( $atts , $params){
     global $errors, $DRS_PLUGIN_URL;
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
-  if($cache != NULL && !(isset($params))) {
+  if($cache != NULL && (!(isset($params)) || $params == NULL)) {
     return $cache;
   }
 
