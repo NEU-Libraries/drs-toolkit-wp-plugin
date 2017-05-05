@@ -169,3 +169,22 @@ To Setup Mirador
 3. Modify assets/mirador/mirador_manifest.js to point the manifest.json file you created
    change [wordpress_url] to the url for the wordpress install like http://example.northeastern.edu
 4. Go to /wp-admin in your browser and update the CERES settings to enable Mirador, set a page title, and custom URL
+
+---
+For Performing Updates to Plugins en mass
+
+1. Make sure you have wp-cli installed on your server (See http://wp-cli.org/ for more info on installing if you do not have it installed)
+
+2. Go to the root of your wordpress install
+  ```
+    wp plugin list --path="/var/www/html/drstest"
+  ```
+  where the path is the correct path to the root of your wordpress install. This will show you all of the plugins installed and which have updates available.
+
+3. Run the Updates
+  ```
+    wp plugin update --path="/var/www/html/drstest --all"
+  ```
+  You can use --all to update all plugins which have updates or you can specify certain plugins
+
+4. For more info on using wp-cli, go to https://make.wordpress.org/cli/handbook/
