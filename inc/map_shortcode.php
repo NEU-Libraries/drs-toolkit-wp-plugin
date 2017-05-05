@@ -43,6 +43,7 @@ function reloadRemainingMap_ajax_handler()
 add_shortcode( 'drstk_map', 'drstk_map' );
 function drstk_map( $atts , $params){
     global $errors, $DRS_PLUGIN_URL;
+    write_log($atts);
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
   // write_log($cache);
   // if($cache != NULL) {
