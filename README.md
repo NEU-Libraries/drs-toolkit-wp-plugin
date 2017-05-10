@@ -188,3 +188,16 @@ For Performing Updates to Plugins en mass
   You can use --all to update all plugins which have updates or you can specify certain plugins
 
 4. For more info on using wp-cli, go to https://make.wordpress.org/cli/handbook/
+
+---
+To migrate a toolkit site to a new VM
+
+1. Copy over entire WP directory (including hidden files like .htaccess) to new VM
+
+2. Export MySQL database
+
+3. Create new database and import the export of the old database
+
+4. Modify wp-config.php to point to new database
+
+5. Modify DNS to point to new VM
