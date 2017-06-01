@@ -532,10 +532,10 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   }
   $html .= '
   });
-  jwplayer().on("ready", function() {
+  jwplayer("'.$id_video.'").on("ready", function() {
    if (is_safari){
     //defaulting to m3u8 stream for safari since it functions better
-    jwplayer().load([{image: "'.$av_poster.'", sources:[{ file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':" + encodeURIComponent("'.$full_pid.'") + "/playlist.m3u8"}]}]);
+    jwplayer("'.$id_video.'").load([{image: "'.$av_poster.'", sources:[{ file: "http://libwowza.neu.edu:1935/vod/_definst_/datastreamStore/cerberusData/newfedoradata/datastreamStore/'.$av_dir.'/'.$av_type.':" + encodeURIComponent("'.$full_pid.'") + "/playlist.m3u8"}]}]);
     // Set poster image for video element to avoid black background for audio-only programs.
     $("'.$id_video.' video").attr("poster", "'.$av_poster.'");
    }
@@ -545,22 +545,22 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
     $("#'.$id_img.'").show();
     $("#'.$id_video.'").hide();
   }
-  jwplayer().on(\'error\', function(){
+  jwplayer("'.$id_video.'").on(\'error\', function(){
     errorMessage();
   });
-  jwplayer().on(\'setupError\', function(){
+  jwplayer("'.$id_video.'").on(\'setupError\', function(){
     errorMessage();
   });
-  jwplayer().on(\'buffer\', function() {
+  jwplayer("'.$id_video.'").on(\'buffer\', function() {
     theTimeout = setTimeout(function(e) {
       errorMessage(e);
     }, 5000);
   });
-  jwplayer().on("play", function(){
+  jwplayer("'.$id_video.'").on("play", function(){
      clearTimeout(theTimeout);
    });
    $(".replace_thumbs").click(function() {
-     jwplayer().play()
+     jwplayer("'.$id_video.'").play()
    })
   });</script>';
 

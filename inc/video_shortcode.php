@@ -136,10 +136,10 @@ function drstk_collection_playlist($atts){
     }
       $cache_output .= 'playlist: [ '. $playlists . ']
         });
-        jwplayer().on("ready", function() {
+        jwplayer("'.$pid_selector.'").on("ready", function() {
          if (is_safari){
            //defaulting to m3u8 stream for safari since it functions better
-           jwplayer().load([{image: "'.$this_poster.'", sources:[{ file: "'.$playlist.'"}]}]);
+           jwplayer("'.$pid_selector.'").load([{image: "'.$this_poster.'", sources:[{ file: "'.$playlist.'"}]}]);
            // Set poster image for video element to avoid black background for audio-only programs.
            $("'.$pid_selector.' video").attr("poster", "'.$this_poster.'");
          }
@@ -147,18 +147,18 @@ function drstk_collection_playlist($atts){
         function errorMessage() {
           $("#drs-item-video").before("<div class=\'alert alert-warning\'>'.$errors['item']['jwplayer_fail'].'<br /><strong>Error Message:</strong> "+e.message+"</div>");
         }
-        jwplayer().on(\'error\', function(){
+        jwplayer("'.$pid_selector.'").on(\'error\', function(){
           errorMessage();
         });
-        jwplayer().on(\'setupError\', function(){
+        jwplayer("'.$pid_selector.'").on(\'setupError\', function(){
           errorMessage();
         });
-        jwplayer().on(\'buffer\', function() {
+        jwplayer("'.$pid_selector.'").on(\'buffer\', function() {
           theTimeout = setTimeout(function(e) {
             errorMessage(e);
           }, 5000);
         });
-        jwplayer().on("play", function(){
+        jwplayer("'.$pid_selector.'").on("play", function(){
            clearTimeout(theTimeout);
          });
       });
