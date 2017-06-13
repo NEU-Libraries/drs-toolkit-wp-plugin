@@ -4,7 +4,7 @@ add_shortcode( 'drstk_item', 'drstk_item' );
 add_shortcode( 'drstk_single', 'drstk_item' );
 function drstk_item( $atts ){
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
-
+  
   if($cache) {
       return $cache;
   }
@@ -19,6 +19,7 @@ function drstk_item( $atts ){
     $url = "https://repository.library.northeastern.edu/api/v1/files/" . $pid . "?solr_only=true";
     $data = get_response($url);
     $data = json_decode($data);
+    write_log($data);
     $data = $data->_source;
     $thumbnail = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
     $master = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[4];
@@ -37,7 +38,9 @@ function drstk_item( $atts ){
     $data->mods->Title = $data->title_info_title_tesim;
     $abs = "Abstract/Description";
     $data->mods->$abs = $data->abstract_tesim;
-    $data->mods->Creator = $data->creator_tesim;
+    if (isset($data->creator_tesim)){
+      $data->mods->Creator = $data->creator_tesim;
+    }
     $dat = "Date Created";
     if (isset($data->key_date_ssi)){
       $data->mods->$dat = array($data->key_date_ssi);
@@ -143,13 +146,9 @@ function drstk_item( $atts ){
   }
 
   if (!$jwplayer) {
-    // TODO - change this to read from SOLR once the Location field has been indexed
-    if (isset($atts['display-issuu']) && isset($data->mods->Location) && strpos($data->mods->Location[0], "issuu") !== FALSE){
-      $location_href = explode("'", strval(htmlentities($data->mods->Location[0])));
-      if (count($location_href) == 1){
-        $location_href = explode('"', strval(htmlentities($data->mods->Location[0])));
-      }
-      $issu_id = explode('?',$location_href[1]);
+    if (isset($atts['display-issuu']) && isset($data->drs_location_url_ssim)){
+      $location_href = $data->drs_location_url_ssim[0];
+      $issu_id = explode('?',$location_href);
       $issu_id = explode('=',$issu_id[1]);
       $issu_id = $issu_id[1];
       $html .= '<div data-configid="'.$issu_id.'" style="width:100%; height:500px;" class="issuuembed"></div><script type="text/javascript" src="//e.issuu.com/embed.js" async="true"></script>';
