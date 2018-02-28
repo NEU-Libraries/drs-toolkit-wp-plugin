@@ -16,10 +16,10 @@ jQuery(document).ready(function($) {
 
     var finalTimelineJson = {events:finalEventsListAfterCustomData['eventsList']};
 
-    window.timeline = new TL.Timeline('timeline-embed', finalTimelineJson, options);
-
-    itemBackgroundModifier($('.tl-timemarker-content-container'), colorIds);
-
+	window.timeline = new TL.Timeline('timeline-embed', finalTimelineJson, options);
+	if (colorIds){
+		itemBackgroundModifier($('.tl-timemarker-content-container'), colorIds);
+	}
 });
 
 	function getItemsFromJqueryArrayTimelineArray(jqArray) {

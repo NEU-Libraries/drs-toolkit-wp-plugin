@@ -303,8 +303,12 @@ function drstk_timeline( $atts, $params ){
             } else {
                 $credit = "";
             }
-            if (isset($data->docs[0]->sourceResource->date->displayDate) && $data->docs[0]->sourceResource->date->displayDate != "Unknown"){
-                $date = $data->docs[0]->sourceResource->date->displayDate;
+            if ((isset($data->docs[0]->sourceResource->date->displayDate) && $data->docs[0]->sourceResource->date->displayDate != "Unknown") || (isset($data->docs[0]->sourceResource->date[0]->displayDate) && $data->docs[0]->sourceResource->date[0]->displayDate != "Unknown")){
+                if (is_array($data->docs[0]->sourceResource->date)){
+                    $date = $data->docs[0]->sourceResource->date[0]->displayDate;
+                } else {
+                    $date = $data->docs[0]->sourceResource->date->displayDate;
+                }
                 $date = explode("-", $date);
                 $year = $date[0];
                 if (strlen($year) != 4){
