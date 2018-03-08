@@ -64,8 +64,14 @@ function parse_metadata($data, $html, $solr=false, $dpla=false, $special_options
     $data = map_dpla_to_mods($data);
   }
   if ($temp_meta_options != NULL){
-    foreach($temp_meta_options as $key => $value){
-      $value = isset($data->$value) ? $data->$value : NULL;
+    $data = (array) $data;
+    foreach($temp_meta_options as $key => $val){
+      $value = NULL;
+      if (isset($data->$val)){
+        $value = $data->$val;
+      } else if (isset($data[$val])){
+        $value = $data[$val];
+      }
       if ($value == NULL){
         continue;//skip to next in each loop
       }
@@ -73,7 +79,11 @@ function parse_metadata($data, $html, $solr=false, $dpla=false, $special_options
       if (!isset($temp_meta_options[$key])){
         $html .= titleize($key);
       } else {
-        $html .= $temp_meta_options[$key];
+        if (strpos($temp_meta_options[$key], '_') !== false) {
+          $html .= titleize($temp_meta_options[$key]);
+        } else {
+          $html .= $temp_meta_options[$key];
+        }
       }
       $html .= "</b></div><div class='drs-field-value'>";
       if (is_array($value)){
