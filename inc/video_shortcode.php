@@ -65,7 +65,7 @@ function drstk_collection_playlist($atts){
               $provider = 'video';
             }
             $playlists .= '{ sources: [ { file: "https://repository.library.northeastern.edu/wowza/' . $pid . '/plain", type: "'.strtolower($type).'" },';
-            $playlists .= '{ file: "https://repository.library.northeastern.edu/wowza' .  $pid . '/playlist"},';
+            $playlists .= '{ file: "https://repository.library.northeastern.edu/wowza' .  $pid . '/playlist.m3u8"},';
             $playlists .= ' ], image: "' . $this_poster . '", title: "' . $title . '" },';
           }
         } else {

@@ -523,7 +523,7 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   if (strpos($av_pid, "neu") !== false) {
     $html .='sources:
     [{ file: "https://repository.library.northeastern.edu/wowza/'.$av_pid.'/plain", type:"'.strtolower($av_type).'"},';
-    $html .= '{ file: "https://repository.library.northeastern.edu/wowza/'.$av_pid.'/playlist"}
+    $html .= '{ file: "https://repository.library.northeastern.edu/wowza/'.$av_pid.'/playlist.m3u8"}
     ],';
   } else {
     $html .= 'sources:[{file:"'.$av_pid.'"}],';
