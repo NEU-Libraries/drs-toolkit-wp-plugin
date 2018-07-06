@@ -165,7 +165,7 @@ function drstk_timeline( $atts, $params ){
                 }
                 $key_date = $data->key_date_ssi;
                 $current_array = array();
-                $thumbnail_url = "http://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[2];
+                $thumbnail_url = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[2];
 
                 if (isset($atts['metadata'])){
                   $timeline_metadata = '';
@@ -248,7 +248,7 @@ function drstk_timeline( $atts, $params ){
         }
         if ($repo == "dpla"){
             if (!isset($timeline_custom_html)){$timeline_custom_html = "";}
-            $data = get_response("http://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7");
+            $data = get_response("https://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7");
             $data = json_decode($data);
             if (isset($data->docs[0]->object)){
                 $url = $data->docs[0]->object;

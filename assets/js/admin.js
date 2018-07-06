@@ -1548,7 +1548,7 @@ drstk.backbone_modal.Application = Backbone.View.extend(
 									data = data['_source'];
 									item.set("title", data.full_title_ssi);
 									if (!item.get("thumbnail")){
-										item.set("thumbnail", "http://repository.library.northeastern.edu"+data.fields_thumbnail_list_tesim[0]);
+										item.set("thumbnail", "https://repository.library.northeastern.edu"+data.fields_thumbnail_list_tesim[0]);
 									}
 									if (!item.get("key_date") || item.get("key_date") == "" || item.get("key_date") == undefined){
 										item.set("key_date", data.key_date_ssi);

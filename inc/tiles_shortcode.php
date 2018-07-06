@@ -24,7 +24,7 @@ function drstk_tiles( $atts ){
       $data = get_response($url);
       $data = json_decode($data);
       $data = $data->_source;
-      $thumbnail = "http://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
+      $thumbnail = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
     }
     if ($repo == "wp"){
       $post = get_post($pid);
@@ -61,7 +61,7 @@ function drstk_tiles( $atts ){
       $pid = "wp:".$pid;
     }
     if ($repo == "dpla"){
-      $url = "http://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
+      $url = "https://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
       $dpla = get_response($url);
       $dpla = json_decode($dpla);
       if (isset($dpla->docs[0]->object)){

@@ -27,7 +27,7 @@ function drstk_enqueue_page_scripts( $hook ) {
           'replace_message' => __( 'Choose a method of embedding DRS and/or DPLA item(s).<br/><br/><table><tr><td><a class="button" href="#one">Single Item</a></td><td><a class="button" href="#four">Media Playlist</a></td></tr><tr><td><a class="button" href="#two">Tile Gallery</a></td><td><a class="button" href="#five">Map</a></td></tr><tr><td><a class="button" href="#three">Gallery Slider</a></td><td><a class="button" href="#six">Timeline</a></td></tr></table>', 'backbone_modal' ),
           'collection_id' => drstk_get_pid(),
         ) );
-      wp_enqueue_style( 'drstk_jquery_ui', 'http://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css');
+      wp_enqueue_style( 'drstk_jquery_ui', 'https://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css');
 
    //this creates a unique nonce to pass back and forth from js/php to protect
    $item_admin_nonce = wp_create_nonce( 'item_admin_nonce' );
@@ -157,7 +157,7 @@ add_action( 'wp_ajax_get_dpla_code', 'drstk_get_dpla_items' ); //for auth users
 
 function drstk_get_dpla_items(){
   check_ajax_referer( 'dpla_ajax_nonce' );
-    $url = "http://api.dp.la/v2/items?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7&page_size=20";
+    $url = "https://api.dp.la/v2/items?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7&page_size=20";
     if (isset($_POST['params']['q'])){
       $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
     }

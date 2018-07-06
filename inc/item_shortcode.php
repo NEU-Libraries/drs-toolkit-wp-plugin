@@ -95,7 +95,7 @@ function drstk_item( $atts ){
     $data->id = $post->ID;
   }
   if ($repo == "dpla"){
-    $dpla = get_response("http://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7");
+    $dpla = get_response("https://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7");
     $dpla = json_decode($dpla);
     if (isset($dpla->docs[0]->object)){
       $url = $dpla->docs[0]->object;
