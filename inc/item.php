@@ -185,6 +185,7 @@ function get_download_links(){
       if ($val == 'Video File'){
         $av_pid = explode("/", $key);
         $av_pid = end($av_pid);
+        $av_pid = str_replace("?datastream_id=content","",$av_pid);
         echo " <a href='".drstk_home_url()."download/".$av_pid."' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
       } else {
         echo " <a href='".$key."' target='_blank' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
@@ -484,6 +485,7 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   if (strpos($av_pid, "repository.library.northeastern.edu") !== false){
     $av_pid = explode("/", $av_pid);
     $av_pid = end($av_pid);
+    $av_pid = str_replace("?datastream_id=content","",$av_pid);
     if (isset($data->thumbnails)){
       $av_poster = $data->thumbnails[3];
     }

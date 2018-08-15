@@ -56,6 +56,7 @@ function drstk_collection_playlist($atts){
             $pid = $key;
             $pid = explode("/", $pid);
             $pid = end($pid);
+            $pid = str_replace("?datastream_id=content","",$pid);
             if ($val == 'Audio File'){
               $type = 'MP3';
               $provider = 'sound';

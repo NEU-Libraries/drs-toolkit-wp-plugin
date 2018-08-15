@@ -6,6 +6,7 @@ if (isset($item_pid)){
   header("Content-disposition: attachment;filename=video.mp4");
   $av_pid = explode("/", $item_pid);
   $av_pid = end($av_pid);
+  $av_pid = str_replace("?datastream_id=content","",$av_pid);
   $url = "https://repository.library.northeastern.edu/wowza/".$av_pid."/plain";
   $handle = @fopen($url, "r");
   if ($handle) {
