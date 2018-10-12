@@ -157,7 +157,7 @@ add_action( 'wp_ajax_get_dpla_code', 'drstk_get_dpla_items' ); //for auth users
 
 function drstk_get_dpla_items(){
   check_ajax_referer( 'dpla_ajax_nonce' );
-    $url = "https://api.dp.la/v2/items?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7&page_size=20";
+    $url = "https://api.dp.la/v2/items?api_key=" . DPLA_API_KEY. "&page_size=20";
     if (isset($_POST['params']['q'])){
       $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
     }
@@ -230,11 +230,13 @@ function drstk_get_dpla_items(){
     $url .= "&facets=sourceResource.contributor,sourceResource.date.begin,sourceResource.date.end,sourceResource.subject.name,sourceResource.type";
     $data = get_response($url);
     $json = json_decode($data);
+    
     if (isset($json->error)) {
       wp_send_json(json_encode( "There was an error: " . $json->error));
       wp_die();
       return;
     }
+    
     wp_send_json($data);
     wp_die();
 }

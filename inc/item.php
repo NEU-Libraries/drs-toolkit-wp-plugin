@@ -210,7 +210,7 @@ function get_item_title(){
     $full_pid = $item_pid;
     $item_pid = explode(":",$item_pid);
     $item_pid = $item_pid[1];
-    $url = "https://api.dp.la/v2/items/".$item_pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
+    $url = "https://api.dp.la/v2/items/".$item_pid."?api_key=" . DPLA_API_KEY;
     $data = get_response($url);
     $data = json_decode($data);
     if (check_for_bad_data($data)){
