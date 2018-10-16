@@ -61,7 +61,7 @@ function drstk_tiles( $atts ){
       $pid = "wp:".$pid;
     }
     if ($repo == "dpla"){
-      $url = "https://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
+      $url = "https://api.dp.la/v2/items/".$pid."?api_key=" . DPLA_API_KEY;
       $dpla = get_response($url);
       $dpla = json_decode($dpla);
       if (isset($dpla->docs[0]->object)){
