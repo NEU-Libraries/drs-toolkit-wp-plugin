@@ -63,94 +63,97 @@ add_action( 'wp_ajax_get_drs_code', 'drstk_get_drs_items' ); //for auth users
 function drstk_get_drs_items(){
   check_ajax_referer( 'drs_ajax_nonce' );
   $col_pid = drstk_get_pid();
-    $url = "https://repository.library.northeastern.edu/api/v1/search";
-    if (isset($_POST['params']['spatialfilter'])){
-      $url .= "/geo";
-    }
-    if (isset($_POST['params']['avfilter'])){
-      $url .= "/av";
-    }
-    if (isset($_POST['params']['timefilter'])){
-      $url .= "/date";
-    }
+  // $url = "https://repository.library.northeastern.edu/api/v1/search";
+  $url = ""; //Blank start
+  if (isset($_POST['params']['spatialfilter'])){
+    // $url .= "/geo";
+    $url = drstk_api_url("drs", $col_pid, "search", "geo", "per_page=20");
+  }
+  if (isset($_POST['params']['avfilter'])){
+    // $url .= "/av";
+    $url = drstk_api_url("drs", $col_pid, "search", "av", "per_page=20");
+  }
+  if (isset($_POST['params']['timefilter'])){
+    // $url .= "/date";
+    $url = drstk_api_url("drs", $col_pid, "search", "date", "per_page=20");
+  }
 
+  // $url .= "/".$col_pid."?per_page=20";
 
-    $url .= "/".$col_pid."?per_page=20";
+  if (isset($_POST['params']['q'])){
+    $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
+  }
 
-    if (isset($_POST['params']['q'])){
-      $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
+  if (isset($_POST['params']['page'])) {
+    $url .= "&page=" . $_POST['params']['page'];
+  }
+  if (isset($_POST['params']['sort'])) {
+    $sort = $_POST['params']['sort'];
+    switch ($sort) {
+      case "title":
+          $sort = "title_ssi";
+          break;
+      case "creator":
+          $sort = "creator_ssi";
+          break;
+      case "date":
+          $sort = "date_ssi";
+          break;
     }
-
-    if (isset($_POST['params']['page'])) {
-      $url .= "&page=" . $_POST['params']['page'];
-    }
-    if (isset($_POST['params']['sort'])) {
-      $sort = $_POST['params']['sort'];
-      switch ($sort) {
-        case "title":
-            $sort = "title_ssi";
-            break;
-        case "creator":
-            $sort = "creator_ssi";
-            break;
-        case "date":
-            $sort = "date_ssi";
-            break;
-      }
-      if ($sort != ""){
-        $url .= "&sort=".$sort."+asc";
-      } else {
-        $url .= "&sort=score+desc";
-      }
+    if ($sort != ""){
+      $url .= "&sort=".$sort."+asc";
     } else {
       $url .= "&sort=score+desc";
     }
-    if (isset($_POST['params']['facets'])){
-      $facets = $_POST['params']['facets'];
-      foreach($facets as $facet_name=>$facet_val){
-        if ($facet_name == "creator"){
-          if (is_array($facet_val)){
-            foreach($facet_val as $facet_value){
-              $url .= "&".urlencode("f[creator_sim][]")."=".urlencode($facet_value);
-            }
-          } else {
-            $url .= "&".urlencode("f[creator_sim][]")."=".urlencode($facet_val);
+  } else {
+    $url .= "&sort=score+desc";
+  }
+  if (isset($_POST['params']['facets'])){
+    $facets = $_POST['params']['facets'];
+    foreach($facets as $facet_name=>$facet_val){
+      if ($facet_name == "creator"){
+        if (is_array($facet_val)){
+          foreach($facet_val as $facet_value){
+            $url .= "&".urlencode("f[creator_sim][]")."=".urlencode($facet_value);
           }
+        } else {
+          $url .= "&".urlencode("f[creator_sim][]")."=".urlencode($facet_val);
         }
-        if ($facet_name == "type"){
-          if (is_array($facet_val)){
-            foreach($facet_val as $facet_value){
-              $url .= "&".urlencode("f[type_sim][]")."=".urlencode($facet_value);
-            }
-          } else {
-            $url .= "&".urlencode("f[type_sim][]")."=".urlencode($facet_val);
+      }
+      if ($facet_name == "type"){
+        if (is_array($facet_val)){
+          foreach($facet_val as $facet_value){
+            $url .= "&".urlencode("f[type_sim][]")."=".urlencode($facet_value);
           }
+        } else {
+          $url .= "&".urlencode("f[type_sim][]")."=".urlencode($facet_val);
         }
-        if ($facet_name == "subject"){
-          if (is_array($facet_val)){
-            foreach($facet_val as $facet_value){
-              $url .= "&".urlencode("f[subject_sim][]")."=".urlencode($facet_value);
-            }
-          } else {
-            $url .= "&".urlencode("f[subject_sim][]")."=".urlencode($facet_val);
+      }
+      if ($facet_name == "subject"){
+        if (is_array($facet_val)){
+          foreach($facet_val as $facet_value){
+            $url .= "&".urlencode("f[subject_sim][]")."=".urlencode($facet_value);
           }
+        } else {
+          $url .= "&".urlencode("f[subject_sim][]")."=".urlencode($facet_val);
         }
-        if ($facet_name == "date"){
-          if (!is_array($facet_val)){
-            $url .= "&".urlencode("f[creation_year_sim][]")."=".urlencode($facet_val);
-          }
+      }
+      if ($facet_name == "date"){
+        if (!is_array($facet_val)){
+          $url .= "&".urlencode("f[creation_year_sim][]")."=".urlencode($facet_val);
         }
       }
     }
-    $data = get_response($url);
-    $json = json_decode($data);
-    if (isset($json->error)) {
-      wp_send_json(json_encode( "There was an error: " . $json->error));
-      wp_die();
-      return;
-    }
-    wp_send_json($data);
+  }
+  $data = get_response($url);
+  $json = json_decode($data);
+  if (isset($json->error)) {
+    wp_send_json(json_encode( "There was an error: " . $json->error));
     wp_die();
+    return;
+  }
+  wp_send_json($data);
+  wp_die();
 }
 
 add_action( 'wp_ajax_get_dpla_code', 'drstk_get_dpla_items' ); //for auth users
