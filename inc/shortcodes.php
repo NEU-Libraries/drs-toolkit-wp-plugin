@@ -160,7 +160,8 @@ add_action( 'wp_ajax_get_dpla_code', 'drstk_get_dpla_items' ); //for auth users
 
 function drstk_get_dpla_items(){
   check_ajax_referer( 'dpla_ajax_nonce' );
-    $url = "https://api.dp.la/v2/items?api_key=" . DPLA_API_KEY. "&page_size=20";
+    // $url = "https://api.dp.la/v2/items?api_key=" . DPLA_API_KEY. "&page_size=20";
+    $url = drstk_api_url("dpla", "", "items", NULL, "page_size=20"); //blank pid for general search
     if (isset($_POST['params']['q'])){
       $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
     }

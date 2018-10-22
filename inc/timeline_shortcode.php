@@ -251,7 +251,9 @@ function drstk_timeline( $atts, $params ){
         }
         if ($repo == "dpla"){
             if (!isset($timeline_custom_html)){$timeline_custom_html = "";}
-            $data = get_response("https://api.dp.la/v2/items/".$pid."?api_key=" . DPLA_API_KEY);
+            // $data = get_response("https://api.dp.la/v2/items/".$pid."?api_key=" . DPLA_API_KEY);
+            $url = drstk_api_url("dpla", $pid, "items");
+            $data = get_response($url);
             $data = json_decode($data);
             if (isset($data->docs[0]->object)){
                 $url = $data->docs[0]->object;
