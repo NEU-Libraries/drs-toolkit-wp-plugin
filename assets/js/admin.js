@@ -1518,7 +1518,6 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             action: "get_dpla_code",
             params: this.search_params,
         }, function(data) {
-        	console.log(data);
             var data = jQuery.parseJSON(data);
             jQuery("#dpla #sortable-" + tab_name + "-list").children("li").remove();
             if (data.count > 0) {
