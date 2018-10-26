@@ -261,8 +261,7 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
 function drstk_drs_auth(){
   // search config.php for username and password
   // if they're both not blank, use them and ask DRS API for a JWT token
-  if (empty(DRS_API_USER)) || (empty(DRS_API_PASSWORD))
-  {
+  if (empty(DRS_API_USER) || empty(DRS_API_PASSWORD)){
     return false;
   }
   // Token is only good for one hour
