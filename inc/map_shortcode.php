@@ -10,7 +10,8 @@ function reload_filtered_set_ajax_handler()
     }
     else if($_POST['reloadWhat'] == "facetReload") {
         if (isset($_POST['atts']['collection_id'])) {
-            $url = "https://repository.library.northeastern.edu/api/v1/search/geo/".$collection_pid."?per_page=10";
+            // $url = "https://repository.library.northeastern.edu/api/v1/search/geo/".$collection_pid."?per_page=10";
+            $url = drstk_api_url("drs", $collection_pid, "search", "geo", "per_page=10");
             if (isset($_POST['params']['f'])) {
                 foreach ($_POST['params']['f'] as $facet => $facet_val) {
                     $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
@@ -76,7 +77,8 @@ function drstk_map( $atts , $params){
 
     if(isset($atts['collection_id'])){
 
-        $url = "https://repository.library.northeastern.edu/api/v1/search/geo/".drstk_get_pid()."?per_page=10";
+        // $url = "https://repository.library.northeastern.edu/api/v1/search/geo/".drstk_get_pid()."?per_page=10";
+        $url = drstk_api_url("drs", drstk_get_pid(), "search", "geo", "per_page=10");
 
         if(isset($params['page_no'])){
             $url .= "&page=" . $params['page_no'];
@@ -116,7 +118,8 @@ function drstk_map( $atts , $params){
     $repo = drstk_get_repo_from_pid($item);
     if ($repo != "drs"){$pid = explode(":",$item); $pid = $pid[1];} else {$pid = $item;}
     if ($repo == "drs"){
-      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item . "?solr_only=true";
+      // $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item . "?solr_only=true";
+      $url = drstk_api_url("drs", $item, "files", NULL, "solr_only=true");
       $data = get_response($url);
       $data = json_decode($data);
       if (!isset($data->error)){
@@ -270,7 +273,8 @@ function drstk_map( $atts , $params){
     }
 
     if ($repo == "dpla"){
-      $url = "https://api.dp.la/v2/items/".$pid."?api_key=" . DPLA_API_KEY;
+      // $url = "https://api.dp.la/v2/items/".$pid."?api_key=" . DPLA_API_KEY;
+      $url = drstk_api_url("dpla", $pid, "items");
       $data = get_response($url);
       $data = json_decode($data);
       if (isset($data->docs[0]->object)){

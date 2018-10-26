@@ -19,9 +19,11 @@ function browse_ajax_handler() {
     wp_die();
   } else {
     if (isset($_POST['params']['collection'])){
-       $url = "https://repository.library.northeastern.edu/api/v1/search/".$_POST['params']['collection']."?";
+       // $url = "https://repository.library.northeastern.edu/api/v1/search/".$_POST['params']['collection']."?";
+       $url = drstk_api_url("drs", $_POST['params']['collection'], "search");
     } else {
-      $url = "https://repository.library.northeastern.edu/api/v1/search/".$collection."?";
+      // $url = "https://repository.library.northeastern.edu/api/v1/search/".$collection."?";
+      $url = drstk_api_url("drs", $collection, "search")
     }
     if (isset($_POST['params']['q'])){
       $url .= "q=". urlencode(sanitize_text_field($_POST['params']['q']));
