@@ -38,8 +38,7 @@ function drstk_collection_playlist($atts){
       if ($repo != "drs"){$pid = explode(":",$video); $pid = $pid[1];} else {$pid = $video;}
       $poster;
       if ($repo == "drs"){
-        // $url = "https://repository.library.northeastern.edu/api/v1/files/" . $video . "?solr_only=true";
-        $url = drstk_api_url("drs", $video, "files", "solr_only=true");
+        $url = "https://repository.library.northeastern.edu/api/v1/files/" . $video . "?solr_only=true";
         $data = get_response($url);
         $data = json_decode($data);
         $data = $data->_source;

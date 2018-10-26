@@ -20,8 +20,7 @@ function drstk_tiles( $atts ){
     $repo = drstk_get_repo_from_pid($img);
     if ($repo != "drs"){$pid = explode(":",$img); $pid = $pid[1];} else {$pid = $img;}
     if ($repo == "drs"){
-      // $url = "https://repository.library.northeastern.edu/api/v1/files/" . $img . "?solr_only=true";
-      $url = drstk_api_url("drs", $img, "files", NULL, "solr_only=true");
+      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $img . "?solr_only=true";
       $data = get_response($url);
       $data = json_decode($data);
       $data = $data->_source;
@@ -62,8 +61,7 @@ function drstk_tiles( $atts ){
       $pid = "wp:".$pid;
     }
     if ($repo == "dpla"){
-      // $url = "https://api.dp.la/v2/items/".$pid."?api_key=" . DPLA_API_KEY;
-      $url = drstk_api_url("dpla", $pid, "items");
+      $url = "https://api.dp.la/v2/items/".$pid."?api_key=" . DPLA_API_KEY;
       $dpla = get_response($url);
       $dpla = json_decode($dpla);
       if (isset($dpla->docs[0]->object)){
