@@ -245,8 +245,8 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
     $url .= "api_key=" . DPLA_API_KEY . "&";
   }
   
-  if($source == "drs" && (!empty(DRS_API_USER) && !empty(DRS_API_PASSWORD)){
-    $token = drstk_drs_auth()
+  if($source == "drs" && (!empty(DRS_API_USER) && !empty(DRS_API_PASSWORD))){
+    $token = drstk_drs_auth();
     if ($token != false && is_string($token))
     $url .= "token=" . $token . "&";
   }
