@@ -226,33 +226,33 @@ function mce_plugin($plugin_array){
 
 /*API URL Builder helper method*/
 function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_arguments = NULL){
-  $url = ""
+  $url = "";
   if($source == "drs"){
-    $url .= "https://repository.library.northeastern.edu/api/v1"
+    $url .= "https://repository.library.northeastern.edu/api/v1";
   } else if ($source == "dpla"){
-    $url .= "https://api.dp.la/v2"
+    $url .= "https://api.dp.la/v2";
   }
   
-  $url .= "/" . $action . "/"
+  $url .= "/" . $action . "/";
   
   if($sub_action != NULL){
-    $url .= $sub_action . "/"
+    $url .= $sub_action . "/";
   }
   
-  $url .= $pid . "?"
+  $url .= $pid . "?";
   
   if($source == "dpla" && !empty(DPLA_API_KEY)){
-    $url .= "api_key=" . DPLA_API_KEY . "&"
+    $url .= "api_key=" . DPLA_API_KEY . "&";
   }
   
   if($source == "drs" && (!empty(DRS_API_USER) && !empty(DRS_API_PASSWORD)){
     $token = drstk_drs_auth()
     if ($token != false && is_string($token))
-    $url .= "token=" . $token . "&"
+    $url .= "token=" . $token . "&";
   }
   
   if($url_arguments != NULL){
-    $url .= $url_arguments
+    $url .= $url_arguments;
   }
 }
 
@@ -262,7 +262,7 @@ function drstk_drs_auth(){
   // if they're both not blank, use them and ask DRS API for a JWT token
   if (empty(DRS_API_USER)) || (empty(DRS_API_PASSWORD))
   {
-    return false
+    return false;
   }
   // Token is only good for one hour
   
@@ -285,9 +285,9 @@ function drstk_drs_auth(){
   $token = $data->{'auth_token'};
   
   if (!empty($token)) {
-    return $token
+    return $token;
   } else {
-    return false
+    return false;
   }
 }
 
