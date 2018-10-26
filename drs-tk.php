@@ -247,8 +247,9 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
   
   if($source == "drs" && (!empty(DRS_API_USER) && !empty(DRS_API_PASSWORD))){
     $token = drstk_drs_auth();
-    if ($token != false && is_string($token))
-    $url .= "token=" . $token . "&";
+    if ($token != false && is_string($token)){
+      $url .= "token=" . $token . "&";
+    }
   }
   
   if($url_arguments != NULL){
