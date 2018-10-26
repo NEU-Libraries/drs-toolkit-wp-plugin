@@ -391,7 +391,7 @@ function get_associated_files(){
       $assoc_pid = key(get_object_vars($data->associated)); //using this just to get the first title
     $assoc_title = $data->associated->$assoc_pid; //using this just to get the first title
     // $url = "https://repository.library.northeastern.edu/api/v1/files/" . $assoc_pid . "?solr_only=true";
-    $url = drstk_api_url("drs", $assoc_pid, "files", NULL, "solr_only=true")
+    $url = drstk_api_url("drs", $assoc_pid, "files", NULL, "solr_only=true");
     $assoc_data = get_response($url);
     $assoc_data = json_decode($assoc_data);
     if (check_for_bad_data($assoc_data)){

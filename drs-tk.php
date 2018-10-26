@@ -227,21 +227,21 @@ function mce_plugin($plugin_array){
 /*API URL Builder helper method*/
 function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_arguments = NULL){
   $url = "";
-  if($source == "drs"){
+  if($source == "drs") {
     $url .= "https://repository.library.northeastern.edu/api/v1";
-  } else if ($source == "dpla"){
+  } else if ($source == "dpla") {
     $url .= "https://api.dp.la/v2";
   }
   
   $url .= "/" . $action . "/";
   
-  if($sub_action != NULL){
+  if($sub_action != NULL) {
     $url .= $sub_action . "/";
   }
   
   $url .= $pid . "?";
   
-  if($source == "dpla" && !empty(DPLA_API_KEY)){
+  if($source == "dpla" && !empty(DPLA_API_KEY)) {
     $url .= "api_key=" . DPLA_API_KEY . "&";
   }
   
