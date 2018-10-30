@@ -16,7 +16,7 @@ function drstk_item( $atts ){
     $num = 3;
   }
   if ($repo == "drs"){
-    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $pid . "?solr_only=true";
+    $url = drstk_api_url("drs", $pid, "files", NULL, "solr_only=true");
     $data = get_response($url);
     $data = json_decode($data);
     write_log($data);
@@ -24,7 +24,7 @@ function drstk_item( $atts ){
     $thumbnail = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
     $master = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[4];
 
-    $objects_url = "https://repository.library.northeastern.edu/api/v1/files/" . $pid . "/content_objects";
+    $objects_url = drstk_api_url("drs", $pid, "files", "content_objects");
     $objects_data = get_response($objects_url);
     $objects_data = json_decode($objects_data);
     $data = (object) array_merge((array) $data, (array) $objects_data);
@@ -228,7 +228,7 @@ function item_solr_admin_ajax_handler() {
   $data = array();
   // Handle the ajax request
   check_ajax_referer( 'item_admin_nonce' );
-  $url = "https://repository.library.northeastern.edu/api/v1/files/" . $_POST['pid'] . "?solr_only=true";
+  $url = drstk_api_url("drs", $_POST['pid'], "files", NULL, "solr_only=true");
   $data = get_response($url);
   $data = json_decode($data);
   wp_send_json(json_encode($data));
