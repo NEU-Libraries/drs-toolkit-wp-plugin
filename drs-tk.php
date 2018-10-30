@@ -217,7 +217,7 @@ add_action( 'admin_init', 'add_tinymce_plugin');
 /*API URL Builder helper method*/
 function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_arguments = NULL){
   $url = "";
-  error_log( $source . " " . $pid . " " . $action );
+  
   if($source == "drs"){
     $url .= "https://repository.library.northeastern.edu/api/v1";
   } else if ($source == "dpla"){
@@ -225,24 +225,16 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
   }
   
   $url .= "/" . $action . "/";
-  
-  error_log( $url );
     
   if($sub_action != NULL){
     $url .= $sub_action . "/";
   }
   
-  error_log( $url );
-  
   $url .= $pid . "?";
-  
-  error_log( $url );
   
   if($source == "dpla" && !empty(DPLA_API_KEY)){
     $url .= "api_key=" . DPLA_API_KEY . "&";
   }
-  
-  error_log( $url );
   
   if($source == "drs" && !(empty(DRS_API_USER) || empty(DRS_API_PASSWORD))){
     $token = drstk_drs_auth();
@@ -250,13 +242,9 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
     $url .= "token=" . $token . "&";
   }
   
-  error_log( $url );
-  
   if($url_arguments != NULL){
     $url .= $url_arguments;
   }
-  
-  error_log( $url );
   
   return $url;
 }
