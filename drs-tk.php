@@ -246,6 +246,39 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
   }
 }
 
+/*DRS API Authenticate helper method*/
+function drstk_drs_auth(){
+  // search config.php for username and password
+  // if they're both not blank, use them and ask DRS API for a JWT token
+  if (empty(DRS_API_USER) || empty(DRS_API_PASSWORD))
+  {
+    return false;
+  }
+  // Token is only good for one hour
+  
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, "https://repository.library.northeastern.edu/api/v1/auth_user");
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, "email=" . DRS_API_USER . "&password=" . DRS_API_PASSWORD);
+  curl_setopt($ch, CURLOPT_POST, 1);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  $headers = array();
+  $headers[] = "Content-Type: application/x-www-form-urlencoded";
+  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+  $result = curl_exec($ch);
+  
+  // result should be json
+  $data = json_decode($result, true);
+  $token = $data->{'auth_token'};
+  
+  if (!empty($token)) {
+    return $token;
+  } else {
+    return false;
+  }
+}
+
 function add_tinymce_plugin(){
   add_filter("mce_external_plugins", 'mce_plugin');
 }
