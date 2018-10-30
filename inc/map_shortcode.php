@@ -270,7 +270,7 @@ function drstk_map( $atts , $params){
     }
 
     if ($repo == "dpla"){
-      $url = "https://api.dp.la/v2/items/".$pid."?api_key=" . DPLA_API_KEY;
+      $url = drstk_api_url("dpla", $pid, "items");
       $data = get_response($url);
       $data = json_decode($data);
       if (isset($data->docs[0]->object)){
