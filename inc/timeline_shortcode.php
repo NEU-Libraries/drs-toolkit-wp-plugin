@@ -10,20 +10,20 @@ function reload_filtered_set_timeline_ajax_handler()
     else if($_POST['reloadWhat'] == "facetReload") {
         if (isset($_POST['atts']['collection_id'])) {
           $test = get_response("https://repository.library.northeastern.edu/api/v1/search/".$_POST['atts']['collection_id']);
-              $test = json_decode($test);
-            $url = "https://repository.library.northeastern.edu/api/v1/search/date/".$_POST['atts']['collection_id']."?per_page=".count($test->pagination->table->total_count);
-            if (isset($_POST['params']['f'])) {
-                foreach ($_POST['params']['f'] as $facet => $facet_val) {
-                    $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
-                }
-            }
-            if (isset($_POST['params']['q']) && $_POST['params']['q'] != ''){
-                $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
-            }
-            $data1 = get_response($url);
-            $data1 = json_decode($data1);
-            $facets_info_data = $data1;
-            wp_send_json($facets_info_data);
+          $test = json_decode($test);
+          $url = drstk_api_url("drs", $_POST['atts']['collection_id'], "search", "date", "per_page=".count($test->pagination->table->total_count));
+          if (isset($_POST['params']['f'])) {
+              foreach ($_POST['params']['f'] as $facet => $facet_val) {
+                  $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
+              }
+          }
+          if (isset($_POST['params']['q']) && $_POST['params']['q'] != ''){
+              $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
+          }
+          $data1 = get_response($url);
+          $data1 = json_decode($data1);
+          $facets_info_data = $data1;
+          wp_send_json($facets_info_data);
         }
     }
     die();
@@ -109,7 +109,7 @@ function drstk_timeline( $atts, $params ){
       $test = get_response("https://repository.library.northeastern.edu/api/v1/search/".$atts['collection_id']);
       $test = json_decode($test);
 
-        $url = "https://repository.library.northeastern.edu/api/v1/search/date/".$atts['collection_id']."?per_page=".$test->pagination->table->total_count; //?per_page=10
+        $url = drstk_api_url("drs", $atts['collection_id'], "search", "date", "per_page=".$test->pagination->table->total_count);
 
         if (isset($params['f'])) {
             foreach ($params['f'] as $facet => $facet_val) {
@@ -153,7 +153,7 @@ function drstk_timeline( $atts, $params ){
         $repo = drstk_get_repo_from_pid($neu_id);
         if ($repo != "drs"){$pid = explode(":",$neu_id); $pid = $pid[1];} else {$pid = $neu_id;}
         if($repo == "drs"){
-            $url = "https://repository.library.northeastern.edu/api/v1/files/" . $neu_id . "?solr_only=true";
+            $url = drstk_api_url("drs", $neu_id, "files", NULL, "solr_only=true");
             $data = get_response($url);
             $data = json_decode($data);
 
