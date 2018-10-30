@@ -214,6 +214,38 @@ function register_drs_settings() {
 add_action( 'admin_init', 'register_drs_settings' );
 add_action( 'admin_init', 'add_tinymce_plugin');
 
+/*API URL Builder helper method*/
+function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_arguments = NULL){
+  $url = "";
+  if($source == "drs"){
+    $url .= "https://repository.library.northeastern.edu/api/v1";
+  } else if ($source == "dpla"){
+    $url .= "https://api.dp.la/v2";
+  }
+  
+  $url .= "/" . $action . "/";
+  
+  if($sub_action != NULL){
+    $url .= $sub_action . "/";
+  }
+  
+  $url .= $pid . "?";
+  
+  if($source == "dpla" && !empty(DPLA_API_KEY)){
+    $url .= "api_key=" . DPLA_API_KEY . "&";
+  }
+  
+  if($source == "drs" && !(empty(DRS_API_USER) || empty(DRS_API_PASSWORD))){
+    $token = drstk_drs_auth();
+    if ($token != false && is_string($token))
+    $url .= "token=" . $token . "&";
+  }
+  
+  if($url_arguments != NULL){
+    $url .= $url_arguments;
+  }
+}
+
 function add_tinymce_plugin(){
   add_filter("mce_external_plugins", 'mce_plugin');
 }
