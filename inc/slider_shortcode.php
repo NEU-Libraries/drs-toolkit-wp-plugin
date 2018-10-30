@@ -30,7 +30,7 @@ function drstk_gallery( $atts ){
      $repo = drstk_get_repo_from_pid($id);
      if ($repo != "drs"){$pid = explode(":",$id); $pid = $pid[1];} else {$pid = $id;}
      if ($repo == "drs"){
-       $url = "https://repository.library.northeastern.edu/api/v1/files/" . $id . "?solr_only=true";
+       $url = drstk_api_url("drs", $id, "files", NULL, "solr_only=true");
        $data = get_response($url);
        $data = json_decode($data);
        $data = $data->_source;
