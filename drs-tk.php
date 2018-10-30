@@ -257,6 +257,8 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
   }
   
   error_log( $url );
+  
+  return $url;
 }
 
 /*DRS API Authenticate helper method*/
