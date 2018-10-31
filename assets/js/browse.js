@@ -257,7 +257,7 @@ jQuery(document).ready(function($) {
         if (template == 'collections'){
           this_doc += "col-lg-3 col-md-4 col-sm-5";
         } else {
-          this_doc += "col-sm-4";
+          this_doc += "col-sm-11";
         }
         this_doc += "'><div class='thumbnail'><figure><a href='"+this_doc_url+"'>";
         if (thumbnail[1]) {
