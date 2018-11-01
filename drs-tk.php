@@ -254,19 +254,15 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
 
 /*DRS API Authenticate helper method*/
 function drstk_drs_auth(){
-  error_log("drstk_drs_auth - inside");
-  
   $dau = constant("DRS_API_USER");
   $dap = constant("DRS_API_PASSWORD");
   // search config.php for username and password
   // if they're both not blank, use them and ask DRS API for a JWT token
   if (empty($dau) || empty($dap))
   {
-    error_log("drstk_drs_auth - false");
     return false;
   }
   
-  error_log("drstk_drs_auth - true");
   // Token is only good for one hour
   
   $ch = curl_init();
@@ -281,16 +277,10 @@ function drstk_drs_auth(){
   curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
   $result = curl_exec($ch);
   
-  error_log("drstk_drs_auth - curled");
-  
   // result should be json
   $data = json_decode($result, true);
   
-  error_log("drstk_drs_auth " . $data);
-  
   $token = $data["auth_token"];
-  
-  error_log("drstk_drs_auth " . $token);
   
   if (!empty($token)) {
     return $token;
