@@ -288,7 +288,7 @@ function drstk_drs_auth(){
   
   error_log("drstk_drs_auth " . $data);
   
-  $token = $data->{'auth_token'};
+  $token = $data["auth_token"];
   
   error_log("drstk_drs_auth " . $token);
   
