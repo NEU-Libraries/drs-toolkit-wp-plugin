@@ -217,9 +217,9 @@ add_action( 'admin_init', 'add_tinymce_plugin');
 /*API URL Builder helper method*/
 function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_arguments = NULL){
   $url = "";
-  $dak = constant(DPLA_API_KEY);
-  $dau = constant(DRS_API_USER);
-  $dap = constant(DRS_API_PASSWORD);
+  $dak = constant("DPLA_API_KEY");
+  $dau = constant("DRS_API_USER");
+  $dap = constant("DRS_API_PASSWORD");
   
   if($source == "drs"){
     $url .= "https://repository.library.northeastern.edu/api/v1";
@@ -256,8 +256,8 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
 function drstk_drs_auth(){
   error_log("drstk_drs_auth - inside");
   
-  $dau = constant(DRS_API_USER);
-  $dap = constant(DRS_API_PASSWORD);
+  $dau = constant("DRS_API_USER");
+  $dap = constant("DRS_API_PASSWORD");
   // search config.php for username and password
   // if they're both not blank, use them and ask DRS API for a JWT token
   if (empty($dau) || empty($dap))
