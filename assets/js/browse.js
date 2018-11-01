@@ -242,7 +242,7 @@ jQuery(document).ready(function($) {
           this_doc += "<h4 class='drs-item-title'><a href='"+this_doc_url+"'>" + title + "</a></h4>";
         }
         if (creator && search_options.indexOf('Creator') > -1){
-          this_doc += "<h6 class='drs-item-creator'>"+ creator + "</h6>";
+          this_doc += "<h6 class='drs-item-creator'>" + creator.join('; ') + "</h6>";
         }
         if (abstract  && search_options.indexOf('Abstract') > -1){
           this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
@@ -270,7 +270,7 @@ jQuery(document).ready(function($) {
           this_doc += "<h5 class='drs-item-title'><a href='"+this_doc_url+"'>"+title+"</a></h5>";
         }
         if (creator && browse_options.indexOf('Creator') > -1){
-          this_doc += "<h6 class='drs-item-creator'>"+creator+"</h6>";
+          this_doc += "<h6 class='drs-item-creator'>" + creator.join('; ') + "</h6>";
         }
         if (abstract  && browse_options.indexOf('Abstract') > -1){
           this_doc += "<p class='drs-item-abstract'>"+abstract+"</p>";
