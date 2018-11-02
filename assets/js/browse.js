@@ -26,11 +26,12 @@ jQuery(document).ready(function($) {
     params.collection = browse_obj.sub_collection_pid;
   }
   if (template == 'search'){
+    params.sort = 'title_ssi%20asc';
     params.per_page = browse_obj.default_search_per_page;
     //  @todo the next line actually does nothing, since it already has class 'col-md-9'
     // $("#primary").removeClass('col-md-12').addClass('col-md-9');
     $("#primary").removeClass('col-md-9'); //for etd's removal of the relevance stuff
-    $("#secondary").hide(); //etd wants to remove the relevance stuff
+    $("#secondary").show(); //etd wants to remove the relevance stuff
     if (browse_obj.search_show_facets == "on"){
       params.show_facets = true;
     }
@@ -54,6 +55,7 @@ jQuery(document).ready(function($) {
 
 
   function get_data(params){
+    console.log(params);
     var errors = $.parseJSON(browse_obj.errors);
     $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-spin'></span></h2>").show();
     $.ajax({
@@ -348,7 +350,7 @@ jQuery(document).ready(function($) {
 
   }
 
-  $("#drs-sort").html("<h6>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance</option><option value='title_ssi%20asc'>Title A-Z</option><option value='title_ssi%20desc'>Title Z-A</option><option value='creator_tesim%20asc'>Creator A-Z</option><option value='creator_tesim%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></h6>");
+  $("#drs-sort").html("<h6>Sort By: <select id='drs-sort-option'><option value='title_ssi%20asc'>Title A-Z</option><option value='title_ssi%20desc'>Title Z-A</option><option value='creator_tesim%20asc'>Creator A-Z</option><option value='creator_tesim%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></h6>");
 
   $("#drs-sort-option").on("change", function() {
     params.sort = $(this).val();
