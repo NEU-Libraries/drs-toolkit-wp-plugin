@@ -27,8 +27,10 @@ jQuery(document).ready(function($) {
   }
   if (template == 'search'){
     params.per_page = browse_obj.default_search_per_page;
-    $("#primary").removeClass('col-md-12').addClass('col-md-9');
-    $("#secondary").show();
+    //  @todo the next line actually does nothing, since it already has class 'col-md-9'
+    // $("#primary").removeClass('col-md-12').addClass('col-md-9');
+    $("#primary").removeClass('col-md-9'); //for etd's removal of the relevance stuff
+    $("#secondary").hide(); //etd wants to remove the relevance stuff
     if (browse_obj.search_show_facets == "on"){
       params.show_facets = true;
     }
