@@ -11,6 +11,8 @@ jQuery(document).ready(function($) {
   var browse_options = browse_obj.browse_options;
   var related_content_title = browse_obj.related_content_title;
   var facets_to_display = browse_obj.facets_to_display;
+  
+  facets_to_display.etd_year_awarded_ssim = "Year Awarded";
   var niec_facets = 'niec_facets_to_display' in browse_obj ? browse_obj.niec_facets_to_display : null;
   if ((q) && (q != '')){
     $("#drs-selection").show();
@@ -55,7 +57,6 @@ jQuery(document).ready(function($) {
 
 
   function get_data(params){
-    console.log(params);
     var errors = $.parseJSON(browse_obj.errors);
     $("#drs-loading").html("<h2>Loading...<br/><span class='fa fa-spinner fa-spin'></span></h2>").show();
     $.ajax({
@@ -245,9 +246,43 @@ jQuery(document).ready(function($) {
         if (search_options.indexOf('Title') > -1){
           this_doc += "<h4 class='drs-item-title'><a href='"+this_doc_url+"'>" + title + "</a></h4>";
         }
-        if (creator && search_options.indexOf('Creator') > -1){
-          this_doc += "<h6 class='drs-item-creator'>" + creator.join('; ') + "</h6>";
+        
+        /*
+         * 
+         *                     "etd_year_awarded_ssim",
+                    "etd_advisor_ssim",
+                    "etd_committee_member_ssim",
+                    "etd_author_ssim",
+        */
+
+        if (doc_vals.etd_author_ssim) {
+            this_doc += "<h5 class='drs-item-creator etd-author'>" + doc_vals.etd_author_ssim.join('; ') + "</h5>";
         }
+        
+        //PMJ is ashamed of the inline styling, but I haven't found where the real style get inserted yet @TODO
+        if (doc_vals.etd_advisor_ssim) {
+            this_doc += "<div><h6 class='drs-item-creator etd-advisor' style='display: inline;'>Advisor(s): </h6>" 
+                + doc_vals.etd_advisor_ssim.join('; ')
+                + "</div>";
+        }
+        
+        if (doc_vals.etd_committee_member_ssim) {
+            this_doc += "<div><h6 class='drs-item-creator etd-committee-member' style='display: inline;'>Committee Members(s): </h6>"
+                + doc_vals.etd_committee_member_ssim.join('; ')
+                + "</div>";
+        }        
+        
+        this_doc += "<p class='year-awarded><span class='year-awarded-label'>Awarded: </span>";
+        
+        if (doc_vals.etd_year_awarded_ssim) {
+            this_doc += doc_vals.etd_year_awarded_ssim;
+        } else {
+            this_doc += "Unknown";
+        }
+        this_doc += "</p>";
+
+        //console.log(doc_vals.etd_year_awarded_ssim);
+        
         if (abstract  && search_options.indexOf('Abstract') > -1){
           this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
         }
