@@ -247,14 +247,6 @@ jQuery(document).ready(function($) {
           this_doc += "<h4 class='drs-item-title'><a href='"+this_doc_url+"'>" + title + "</a></h4>";
         }
         
-        /*
-         * 
-         *                     "etd_year_awarded_ssim",
-                    "etd_advisor_ssim",
-                    "etd_committee_member_ssim",
-                    "etd_author_ssim",
-        */
-
         if (doc_vals.etd_author_ssim) {
             this_doc += "<h5 class='drs-item-creator etd-author'>" + doc_vals.etd_author_ssim.join('; ') + "</h5>";
         }
@@ -273,7 +265,6 @@ jQuery(document).ready(function($) {
         }        
         
         this_doc += "<p class='year-awarded><span class='year-awarded-label'>Awarded: </span>";
-        
         if (doc_vals.etd_year_awarded_ssim) {
             this_doc += doc_vals.etd_year_awarded_ssim;
         } else {
@@ -281,8 +272,6 @@ jQuery(document).ready(function($) {
         }
         this_doc += "</p>";
 
-        //console.log(doc_vals.etd_year_awarded_ssim);
-        
         if (abstract  && search_options.indexOf('Abstract') > -1){
           this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
         }
