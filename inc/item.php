@@ -181,10 +181,10 @@ function get_download_links(){
     $data->content_objects = new StdClass;
   }
   foreach($data->content_objects as $key=>$val){
+    error_log("DGC DEBUG - get_download_links");
+    error_log("key: ".$key);
     if ($val != "Thumbnail Image"){
       if ($val == 'Video File'){
-        error_log("DGC DEBUG - get_download_links");
-        error_log("key: ".$key);
         $av_pid = explode("/", $key);
         $av_pid = end($av_pid);
         $av_pid = str_replace("?datastream_id=content","",$av_pid);
