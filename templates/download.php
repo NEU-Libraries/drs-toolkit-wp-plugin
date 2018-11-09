@@ -16,7 +16,14 @@
 //       fclose($handle);
 //   }
 // }
-$av_pid = explode("/", $item_pid);
+
+global $item_pid;
+
 error_log("DGC DEBUG - download.php template");
 error_log("item_pid: ".$item_pid);
+
+  $av_pid = explode("/", $item_pid);
+  $av_pid = end($av_pid);
+  $av_pid = str_replace("?datastream_id=content","",$av_pid);
+
 error_log("av_pid: ".$av_pid);
