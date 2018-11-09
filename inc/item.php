@@ -182,11 +182,11 @@ function get_download_links(){
   }
   foreach($data->content_objects as $key=>$val){
     if ($val != "Thumbnail Image"){
-      if ($val == 'Video File'){
-        $av_pid = explode("/", $key);
-        $av_pid = end($av_pid);
-        $av_pid = str_replace("?datastream_id=content","",$av_pid);
-        echo " <a href='".drstk_home_url()."download/".$av_pid."' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
+      if (is_user_logged_in() && drstk_api_auth_enabled()){
+        $content_pid = explode("/", $key);
+        $content_pid = end($content_pid);
+        $content_pid = str_replace("?datastream_id=content","",$content_pid);
+        echo " <a href='".drstk_home_url()."download/".$content_pid."' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
       } else {
         echo " <a href='".$key."' target='_blank' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
       }
@@ -198,7 +198,7 @@ function get_item_title(){
   global $item_pid, $data, $url, $repo, $full_pid, $title;
   $repo = drstk_get_repo_from_pid($item_pid);
   if ($repo == "drs"){
-    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item_pid;
+    $url = drstk_api_url("drs", $item_pid, "files");
     $data = get_response($url);
     $data = json_decode($data);
     if (check_for_bad_data($data)){
@@ -210,7 +210,7 @@ function get_item_title(){
     $full_pid = $item_pid;
     $item_pid = explode(":",$item_pid);
     $item_pid = $item_pid[1];
-    $url = "https://api.dp.la/v2/items/".$item_pid."?api_key=" . DPLA_API_KEY;
+    $url = drstk_api_url("dpla", $item_pid, "items");
     $data = get_response($url);
     $data = json_decode($data);
     if (check_for_bad_data($data)){
@@ -388,7 +388,7 @@ function get_associated_files(){
     $associated_html .= "<div class='panel panel-default assoc_files'><div class='panel-heading'>".$title."</div><div class='panel-body'>";
       $assoc_pid = key(get_object_vars($data->associated)); //using this just to get the first title
     $assoc_title = $data->associated->$assoc_pid; //using this just to get the first title
-    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $assoc_pid . "?solr_only=true";
+    $url = drstk_api_url("drs", $assoc_pid, "files", NULL, "solr_only=true");
     $assoc_data = get_response($url);
     $assoc_data = json_decode($assoc_data);
     if (check_for_bad_data($assoc_data)){
@@ -640,7 +640,7 @@ function associated_ajax_handler() {
     $title = (get_option('drstk_assoc_title') != '') ? get_option('drstk_assoc_title') : 'Associated Files';
     $associated_html .= "";
     $assoc_pid = $_POST['pid']; //using this just to get the first title
-    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $assoc_pid . "?solr_only=true";
+    $url = drstk_api_url("drs", $assoc_pid, "files", NULL, "solr_only=true");
     $assoc_data = get_response($url);
     $assoc_data = json_decode($assoc_data);
     if (check_for_bad_data($assoc_data)){

@@ -214,6 +214,95 @@ function register_drs_settings() {
 add_action( 'admin_init', 'register_drs_settings' );
 add_action( 'admin_init', 'add_tinymce_plugin');
 
+/*API URL Builder helper method*/
+function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_arguments = NULL){
+  $url = "";
+  $dak = constant("DPLA_API_KEY");
+  $dau = constant("DRS_API_USER");
+  $dap = constant("DRS_API_PASSWORD");
+  
+  if($source == "drs"){
+    $url .= "https://repository.library.northeastern.edu/api/v1";
+  } else if ($source == "dpla"){
+    $url .= "https://api.dp.la/v2";
+  }
+  
+  $url .= "/" . $action . "/";
+    
+  if($sub_action != NULL){
+    $url .= $sub_action . "/";
+  }
+  
+  $url .= $pid . "?";
+  
+  if($source == "dpla" && !empty($dak)){
+    $url .= "api_key=" . DPLA_API_KEY . "&";
+  }
+  
+  if($source == "drs" && !(empty($dau) || empty($dap))){
+    $token = drstk_drs_auth();
+    if ($token != false && is_string($token))
+    $url .= "token=" . $token . "&";
+  }
+  
+  if($url_arguments != NULL){
+    $url .= $url_arguments;
+  }
+  
+  return $url;
+}
+
+/*DRS API Auth Enabled helper method */
+
+function drstk_api_auth_enabled(){
+  $dau = constant("DRS_API_USER");
+  $dap = constant("DRS_API_PASSWORD");
+  // search config.php for username and password
+  // if they're both not blank, use them and ask DRS API for a JWT token
+  if (empty($dau) || empty($dap))
+  {
+    return false;
+  }
+  else
+  {
+    return true;
+  }
+}
+
+/*DRS API Authenticate helper method*/
+function drstk_drs_auth(){  
+  if(drstk_api_auth_enabled() == true){
+    // Token is only good for one hour
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "https://repository.library.northeastern.edu/api/v1/auth_user");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "email=" . DRS_API_USER . "&password=" . DRS_API_PASSWORD);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $headers = array();
+    $headers[] = "Content-Type: application/x-www-form-urlencoded";
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    $result = curl_exec($ch);
+    
+    // result should be json
+    $data = json_decode($result, true);
+    
+    $token = $data["auth_token"];
+    
+    if (!empty($token)) {
+      return $token;
+    } else {
+      return false;
+    }
+  }
+  else {
+    // No user and/or password set
+    return false;
+  }
+}
+
 function add_tinymce_plugin(){
   add_filter("mce_external_plugins", 'mce_plugin');
 }
