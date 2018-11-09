@@ -181,14 +181,12 @@ function get_download_links(){
     $data->content_objects = new StdClass;
   }
   foreach($data->content_objects as $key=>$val){
-    error_log("DGC DEBUG - get_download_links");
-    error_log("key: ".$key);
     if ($val != "Thumbnail Image"){
-      if ($val == 'Video File'){
-        $av_pid = explode("/", $key);
-        $av_pid = end($av_pid);
-        $av_pid = str_replace("?datastream_id=content","",$av_pid);
-        echo " <a href='".drstk_home_url()."download/".$av_pid."' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
+      if (is_user_logged_in() && drstk_api_auth_enabled()){
+        $content_pid = explode("/", $key);
+        $content_pid = end($content_pid);
+        $content_pid = str_replace("?datastream_id=content","",$content_pid);
+        echo " <a href='".drstk_home_url()."download/".$content_pid."' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
       } else {
         echo " <a href='".$key."' target='_blank' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
       }
