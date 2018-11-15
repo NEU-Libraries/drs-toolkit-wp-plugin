@@ -45,9 +45,8 @@ function drstk_map( $atts , $params){
     global $errors, $DRS_PLUGIN_URL;
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
   if($cache != NULL && (!(isset($params)) || $params == NULL) && !(isset($atts['collection_id']))) {
-    return $cache;
+    //return $cache;
   }
-
     if(!isset($atts['collection_id'])) {
         $items = array_map('trim', explode(',', $atts['id']));
     }
@@ -73,7 +72,6 @@ function drstk_map( $atts , $params){
     $collectionItemsId = array();
 
     $facets_info_data = array();
-
     if(isset($atts['collection_id'])){
 
         $url = drstk_api_url("drs", drstk_get_pid(), "search", "geo", "per_page=10");
@@ -111,7 +109,6 @@ function drstk_map( $atts , $params){
         }
         $items = $collectionItemsId;
     }
-
     foreach($items as $item){
     $repo = drstk_get_repo_from_pid($item);
     if ($repo != "drs"){$pid = explode(":",$item); $pid = $pid[1];} else {$pid = $item;}
@@ -128,7 +125,7 @@ function drstk_map( $atts , $params){
           $coordinates = $data->subject_cartographics_coordinates_tesim[0];
         } else if (isset($data->subject_geographic_tesim)){
           $location = $data->subject_geographic_tesim[0];
-          $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
+          $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location) . '&key=' . GOOGLE_MAPS_GEOCODING_KEY;
           $locationData = get_response($locationUrl);
           $locationData = json_decode($locationData);
           if (!isset($locationData->error)) {
@@ -221,7 +218,7 @@ function drstk_map( $atts , $params){
       $data->id=$post->ID;
       if(!is_numeric($coordinates[0])) {
         $location = $coordinates;
-        $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
+        $locationUrl = "https://maps.google.com/maps/api/geocode/json?location=" . urlencode($location) . '&key=' . GOOGLE_MAPS_GEOCODING_KEY;
         $locationData = get_response($locationUrl);
         $locationData = json_decode($locationData);
         if (!isset($locationData->error)) {
@@ -268,10 +265,11 @@ function drstk_map( $atts , $params){
 
       $map_html .= "></div>";
     }
-
     if ($repo == "dpla"){
       $url = drstk_api_url("dpla", $pid, "items");
       $data = get_response($url);
+
+
       $data = json_decode($data);
       if (isset($data->docs[0]->object)){
         $url = $data->docs[0]->object;
@@ -306,8 +304,9 @@ function drstk_map( $atts , $params){
 
       if(!isset($data->docs[0]->sourceResource->spatial[0]->coordinates)) {
         $location = $data->docs[0]->sourceResource->spatial[count($data->docs[0]->sourceResource->spatial)-1]->name;// . $data->docs[0]->sourceResource->spatial[0]->state;
-        $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
+        $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location) . '&key=' . GOOGLE_MAPS_GEOCODING_KEY;
         $locationData = get_response($locationUrl);
+        
         $locationData = json_decode($locationData);
         if (!isset($locationData->error)) {
           $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
@@ -365,7 +364,7 @@ function drstk_map( $atts , $params){
       $colorGroup = $custom_map_color_groups[$key];
 
       $coordinates = "";
-      $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
+      $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location) . '&key=' . GOOGLE_MAPS_GEOCODING_KEY;
       $locationData = get_response($locationUrl);
       $locationData = json_decode($locationData);
       if (!isset($locationData->error)) {

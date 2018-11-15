@@ -48,7 +48,7 @@ function drstk_timeline( $atts, $params ){
 
     $cache = get_transient(md5('PREFIX'.serialize($atts)));
   if($cache != NULL && (!(isset($params)) || $params == NULL) && !(isset($atts['collection_id']))) {
-    return $cache;
+    //return $cache;
   }
 
     $color_codes = array();

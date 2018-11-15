@@ -227,8 +227,13 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
     $url .= "https://api.dp.la/v2";
   }
   
-  $url .= "/" . $action . "/";
-    
+  //when searching dpla on admin side, there's no pid, and the API barfs with a 404 if there's /? instead of just ?
+  if ($source == 'dpla' && empty($pid)) {
+    $url .= '/' . $action;
+  } else {
+    $url .= "/" . $action . "/";
+  }
+  
   if($sub_action != NULL){
     $url .= $sub_action . "/";
   }

@@ -157,6 +157,7 @@ add_action( 'wp_ajax_get_dpla_code', 'drstk_get_dpla_items' ); //for auth users
 function drstk_get_dpla_items(){
   check_ajax_referer( 'dpla_ajax_nonce' );
     $url = drstk_api_url("dpla", "", "items", NULL, "page_size=20"); //blank pid for general search
+    
     if (isset($_POST['params']['q'])){
       $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
     }
@@ -167,7 +168,7 @@ function drstk_get_dpla_items(){
       $url .= '&sourceResource.spatial=**';
     }
     if (isset($_POST['params']['timefilter'])){
-      $url .= '&sourceResource.date.displayDate=**';
+      $url .= '&sourceResource.date.displayDate=*';
     }
     if (isset($_POST['params']['page'])) {
       $url .= "&page=" . $_POST['params']['page'];
@@ -227,7 +228,8 @@ function drstk_get_dpla_items(){
       }
     }
     $url .= "&facets=sourceResource.contributor,sourceResource.date.begin,sourceResource.date.end,sourceResource.subject.name,sourceResource.type";
-    $data = get_response($url);
+    
+    $data = get_response( $url );
     $json = json_decode($data);
     
     if (isset($json->error)) {
