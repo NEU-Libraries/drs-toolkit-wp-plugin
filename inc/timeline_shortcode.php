@@ -46,9 +46,14 @@ add_shortcode( 'drstk_timeline', 'drstk_timeline' );
 function drstk_timeline( $atts, $params ){
     global $errors;
 
-    $cache = get_transient(md5('PREFIX'.serialize($atts)));
-  if($cache != NULL && (!(isset($params)) || $params == NULL) && !(isset($atts['collection_id']))) {
-    //return $cache;
+  $cache = get_transient(md5('PREFIX'.serialize($atts)));
+  if($cache != NULL
+      && ! WP_DEBUG
+      && (!(isset($params))
+      || $params == NULL)
+      && !(isset($atts['collection_id']))
+    ) {
+         return $cache;
   }
 
     $color_codes = array();

@@ -6,9 +6,15 @@ function drstk_gallery( $atts ){
   global $errors;
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
 
-  if($cache) {
-      return $cache;
+  if($cache != NULL
+      && ! WP_DEBUG
+      && (!(isset($params))
+          || $params == NULL)
+      && !(isset($atts['collection_id']))
+      ) {
+          return $cache;
   }
+      
   if (isset($atts['id'])){
     $images = array_map('trim', explode(',', $atts['id']));
     $img_html = '';

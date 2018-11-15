@@ -4,10 +4,16 @@ add_shortcode( 'drstk_item', 'drstk_item' );
 add_shortcode( 'drstk_single', 'drstk_item' );
 function drstk_item( $atts ){
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
-  
-  if($cache) {
-      return $cache;
+
+  if($cache != NULL
+      && ! WP_DEBUG
+      && (!(isset($params))
+          || $params == NULL)
+      && !(isset($atts['collection_id']))
+      ) {
+          return $cache;
   }
+      
   $repo = drstk_get_repo_from_pid($atts['id']);
   if ($repo != "drs"){$pid = explode(":",$atts['id']); $pid = $pid[1];} else {$pid = $atts['id'];}
   if (isset($atts['image-size'])){

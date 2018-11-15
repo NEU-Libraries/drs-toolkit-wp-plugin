@@ -5,8 +5,13 @@ add_shortcode( 'drstk_media', 'drstk_collection_playlist' );
 function drstk_collection_playlist($atts){
   global $errors;
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
-  if($cache) {
-    return $cache;
+  if($cache != NULL
+      && ! WP_DEBUG
+      && (!(isset($params))
+          || $params == NULL)
+      && !(isset($atts['collection_id']))
+      ) {
+          return $cache;
   }
     $collection = array_map('trim', explode(',', $atts['id']));
     $playlists = '';

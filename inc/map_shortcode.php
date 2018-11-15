@@ -44,12 +44,19 @@ add_shortcode( 'drstk_map', 'drstk_map' );
 function drstk_map( $atts , $params){
     global $errors, $DRS_PLUGIN_URL;
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
-  if($cache != NULL && (!(isset($params)) || $params == NULL) && !(isset($atts['collection_id']))) {
-    //return $cache;
+  if($cache != NULL
+      && ! WP_DEBUG
+      && (!(isset($params))
+          || $params == NULL)
+      && !(isset($atts['collection_id']))
+      ) {
+         return $cache;
   }
-    if(!isset($atts['collection_id'])) {
-        $items = array_map('trim', explode(',', $atts['id']));
-    }
+      
+  if(!isset($atts['collection_id'])) {
+    $items = array_map('trim', explode(',', $atts['id']));
+  }
+  
   $map_api_key = drstk_get_map_api_key();
   $map_project_key = drstk_get_map_project_key();
   $story = isset($atts['story']) ? $atts['story'] : "no";
