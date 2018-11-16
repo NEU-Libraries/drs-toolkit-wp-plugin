@@ -7,7 +7,6 @@
  * Description: This plugin provides the core functionality of the CERES: Exhibit Toolkit and brings the content of a project from the DRS into Wordpress using the DRS API.
  */
 
-require_once( plugin_dir_path( __FILE__ ) . 'inc/errors.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/item.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/browse.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/breadcrumb.php' );
