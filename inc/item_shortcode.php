@@ -25,7 +25,6 @@ function drstk_item( $atts ){
     $url = drstk_api_url("drs", $pid, "files", NULL, "solr_only=true");
     $data = get_response($url);
     $data = json_decode($data);
-    write_log($data);
     $data = $data->_source;
     $thumbnail = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
     $master = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[4];
@@ -34,7 +33,6 @@ function drstk_item( $atts ){
     $objects_data = get_response($objects_url);
     $objects_data = json_decode($objects_data);
     $data = (object) array_merge((array) $data, (array) $objects_data);
-
     foreach($data->content_objects as $key=>$val){
       if ($val == 'Large Image'){
         $master = $key;

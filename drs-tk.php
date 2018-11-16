@@ -226,7 +226,6 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
   } else if ($source == "dpla"){
     $url .= "https://api.dp.la/v2";
   }
-  
   //when searching dpla on admin side, there's no pid, and the API barfs with a 404 if there's /? instead of just ?
   if ($source == 'dpla' && empty($pid)) {
     $url .= '/' . $action;
@@ -926,6 +925,7 @@ function get_response( $url ) {
 
   // if it returns a 403 it will return no $output
   curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+  
   $output = curl_exec($ch);
   curl_close($ch);
   return $output;

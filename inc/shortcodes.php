@@ -62,7 +62,6 @@ add_action( 'wp_ajax_get_drs_code', 'drstk_get_drs_items' ); //for auth users
 
 function drstk_get_drs_items(){
   check_ajax_referer( 'drs_ajax_nonce' );
-  
   $col_pid = drstk_get_pid();
   $url = ""; //Blank start
   
@@ -76,6 +75,10 @@ function drstk_get_drs_items(){
     $url = drstk_api_url("drs", $col_pid, "search", "date", "per_page=20");
   }
 
+  if (empty($url)) {
+      $url = drstk_api_url("drs", $col_pid, "search", null, "per_page=20");
+  }
+  
   if (isset($_POST['params']['q'])){
     $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
   }
