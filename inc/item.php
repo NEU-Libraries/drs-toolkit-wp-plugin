@@ -200,8 +200,8 @@ function get_item_title(){
   $repo = drstk_get_repo_from_pid($item_pid);
   if ($repo == "drs"){
     $url = drstk_api_url("drs", $item_pid, "files");
-    $data = get_response($url);
-    $data = json_decode($data);
+    $response = get_response($url);
+    $data = json_decode($response['output']);
     if (check_for_bad_data($data)){
       return false;
     }
@@ -212,8 +212,8 @@ function get_item_title(){
     $item_pid = explode(":",$item_pid);
     $item_pid = $item_pid[1];
     $url = drstk_api_url("dpla", $item_pid, "items");
-    $data = get_response($url);
-    $data = json_decode($data);
+    $response = get_response($url);
+    $data = json_decode($response['output']);
     if (check_for_bad_data($data)){
       return false;
     }
@@ -392,8 +392,8 @@ function get_associated_files(){
       $assoc_pid = key(get_object_vars($data->associated)); //using this just to get the first title
     $assoc_title = $data->associated->$assoc_pid; //using this just to get the first title
     $url = drstk_api_url("drs", $assoc_pid, "files", NULL, "solr_only=true");
-    $assoc_data = get_response($url);
-    $assoc_data = json_decode($assoc_data);
+    $response = get_response($url);
+    $assoc_data = json_decode($response['output']);
     if (check_for_bad_data($assoc_data)){
       return false;
     } else {
@@ -646,8 +646,8 @@ function associated_ajax_handler() {
     $associated_html .= "";
     $assoc_pid = $_POST['pid']; //using this just to get the first title
     $url = drstk_api_url("drs", $assoc_pid, "files", NULL, "solr_only=true");
-    $assoc_data = get_response($url);
-    $assoc_data = json_decode($assoc_data);
+    $response = get_response($url);
+    $assoc_data = json_decode($response['output']);
     if (check_for_bad_data($assoc_data)){
       return false;
     } else {

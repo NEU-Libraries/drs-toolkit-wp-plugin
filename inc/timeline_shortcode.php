@@ -9,6 +9,7 @@ function reload_filtered_set_timeline_ajax_handler()
     }
     else if($_POST['reloadWhat'] == "facetReload") {
         if (isset($_POST['atts']['collection_id'])) {
+          // @TODO
           $test = get_response("https://repository.library.northeastern.edu/api/v1/search/".$_POST['atts']['collection_id']);
           $test = json_decode($test);
           $url = drstk_api_url("drs", $_POST['atts']['collection_id'], "search", "date", "per_page=".count($test->pagination->table->total_count));
@@ -20,9 +21,8 @@ function reload_filtered_set_timeline_ajax_handler()
           if (isset($_POST['params']['q']) && $_POST['params']['q'] != ''){
               $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
           }
-          $data1 = get_response($url);
-          $data1 = json_decode($data1);
-          $facets_info_data = $data1;
+          $response = get_response($url);
+          $facets_info_data = json_decode($response['output']);
           wp_send_json($facets_info_data);
         }
     }
@@ -106,6 +106,7 @@ function drstk_timeline( $atts, $params ){
 
     $collectionCheck =null;
     if(isset($atts['collection_id'])){
+      // @TODO
       $test = get_response("https://repository.library.northeastern.edu/api/v1/search/".$atts['collection_id']);
       $test = json_decode($test);
 
@@ -125,9 +126,8 @@ function drstk_timeline( $atts, $params ){
             $url .= "&page=" . $params['page_no'];
          }
 
-        $data1 = get_response($url);
-        $data1 = json_decode($data1);
-        $facets_info_data = $data1;
+        $response = get_response($url);
+        $facets_info_data = json_decode($response['output']);
         $num_pages = $data1->pagination->table->num_pages;
 
         if($num_pages == 0){
@@ -154,8 +154,8 @@ function drstk_timeline( $atts, $params ){
         if ($repo != "drs"){$pid = explode(":",$neu_id); $pid = $pid[1];} else {$pid = $neu_id;}
         if($repo == "drs"){
             $url = drstk_api_url("drs", $neu_id, "files", NULL, "solr_only=true");
-            $data = get_response($url);
-            $data = json_decode($data);
+            $response = get_response($url);
+            $data = json_decode($response['output']);
 
             if (!isset($data->error)){
                 $data = $data->_source;
@@ -249,8 +249,8 @@ function drstk_timeline( $atts, $params ){
         if ($repo == "dpla"){
             if (!isset($timeline_custom_html)){$timeline_custom_html = "";}
             $url = drstk_api_url("dpla", $pid, "items");
-            $data = get_response($url);
-            $data = json_decode($data);
+            $response = get_response($url);
+            $data = json_decode($response['output']);
             if (isset($data->docs[0]->object)){
                 $url = $data->docs[0]->object;
             } else {

@@ -19,9 +19,8 @@ function reload_filtered_set_ajax_handler()
             if (isset($_POST['params']['q']) && $_POST['params']['q'] != ''){
                 $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
             }
-            $data1 = get_response($url);
-            $data1 = json_decode($data1);
-            $facets_info_data = $data1;
+            $response = get_response($url);
+            $facets_info_data = json_decode($response['output']);
             wp_send_json($facets_info_data);
         }
     }
@@ -93,9 +92,8 @@ function drstk_map( $atts , $params){
             $url .= "&q=". urlencode(sanitize_text_field($params['q']));
         }
 
-        $data1 = get_response($url);
-        $data1 = json_decode($data1);
-        $facets_info_data = $data1;
+        $response = get_response($url);
+        $facets_info_data = json_decode($response['output']);
 
         $num_pages = $data1->pagination->table->num_pages;
 
@@ -118,8 +116,8 @@ function drstk_map( $atts , $params){
     if ($repo != "drs"){$pid = explode(":",$item); $pid = $pid[1];} else {$pid = $item;}
     if ($repo == "drs"){
       $url = drstk_api_url("drs", $item, "files", NULL, "solr_only=true");
-      $data = get_response($url);
-      $data = json_decode($data);
+      $response = get_response($url);
+      $data = json_decode($response['output']);
       if (!isset($data->error)){
         $data = $data->_source;
         $pid = $data->id;
@@ -130,8 +128,8 @@ function drstk_map( $atts , $params){
         } else if (isset($data->subject_geographic_tesim)){
           $location = $data->subject_geographic_tesim[0];
           $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
-          $locationData = get_response($locationUrl);
-          $locationData = json_decode($locationData);
+          $response = get_response($locationUrl);
+          $locationData = json_decode($response['output']);
           if (!isset($locationData->error)) {
             $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
           }
@@ -174,8 +172,8 @@ function drstk_map( $atts , $params){
         if (isset($data->canonical_class_tesim)){
           if ($data->canonical_class_tesim[0] == "AudioFile" || $data->canonical_class_tesim[0] == "VideoFile"){
             $objects_url = "https://repository.library.northeastern.edu/api/v1/files/" . $item . "/content_objects";
-            $objects_data = get_response($objects_url);
-            $objects_data = json_decode($objects_data);
+            $response = get_response($objects_url);
+            $objects_data = json_decode($response['output']);
             $data = (object) array_merge((array) $data, (array) $objects_data);
             if (isset($objects_data->canonical_object)){
               $canonical_object = insert_jwplayer($key, $val, $data, $data->fields_thumbnail_list_tesim[2]);
@@ -223,8 +221,8 @@ function drstk_map( $atts , $params){
       if(!is_numeric($coordinates[0])) {
         $location = $coordinates;
         $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
-        $locationData = get_response($locationUrl);
-        $locationData = json_decode($locationData);
+        $response = get_response($locationUrl);
+        $locationData = json_decode($response['output']);
         if (!isset($locationData->error)) {
           $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
         }
@@ -272,8 +270,8 @@ function drstk_map( $atts , $params){
 
     if ($repo == "dpla"){
       $url = drstk_api_url("dpla", $pid, "items");
-      $data = get_response($url);
-      $data = json_decode($data);
+      $response = get_response($url);
+      $data = json_decode($response['output']);
       if (isset($data->docs[0]->object)){
         $url = $data->docs[0]->object;
       } else {
@@ -308,8 +306,8 @@ function drstk_map( $atts , $params){
       if(!isset($data->docs[0]->sourceResource->spatial[0]->coordinates)) {
         $location = $data->docs[0]->sourceResource->spatial[count($data->docs[0]->sourceResource->spatial)-1]->name;// . $data->docs[0]->sourceResource->spatial[0]->state;
         $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
-        $locationData = get_response($locationUrl);
-        $locationData = json_decode($locationData);
+        $response = get_response($locationUrl);
+        $locationData = json_decode($response['output']);
         if (!isset($locationData->error)) {
           $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
         }
@@ -367,8 +365,8 @@ function drstk_map( $atts , $params){
 
       $coordinates = "";
       $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
-      $locationData = get_response($locationUrl);
-      $locationData = json_decode($locationData);
+      $response = get_response($locationUrl);
+      $locationData = json_decode($response['output']);
       if (!isset($locationData->error)) {
         $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
       }

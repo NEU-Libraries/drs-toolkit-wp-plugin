@@ -17,16 +17,15 @@ function drstk_item( $atts ){
   }
   if ($repo == "drs"){
     $url = drstk_api_url("drs", $pid, "files", NULL, "solr_only=true");
-    $data = get_response($url);
-    $data = json_decode($data);
-    write_log($data);
+    $response = get_response($url);
+    $data = json_decode($response['output']);
     $data = $data->_source;
     $thumbnail = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
     $master = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[4];
 
     $objects_url = drstk_api_url("drs", $pid, "files", "content_objects");
-    $objects_data = get_response($objects_url);
-    $objects_data = json_decode($objects_data);
+    $response = get_response($objects_url);
+    $objects_data = json_decode($response['output']);
     $data = (object) array_merge((array) $data, (array) $objects_data);
 
     foreach($data->content_objects as $key=>$val){
@@ -96,8 +95,8 @@ function drstk_item( $atts ){
   }
   if ($repo == "dpla"){
     $url = drstk_api_url("dpla", $pid, "items");
-    $dpla = get_response($url);
-    $dpla = json_decode($dpla);
+    $response = get_response($url);
+    $dpla = json_decode($response['output']);
     if (isset($dpla->docs[0]->object)){
       $url = $dpla->docs[0]->object;
     } else {
@@ -230,8 +229,8 @@ function item_solr_admin_ajax_handler() {
   // Handle the ajax request
   check_ajax_referer( 'item_admin_nonce' );
   $url = drstk_api_url("drs", $_POST['pid'], "files", NULL, "solr_only=true");
-  $data = get_response($url);
-  $data = json_decode($data);
+  $response = get_response($url);
+  $data = json_decode($response['output']);
   wp_send_json(json_encode($data));
   wp_die();
 }

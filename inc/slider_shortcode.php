@@ -7,7 +7,7 @@ function drstk_gallery( $atts ){
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
 
   if($cache) {
-      return $cache;
+      //return $cache;
   }
   if (isset($atts['id'])){
     $images = array_map('trim', explode(',', $atts['id']));
@@ -31,8 +31,11 @@ function drstk_gallery( $atts ){
      if ($repo != "drs"){$pid = explode(":",$id); $pid = $pid[1];} else {$pid = $id;}
      if ($repo == "drs"){
        $url = drstk_api_url("drs", $id, "files", NULL, "solr_only=true");
-       $data = get_response($url);
-       $data = json_decode($data);
+       $response = get_response($url);
+       
+       error_log( $response['status']);
+       $data = json_decode($response['output']);
+       
        $data = $data->_source;
        $thumbnail = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
      }
@@ -67,8 +70,8 @@ function drstk_gallery( $atts ){
      }
      if ($repo == "dpla"){
        $url = drstk_api_url("dpla", $pid, "items");
-       $dpla = get_response($url);
-       $dpla = json_decode($dpla);
+       $response = get_response($url);
+       $dpla = json_decode($response['output']);
        if (isset($dpla->docs[0]->object)){
          $url = $dpla->docs[0]->object;
        } else {

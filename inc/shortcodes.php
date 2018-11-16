@@ -142,6 +142,7 @@ function drstk_get_drs_items(){
       }
     }
   }
+  // @TODO
   $data = get_response($url);
   $json = json_decode($data);
   if (isset($json->error)) {
@@ -230,7 +231,7 @@ function drstk_get_dpla_items(){
     $url .= "&facets=sourceResource.contributor,sourceResource.date.begin,sourceResource.date.end,sourceResource.subject.name,sourceResource.type";
     $data = get_response($url);
     $json = json_decode($data);
-    
+    // @TODO
     if (isset($json->error)) {
       wp_send_json(json_encode( "There was an error: " . $json->error));
       wp_die();

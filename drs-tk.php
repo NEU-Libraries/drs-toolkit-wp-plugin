@@ -930,18 +930,54 @@ add_action( 'admin_head', 'fix_admin_head' );
 
 /**
 * Basic curl response mechanism.
+* Designed here to make it easy to output some message, even in the case of an error
+* For debugging, the fuller status info is passed along for inspection when needed
+* 
+* Typical usage:
+* $response = get_response($url);
+* $output = $response['output'];
+* echo $output;
+* 
+* Fancier:
+* $response = get_response($url);
+* if ($response['status'] == 404) {
+*   $output = 'No soup for you!';
+* }
+* echo $output;
 */
 function get_response( $url ) {
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+  //curl_setopt($ch, CURLOPT_HEADER, true);
 
-  // if it returns a 403 it will return no $output
-  curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-  $output = curl_exec($ch);
+  curl_setopt($ch, CURLOPT_FAILONERROR, false);
+  $raw_response = curl_exec($ch);
+  $response_status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+  
+  switch ($response_status) {
+    case 200:
+      $output = $raw_response;
+      $status_message = 'OK';
+      break;
+    case 404:
+      $output = 'The resource was not found.';
+      $status_message = 'Not Found';
+      break;
+    default:
+      $output = 'An unknown error occured.';
+      break;
+      
+  }
+  $response = array(
+    'status' => $response_status,
+    'status_message' => $status_message,
+    'output' => $output,
+  );
+  
   curl_close($ch);
-  return $output;
+  return $response;
 }
 
 function titleize($string){
