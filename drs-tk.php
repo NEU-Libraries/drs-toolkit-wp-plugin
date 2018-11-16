@@ -354,7 +354,25 @@ function drstk_get_facet_name($facet, $niec=false){
 }
 
 function drstk_get_errors(){
-  global $errors;
+  $errors = array(
+      "admin" => array(
+          "api_fail" => "Sorry, DRS files and metadata are currently unavailable. Please refresh the page or try again later. If problem persists please contact dsg@neu.edu.",
+      ),
+      "search" => array(
+          "no_results" => "Your query produced no results. Please refine your search and try again.",
+          "fail_null" => "Sorry, these project materials are currently unavailable. Please try again later.",
+          "no_sub_collections" => "This project has no sub-collections.",
+          "missing_collection" => "No collections are available at this time. Please contact the site administrator.",
+      ),
+      "item" => array(
+          "no_results" => "This file is currently unavailable. Please check the URL and try again.",
+          "fail" => "Sorry, project materials are currently unavailable. Please refresh the page or try again later. If problem persists please contact the site administrator.",
+          "jwplayer_fail" => "There was an issue playing this file. Please contact the site administrator.",
+      ),
+      "shortcodes" => array(
+          "fail" => "Sorry, project materials are currently unavailable. Please refresh the page or try again later. If problem persists please contact the site administrator.",
+      ),
+  );
   return $errors;
 }
 
@@ -779,7 +797,7 @@ function drstk_browse_script() {
     global $wp_query;
     global $VERSION;
     global $sub_collection_pid;
-    global $errors;
+    $errors = drstk_get_errors();
     //this enqueues the JS file
     wp_register_script( 'drstk_browse',
         plugins_url( '/assets/js/browse.js', __FILE__ ),
@@ -841,8 +859,8 @@ function drstk_item_script() {
     global $VERSION;
     global $wp_query;
     global $item_pid;
-    global $errors;
-
+    
+    $errors = drstk_get_errors();
     $item_nonce = wp_create_nonce( 'item_drs' );
 
     //this enqueues the JS file
@@ -891,8 +909,9 @@ function drstk_breadcrumb_script(){
 function drstk_mirador_script() {
     global $VERSION;
     global $wp_query;
-    global $errors;
-
+    // this appears unused, but at least it isn't the global it used to be
+    $errors = drstk_get_errors();
+    
     //this enqueues the JS file
     wp_register_script('drstk_mirador', plugins_url('/assets/mirador/mirador.js', __FILE__), array(), $VERSION, false );
     wp_enqueue_script('drstk_mirador');

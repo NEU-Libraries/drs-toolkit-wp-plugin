@@ -3,7 +3,7 @@
 add_shortcode( 'drstk_tiles', 'drstk_tiles' );
 add_shortcode( 'drstk_tile', 'drstk_tiles' );
 function drstk_tiles( $atts ){
-  global $errors;
+  $errors = drstk_get_errors();
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
 
   if($cache) {
