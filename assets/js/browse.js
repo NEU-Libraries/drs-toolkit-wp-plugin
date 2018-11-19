@@ -236,13 +236,8 @@ jQuery(document).ready(function($) {
       var this_doc = '';
       if (template == 'search'){
         //search = grid
-        this_doc += "<div class='drs-item search panel panel-default'><div class='panel-body'><div class='one_fourth col-sm-3'><figure><a href='"+this_doc_url+"'>";
-        if (thumbnail[1]) {
-          this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
-        } else {
-          this_doc += "<div class='fa fa-folder-open-o'></div>";
-        }
-        this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure></div><div class='three_fourth col-sm-9 last'>";
+        this_doc += "<div class='drs-item search panel panel-default'><div class='panel-body'>";
+        this_doc += "<div class='three_fourth last'>";
         if (search_options.indexOf('Title') > -1){
           this_doc += "<h4 class='drs-item-title'><a href='"+this_doc_url+"'>" + title + "</a></h4>";
         }
