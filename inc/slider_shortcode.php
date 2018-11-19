@@ -33,7 +33,6 @@ function drstk_gallery( $atts ){
        $url = drstk_api_url("drs", $id, "files", NULL, "solr_only=true");
        $response = get_response($url);
        
-       error_log( $response['status']);
        $data = json_decode($response['output']);
        
        $data = $data->_source;
@@ -47,6 +46,7 @@ function drstk_gallery( $atts ){
        $thumb_base = explode("/",$thumb_base);
        $arr = array_pop($thumb_base);
        $thumb_base = implode("/", $thumb_base);
+       // @TODO a switch seems appropriate here
        if ($num == 1){ $thumbnail = $thumb_base."/".$meta['sizes']['thumbnail']['file'];}
        if ($num == 2){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
        if ($num == 3){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
