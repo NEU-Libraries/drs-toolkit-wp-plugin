@@ -270,9 +270,6 @@ jQuery(document).ready(function($) {
         if (abstract  && search_options.indexOf('Abstract') > -1){
           this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
         }
-        if (date  && search_options.indexOf('Date') > -1){
-          this_doc += "<p class='drs-item-date'>" + date + "</p>";
-        }
         this_doc += "<div class=''><a href='"+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";
       } else {
         //browse = tile
