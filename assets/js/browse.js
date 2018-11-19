@@ -268,7 +268,10 @@ jQuery(document).ready(function($) {
         this_doc += "</p>";
 
         if (abstract  && search_options.indexOf('Abstract') > -1){
-          this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
+          //truncation via https://stackoverflow.com/questions/4637942/how-can-i-truncate-a-string-in-jquery
+          var trimmedAbstract = jQuery.trim(abstract).substring(0, 300)
+          .split(" ").slice(0, -1).join(" ") + "...";
+          this_doc += "<p class='drs-item-abstract'>" + trimmedAbstract + "</p>";
         }
         this_doc += "<div class=''><a href='"+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";
       } else {
