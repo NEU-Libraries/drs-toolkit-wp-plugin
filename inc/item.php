@@ -279,7 +279,7 @@ function get_item_image(){
     if (isset($data->docs[0]->object)){
       $img = $data->docs[0]->object;
     } else {
-      $img = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+      $img = DPLA_FALLBACK_IMAGE_URL;
     } //not doing canonical object because we can't do any zoom or media playing anyway
   }
   if ($repo == "wp"){

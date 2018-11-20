@@ -105,7 +105,7 @@ function drstk_item( $atts ){
     if (isset($dpla->docs[0]->object)){
       $url = $dpla->docs[0]->object;
     } else {
-      $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+      $url = DPLA_FALLBACK_IMAGE_URL;
     }
     $data = new StdClass;
     $data->canonical_object = new StdClass;

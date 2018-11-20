@@ -78,7 +78,7 @@ function drstk_gallery( $atts ){
        if (isset($dpla->docs[0]->object)){
          $url = $dpla->docs[0]->object;
        } else {
-         $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+         $url = DPLA_FALLBACK_IMAGE_URL;
        }
        $title = $dpla->docs[0]->sourceResource->title;
        if (isset($dpla->docs[0]->sourceResource->description)){

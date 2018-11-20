@@ -281,7 +281,7 @@ function drstk_map( $atts , $params){
       if (isset($data->docs[0]->object)){
         $url = $data->docs[0]->object;
       } else {
-        $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+        $url = DPLA_FALLBACK_IMAGE_URL;
       }
       $title = $data->docs[0]->sourceResource->title;
       if (isset($data->docs[0]->sourceResource->description)){
