@@ -457,7 +457,39 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     /* inserts shortcode and closes modal */
     insertShortcode: function(e) {
         var items = this.shortcode.items;
-        if (items != undefined) {
+        
+        //without some heavy refactoring, PMJ is forced to dig up the direct inserts first
+        //to get around the original checks on whether items are empty
+        var ids = [];
+        var directIds = jQuery('input.drstk-direct-insert');
+        jQuery.each(directIds, function(index, input) {
+          var jqInput = jQuery(input);
+          var urlValue = jqInput.val();
+          if (urlValue != '') {
+            //it's possible students will end up with a full query string, especially from DPLA
+            console.log(urlValue)
+            var queryIndex = urlValue.indexOf('?');
+            if (queryIndex != -1) {
+                urlValue = urlValue.substring(0, queryIndex);
+            }
+            
+            //kill trailing slashes
+            if (urlValue.endsWith('/')) {
+                urlValue = urlValue.slice(0, -1);
+            }
+            
+            var parsedUrl = urlValue.split('/');
+            var parsedId = parsedUrl[parsedUrl.length - 1];
+            
+            if ( ! parsedId.startsWith('neu:')) {
+                parsedId = 'dpla:'.concat(parsedId);
+            }
+            
+            ids.push(parsedId);
+          }
+
+        });
+        if (items != undefined || ids.length != 0) {
             start_date = this.shortcode.get('settings').where({
                 name: 'start-date'
             })[0];
@@ -470,7 +502,15 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             if (end_date != undefined) {
                 end_date = end_date.attributes.value[0];
             }
-            if ((this.current_tab == 6 && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined)) && this.validTime() == true) || (this.current_tab == 6 && start_date == undefined && end_date == undefined && this.validTime() == true) || (this.current_tab == 5 && this.validMap() == true) || (this.current_tab == 1 && this.shortcode.items.length == 1) || (this.current_tab != 6 && this.current_tab != 1 && this.current_tab != 5)) {
+            
+            if ((this.current_tab == 6
+                && ((start_date != "" && start_date != undefined) || (end_date != "" && end_date != undefined))
+                && this.validTime() == true)
+                || (this.current_tab == 6 && start_date == undefined && end_date == undefined && this.validTime() == true)
+                || (this.current_tab == 5 && this.validMap() == true)
+                || (this.current_tab == 1)
+                || (this.current_tab != 6 && this.current_tab != 1 && this.current_tab != 5)) {// current_tab is actually not a tab -- it's the button for the type of shortcode
+                
                 shortcode = '<p>[drstk_' + this.tabs[this.current_tab];
 
                 // If check box is checked then add collection_Id attribute to the shortcode
@@ -478,17 +518,20 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                     shortcode += ' collection_id="' + this.collection_id + '"';
                 }
 
-                ids = []
-                jQuery.each(items.models, function(i, item) {
-                    if (item.attributes.repo == 'dpla') {
-                        pid = "dpla:" + item.attributes.pid;
-                    } else if (item.attributes.repo == 'drs') {
-                        pid = item.attributes.pid;
-                    } else if (item.attributes.repo == 'local') {
-                        pid = "wp:" + item.attributes.pid;
-                    }
-                    ids.push(pid);
-                });
+
+                
+                if (ids.length == 0) {
+                    jQuery.each(items.models, function(i, item) {
+                        if (item.attributes.repo == 'dpla') {
+                            pid = "dpla:" + item.attributes.pid;
+                        } else if (item.attributes.repo == 'drs') {
+                            pid = item.attributes.pid;
+                        } else if (item.attributes.repo == 'local') {
+                            pid = "wp:" + item.attributes.pid;
+                        }
+                        ids.push(pid);
+                    });
+                }
                 ids.join(",");
 
                 if (!jQuery("#drs-select-all-item").prop("checked")) {
@@ -1396,6 +1439,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                 local_params = this.search_params;
                 var self = this;
                 local_params.q = pid;
+                console.log(local_params.q);
                 jQuery.post(dpla_ajax_obj.ajax_url, {
                     _ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
                     action: "get_dpla_code",
@@ -1512,6 +1556,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             delete this.search_params.timefilter;
         }
         var self = this;
+        console.log(this.search_params);
         tab_name = this.tabs[this.current_tab];
         jQuery.post(dpla_ajax_obj.ajax_url, {
             _ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
@@ -1743,7 +1788,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     },
 
     search: function(e) {
-        this.search_params.q = jQuery(e.currentTarget).siblings("input[type='text']").val();
+        this.search_params.q = jQuery(e.currentTarget).siblings("input.drstk-search-input").val();
         parent = jQuery(e.currentTarget).parents(".pane").attr("id");
         if (parent == 'drs') {
             this.getDRSitems();
