@@ -76,7 +76,7 @@ function drstk_get_drs_items(){
   }
 
   if (empty($url)) {
-      $url = drstk_api_url("drs", $col_pid, "search", null, "per_page=20");
+    $url = drstk_api_url("drs", $col_pid, "search", null, "per_page=20");
   }
   
   if (isset($_POST['params']['q'])){
@@ -158,8 +158,27 @@ function drstk_get_drs_items(){
 add_action( 'wp_ajax_get_dpla_code', 'drstk_get_dpla_items' ); //for auth users
 
 function drstk_get_dpla_items(){
-  check_ajax_referer( 'dpla_ajax_nonce' );
-    $url = drstk_api_url("dpla", "", "items", NULL, "page_size=20"); //blank pid for general search
+    check_ajax_referer( 'dpla_ajax_nonce' );
+    if (isset($_POST['params']['pid'])) {
+      $url = drstk_api_url("dpla", $_POST['params']['pid'], "items", NULL, "page_size=20"); 
+      
+      $data = get_response( $url );
+      $json = json_decode($data);
+      
+      if (isset($json->error)) {
+        wp_send_json(json_encode( "There was an error: " . $json->error));
+        wp_die();
+        return;
+      }
+      
+      wp_send_json($data);
+      wp_die();
+      
+    } else {
+      $url = drstk_api_url("dpla", "", "items", NULL, "page_size=20"); //blank pid for general search
+    }
+    
+    
     
     if (isset($_POST['params']['q'])){
       $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));

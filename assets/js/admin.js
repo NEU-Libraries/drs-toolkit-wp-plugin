@@ -1438,8 +1438,8 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                 old_search = this.search_params;
                 local_params = this.search_params;
                 var self = this;
-                local_params.q = pid;
-                console.log(local_params.q);
+                local_params.pid = pid;
+                console.log(local_params);
                 jQuery.post(dpla_ajax_obj.ajax_url, {
                     _ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
                     action: "get_dpla_code",
@@ -1556,7 +1556,6 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             delete this.search_params.timefilter;
         }
         var self = this;
-        console.log(this.search_params);
         tab_name = this.tabs[this.current_tab];
         jQuery.post(dpla_ajax_obj.ajax_url, {
             _ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,

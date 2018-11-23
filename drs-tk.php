@@ -228,12 +228,16 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
     $url .= "https://api.dp.la/v2";
   }
   //when searching dpla on admin side, there's no pid, and the API barfs with a 404 if there's /? instead of just ?
-  if ($source == 'dpla' && empty($pid)) {
-    $url .= '/' . $action;
+  if ($source == 'dpla') {
+    if (empty($pid)) {
+      $url .= '/' . $action;
+    } else {
+      // grabbing a dpla item by ?q=pid no longer works, so build the url direct to the item's data
+      $url .= '/' . $action . '/';
+    }
   } else {
     $url .= "/" . $action . "/";
   }
-  
   if($sub_action != NULL){
     $url .= $sub_action . "/";
   }
@@ -250,10 +254,26 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
     $url .= "token=" . $token . "&";
   }
   
-  if($url_arguments != NULL){
-    $url .= $url_arguments;
+  //direct DPLA item pid barfs on extraneous params
+  switch ($source) {
+    case 'dpla':
+      error_log('dpla pid ' . $pid);
+      if (empty($pid) && $url_arguments != null) {
+        error_log('dammit');
+        $url .= $url_arguments;
+      }
+      break;
+      
+    case 'drs':
+      if($url_arguments != NULL){
+        $url .= $url_arguments;
+      }
+      break;
+      
+    default:
+      break;
   }
-  
+  error_log('api_url ' . $url);
   return $url;
 }
 
@@ -919,6 +939,7 @@ add_action( 'admin_head', 'fix_admin_head' );
 * Basic curl response mechanism.
 */
 function get_response( $url ) {
+  error_log('get_response ' . $url);
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
