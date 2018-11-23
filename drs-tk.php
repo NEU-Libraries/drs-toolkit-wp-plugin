@@ -257,9 +257,7 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
   //direct DPLA item pid barfs on extraneous params
   switch ($source) {
     case 'dpla':
-      error_log('dpla pid ' . $pid);
       if (empty($pid) && $url_arguments != null) {
-        error_log('dammit');
         $url .= $url_arguments;
       }
       break;
@@ -273,7 +271,6 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
     default:
       break;
   }
-  error_log('api_url ' . $url);
   return $url;
 }
 
@@ -939,7 +936,6 @@ add_action( 'admin_head', 'fix_admin_head' );
 * Basic curl response mechanism.
 */
 function get_response( $url ) {
-  error_log('get_response ' . $url);
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
