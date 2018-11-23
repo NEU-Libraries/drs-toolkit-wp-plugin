@@ -1075,6 +1075,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         this.search_params.page = 1;
         this.search_params.q = "";
         jQuery(".pane").hide();
+        // @TODO this looks like switch is more appropriate
         if (path == '#drs') {
             jQuery("#drs").show();
             jQuery("#drs input[name='search']").val(this.search_params.q);
@@ -1086,7 +1087,9 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                 jQuery("#dpla").html("<div class='notice notice-warning'><p>DPLA items cannot be used in embedded media. If you would like to use a media item from the DPLA, consider downloading it and upload it using the 'Local Items' tab.</p></div>");
             } else {
                 jQuery("#dpla ol").children("li").remove();
-                jQuery(".dpla-items").html("<div class='notice notice-info'><p>Perform a search or enter a DPLA ID to select items.</p></div>");
+                // PMJ putting in an empty thing until the messages can be refactored
+                // because of the new direct insert of URL code as of e814f1d8bf930512a8e4d079a7fdc15456932d59
+                jQuery(".dpla-items").html("<div class='notice notice-info'></div>");
             }
         } else if (path == '#local') {
             jQuery("#local").show();
