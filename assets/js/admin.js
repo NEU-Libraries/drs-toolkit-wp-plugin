@@ -1216,8 +1216,8 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             _ajax_nonce: drs_ajax_obj.drs_ajax_nonce,
             action: "get_drs_code",
             params: this.search_params,
-        }, function(data) {
-            var data = jQuery.parseJSON(data);
+        }, function(response) {
+            var data = jQuery.parseJSON(response);
             jQuery("#drs #sortable-" + tab_name + "-list").children("li").remove();
             jQuery(".drs-pagination").html("");
             if (jQuery.type(data) === "string") {

@@ -975,7 +975,7 @@ function get_response( $url ) {
   curl_setopt($ch, CURLOPT_FAILONERROR, false);
   $raw_response = curl_exec($ch);
   $response_status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-  
+  error_log($raw_response);
   switch ($response_status) {
     case 200:
       $output = $raw_response;
