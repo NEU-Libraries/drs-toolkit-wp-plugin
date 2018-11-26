@@ -16,7 +16,7 @@ function get_item_details($data, $assoc=false){
   $html = '';
   if ($repo == "wp"){
     $abs = "Abstract/Description";
-    $data->mods->$abs = $data->post_excerpt;
+    $data->mods->$abs = $data->post_content;
     $datec = "Date created";
     $data->mods->$datec = $data->post_date;
   }
