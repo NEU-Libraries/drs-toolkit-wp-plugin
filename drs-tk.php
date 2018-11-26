@@ -7,7 +7,6 @@
  * Description: This plugin provides the core functionality of the CERES: Exhibit Toolkit and brings the content of a project from the DRS into Wordpress using the DRS API.
  */
 
-require_once( plugin_dir_path( __FILE__ ) . 'inc/errors.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/item.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/browse.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/breadcrumb.php' );
@@ -26,6 +25,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'config.php' );
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
 $DRS_PLUGIN_PATH = plugin_dir_path( __FILE__ );
 $DRS_PLUGIN_URL = plugin_dir_url( __FILE__ );
+define('DPLA_FALLBACK_IMAGE_URL', $DRS_PLUGIN_URL . '/assets/images/DPLA-square-logo-color.jpeg');
 
 $VERSION = '1.1.1';
 
@@ -214,6 +214,116 @@ function register_drs_settings() {
 add_action( 'admin_init', 'register_drs_settings' );
 add_action( 'admin_init', 'add_tinymce_plugin');
 
+/*API URL Builder helper method*/
+function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_arguments = NULL){
+  $url = "";
+  $dak = constant("DPLA_API_KEY");
+  $dau = constant("DRS_API_USER");
+  $dap = constant("DRS_API_PASSWORD");
+  
+  if($source == "drs"){
+    $url .= "https://repository.library.northeastern.edu/api/v1";
+  } else if ($source == "dpla"){
+    $url .= "https://api.dp.la/v2";
+  }
+  //when searching dpla on admin side, there's no pid, and the API barfs with a 404 if there's /? instead of just ?
+  if ($source == 'dpla') {
+    if (empty($pid)) {
+      $url .= '/' . $action;
+    } else {
+      // grabbing a dpla item by ?q=pid no longer works, so build the url direct to the item's data
+      $url .= '/' . $action . '/';
+    }
+  } else {
+    $url .= "/" . $action . "/";
+  }
+  if($sub_action != NULL){
+    $url .= $sub_action . "/";
+  }
+  
+  $url .= $pid . "?";
+  
+  if($source == "dpla" && !empty($dak)){
+    $url .= "api_key=" . DPLA_API_KEY . "&";
+  }
+  
+  if($source == "drs" && !(empty($dau) || empty($dap))){
+    $token = drstk_drs_auth();
+    if ($token != false && is_string($token))
+    $url .= "token=" . $token . "&";
+  }
+  
+  //direct DPLA item pid barfs on extraneous params
+  switch ($source) {
+    case 'dpla':
+      if (empty($pid) && $url_arguments != null) {
+        $url .= $url_arguments;
+      }
+      break;
+      
+    case 'drs':
+      if($url_arguments != NULL){
+        $url .= $url_arguments;
+      }
+      break;
+      
+    default:
+      break;
+  }
+  return $url;
+}
+
+/*DRS API Auth Enabled helper method */
+
+function drstk_api_auth_enabled(){
+  $dau = constant("DRS_API_USER");
+  $dap = constant("DRS_API_PASSWORD");
+  // search config.php for username and password
+  // if they're both not blank, use them and ask DRS API for a JWT token
+  if (empty($dau) || empty($dap))
+  {
+    return false;
+  }
+  else
+  {
+    return true;
+  }
+}
+
+/*DRS API Authenticate helper method*/
+function drstk_drs_auth(){  
+  if(drstk_api_auth_enabled() == true){
+    // Token is only good for one hour
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "https://repository.library.northeastern.edu/api/v1/auth_user");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "email=" . DRS_API_USER . "&password=" . DRS_API_PASSWORD);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $headers = array();
+    $headers[] = "Content-Type: application/x-www-form-urlencoded";
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    $result = curl_exec($ch);
+    
+    // result should be json
+    $data = json_decode($result, true);
+    
+    $token = $data["auth_token"];
+    
+    if (!empty($token)) {
+      return $token;
+    } else {
+      return false;
+    }
+  }
+  else {
+    // No user and/or password set
+    return false;
+  }
+}
+
 function add_tinymce_plugin(){
   add_filter("mce_external_plugins", 'mce_plugin');
 }
@@ -265,7 +375,25 @@ function drstk_get_facet_name($facet, $niec=false){
 }
 
 function drstk_get_errors(){
-  global $errors;
+  $errors = array(
+      "admin" => array(
+          "api_fail" => "Sorry, DRS files and metadata are currently unavailable. Please refresh the page or try again later. If problem persists please contact dsg@neu.edu.",
+      ),
+      "search" => array(
+          "no_results" => "Your query produced no results. Please refine your search and try again.",
+          "fail_null" => "Sorry, these project materials are currently unavailable. Please try again later.",
+          "no_sub_collections" => "This project has no sub-collections.",
+          "missing_collection" => "No collections are available at this time. Please contact the site administrator.",
+      ),
+      "item" => array(
+          "no_results" => "This file is currently unavailable. Please check the URL and try again.",
+          "fail" => "Sorry, project materials are currently unavailable. Please refresh the page or try again later. If problem persists please contact the site administrator.",
+          "jwplayer_fail" => "There was an issue playing this file. Please contact the site administrator.",
+      ),
+      "shortcodes" => array(
+          "fail" => "Sorry, project materials are currently unavailable. Please refresh the page or try again later. If problem persists please contact the site administrator.",
+      ),
+  );
   return $errors;
 }
 
@@ -690,7 +818,7 @@ function drstk_browse_script() {
     global $wp_query;
     global $VERSION;
     global $sub_collection_pid;
-    global $errors;
+    $errors = drstk_get_errors();
     //this enqueues the JS file
     wp_register_script( 'drstk_browse',
         plugins_url( '/assets/js/browse.js', __FILE__ ),
@@ -752,8 +880,8 @@ function drstk_item_script() {
     global $VERSION;
     global $wp_query;
     global $item_pid;
-    global $errors;
-
+    
+    $errors = drstk_get_errors();
     $item_nonce = wp_create_nonce( 'item_drs' );
 
     //this enqueues the JS file
@@ -802,8 +930,9 @@ function drstk_breadcrumb_script(){
 function drstk_mirador_script() {
     global $VERSION;
     global $wp_query;
-    global $errors;
-
+    // this appears unused, but at least it isn't the global it used to be
+    $errors = drstk_get_errors();
+    
     //this enqueues the JS file
     wp_register_script('drstk_mirador', plugins_url('/assets/mirador/mirador.js', __FILE__), array(), $VERSION, false );
     wp_enqueue_script('drstk_mirador');
@@ -823,18 +952,51 @@ add_action( 'admin_head', 'fix_admin_head' );
 
 /**
 * Basic curl response mechanism.
+* Designed here to make it easy to output some message, even in the case of an error
+* For debugging, the fuller status info is passed along for inspection when needed
+* 
+* Typical usage:
+* $response = get_response($url);
+* $output = $response['output'];
+* echo $output;
+* 
+* Fancier:
+* $response = get_response($url);
+* if ($response['status'] == 404) {
+*   $output = 'No soup for you!';
+* }
+* echo $output;
 */
 function get_response( $url ) {
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-
-  // if it returns a 403 it will return no $output
-  curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-  $output = curl_exec($ch);
+  curl_setopt($ch, CURLOPT_FAILONERROR, false);
+  $raw_response = curl_exec($ch);
+  $response_status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+  
+  switch ($response_status) {
+    case 200:
+      $output = $raw_response;
+      $status_message = 'OK';
+      break;
+    case 404:
+      $output = 'The resource was not found.';
+      $status_message = 'Not Found';
+      break;
+    default:
+      $output = 'An unknown error occured.';
+      break;
+      
+  }
+  $response = array(
+    'status' => $response_status,
+    'status_message' => $status_message,
+    'output' => $output,
+  );
   curl_close($ch);
-  return $output;
+  return $response;
 }
 
 function titleize($string){

@@ -4,10 +4,16 @@ add_shortcode( 'drstk_item', 'drstk_item' );
 add_shortcode( 'drstk_single', 'drstk_item' );
 function drstk_item( $atts ){
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
-  
-  if($cache) {
-      return $cache;
+
+  if($cache != NULL
+      && ! WP_DEBUG
+      && (!(isset($params))
+          || $params == NULL)
+      && !(isset($atts['collection_id']))
+      ) {
+          return $cache;
   }
+      
   $repo = drstk_get_repo_from_pid($atts['id']);
   if ($repo != "drs"){$pid = explode(":",$atts['id']); $pid = $pid[1];} else {$pid = $atts['id'];}
   if (isset($atts['image-size'])){
@@ -16,19 +22,17 @@ function drstk_item( $atts ){
     $num = 3;
   }
   if ($repo == "drs"){
-    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $pid . "?solr_only=true";
-    $data = get_response($url);
-    $data = json_decode($data);
-    write_log($data);
+    $url = drstk_api_url("drs", $pid, "files", NULL, "solr_only=true");
+    $response = get_response($url);
+    $data = json_decode($response['output']);
     $data = $data->_source;
     $thumbnail = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
     $master = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[4];
 
-    $objects_url = "https://repository.library.northeastern.edu/api/v1/files/" . $pid . "/content_objects";
-    $objects_data = get_response($objects_url);
-    $objects_data = json_decode($objects_data);
+    $objects_url = drstk_api_url("drs", $pid, "files", "content_objects");
+    $response = get_response($objects_url);
+    $objects_data = json_decode($response['output']);
     $data = (object) array_merge((array) $data, (array) $objects_data);
-
     foreach($data->content_objects as $key=>$val){
       if ($val == 'Large Image'){
         $master = $key;
@@ -95,12 +99,13 @@ function drstk_item( $atts ){
     $data->id = $post->ID;
   }
   if ($repo == "dpla"){
-    $dpla = get_response("https://api.dp.la/v2/items/".$pid."?api_key=" . DPLA_API_KEY);
-    $dpla = json_decode($dpla);
+    $url = drstk_api_url("dpla", $pid, "items");
+    $response = get_response($url);
+    $dpla = json_decode($response['output']);
     if (isset($dpla->docs[0]->object)){
       $url = $dpla->docs[0]->object;
     } else {
-      $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+      $url = DPLA_FALLBACK_IMAGE_URL;
     }
     $data = new StdClass;
     $data->canonical_object = new StdClass;
@@ -228,9 +233,9 @@ function item_solr_admin_ajax_handler() {
   $data = array();
   // Handle the ajax request
   check_ajax_referer( 'item_admin_nonce' );
-  $url = "https://repository.library.northeastern.edu/api/v1/files/" . $_POST['pid'] . "?solr_only=true";
-  $data = get_response($url);
-  $data = json_decode($data);
+  $url = drstk_api_url("drs", $_POST['pid'], "files", NULL, "solr_only=true");
+  $response = get_response($url);
+  $data = json_decode($response['output']);
   wp_send_json(json_encode($data));
   wp_die();
 }

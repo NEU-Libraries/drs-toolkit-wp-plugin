@@ -344,7 +344,6 @@ jQuery(document).ready(function($) {
       var facet_val = $(this).children(".drs-facet-val div:first-of-type").html();
       params.f[facet] = facet_val;
 
-      console.log(params);
       params.page = 1;
       $("#drs-selection").show();
       $("#drs-selection .col-md-10").append("<a class='themebutton btn btn-more' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+" <span class='fa fa-close'></span></a>");
@@ -413,9 +412,6 @@ jQuery(document).ready(function($) {
       if (!page){
         page = 1;
       }
-      console.log(browse_obj.ajax_url);
-      console.log(query);
-      console.log(page);
 
       $.ajax({
   			type: 'GET',

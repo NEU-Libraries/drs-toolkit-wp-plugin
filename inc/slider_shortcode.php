@@ -3,12 +3,18 @@
 add_shortcode( 'drstk_gallery', 'drstk_gallery' );
 add_shortcode('drstk_slider', 'drstk_gallery');
 function drstk_gallery( $atts ){
-  global $errors;
+  $errors = drstk_get_errors();
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
 
-  if($cache) {
-      return $cache;
+  if($cache != NULL
+      && ! WP_DEBUG
+      && (!(isset($params))
+          || $params == NULL)
+      && !(isset($atts['collection_id']))
+      ) {
+          return $cache;
   }
+      
   if (isset($atts['id'])){
     $images = array_map('trim', explode(',', $atts['id']));
     $img_html = '';
@@ -30,9 +36,11 @@ function drstk_gallery( $atts ){
      $repo = drstk_get_repo_from_pid($id);
      if ($repo != "drs"){$pid = explode(":",$id); $pid = $pid[1];} else {$pid = $id;}
      if ($repo == "drs"){
-       $url = "https://repository.library.northeastern.edu/api/v1/files/" . $id . "?solr_only=true";
-       $data = get_response($url);
-       $data = json_decode($data);
+       $url = drstk_api_url("drs", $id, "files", NULL, "solr_only=true");
+       $response = get_response($url);
+       
+       $data = json_decode($response['output']);
+       
        $data = $data->_source;
        $thumbnail = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
      }
@@ -44,6 +52,7 @@ function drstk_gallery( $atts ){
        $thumb_base = explode("/",$thumb_base);
        $arr = array_pop($thumb_base);
        $thumb_base = implode("/", $thumb_base);
+       // @TODO a switch seems appropriate here
        if ($num == 1){ $thumbnail = $thumb_base."/".$meta['sizes']['thumbnail']['file'];}
        if ($num == 2){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
        if ($num == 3){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
@@ -66,13 +75,13 @@ function drstk_gallery( $atts ){
        $data->abstract_tesim = array($post->post_excerpt);
      }
      if ($repo == "dpla"){
-       $url = "https://api.dp.la/v2/items/".$pid."?api_key=" . DPLA_API_KEY;
-       $dpla = get_response($url);
-       $dpla = json_decode($dpla);
+       $url = drstk_api_url("dpla", $pid, "items");
+       $response = get_response($url);
+       $dpla = json_decode($response['output']);
        if (isset($dpla->docs[0]->object)){
          $url = $dpla->docs[0]->object;
        } else {
-         $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+         $url = DPLA_FALLBACK_IMAGE_URL;
        }
        $title = $dpla->docs[0]->sourceResource->title;
        if (isset($dpla->docs[0]->sourceResource->description)){
