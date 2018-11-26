@@ -46,9 +46,14 @@ add_shortcode( 'drstk_timeline', 'drstk_timeline' );
 function drstk_timeline( $atts, $params ){
     global $errors;
 
-    $cache = get_transient(md5('PREFIX'.serialize($atts)));
-  if($cache != NULL && (!(isset($params)) || $params == NULL) && !(isset($atts['collection_id']))) {
-    return $cache;
+  $cache = get_transient(md5('PREFIX'.serialize($atts)));
+  if($cache != NULL
+      && ! WP_DEBUG
+      && (!(isset($params))
+      || $params == NULL)
+      && !(isset($atts['collection_id']))
+    ) {
+         return $cache;
   }
 
     $color_codes = array();
@@ -254,7 +259,7 @@ function drstk_timeline( $atts, $params ){
             if (isset($data->docs[0]->object)){
                 $url = $data->docs[0]->object;
             } else {
-                $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+              $url = DPLA_FALLBACK_IMAGE_URL;
             }
             $title = $data->docs[0]->sourceResource->title;
             if (is_array($title)){

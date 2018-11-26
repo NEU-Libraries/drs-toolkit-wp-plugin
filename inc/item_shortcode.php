@@ -4,10 +4,16 @@ add_shortcode( 'drstk_item', 'drstk_item' );
 add_shortcode( 'drstk_single', 'drstk_item' );
 function drstk_item( $atts ){
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
-  
-  if($cache) {
-      return $cache;
+
+  if($cache != NULL
+      && ! WP_DEBUG
+      && (!(isset($params))
+          || $params == NULL)
+      && !(isset($atts['collection_id']))
+      ) {
+          return $cache;
   }
+      
   $repo = drstk_get_repo_from_pid($atts['id']);
   if ($repo != "drs"){$pid = explode(":",$atts['id']); $pid = $pid[1];} else {$pid = $atts['id'];}
   if (isset($atts['image-size'])){
@@ -19,7 +25,6 @@ function drstk_item( $atts ){
     $url = drstk_api_url("drs", $pid, "files", NULL, "solr_only=true");
     $data = get_response($url);
     $data = json_decode($data);
-    write_log($data);
     $data = $data->_source;
     $thumbnail = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
     $master = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[4];
@@ -28,7 +33,6 @@ function drstk_item( $atts ){
     $objects_data = get_response($objects_url);
     $objects_data = json_decode($objects_data);
     $data = (object) array_merge((array) $data, (array) $objects_data);
-
     foreach($data->content_objects as $key=>$val){
       if ($val == 'Large Image'){
         $master = $key;
@@ -101,7 +105,7 @@ function drstk_item( $atts ){
     if (isset($dpla->docs[0]->object)){
       $url = $dpla->docs[0]->object;
     } else {
-      $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+      $url = DPLA_FALLBACK_IMAGE_URL;
     }
     $data = new StdClass;
     $data->canonical_object = new StdClass;

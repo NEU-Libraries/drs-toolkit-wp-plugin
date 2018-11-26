@@ -26,6 +26,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'config.php' );
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
 $DRS_PLUGIN_PATH = plugin_dir_path( __FILE__ );
 $DRS_PLUGIN_URL = plugin_dir_url( __FILE__ );
+define('DPLA_FALLBACK_IMAGE_URL', $DRS_PLUGIN_URL . '/assets/images/DPLA-square-logo-color.jpeg');
 
 $VERSION = '1.1.1';
 
@@ -226,9 +227,17 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
   } else if ($source == "dpla"){
     $url .= "https://api.dp.la/v2";
   }
-  
-  $url .= "/" . $action . "/";
-    
+  //when searching dpla on admin side, there's no pid, and the API barfs with a 404 if there's /? instead of just ?
+  if ($source == 'dpla') {
+    if (empty($pid)) {
+      $url .= '/' . $action;
+    } else {
+      // grabbing a dpla item by ?q=pid no longer works, so build the url direct to the item's data
+      $url .= '/' . $action . '/';
+    }
+  } else {
+    $url .= "/" . $action . "/";
+  }
   if($sub_action != NULL){
     $url .= $sub_action . "/";
   }
@@ -245,10 +254,23 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
     $url .= "token=" . $token . "&";
   }
   
-  if($url_arguments != NULL){
-    $url .= $url_arguments;
+  //direct DPLA item pid barfs on extraneous params
+  switch ($source) {
+    case 'dpla':
+      if (empty($pid) && $url_arguments != null) {
+        $url .= $url_arguments;
+      }
+      break;
+      
+    case 'drs':
+      if($url_arguments != NULL){
+        $url .= $url_arguments;
+      }
+      break;
+      
+    default:
+      break;
   }
-  
   return $url;
 }
 
@@ -921,6 +943,7 @@ function get_response( $url ) {
 
   // if it returns a 403 it will return no $output
   curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+  
   $output = curl_exec($ch);
   curl_close($ch);
   return $output;

@@ -6,9 +6,15 @@ function drstk_tiles( $atts ){
   global $errors;
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
 
-  if($cache) {
-      return $cache;
+  if($cache != NULL
+      && ! WP_DEBUG
+      && (!(isset($params))
+          || $params == NULL)
+      && !(isset($atts['collection_id']))
+      ) {
+          return $cache;
   }
+      
   $imgs = array_map('trim', explode(',', $atts['id']));
   $img_html = "";
   if (isset($atts['image-size'])){
@@ -67,7 +73,7 @@ function drstk_tiles( $atts ){
       if (isset($dpla->docs[0]->object)){
         $url = $dpla->docs[0]->object;
       } else {
-        $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+        $url = DPLA_FALLBACK_IMAGE_URL;
       }
       $title = $dpla->docs[0]->sourceResource->title;
       if (isset($dpla->docs[0]->sourceResource->description)){

@@ -88,8 +88,6 @@ jQuery(document).ready(function($) {
       var wp_page = $(this).attr('href').split("/");
 			pid = wp_page[wp_page.length -3];
       wp_page = wp_page[wp_page.length -1];
-			console.log(pid);
-			console.log(wp_page);
 			$(".related_content .panel-body").html("Loading...<br/><span class='fa fa-spinner fa-spin'></span>");
 			$.ajax({
   			type: 'GET',
