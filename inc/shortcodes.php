@@ -9,7 +9,8 @@ add_action('media_buttons', 'add_drs_button', 1000);
 
 /*enques extra js*/
 function drstk_enqueue_page_scripts( $hook ) {
-  global $errors, $DRS_PLUGIN_PATH, $DRS_PLUGIN_URL;
+  global $DRS_PLUGIN_PATH, $DRS_PLUGIN_URL;
+  $errors = drstk_get_errors();
     wp_enqueue_style( 'drstk_admin_js', $DRS_PLUGIN_URL . '/assets/css/admin.css' );
     if ($hook == 'post.php' || $hook == 'post-new.php') {
 
@@ -144,6 +145,7 @@ function drstk_get_drs_items(){
       }
     }
   }
+  // @TODO
   $data = get_response($url);
   $json = json_decode($data);
   if (isset($json->error)) {
@@ -253,7 +255,7 @@ function drstk_get_dpla_items(){
     
     $data = get_response( $url );
     $json = json_decode($data);
-    
+    // @TODO
     if (isset($json->error)) {
       wp_send_json(json_encode( "There was an error: " . $json->error));
       wp_die();

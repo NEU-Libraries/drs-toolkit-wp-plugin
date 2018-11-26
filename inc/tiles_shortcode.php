@@ -3,7 +3,7 @@
 add_shortcode( 'drstk_tiles', 'drstk_tiles' );
 add_shortcode( 'drstk_tile', 'drstk_tiles' );
 function drstk_tiles( $atts ){
-  global $errors;
+  $errors = drstk_get_errors();
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
 
   if($cache != NULL
@@ -27,8 +27,8 @@ function drstk_tiles( $atts ){
     if ($repo != "drs"){$pid = explode(":",$img); $pid = $pid[1];} else {$pid = $img;}
     if ($repo == "drs"){
       $url = drstk_api_url("drs", $img, "files", NULL, "solr_only=true");
-      $data = get_response($url);
-      $data = json_decode($data);
+      $response = get_response($url);
+      $data = json_decode($response['output']);
       $data = $data->_source;
       $thumbnail = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
     }
@@ -68,8 +68,8 @@ function drstk_tiles( $atts ){
     }
     if ($repo == "dpla"){
       $url = drstk_api_url("dpla", $pid, "items");
-      $dpla = get_response($url);
-      $dpla = json_decode($dpla);
+      $response = get_response($url);
+      $dpla = json_decode($response['output']);
       if (isset($dpla->docs[0]->object)){
         $url = $dpla->docs[0]->object;
       } else {

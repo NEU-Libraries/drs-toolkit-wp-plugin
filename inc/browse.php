@@ -3,7 +3,7 @@ add_action( 'wp_ajax_get_browse', 'browse_ajax_handler' ); //for auth users
 add_action( 'wp_ajax_nopriv_get_browse', 'browse_ajax_handler' ); //for nonauth users
 function browse_ajax_handler() {
   // Handle the ajax request
-  global $errors;
+  $errors = drstk_get_errors();
   check_ajax_referer( 'browse_drs' );
   $collection = drstk_get_pid();
 
@@ -44,8 +44,8 @@ function browse_ajax_handler() {
     if (isset($_POST['params']['sort'])) {
       $url .= "&sort=" . $_POST['params']['sort'];
     }
-    $data = get_response($url);
-    wp_send_json($data);
+    $response = get_response($url);
+    wp_send_json($response['output']);
     wp_die();
   }
 }

@@ -7,7 +7,6 @@
  * Description: This plugin provides the core functionality of the CERES: Exhibit Toolkit and brings the content of a project from the DRS into Wordpress using the DRS API.
  */
 
-require_once( plugin_dir_path( __FILE__ ) . 'inc/errors.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/item.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/browse.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/breadcrumb.php' );
@@ -376,7 +375,25 @@ function drstk_get_facet_name($facet, $niec=false){
 }
 
 function drstk_get_errors(){
-  global $errors;
+  $errors = array(
+      "admin" => array(
+          "api_fail" => "Sorry, DRS files and metadata are currently unavailable. Please refresh the page or try again later. If problem persists please contact dsg@neu.edu.",
+      ),
+      "search" => array(
+          "no_results" => "Your query produced no results. Please refine your search and try again.",
+          "fail_null" => "Sorry, these project materials are currently unavailable. Please try again later.",
+          "no_sub_collections" => "This project has no sub-collections.",
+          "missing_collection" => "No collections are available at this time. Please contact the site administrator.",
+      ),
+      "item" => array(
+          "no_results" => "This file is currently unavailable. Please check the URL and try again.",
+          "fail" => "Sorry, project materials are currently unavailable. Please refresh the page or try again later. If problem persists please contact the site administrator.",
+          "jwplayer_fail" => "There was an issue playing this file. Please contact the site administrator.",
+      ),
+      "shortcodes" => array(
+          "fail" => "Sorry, project materials are currently unavailable. Please refresh the page or try again later. If problem persists please contact the site administrator.",
+      ),
+  );
   return $errors;
 }
 
@@ -801,7 +818,7 @@ function drstk_browse_script() {
     global $wp_query;
     global $VERSION;
     global $sub_collection_pid;
-    global $errors;
+    $errors = drstk_get_errors();
     //this enqueues the JS file
     wp_register_script( 'drstk_browse',
         plugins_url( '/assets/js/browse.js', __FILE__ ),
@@ -863,8 +880,8 @@ function drstk_item_script() {
     global $VERSION;
     global $wp_query;
     global $item_pid;
-    global $errors;
-
+    
+    $errors = drstk_get_errors();
     $item_nonce = wp_create_nonce( 'item_drs' );
 
     //this enqueues the JS file
@@ -913,8 +930,9 @@ function drstk_breadcrumb_script(){
 function drstk_mirador_script() {
     global $VERSION;
     global $wp_query;
-    global $errors;
-
+    // this appears unused, but at least it isn't the global it used to be
+    $errors = drstk_get_errors();
+    
     //this enqueues the JS file
     wp_register_script('drstk_mirador', plugins_url('/assets/mirador/mirador.js', __FILE__), array(), $VERSION, false );
     wp_enqueue_script('drstk_mirador');
@@ -934,19 +952,51 @@ add_action( 'admin_head', 'fix_admin_head' );
 
 /**
 * Basic curl response mechanism.
+* Designed here to make it easy to output some message, even in the case of an error
+* For debugging, the fuller status info is passed along for inspection when needed
+* 
+* Typical usage:
+* $response = get_response($url);
+* $output = $response['output'];
+* echo $output;
+* 
+* Fancier:
+* $response = get_response($url);
+* if ($response['status'] == 404) {
+*   $output = 'No soup for you!';
+* }
+* echo $output;
 */
 function get_response( $url ) {
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-
-  // if it returns a 403 it will return no $output
-  curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+  curl_setopt($ch, CURLOPT_FAILONERROR, false);
+  $raw_response = curl_exec($ch);
+  $response_status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
   
-  $output = curl_exec($ch);
+  switch ($response_status) {
+    case 200:
+      $output = $raw_response;
+      $status_message = 'OK';
+      break;
+    case 404:
+      $output = 'The resource was not found.';
+      $status_message = 'Not Found';
+      break;
+    default:
+      $output = 'An unknown error occured.';
+      break;
+      
+  }
+  $response = array(
+    'status' => $response_status,
+    'status_message' => $status_message,
+    'output' => $output,
+  );
   curl_close($ch);
-  return $output;
+  return $response;
 }
 
 function titleize($string){

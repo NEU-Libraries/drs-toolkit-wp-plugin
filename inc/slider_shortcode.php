@@ -3,7 +3,7 @@
 add_shortcode( 'drstk_gallery', 'drstk_gallery' );
 add_shortcode('drstk_slider', 'drstk_gallery');
 function drstk_gallery( $atts ){
-  global $errors;
+  $errors = drstk_get_errors();
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
 
   if($cache != NULL
@@ -37,8 +37,10 @@ function drstk_gallery( $atts ){
      if ($repo != "drs"){$pid = explode(":",$id); $pid = $pid[1];} else {$pid = $id;}
      if ($repo == "drs"){
        $url = drstk_api_url("drs", $id, "files", NULL, "solr_only=true");
-       $data = get_response($url);
-       $data = json_decode($data);
+       $response = get_response($url);
+       
+       $data = json_decode($response['output']);
+       
        $data = $data->_source;
        $thumbnail = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
      }
@@ -50,6 +52,7 @@ function drstk_gallery( $atts ){
        $thumb_base = explode("/",$thumb_base);
        $arr = array_pop($thumb_base);
        $thumb_base = implode("/", $thumb_base);
+       // @TODO a switch seems appropriate here
        if ($num == 1){ $thumbnail = $thumb_base."/".$meta['sizes']['thumbnail']['file'];}
        if ($num == 2){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
        if ($num == 3){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
@@ -73,8 +76,8 @@ function drstk_gallery( $atts ){
      }
      if ($repo == "dpla"){
        $url = drstk_api_url("dpla", $pid, "items");
-       $dpla = get_response($url);
-       $dpla = json_decode($dpla);
+       $response = get_response($url);
+       $dpla = json_decode($response['output']);
        if (isset($dpla->docs[0]->object)){
          $url = $dpla->docs[0]->object;
        } else {

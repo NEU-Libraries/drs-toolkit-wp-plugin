@@ -9,8 +9,8 @@ function breadcrumb_ajax_handler() {
     if ($_POST['pid'] ){
       $url .= 'f["id"][]='.$_POST['pid'];
     }
-    $data = get_response($url);
-    $data = json_decode($data, true);
+    $response = get_response($url);
+    $data = json_decode($response['output'], true);
     $data['home_url'] = drstk_home_url();
     wp_send_json(json_encode($data));
     wp_die();
