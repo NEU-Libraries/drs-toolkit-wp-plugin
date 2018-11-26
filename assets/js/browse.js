@@ -64,7 +64,6 @@ jQuery(document).ready(function($) {
         },
     success: function(data)
      {
-        console.log(data);
       $("#drs-loading").hide();
         var data = $.parseJSON(data);
         if (data == null) {
@@ -308,7 +307,6 @@ jQuery(document).ready(function($) {
 
     $("#drs-facets a").on("click", function(e){
       e.preventDefault();
-      console.log("clicked");
 
       var facet = $(this).parents('.drs-facet').attr("id");
       if ($(this).parent().hasClass('modal-body')){
