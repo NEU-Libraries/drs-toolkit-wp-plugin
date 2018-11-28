@@ -256,7 +256,7 @@ jQuery(document).ready(function($) {
         }
         
         if (doc_vals.etd_committee_member_ssim) {
-            this_doc += "<div><h6 class='drs-item-creator etd-committee-member' style='display: inline;'>Committee Members(s): </h6>"
+            this_doc += "<div><h6 class='drs-item-creator etd-committee-member' style='display: inline;'>Committee Member(s): </h6>"
                 + doc_vals.etd_committee_member_ssim.join('; ')
                 + "</div>";
         }        
