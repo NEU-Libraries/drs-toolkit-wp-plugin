@@ -145,15 +145,17 @@ function drstk_get_drs_items(){
       }
     }
   }
-  // @TODO
-  $data = get_response($url);
-  $json = json_decode($data);
-  if (isset($json->error)) {
+
+  
+  $response = get_response($url);
+  $jsonString = $response['output'];
+  if ($response['status'] != 200) {
+    // @TODO figure out how this was supposed to work in earlier versions
     wp_send_json(json_encode( "There was an error: " . $json->error));
     wp_die();
     return;
   }
-  wp_send_json($data);
+  wp_send_json($jsonString);
   wp_die();
 }
 
@@ -164,16 +166,16 @@ function drstk_get_dpla_items(){
     if (isset($_POST['params']['pid'])) {
       $url = drstk_api_url("dpla", $_POST['params']['pid'], "items", NULL, "page_size=20"); 
       
-      $data = get_response( $url );
-      $json = json_decode($data);
+      $response = get_response($url);
+      $jsonString = $response['output'];
       
-      if (isset($json->error)) {
+      if ($response['status'] != 200) {
+        // @TODO figure out how this was supposed to work in earlier versions
         wp_send_json(json_encode( "There was an error: " . $json->error));
         wp_die();
         return;
       }
-      
-      wp_send_json($data);
+      wp_send_json($jsonString);
       wp_die();
       
     } else {
@@ -253,17 +255,18 @@ function drstk_get_dpla_items(){
     }
     $url .= "&facets=sourceResource.contributor,sourceResource.date.begin,sourceResource.date.end,sourceResource.subject.name,sourceResource.type";
     
-    $data = get_response( $url );
-    $json = json_decode($data);
-    // @TODO
-    if (isset($json->error)) {
+    $response = get_response($url);
+    $jsonString = $response['output'];
+    
+    if ($response['status'] != 200) {
+      // @TODO figure out how this was supposed to work in earlier versions
       wp_send_json(json_encode( "There was an error: " . $json->error));
       wp_die();
       return;
     }
-    
-    wp_send_json($data);
+    wp_send_json($jsonString);
     wp_die();
+    
 }
 
 

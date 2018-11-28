@@ -498,7 +498,7 @@ function drstk_browse_metadata_callback(){
 }
 
 function drstk_default_sort_callback(){
-  $sort_options = array("title_ssi%20asc"=>"Title A-Z","title_ssi%20desc"=>"Title Z-A", "score+desc%2C+system_create_dtsi+desc"=>"Relevance", "creator_tesim%20asc"=>"Creator A-Z","creator_tesim%20desc"=>"Creator Z-A","system_modified_dtsi%20asc"=>"Date (earliest to latest)","system_modified_dtsi%20desc"=>"Date (latest to earliest)");
+  $sort_options = array("title_ssi%20asc"=>"Title A-Z","title_ssi%20desc"=>"Title Z-A", "score+desc%2C+system_create_dtsi+desc"=>"Relevance", "creator_ssi%20asc"=>"Creator A-Z","creator_ssi%20desc"=>"Creator Z-A","system_modified_dtsi%20asc"=>"Date (earliest to latest)","system_modified_dtsi%20desc"=>"Date (latest to earliest)");
   $default_sort = get_option('drstk_default_sort');
   echo '<select name="drstk_default_sort">';
   foreach($sort_options as $val=>$option){
@@ -967,7 +967,7 @@ add_action( 'admin_head', 'fix_admin_head' );
 * }
 * echo $output;
 */
-function get_response( $url ) {
+function get_response($url) {
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -975,7 +975,6 @@ function get_response( $url ) {
   curl_setopt($ch, CURLOPT_FAILONERROR, false);
   $raw_response = curl_exec($ch);
   $response_status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-  
   switch ($response_status) {
     case 200:
       $output = $raw_response;
@@ -986,7 +985,8 @@ function get_response( $url ) {
       $status_message = 'Not Found';
       break;
     default:
-      $output = 'An unknown error occured.';
+      $output = 'An unknown error occured.' . $response_status;
+      $status_message = 'An unkown error occured. Please try again';
       break;
       
   }

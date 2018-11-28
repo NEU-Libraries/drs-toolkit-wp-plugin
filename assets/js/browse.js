@@ -273,7 +273,7 @@ jQuery(document).ready(function($) {
           //truncation via https://stackoverflow.com/questions/4637942/how-can-i-truncate-a-string-in-jquery
           var trimmedAbstract = jQuery.trim(abstract).substring(0, 300)
           .split(" ").slice(0, -1).join(" ") + "...";
-          this_doc += "<p class='drs-item-abstract'>" + trimmedAbstract + "</p>";
+          this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
         }
         this_doc += "<div class=''><a href='"+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";
       } else {
@@ -332,7 +332,6 @@ jQuery(document).ready(function($) {
 
     $("#drs-facets a").on("click", function(e){
       e.preventDefault();
-      console.log("clicked");
 
       var facet = $(this).parents('.drs-facet').attr("id");
       if ($(this).parent().hasClass('modal-body')){
@@ -370,7 +369,7 @@ jQuery(document).ready(function($) {
 
   }
 
-  $("#drs-sort").html("<h6>Sort By: <select id='drs-sort-option'><option value='title_ssi%20asc'>Title A-Z</option><option value='title_ssi%20desc'>Title Z-A</option><option value='creator_tesim%20asc'>Creator A-Z</option><option value='creator_tesim%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></h6>");
+  $("#drs-sort").html("<h6>Sort By: <select id='drs-sort-option'><option value='title_ssi%20asc'>Title A-Z</option><option value='title_ssi%20desc'>Title Z-A</option><option value='creator_ssi%20asc'>Creator A-Z</option><option value='creator_ssi%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></h6>");
 
   $("#drs-sort-option").on("change", function() {
     params.sort = $(this).val();

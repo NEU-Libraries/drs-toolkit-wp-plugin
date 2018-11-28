@@ -467,7 +467,6 @@ drstk.backbone_modal.Application = Backbone.View.extend({
           var urlValue = jqInput.val();
           if (urlValue != '') {
             //it's possible students will end up with a full query string, especially from DPLA
-            console.log(urlValue)
             var queryIndex = urlValue.indexOf('?');
             if (queryIndex != -1) {
                 urlValue = urlValue.substring(0, queryIndex);
@@ -1007,6 +1006,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
 
             this.shortcode.set('settings', settings);
         } else {
+            // @TODO presumably this should give something to the UI? But what? PMJ
             console.log("not a known shortcode type");
         }
     },
@@ -1216,8 +1216,8 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             _ajax_nonce: drs_ajax_obj.drs_ajax_nonce,
             action: "get_drs_code",
             params: this.search_params,
-        }, function(data) {
-            var data = jQuery.parseJSON(data);
+        }, function(response) {
+            var data = jQuery.parseJSON(response);
             jQuery("#drs #sortable-" + tab_name + "-list").children("li").remove();
             jQuery(".drs-pagination").html("");
             if (jQuery.type(data) === "string") {
@@ -1442,7 +1442,6 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                 local_params = this.search_params;
                 var self = this;
                 local_params.pid = pid;
-                console.log(local_params);
                 jQuery.post(dpla_ajax_obj.ajax_url, {
                     _ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
                     action: "get_dpla_code",
