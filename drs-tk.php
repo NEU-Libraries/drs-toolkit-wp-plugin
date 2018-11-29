@@ -975,6 +975,14 @@ function get_response($url) {
   curl_setopt($ch, CURLOPT_FAILONERROR, false);
   $raw_response = curl_exec($ch);
   $response_status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+  
+  //fallback for PHP < 5.5
+  // @TODO remove this once our servers are upgraded, so we can keep using modern(ish) PHP practices
+  if (! $response_status) {
+    $response_status_array = curl_getinfo($ch);
+    $response_status = $response_status_array['http_code'];
+  }
+  
   switch ($response_status) {
     case 200:
       $output = $raw_response;
