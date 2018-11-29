@@ -35,7 +35,7 @@ jQuery(document).ready(function($) {
     //  @todo the next line actually does nothing, since it already has class 'col-md-9'
     // $("#primary").removeClass('col-md-12').addClass('col-md-9');
     $("#primary").removeClass('col-md-9'); //for etd's removal of the relevance stuff
-    $("#secondary").show(); //etd wants to remove the relevance stuff
+    $("#secondary").hide(); //etd wants to remove the relevance stuff
     if (browse_obj.search_show_facets == "on"){
       params.show_facets = true;
     }
@@ -406,8 +406,8 @@ jQuery(document).ready(function($) {
     }
   }
 
-  function get_wp_data(query, page){
-    if (template == 'search'){
+  function get_wp_data(query, page) {
+    if (template == 'search') {
       if (!page){
         page = 1;
       }
@@ -416,26 +416,23 @@ jQuery(document).ready(function($) {
   			type: 'GET',
   			url: browse_obj.ajax_url,
   			data: {
-  				action: 'wp_search',
-  				query: query,
-          page: page,
+  			  action: 'wp_search',
+  			  query: query,
+              page: page,
   			},
-  			beforeSend: function ()
-  			{
-          $("#secondary").html("Looking for "+related_content_title.toLowerCase()+"...");
+  			beforeSend: function () {
+              $("#secondary").html("Looking for "+related_content_title.toLowerCase()+"...");
+            },
+  			success: function(data) {
+              $("#secondary").html("<div class='panel panel-default'><div class='panel-heading'><b>"+related_content_title+"</b></div><div class='panel-body'>"+data+"</div></div>");
+              $("#secondary").addClass('drs-sidebar');
+              $("#primary").addClass('drs-main');
+              $("#secondary #title-container").hide();
+              fix_wp_pagination();
   			},
-  			success: function(data)
-  			{
-          $("#secondary").html("<div class='panel panel-default'><div class='panel-heading'><b>"+related_content_title+"</b></div><div class='panel-body'>"+data+"</div></div>");
-          $("#secondary").addClass('drs-sidebar');
-          $("#primary").addClass('drs-main');
-          $("#secondary #title-container").hide();
-          fix_wp_pagination();
-  			},
-  			error: function()
-  			{
-  				$("#secondary").hide();
-          $("#primary").removeClass('col-md-9').addClass('col-md-12');
+  			error: function() {
+              $("#secondary").hide();
+              $("#primary").removeClass('col-md-9').addClass('col-md-12');
   			}
   		});
     } else {
