@@ -235,14 +235,32 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
       $url .= '/' . $action . '/';
     }
   } else {
+    //assuming the only else is DRS
     $url .= "/" . $action . "/";
   }
-  if($sub_action != NULL){
-    $url .= $sub_action . "/";
+  
+  //DRS subaction of content_objects has special needs for building the URL
+  //PMJ assuming this only gets invoked when the action is 'files' 
+  switch ($sub_action) {
+    case 'content_objects':
+      $url .= "$pid/$sub_action";
+      break;
+      
+    case null:
+      //do nothing since there's no subaction
+      $url .= $pid . "?";
+      break;
+      
+    default:
+      //most common url construction
+      $url .= $sub_action . "/";
+      $url .= $pid . "?";
+      break;
+    
   }
   
-  $url .= $pid . "?";
-  
+  // @TODO it might be nice to guarantee somehow that before we get here we know the DPLA key is in place
+  // since if it isn't this won't return anything anyway
   if($source == "dpla" && !empty($dak)){
     $url .= "api_key=" . DPLA_API_KEY . "&";
   }
@@ -265,9 +283,6 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
       if($url_arguments != NULL){
         $url .= $url_arguments;
       }
-      break;
-      
-    default:
       break;
   }
   return $url;
