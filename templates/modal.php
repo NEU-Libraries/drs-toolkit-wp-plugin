@@ -84,7 +84,14 @@
 		</h2>
 		<br/>
 		<div class="pane" id="drs">
-			<label for="search">Search for an item: </label><input type="text" name="search" id="search-{{data.type}}" /><button class="themebutton search-button">Search</button>
+      <label for='drs-direct-insert'>Enter an item's URL directly from DRS</label>
+      <input type='text' name='drs-direct-insert' class='drstk-direct-insert drstk-direct-insert-drs' ></input>
+
+      <p class='drstk-direct-insert-spacer'> - OR - </p>
+
+			<label for="search">Search for an item: </label>
+      <input type="text" name="search" id="search-{{data.type}}" class='drstk-search-input'  />
+      <button class="themebutton search-button">Search</button>
 			<br/>
 			<div class="drs-chosen"></div>
 			<br/>
@@ -113,7 +120,14 @@
 			<ol id="sortable-{{data.type}}-list" class="fullwidth"></ol><div class="drs-pagination"></div>
 		</div>
 		<div class="pane" id="dpla">
-			<label for="search">Search for an item: </label><input type="text" name="search" id="search-{{data.type}}" /><button class="themebutton search-button">Search</button>
+      <label for='dpla-direct-insert'>Enter an item's URL directly from DPLA</label>
+      <input type='text' name='dpla-direct-insert' class='drstk-direct-insert drstk-direct-insert-dpla'></input>
+
+      <p class='drstk-direct-insert-spacer'> - OR - </p>
+
+			<label for="search">Search for an item: </label>
+      <input type="text" name="search" id="search-{{data.type}}" class='drstk-search-input' />
+      <button class="themebutton search-button">Search</button>
 			<br/>
 			<div class="dpla-chosen"></div>
 			<br/>

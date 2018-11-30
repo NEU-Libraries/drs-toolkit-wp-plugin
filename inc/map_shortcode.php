@@ -10,7 +10,7 @@ function reload_filtered_set_ajax_handler()
     }
     else if($_POST['reloadWhat'] == "facetReload") {
         if (isset($_POST['atts']['collection_id'])) {
-            $url = "https://repository.library.northeastern.edu/api/v1/search/geo/".$collection_pid."?per_page=10";
+            $url = drstk_api_url("drs", $collection_pid, "search", "geo", "per_page=10");
             if (isset($_POST['params']['f'])) {
                 foreach ($_POST['params']['f'] as $facet => $facet_val) {
                     $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
@@ -19,9 +19,8 @@ function reload_filtered_set_ajax_handler()
             if (isset($_POST['params']['q']) && $_POST['params']['q'] != ''){
                 $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
             }
-            $data1 = get_response($url);
-            $data1 = json_decode($data1);
-            $facets_info_data = $data1;
+            $response = get_response($url);
+            $facets_info_data = json_decode($response['output']);
             wp_send_json($facets_info_data);
         }
     }
@@ -42,15 +41,22 @@ function reloadRemainingMap_ajax_handler()
 /* adds shortcode */
 add_shortcode( 'drstk_map', 'drstk_map' );
 function drstk_map( $atts , $params){
-    global $errors, $DRS_PLUGIN_URL;
+  global $DRS_PLUGIN_URL;
+  $errors = drstk_get_errors();
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
-  if($cache != NULL && (!(isset($params)) || $params == NULL) && !(isset($atts['collection_id']))) {
-    return $cache;
+  if($cache != NULL
+      && ! WP_DEBUG
+      && (!(isset($params))
+          || $params == NULL)
+      && !(isset($atts['collection_id']))
+      ) {
+         return $cache;
   }
-
-    if(!isset($atts['collection_id'])) {
-        $items = array_map('trim', explode(',', $atts['id']));
-    }
+      
+  if(!isset($atts['collection_id'])) {
+    $items = array_map('trim', explode(',', $atts['id']));
+  }
+  
   $map_api_key = drstk_get_map_api_key();
   $map_project_key = drstk_get_map_project_key();
   $story = isset($atts['story']) ? $atts['story'] : "no";
@@ -73,10 +79,9 @@ function drstk_map( $atts , $params){
     $collectionItemsId = array();
 
     $facets_info_data = array();
-
     if(isset($atts['collection_id'])){
 
-        $url = "https://repository.library.northeastern.edu/api/v1/search/geo/".drstk_get_pid()."?per_page=10";
+        $url = drstk_api_url("drs", drstk_get_pid(), "search", "geo", "per_page=10");
 
         if(isset($params['page_no'])){
             $url .= "&page=" . $params['page_no'];
@@ -92,9 +97,8 @@ function drstk_map( $atts , $params){
             $url .= "&q=". urlencode(sanitize_text_field($params['q']));
         }
 
-        $data1 = get_response($url);
-        $data1 = json_decode($data1);
-        $facets_info_data = $data1;
+        $response = get_response($url);
+        $facets_info_data = json_decode($response['output']);
 
         $num_pages = $data1->pagination->table->num_pages;
 
@@ -111,14 +115,13 @@ function drstk_map( $atts , $params){
         }
         $items = $collectionItemsId;
     }
-
     foreach($items as $item){
     $repo = drstk_get_repo_from_pid($item);
     if ($repo != "drs"){$pid = explode(":",$item); $pid = $pid[1];} else {$pid = $item;}
     if ($repo == "drs"){
-      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item . "?solr_only=true";
-      $data = get_response($url);
-      $data = json_decode($data);
+      $url = drstk_api_url("drs", $item, "files", NULL, "solr_only=true");
+      $response = get_response($url);
+      $data = json_decode($response['output']);
       if (!isset($data->error)){
         $data = $data->_source;
         $pid = $data->id;
@@ -128,9 +131,9 @@ function drstk_map( $atts , $params){
           $coordinates = $data->subject_cartographics_coordinates_tesim[0];
         } else if (isset($data->subject_geographic_tesim)){
           $location = $data->subject_geographic_tesim[0];
-          $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
-          $locationData = get_response($locationUrl);
-          $locationData = json_decode($locationData);
+          $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location) . '&key=' . GOOGLE_MAPS_GEOCODING_KEY;
+          $response = get_response($locationUrl);
+          $locationData = json_decode($response['output']);
           if (!isset($locationData->error)) {
             $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
           }
@@ -173,8 +176,8 @@ function drstk_map( $atts , $params){
         if (isset($data->canonical_class_tesim)){
           if ($data->canonical_class_tesim[0] == "AudioFile" || $data->canonical_class_tesim[0] == "VideoFile"){
             $objects_url = "https://repository.library.northeastern.edu/api/v1/files/" . $item . "/content_objects";
-            $objects_data = get_response($objects_url);
-            $objects_data = json_decode($objects_data);
+            $response = get_response($objects_url);
+            $objects_data = json_decode($response['output']);
             $data = (object) array_merge((array) $data, (array) $objects_data);
             if (isset($objects_data->canonical_object)){
               $canonical_object = insert_jwplayer($key, $val, $data, $data->fields_thumbnail_list_tesim[2]);
@@ -221,9 +224,9 @@ function drstk_map( $atts , $params){
       $data->id=$post->ID;
       if(!is_numeric($coordinates[0])) {
         $location = $coordinates;
-        $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
-        $locationData = get_response($locationUrl);
-        $locationData = json_decode($locationData);
+        $locationUrl = "https://maps.google.com/maps/api/geocode/json?location=" . urlencode($location) . '&key=' . GOOGLE_MAPS_GEOCODING_KEY;
+        $response = get_response($locationUrl);
+        $locationData = json_decode($response['output']);
         if (!isset($locationData->error)) {
           $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
         }
@@ -268,15 +271,14 @@ function drstk_map( $atts , $params){
 
       $map_html .= "></div>";
     }
-
     if ($repo == "dpla"){
-      $url = "https://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
-      $data = get_response($url);
-      $data = json_decode($data);
+      $url = drstk_api_url("dpla", $pid, "items");
+      $response = get_response($url);
+      $data = json_decode($response['output']);
       if (isset($data->docs[0]->object)){
         $url = $data->docs[0]->object;
       } else {
-        $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+        $url = DPLA_FALLBACK_IMAGE_URL;
       }
       $title = $data->docs[0]->sourceResource->title;
       if (isset($data->docs[0]->sourceResource->description)){
@@ -306,9 +308,9 @@ function drstk_map( $atts , $params){
 
       if(!isset($data->docs[0]->sourceResource->spatial[0]->coordinates)) {
         $location = $data->docs[0]->sourceResource->spatial[count($data->docs[0]->sourceResource->spatial)-1]->name;// . $data->docs[0]->sourceResource->spatial[0]->state;
-        $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
-        $locationData = get_response($locationUrl);
-        $locationData = json_decode($locationData);
+        $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location) . '&key=' . GOOGLE_MAPS_GEOCODING_KEY;
+        $response = get_response($locationUrl);
+        $locationData = json_decode($response['output']);
         if (!isset($locationData->error)) {
           $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
         }
@@ -365,9 +367,9 @@ function drstk_map( $atts , $params){
       $colorGroup = $custom_map_color_groups[$key];
 
       $coordinates = "";
-      $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location);
-      $locationData = get_response($locationUrl);
-      $locationData = json_decode($locationData);
+      $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location) . '&key=' . GOOGLE_MAPS_GEOCODING_KEY;
+      $response = get_response($locationUrl);
+      $locationData = json_decode($response['output']);
       if (!isset($locationData->error)) {
         $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
       }

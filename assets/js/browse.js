@@ -242,7 +242,7 @@ jQuery(document).ready(function($) {
           this_doc += "<h4 class='drs-item-title'><a href='"+this_doc_url+"'>" + title + "</a></h4>";
         }
         if (creator && search_options.indexOf('Creator') > -1){
-          this_doc += "<h6 class='drs-item-creator'>"+ creator + "</h6>";
+          this_doc += "<h6 class='drs-item-creator'>" + creator.join('; ') + "</h6>";
         }
         if (abstract  && search_options.indexOf('Abstract') > -1){
           this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
@@ -270,7 +270,7 @@ jQuery(document).ready(function($) {
           this_doc += "<h5 class='drs-item-title'><a href='"+this_doc_url+"'>"+title+"</a></h5>";
         }
         if (creator && browse_options.indexOf('Creator') > -1){
-          this_doc += "<h6 class='drs-item-creator'>"+creator+"</h6>";
+          this_doc += "<h6 class='drs-item-creator'>" + creator.join('; ') + "</h6>";
         }
         if (abstract  && browse_options.indexOf('Abstract') > -1){
           this_doc += "<p class='drs-item-abstract'>"+abstract+"</p>";
@@ -307,7 +307,6 @@ jQuery(document).ready(function($) {
 
     $("#drs-facets a").on("click", function(e){
       e.preventDefault();
-      console.log("clicked");
 
       var facet = $(this).parents('.drs-facet').attr("id");
       if ($(this).parent().hasClass('modal-body')){
@@ -319,7 +318,6 @@ jQuery(document).ready(function($) {
       var facet_val = $(this).children(".drs-facet-val div:first-of-type").html();
       params.f[facet] = facet_val;
 
-      console.log(params);
       params.page = 1;
       $("#drs-selection").show();
       $("#drs-selection .col-md-10").append("<a class='themebutton btn btn-more' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+" <span class='fa fa-close'></span></a>");
@@ -346,7 +344,7 @@ jQuery(document).ready(function($) {
 
   }
 
-  $("#drs-sort").html("<h6>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance</option><option value='title_ssi%20asc'>Title A-Z</option><option value='title_ssi%20desc'>Title Z-A</option><option value='creator_tesim%20asc'>Creator A-Z</option><option value='creator_tesim%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></h6>");
+  $("#drs-sort").html("<h6>Sort By: <select id='drs-sort-option'><option value='score+desc%2C+system_create_dtsi+desc'>Relevance</option><option value='title_ssi%20asc'>Title A-Z</option><option value='title_ssi%20desc'>Title Z-A</option><option value='creator_ssi%20asc'>Creator A-Z</option><option value='creator_ssi%20desc'>Creator Z-A</option><option value='system_modified_dtsi%20asc'>Date (earliest to latest)</option><option value='system_modified_dtsi%20desc'>Date (latest to earliest)</option></select></h6>");
 
   $("#drs-sort-option").on("change", function() {
     params.sort = $(this).val();
@@ -388,9 +386,6 @@ jQuery(document).ready(function($) {
       if (!page){
         page = 1;
       }
-      console.log(browse_obj.ajax_url);
-      console.log(query);
-      console.log(page);
 
       $.ajax({
   			type: 'GET',

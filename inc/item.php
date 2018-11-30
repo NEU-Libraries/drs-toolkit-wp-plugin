@@ -1,5 +1,5 @@
 <?php
-global $item_pid, $data, $collection, $errors, $repo, $all_meta_options, $full_pid, $title;
+global $item_pid, $data, $collection, $repo, $all_meta_options, $full_pid, $title;
 $collection = drstk_get_pid();
 $errors = drstk_get_errors();
 $meta_options = get_option('drstk_item_page_metadata');
@@ -9,14 +9,15 @@ if (!is_array($meta_options)){
 $assoc_meta_options = drstk_get_assoc_meta_options();
 
 function get_item_details($data, $assoc=false){
-  global $errors, $repo, $meta_options, $assoc_meta_options;
+  global $repo, $meta_options, $assoc_meta_options;
+  $errors = drstk_get_errors();
   if (check_for_bad_data($data)){
     return false;
   }
   $html = '';
   if ($repo == "wp"){
     $abs = "Abstract/Description";
-    $data->mods->$abs = $data->post_excerpt;
+    $data->mods->$abs = $data->post_content;
     $datec = "Date created";
     $data->mods->$datec = $data->post_date;
   }
@@ -182,11 +183,11 @@ function get_download_links(){
   }
   foreach($data->content_objects as $key=>$val){
     if ($val != "Thumbnail Image"){
-      if ($val == 'Video File'){
-        $av_pid = explode("/", $key);
-        $av_pid = end($av_pid);
-        $av_pid = str_replace("?datastream_id=content","",$av_pid);
-        echo " <a href='".drstk_home_url()."download/".$av_pid."' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
+      if (is_user_logged_in() && drstk_api_auth_enabled()){
+        $content_pid = explode("/", $key);
+        $content_pid = end($content_pid);
+        $content_pid = str_replace("?datastream_id=content","",$content_pid);
+        echo " <a href='".drstk_home_url()."download/".$content_pid."' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
       } else {
         echo " <a href='".$key."' target='_blank' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
       }
@@ -198,9 +199,9 @@ function get_item_title(){
   global $item_pid, $data, $url, $repo, $full_pid, $title;
   $repo = drstk_get_repo_from_pid($item_pid);
   if ($repo == "drs"){
-    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $item_pid;
-    $data = get_response($url);
-    $data = json_decode($data);
+    $url = drstk_api_url("drs", $item_pid, "files");
+    $response = get_response($url);
+    $data = json_decode($response['output']);
     if (check_for_bad_data($data)){
       return false;
     }
@@ -210,9 +211,9 @@ function get_item_title(){
     $full_pid = $item_pid;
     $item_pid = explode(":",$item_pid);
     $item_pid = $item_pid[1];
-    $url = "https://api.dp.la/v2/items/".$item_pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
-    $data = get_response($url);
-    $data = json_decode($data);
+    $url = drstk_api_url("dpla", $item_pid, "items");
+    $response = get_response($url);
+    $data = json_decode($response['output']);
     if (check_for_bad_data($data)){
       return false;
     }
@@ -270,7 +271,8 @@ function get_item_breadcrumbs(){
 }
 
 function get_item_image(){
-  global $item_pid, $data, $errors, $repo;
+  global $item_pid, $data, $repo;
+  $errors = drstk_get_errors();
   if (check_for_bad_data($data)){
     echo check_for_bad_data($data);
     return false;
@@ -279,7 +281,7 @@ function get_item_image(){
     if (isset($data->docs[0]->object)){
       $img = $data->docs[0]->object;
     } else {
-      $img = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+      $img = DPLA_FALLBACK_IMAGE_URL;
     } //not doing canonical object because we can't do any zoom or media playing anyway
   }
   if ($repo == "wp"){
@@ -381,16 +383,17 @@ function get_item_image(){
 }
 
 function get_associated_files(){
-  global $data, $errors, $assoc_meta_options;
+  global $data, $assoc_meta_options;
+  $errors = drstk_get_errors();
   if (isset($data->associated) && ($data->associated != NULL) && (get_option('drstk_assoc') == 'on')){
     $associated_html = '';
     $title = (get_option('drstk_assoc_title') != '') ? get_option('drstk_assoc_title') : 'Associated Files';
     $associated_html .= "<div class='panel panel-default assoc_files'><div class='panel-heading'>".$title."</div><div class='panel-body'>";
       $assoc_pid = key(get_object_vars($data->associated)); //using this just to get the first title
     $assoc_title = $data->associated->$assoc_pid; //using this just to get the first title
-    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $assoc_pid . "?solr_only=true";
-    $assoc_data = get_response($url);
-    $assoc_data = json_decode($assoc_data);
+    $url = drstk_api_url("drs", $assoc_pid, "files", NULL, "solr_only=true");
+    $response = get_response($url);
+    $assoc_data = json_decode($response['output']);
     if (check_for_bad_data($assoc_data)){
       return false;
     } else {
@@ -452,7 +455,8 @@ function do_related_content_query($pid, $paged){
 add_action( 'wp_ajax_get_related_content_paginated', 'related_content_paginated_handler' ); //for auth users
 add_action( 'wp_ajax_nopriv_get_related_content_paginated', 'related_content_paginated_handler' ); //for nonauth users
 function related_content_paginated_handler(){
-  global $post, $errors;
+  global $post;
+  $errors = drstk_get_errors();
   if (isset($_GET['pid']) && isset($_GET['page']) && $_GET['page'] != null && $_GET['pid'] != NULL){
     $pid = $_GET['pid'];
     $page = intval($_GET['page']);
@@ -462,7 +466,7 @@ function related_content_paginated_handler(){
 }
 
 function check_for_bad_data($data){
-  global $errors;
+  $errors = drstk_get_errors();;
   if ($data == null) {
     return $errors['item']['fail'];
   } else if (isset($data->error)) {
@@ -471,7 +475,7 @@ function check_for_bad_data($data){
 }
 
 function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) {
-  global $errors;
+  $errors = drstk_get_errors();
   $av_type = "";
   if ($canonical_object_type == 'Video File'){
     $av_provider = 'video';
@@ -633,16 +637,17 @@ add_action( 'wp_ajax_get_associated_item', 'associated_ajax_handler' ); //for au
 add_action( 'wp_ajax_nopriv_get_associated_item', 'associated_ajax_handler' ); //for nonauth users
 function associated_ajax_handler() {
   // Handle the ajax request
-  global $errors, $assoc_meta_options;
+  global $assoc_meta_options;
+  $errors = drstk_get_errors();
   check_ajax_referer( 'item_drs' );
   if (isset($_POST['pid']) && ($_POST['pid'] != NULL) && (get_option('drstk_assoc') == 'on')){
     $associated_html = '';
     $title = (get_option('drstk_assoc_title') != '') ? get_option('drstk_assoc_title') : 'Associated Files';
     $associated_html .= "";
     $assoc_pid = $_POST['pid']; //using this just to get the first title
-    $url = "https://repository.library.northeastern.edu/api/v1/files/" . $assoc_pid . "?solr_only=true";
-    $assoc_data = get_response($url);
-    $assoc_data = json_decode($assoc_data);
+    $url = drstk_api_url("drs", $assoc_pid, "files", NULL, "solr_only=true");
+    $response = get_response($url);
+    $assoc_data = json_decode($response['output']);
     if (check_for_bad_data($assoc_data)){
       return false;
     } else {

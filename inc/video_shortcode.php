@@ -3,10 +3,15 @@
 add_shortcode( 'drstk_collection_playlist', 'drstk_collection_playlist' );
 add_shortcode( 'drstk_media', 'drstk_collection_playlist' );
 function drstk_collection_playlist($atts){
-  global $errors;
+  $errors = drstk_get_errors();
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
-  if($cache) {
-    return $cache;
+  if($cache != NULL
+      && ! WP_DEBUG
+      && (!(isset($params))
+          || $params == NULL)
+      && !(isset($atts['collection_id']))
+      ) {
+          return $cache;
   }
     $collection = array_map('trim', explode(',', $atts['id']));
     $playlists = '';
@@ -38,13 +43,13 @@ function drstk_collection_playlist($atts){
       if ($repo != "drs"){$pid = explode(":",$video); $pid = $pid[1];} else {$pid = $video;}
       $poster;
       if ($repo == "drs"){
-        $url = "https://repository.library.northeastern.edu/api/v1/files/" . $video . "?solr_only=true";
-        $data = get_response($url);
-        $data = json_decode($data);
+        $url = drstk_api_url("drs", $video, "files", "solr_only=true");
+        $response = get_response($url);
+        $data = json_decode($response['output']);
         $data = $data->_source;
         $objects_url = "https://repository.library.northeastern.edu/api/v1/files/" . $video . "/content_objects";
-        $objects_data = get_response($objects_url);
-        $objects_data = json_decode($objects_data);
+        $response = get_response($objects_url);
+        $objects_data = json_decode($response['output']);
         $data = (object) array_merge((array) $data, (array) $objects_data);
         if (!isset($data->error)){
 

@@ -9,7 +9,8 @@ add_action('media_buttons', 'add_drs_button', 1000);
 
 /*enques extra js*/
 function drstk_enqueue_page_scripts( $hook ) {
-  global $errors, $DRS_PLUGIN_PATH, $DRS_PLUGIN_URL;
+  global $DRS_PLUGIN_PATH, $DRS_PLUGIN_URL;
+  $errors = drstk_get_errors();
     wp_enqueue_style( 'drstk_admin_js', $DRS_PLUGIN_URL . '/assets/css/admin.css' );
     if ($hook == 'post.php' || $hook == 'post-new.php') {
 
@@ -63,101 +64,126 @@ add_action( 'wp_ajax_get_drs_code', 'drstk_get_drs_items' ); //for auth users
 function drstk_get_drs_items(){
   check_ajax_referer( 'drs_ajax_nonce' );
   $col_pid = drstk_get_pid();
-    $url = "https://repository.library.northeastern.edu/api/v1/search";
-    if (isset($_POST['params']['spatialfilter'])){
-      $url .= "/geo";
-    }
-    if (isset($_POST['params']['avfilter'])){
-      $url .= "/av";
-    }
-    if (isset($_POST['params']['timefilter'])){
-      $url .= "/date";
-    }
+  $url = ""; //Blank start
+  
+  if (isset($_POST['params']['spatialfilter'])){
+    $url = drstk_api_url("drs", $col_pid, "search", "geo", "per_page=20");
+  }
+  if (isset($_POST['params']['avfilter'])){
+    $url = drstk_api_url("drs", $col_pid, "search", "av", "per_page=20");
+  }
+  if (isset($_POST['params']['timefilter'])){
+    $url = drstk_api_url("drs", $col_pid, "search", "date", "per_page=20");
+  }
 
+  if (empty($url)) {
+    $url = drstk_api_url("drs", $col_pid, "search", null, "per_page=20");
+  }
+  
+  if (isset($_POST['params']['q'])){
+    $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
+  }
 
-    $url .= "/".$col_pid."?per_page=20";
-
-    if (isset($_POST['params']['q'])){
-      $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
+  if (isset($_POST['params']['page'])) {
+    $url .= "&page=" . $_POST['params']['page'];
+  }
+  if (isset($_POST['params']['sort'])) {
+    $sort = $_POST['params']['sort'];
+    switch ($sort) {
+      case "title":
+          $sort = "title_ssi";
+          break;
+      case "creator":
+          $sort = "creator_ssi";
+          break;
+      case "date":
+          $sort = "date_ssi";
+          break;
     }
-
-    if (isset($_POST['params']['page'])) {
-      $url .= "&page=" . $_POST['params']['page'];
-    }
-    if (isset($_POST['params']['sort'])) {
-      $sort = $_POST['params']['sort'];
-      switch ($sort) {
-        case "title":
-            $sort = "title_ssi";
-            break;
-        case "creator":
-            $sort = "creator_ssi";
-            break;
-        case "date":
-            $sort = "date_ssi";
-            break;
-      }
-      if ($sort != ""){
-        $url .= "&sort=".$sort."+asc";
-      } else {
-        $url .= "&sort=score+desc";
-      }
+    if ($sort != ""){
+      $url .= "&sort=".$sort."+asc";
     } else {
       $url .= "&sort=score+desc";
     }
-    if (isset($_POST['params']['facets'])){
-      $facets = $_POST['params']['facets'];
-      foreach($facets as $facet_name=>$facet_val){
-        if ($facet_name == "creator"){
-          if (is_array($facet_val)){
-            foreach($facet_val as $facet_value){
-              $url .= "&".urlencode("f[creator_sim][]")."=".urlencode($facet_value);
-            }
-          } else {
-            $url .= "&".urlencode("f[creator_sim][]")."=".urlencode($facet_val);
+  } else {
+    $url .= "&sort=score+desc";
+  }
+  if (isset($_POST['params']['facets'])){
+    $facets = $_POST['params']['facets'];
+    foreach($facets as $facet_name=>$facet_val){
+      if ($facet_name == "creator"){
+        if (is_array($facet_val)){
+          foreach($facet_val as $facet_value){
+            $url .= "&".urlencode("f[creator_sim][]")."=".urlencode($facet_value);
           }
+        } else {
+          $url .= "&".urlencode("f[creator_sim][]")."=".urlencode($facet_val);
         }
-        if ($facet_name == "type"){
-          if (is_array($facet_val)){
-            foreach($facet_val as $facet_value){
-              $url .= "&".urlencode("f[type_sim][]")."=".urlencode($facet_value);
-            }
-          } else {
-            $url .= "&".urlencode("f[type_sim][]")."=".urlencode($facet_val);
+      }
+      if ($facet_name == "type"){
+        if (is_array($facet_val)){
+          foreach($facet_val as $facet_value){
+            $url .= "&".urlencode("f[type_sim][]")."=".urlencode($facet_value);
           }
+        } else {
+          $url .= "&".urlencode("f[type_sim][]")."=".urlencode($facet_val);
         }
-        if ($facet_name == "subject"){
-          if (is_array($facet_val)){
-            foreach($facet_val as $facet_value){
-              $url .= "&".urlencode("f[subject_sim][]")."=".urlencode($facet_value);
-            }
-          } else {
-            $url .= "&".urlencode("f[subject_sim][]")."=".urlencode($facet_val);
+      }
+      if ($facet_name == "subject"){
+        if (is_array($facet_val)){
+          foreach($facet_val as $facet_value){
+            $url .= "&".urlencode("f[subject_sim][]")."=".urlencode($facet_value);
           }
+        } else {
+          $url .= "&".urlencode("f[subject_sim][]")."=".urlencode($facet_val);
         }
-        if ($facet_name == "date"){
-          if (!is_array($facet_val)){
-            $url .= "&".urlencode("f[creation_year_sim][]")."=".urlencode($facet_val);
-          }
+      }
+      if ($facet_name == "date"){
+        if (!is_array($facet_val)){
+          $url .= "&".urlencode("f[creation_year_sim][]")."=".urlencode($facet_val);
         }
       }
     }
-    $data = get_response($url);
-    $json = json_decode($data);
-    if (isset($json->error)) {
-      wp_send_json(json_encode( "There was an error: " . $json->error));
-      wp_die();
-      return;
-    }
-    wp_send_json($data);
+  }
+
+  
+  $response = get_response($url);
+  $jsonString = $response['output'];
+  if ($response['status'] != 200) {
+    // @TODO figure out how this was supposed to work in earlier versions
+    wp_send_json(json_encode( "There was an error: " . $json->error));
     wp_die();
+    return;
+  }
+  wp_send_json($jsonString);
+  wp_die();
 }
 
 add_action( 'wp_ajax_get_dpla_code', 'drstk_get_dpla_items' ); //for auth users
 
 function drstk_get_dpla_items(){
-  check_ajax_referer( 'dpla_ajax_nonce' );
-    $url = "https://api.dp.la/v2/items?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7&page_size=20";
+    check_ajax_referer( 'dpla_ajax_nonce' );
+    if (isset($_POST['params']['pid'])) {
+      $url = drstk_api_url("dpla", $_POST['params']['pid'], "items", NULL, "page_size=20"); 
+      
+      $response = get_response($url);
+      $jsonString = $response['output'];
+      
+      if ($response['status'] != 200) {
+        // @TODO figure out how this was supposed to work in earlier versions
+        wp_send_json(json_encode( "There was an error: " . $json->error));
+        wp_die();
+        return;
+      }
+      wp_send_json($jsonString);
+      wp_die();
+      
+    } else {
+      $url = drstk_api_url("dpla", "", "items", NULL, "page_size=20"); //blank pid for general search
+    }
+    
+    
+    
     if (isset($_POST['params']['q'])){
       $url .= "&q=". urlencode(sanitize_text_field($_POST['params']['q']));
     }
@@ -168,7 +194,7 @@ function drstk_get_dpla_items(){
       $url .= '&sourceResource.spatial=**';
     }
     if (isset($_POST['params']['timefilter'])){
-      $url .= '&sourceResource.date.displayDate=**';
+      $url .= '&sourceResource.date.displayDate=*';
     }
     if (isset($_POST['params']['page'])) {
       $url .= "&page=" . $_POST['params']['page'];
@@ -228,15 +254,19 @@ function drstk_get_dpla_items(){
       }
     }
     $url .= "&facets=sourceResource.contributor,sourceResource.date.begin,sourceResource.date.end,sourceResource.subject.name,sourceResource.type";
-    $data = get_response($url);
-    $json = json_decode($data);
-    if (isset($json->error)) {
+    
+    $response = get_response($url);
+    $jsonString = $response['output'];
+    
+    if ($response['status'] != 200) {
+      // @TODO figure out how this was supposed to work in earlier versions
       wp_send_json(json_encode( "There was an error: " . $json->error));
       wp_die();
       return;
     }
-    wp_send_json($data);
+    wp_send_json($jsonString);
     wp_die();
+    
 }
 
 

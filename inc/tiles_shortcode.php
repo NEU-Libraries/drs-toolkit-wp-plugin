@@ -3,12 +3,18 @@
 add_shortcode( 'drstk_tiles', 'drstk_tiles' );
 add_shortcode( 'drstk_tile', 'drstk_tiles' );
 function drstk_tiles( $atts ){
-  global $errors;
+  $errors = drstk_get_errors();
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
 
-  if($cache) {
-      return $cache;
+  if($cache != NULL
+      && ! WP_DEBUG
+      && (!(isset($params))
+          || $params == NULL)
+      && !(isset($atts['collection_id']))
+      ) {
+          return $cache;
   }
+      
   $imgs = array_map('trim', explode(',', $atts['id']));
   $img_html = "";
   if (isset($atts['image-size'])){
@@ -20,9 +26,9 @@ function drstk_tiles( $atts ){
     $repo = drstk_get_repo_from_pid($img);
     if ($repo != "drs"){$pid = explode(":",$img); $pid = $pid[1];} else {$pid = $img;}
     if ($repo == "drs"){
-      $url = "https://repository.library.northeastern.edu/api/v1/files/" . $img . "?solr_only=true";
-      $data = get_response($url);
-      $data = json_decode($data);
+      $url = drstk_api_url("drs", $img, "files", NULL, "solr_only=true");
+      $response = get_response($url);
+      $data = json_decode($response['output']);
       $data = $data->_source;
       $thumbnail = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
     }
@@ -61,13 +67,13 @@ function drstk_tiles( $atts ){
       $pid = "wp:".$pid;
     }
     if ($repo == "dpla"){
-      $url = "https://api.dp.la/v2/items/".$pid."?api_key=b0ff9dc35cb32dec446bd32dd3b1feb7";
-      $dpla = get_response($url);
-      $dpla = json_decode($dpla);
+      $url = drstk_api_url("dpla", $pid, "items");
+      $response = get_response($url);
+      $dpla = json_decode($response['output']);
       if (isset($dpla->docs[0]->object)){
         $url = $dpla->docs[0]->object;
       } else {
-        $url = "https://dp.la/info/wp-content/themes/berkman_custom_dpla/images/logo.png";
+        $url = DPLA_FALLBACK_IMAGE_URL;
       }
       $title = $dpla->docs[0]->sourceResource->title;
       if (isset($dpla->docs[0]->sourceResource->description)){
