@@ -61,7 +61,6 @@ function reloadRemainingMap(map_obj, params, post_id){
                 console.log("All pages loaded ... Done .. No more Api calls");
             }else{
                 //WILL HAVE TO INCLUDE FOR CUSTOM COORDINATES
-
                 //to grab the map div
                 var mapDiv = jQuery(data).filter("#map").empty()[0].outerHTML;
 

@@ -99,9 +99,12 @@ function drstk_map( $atts , $params){
 
         $response = get_response($url);
         $facets_info_data = json_decode($response['output']);
+        // this variable naming is horrific, but no time now to sort through refactoring and seeing what breaks to fix it -- PMJ @TODO
+        $data1 = $facets_info_data;
 
         $num_pages = $data1->pagination->table->num_pages;
 
+        // @TODO make sense of response data
         if($num_pages == 0){
             return "No Result";
         }
