@@ -1007,6 +1007,16 @@ function get_response($url) {
       $output = 'The resource was not found.';
       $status_message = 'Not Found';
       break;
+    case 302:
+      // check if there's json in it anyway
+      $json = json_decode($raw_response);
+      if (is_object($json)) {
+        $output = $raw_response;
+      } else {
+        $output = 'An unknown error occured -- ' . $response_status;
+      }
+      $status_message = 'The resource has moved or is no longer available';
+      break;
     default:
       $output = 'An unknown error occured.' . $response_status;
       $status_message = 'An unkown error occured. Please try again';

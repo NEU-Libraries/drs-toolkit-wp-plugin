@@ -103,6 +103,9 @@ function drstk_map( $atts , $params) {
         if($num_pages == 0){
             return "No Result";
         }
+        
+        // @TODO this is a little backwards: I'd prefer to make make the request at
+        // all if we've paged through everything, but that looks like big JS refactoring
         if(isset($params['page_no']) && $params['page_no'] > $num_pages) {
             return "All_Pages_Loaded";
         }
@@ -403,7 +406,7 @@ function drstk_map( $atts , $params) {
         $facets_info_data_obj = array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => $reload_filtered_set_drs_nonce,
-            'data' => $facets_info_data,
+            'data' => $responseData,
             'home_url' => drstk_home_url(),
             "atts" => $atts,
             "map_obj" => $map_obj

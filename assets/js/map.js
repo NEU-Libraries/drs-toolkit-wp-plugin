@@ -43,7 +43,6 @@ jQuery(document).ready(function($) {
 function reloadRemainingMap(map_obj, params, post_id){
 
     var page_no = params["page_no"];
-
     jQuery.ajax({
         type: 'POST',
         url: map_obj.ajax_url,
