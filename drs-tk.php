@@ -900,8 +900,8 @@ function drstk_item_script() {
     $item_nonce = wp_create_nonce( 'item_drs' );
 
     //this enqueues the JS file
-    wp_register_script('drstk_jwplayer', plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__), array(), $VERSION, false );
-    wp_enqueue_script('drstk_jwplayer');
+    wp_register_script('drstk_cloud_jwplayer', 'https://content.jwplatform.com/libraries/dTFl0VEe.js');
+    wp_enqueue_script('drstk_cloud_jwplayer');
     wp_register_script('drstk_elevatezoom',plugins_url('/assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__), array());
     wp_enqueue_script('drstk_elevatezoom');
     wp_register_script('drstk_item_gallery', plugins_url('/assets/js/item_gallery.js', __FILE__), array(), $VERSION, false );
