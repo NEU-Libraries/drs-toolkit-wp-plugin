@@ -40,7 +40,7 @@ function reloadRemainingMap_ajax_handler()
 
 /* adds shortcode */
 add_shortcode( 'drstk_map', 'drstk_map' );
-function drstk_map( $atts , $params){
+function drstk_map( $atts , $params) {
   global $DRS_PLUGIN_URL;
   $errors = drstk_get_errors();
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
@@ -65,10 +65,10 @@ function drstk_map( $atts , $params){
 
   $shortcode = "<div id='map' data-story='".$story."' data-map_api_key='".$map_api_key."' data-map_project_key='".$map_project_key."'";
   foreach($atts as $key => $value){
-        if(preg_match('/(.*)_color_desc_id/',$key)){
+        if(preg_match('/(.*)_color_desc_id/',$key)) {
             $shortcode .= " data-".$key."='".$atts[$key]."'";
         }
-        if(preg_match('/(.*)_color_hex/',$key)){
+        if(preg_match('/(.*)_color_hex/',$key)) {
             $shortcode .= " data-".$key."='".$atts[$key]."'";
         }
     }
@@ -79,10 +79,8 @@ function drstk_map( $atts , $params){
     $collectionItemsId = array();
 
     $facets_info_data = array();
-    if(isset($atts['collection_id'])){
-
+    if(isset($atts['collection_id'])) {
         $url = drstk_api_url("drs", drstk_get_pid(), "search", "geo", "per_page=10");
-
         if(isset($params['page_no'])){
             $url .= "&page=" . $params['page_no'];
         }
@@ -98,65 +96,72 @@ function drstk_map( $atts , $params){
         }
 
         $response = get_response($url);
-        $facets_info_data = json_decode($response['output']);
+        $responseData = json_decode($response['output']);
+        $num_pages = $responseData->pagination->table->num_pages;
 
-        $num_pages = $data1->pagination->table->num_pages;
-
+        // @TODO make sense of response data
         if($num_pages == 0){
             return "No Result";
         }
-        if(isset($params['page_no']) && $params['page_no'] > $num_pages){
+        
+        // @TODO this is a little backwards: I'd prefer to make make the request at
+        // all if we've paged through everything, but that looks like big JS refactoring
+        if(isset($params['page_no']) && $params['page_no'] > $num_pages) {
             return "All_Pages_Loaded";
         }
 
-        $docs2 = $data1->response->response->docs;
+        $docs2 = $responseData->response->response->docs;
         foreach($docs2 as $docItem){
             $collectionItemsId [] = $docItem->id;
         }
         $items = $collectionItemsId;
     }
-    foreach($items as $item){
-    $repo = drstk_get_repo_from_pid($item);
-    if ($repo != "drs"){$pid = explode(":",$item); $pid = $pid[1];} else {$pid = $item;}
-    if ($repo == "drs"){
-      $url = drstk_api_url("drs", $item, "files", NULL, "solr_only=true");
-      $response = get_response($url);
-      $data = json_decode($response['output']);
-      if (!isset($data->error)){
-        $data = $data->_source;
-        $pid = $data->id;
+    foreach($items as $item) {
+      $repo = drstk_get_repo_from_pid($item);
+      if ($repo != "drs") {
+        $pid = explode(":",$item); $pid = $pid[1];
+      } else {
+          $pid = $item;
+      }
+      if ($repo == "drs") {
+        $url = drstk_api_url("drs", $item, "files", NULL, "solr_only=true");
+        $response = get_response($url);
+        $data = json_decode($response['output']);
+        if (!isset($data->error)) {
+          $data = $data->_source;
+          $pid = $data->id;
 
-        $coordinates = "";
-        if(isset($data->subject_cartographics_coordinates_tesim)) {
-          $coordinates = $data->subject_cartographics_coordinates_tesim[0];
-        } else if (isset($data->subject_geographic_tesim)){
-          $location = $data->subject_geographic_tesim[0];
-          $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location) . '&key=' . GOOGLE_MAPS_GEOCODING_KEY;
-          $response = get_response($locationUrl);
-          $locationData = json_decode($response['output']);
-          if (!isset($locationData->error)) {
-            $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
-          }
-        } else { //no geo data, skip it
           $coordinates = "";
-        }
-        if ($coordinates == ""){
-          continue;
-        }
+          if(isset($data->subject_cartographics_coordinates_tesim)) {
+            $coordinates = $data->subject_cartographics_coordinates_tesim[0];
+          } else if (isset($data->subject_geographic_tesim)) {
+            $location = $data->subject_geographic_tesim[0];
+            $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location) . '&key=' . GOOGLE_MAPS_GEOCODING_KEY;
+            $response = get_response($locationUrl);
+            $locationData = json_decode($response['output']);
+            if (!isset($locationData->error)) {
+              $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
+            }
+          } else { //no geo data, skip it
+            $coordinates = "";
+          }
+          if ($coordinates == "") {
+            continue;
+          }
 
         $title = $data->full_title_ssi;
         $permanentUrl = drstk_home_url() . "item/".$pid;
         $map_html .= "<div class='coordinates' data-pid='".$pid."' data-url='".$permanentUrl."' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."'";
-        if (isset($atts['metadata'])){
+        if (isset($atts['metadata'])) {
           $map_metadata = '';
           $metadata = explode(",",$atts['metadata']);
-          foreach($metadata as $field){
-             if (isset($data->$field)){
+          foreach($metadata as $field) {
+             if (isset($data->$field)) {
                $this_field = $data->$field;
-              if (isset($this_field)){
-                if (is_array($this_field)){
-                  foreach($this_field as $val){
-                    if (is_array($val)){
+              if (isset($this_field)) {
+                if (is_array($this_field)) {
+                  foreach($this_field as $val) {
+                    if (is_array($val)) {
                       $map_metadata .= implode("<br/>",$val) . "<br/>";
                     } else {
                       $map_metadata .= $val ."<br/>";
@@ -173,7 +178,7 @@ function drstk_map( $atts , $params){
 
 
         $canonical_object = "";
-        if (isset($data->canonical_class_tesim)){
+        if (isset($data->canonical_class_tesim)) {
           if ($data->canonical_class_tesim[0] == "AudioFile" || $data->canonical_class_tesim[0] == "VideoFile"){
             $objects_url = "https://repository.library.northeastern.edu/api/v1/files/" . $item . "/content_objects";
             $response = get_response($objects_url);
@@ -194,13 +199,13 @@ function drstk_map( $atts , $params){
         $map_html = $errors['shortcodes']['fail'];
       }
     }
-    if ($repo == "wp"){
+    if ($repo == "wp") {
       $post = get_post($pid);
       $url = $post->guid;
       $title = $post->post_title;
       $description = $post->post_excerpt;
       $custom = get_post_custom($pid);
-      if (isset($custom['_map_coords'])){
+      if (isset($custom['_map_coords'])) {
         $coordinates = $custom['_map_coords'][0];
       } else {
         $coordinates = "";
@@ -212,9 +217,9 @@ function drstk_map( $atts , $params){
       $data->date_ssi = array($custom['_timeline_date'][0]);
       $data->canonical_object = new StdClass;
       $url = $post->guid;
-      if (strpos($post->post_mime_type, "audio") !== false){
+      if (strpos($post->post_mime_type, "audio") !== false) {
         $type = "AudioFile";
-      } else if (strpos($post->post_mime_type, "video") !== false){
+      } else if (strpos($post->post_mime_type, "video") !== false) {
         $type = "VideoFile";
       } else {
         $type = "ImageMasterFile";
@@ -234,7 +239,7 @@ function drstk_map( $atts , $params){
       $permanentUrl = drstk_home_url() . "item/wp:".$post->ID;
       $map_html .= "<div class='coordinates' data-pid='".$pid."' data-url='".$permanentUrl."' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title, ENT_QUOTES, 'UTF-8')."'";
 
-      if (isset($atts['metadata'])){
+      if (isset($atts['metadata'])) {
         $map_metadata = '';
         $metadata = explode(",",$atts['metadata']);
         foreach($metadata as $field){
@@ -258,8 +263,8 @@ function drstk_map( $atts , $params){
         $map_html .= " data-metadata='".$map_metadata."'";
       }
       $canonical_object = "";
-      if (isset($data->canonical_object)){
-        foreach($data->canonical_object as $key=>$val){
+      if (isset($data->canonical_object)) {
+        foreach($data->canonical_object as $key=>$val) {
           if ($val == 'VideoFile' || $val == 'AudioFile'){
             $canonical_object = do_shortcode('[video src="'.$post->guid.'"]');
           } else {
@@ -271,7 +276,7 @@ function drstk_map( $atts , $params){
 
       $map_html .= "></div>";
     }
-    if ($repo == "dpla"){
+    if ($repo == "dpla") {
       $url = drstk_api_url("dpla", $pid, "items");
       $response = get_response($url);
       $data = json_decode($response['output']);
@@ -281,18 +286,18 @@ function drstk_map( $atts , $params){
         $url = DPLA_FALLBACK_IMAGE_URL;
       }
       $title = $data->docs[0]->sourceResource->title;
-      if (isset($data->docs[0]->sourceResource->description)){
+      if (isset($data->docs[0]->sourceResource->description)) {
         $description = $data->docs[0]->sourceResource->description;
       } else {
         $description = "";
       }
-      if (!is_array($title)){
+      if (!is_array($title)) {
         $title = array($title);
       }
       $data->full_title_ssi = $title;
       $data->abstract_tesim = $description;
       $cre = "Creator,Contributor";
-      if (isset($data->docs[0]->sourceResource->creator)){
+      if (isset($data->docs[0]->sourceResource->creator)) {
         $data->creator_tesim = $data->docs[0]->sourceResource->creator;
       } else {
         $data->creator_tesim = "";
@@ -301,7 +306,7 @@ function drstk_map( $atts , $params){
       $data->key_date_ssi = isset($data->docs[0]->sourceResource->date->displayDate) ? $data->docs[0]->sourceResource->date->displayDate : array();
       $data->canonical_object = new StdClass;
       $data->canonical_object->$url = "Master Image";
-      if (!isset($data->docs[0]->sourceResource->spatial)){
+      if (!isset($data->docs[0]->sourceResource->spatial)) {
         $coordinates = "";
         continue;
       }
@@ -320,15 +325,15 @@ function drstk_map( $atts , $params){
       $permanentUrl = drstk_home_url() . "item/dpla:".$pid;
       $map_html .= "<div class='coordinates' data-pid='".$pid."' data-url='".$permanentUrl."' data-coordinates='".$coordinates."' data-title='".htmlspecialchars($title[0], ENT_QUOTES, 'UTF-8')."'";
 
-      if (isset($atts['metadata'])){
+      if (isset($atts['metadata'])) {
         $map_metadata = '';
         $metadata = explode(",",$atts['metadata']);
-        foreach($metadata as $field){
-           if (isset($data->$field)){
+        foreach($metadata as $field) {
+           if (isset($data->$field)) {
              $this_field = $data->$field;
-            if (isset($this_field)){
-              if (is_array($this_field)){
-                foreach($this_field as $val){
+            if (isset($this_field)) {
+              if (is_array($this_field)) {
+                foreach($this_field as $val) {
                   if (is_array($val)){
                     $map_metadata .= implode("<br/>",$val) . "<br/>";
                   } else {
@@ -401,7 +406,7 @@ function drstk_map( $atts , $params){
         $facets_info_data_obj = array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => $reload_filtered_set_drs_nonce,
-            'data' => $facets_info_data,
+            'data' => $responseData,
             'home_url' => drstk_home_url(),
             "atts" => $atts,
             "map_obj" => $map_obj
@@ -449,7 +454,7 @@ function drstk_map_shortcode_scripts() {
     $temp =  shortcode_parse_atts($post->post_content);
     $collectionSet = "";
 
-    if(isset($temp['collection_id']) && $temp['collection_id'] != ''){
+    if(isset($temp['collection_id']) && $temp['collection_id'] != '') {
         $collectionSet = "checked";
     }
     $map_obj = array(

@@ -43,7 +43,6 @@ jQuery(document).ready(function($) {
 function reloadRemainingMap(map_obj, params, post_id){
 
     var page_no = params["page_no"];
-
     jQuery.ajax({
         type: 'POST',
         url: map_obj.ajax_url,
@@ -61,7 +60,6 @@ function reloadRemainingMap(map_obj, params, post_id){
                 console.log("All pages loaded ... Done .. No more Api calls");
             }else{
                 //WILL HAVE TO INCLUDE FOR CUSTOM COORDINATES
-
                 //to grab the map div
                 var mapDiv = jQuery(data).filter("#map").empty()[0].outerHTML;
 

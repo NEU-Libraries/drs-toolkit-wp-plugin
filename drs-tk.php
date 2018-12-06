@@ -235,14 +235,32 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
       $url .= '/' . $action . '/';
     }
   } else {
+    //assuming the only else is DRS
     $url .= "/" . $action . "/";
   }
-  if($sub_action != NULL){
-    $url .= $sub_action . "/";
+  
+  //DRS subaction of content_objects has special needs for building the URL
+  //PMJ assuming this only gets invoked when the action is 'files' 
+  switch ($sub_action) {
+    case 'content_objects':
+      $url .= "$pid/$sub_action";
+      break;
+      
+    case null:
+      //do nothing since there's no subaction
+      $url .= $pid . "?";
+      break;
+      
+    default:
+      //most common url construction
+      $url .= $sub_action . "/";
+      $url .= $pid . "?";
+      break;
+    
   }
   
-  $url .= $pid . "?";
-  
+  // @TODO it might be nice to guarantee somehow that before we get here we know the DPLA key is in place
+  // since if it isn't this won't return anything anyway
   if($source == "dpla" && !empty($dak)){
     $url .= "api_key=" . DPLA_API_KEY . "&";
   }
@@ -265,9 +283,6 @@ function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_argument
       if($url_arguments != NULL){
         $url .= $url_arguments;
       }
-      break;
-      
-    default:
       break;
   }
   return $url;
@@ -885,8 +900,8 @@ function drstk_item_script() {
     $item_nonce = wp_create_nonce( 'item_drs' );
 
     //this enqueues the JS file
-    wp_register_script('drstk_jwplayer', plugins_url('/assets/js/jwplayer/jwplayer.js', __FILE__), array(), $VERSION, false );
-    wp_enqueue_script('drstk_jwplayer');
+    wp_register_script('drstk_cloud_jwplayer', 'https://content.jwplatform.com/libraries/dTFl0VEe.js');
+    wp_enqueue_script('drstk_cloud_jwplayer');
     wp_register_script('drstk_elevatezoom',plugins_url('/assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__), array());
     wp_enqueue_script('drstk_elevatezoom');
     wp_register_script('drstk_item_gallery', plugins_url('/assets/js/item_gallery.js', __FILE__), array(), $VERSION, false );
@@ -991,6 +1006,16 @@ function get_response($url) {
     case 404:
       $output = 'The resource was not found.';
       $status_message = 'Not Found';
+      break;
+    case 302:
+      // check if there's json in it anyway
+      $json = json_decode($raw_response);
+      if (is_object($json)) {
+        $output = $raw_response;
+      } else {
+        $output = 'An unknown error occured -- ' . $response_status;
+      }
+      $status_message = 'The resource has moved or is no longer available';
       break;
     default:
       $output = 'An unknown error occured.' . $response_status;
