@@ -77,7 +77,7 @@ function drstk_timeline( $atts, $params ){
     $current_color_code_id_values = array();
     $current_color_legend_desc_values = array();
     $index_color_pair = array();
-    $facet_options = drstk_facets_get_option(true);
+    $facet_options = drstk_facets_get_option('drstk', true);
     
     foreach($color_codes as $color_code=>$color_code_values){
         //$current_color_code_id_string = $color_code . "_id";

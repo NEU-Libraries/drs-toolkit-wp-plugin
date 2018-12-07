@@ -46,10 +46,9 @@ $TEMPLATE_THEME = array(
 
  register_activation_hook( __FILE__, 'drstk_install' );
  register_deactivation_hook( __FILE__, 'drstk_deactivation' );
-
  $all_meta_options = array("Title","Alternative Title","Creator","Contributor","Publisher","Type of Resource","Genre","Language","Physical Description","Abstract/Description","Table of contents","Notes","Subjects and keywords","Related item","Identifier","Access condition","Location","uri","Format","Permanent URL","Date created","Date issued","Copyright date","Biographical/Historical","Biográfica/histórica", "Issuance","Frequency","Digital origin","Map data","Use and reproduction","Restriction on access");
  $all_assoc_meta_options = array("full_title_ssi","creator_tesim","abstract_tesim");
- $niec_facet_options = array("niec_gender_ssim", "niec_age_ssim", "niec_race_ssim", "niec_sign_pace_ssim", "niec_fingerspelling_extent_ssim", "niec_fingerspelling_pace_ssim", "niec_numbers_pace_ssim", "niec_numbers_extent_ssim", "niec_classifiers_extent_ssim", "niec_use_of_space_extent_ssim", "niec_how_space_used_ssim", "niec_text_type_ssim", "niec_register_ssim", "niec_conversation_type_ssim", "niec_audience_ssim", "niec_signed_language_ssim", "niec_spoken_language_ssim", "niec_lends_itself_to_classifiers_ssim", "niec_lends_itself_to_use_of_space_ssim");
+ 
 
  /**
   * Rewrite rules for the plugin.
@@ -116,7 +115,6 @@ $TEMPLATE_THEME = array(
 
 //This registers the settings
 function register_drs_settings() {
-  global $niec_facet_options;
 
   //Project Settings
   add_settings_section('drstk_project', "Project Settings", null, 'drstk_options');
@@ -125,7 +123,7 @@ function register_drs_settings() {
   add_settings_field('drstk_home_url', 'Permalink/URL Base', 'drstk_home_url_callback', 'drstk_options', 'drstk_project');
   register_setting( 'drstk_options', 'drstk_home_url', 'drstk_home_url_validation' );
 
-
+  //Search Settings
   add_settings_section('drstk_search_settings', 'Search Settings', null, 'drstk_options');
   add_settings_field('drstk_search_page_title', 'Search Page Title', 'drstk_search_page_title_callback', 'drstk_options', 'drstk_search_settings');
   register_setting( 'drstk_options', 'drstk_search_page_title' );
@@ -140,6 +138,7 @@ function register_drs_settings() {
   add_settings_field('drstk_search_show_facets', 'Show Facets', 'drstk_search_show_facets_callback', 'drstk_options', 'drstk_search_settings');
   register_setting( 'drstk_options', 'drstk_search_show_facets' );
 
+  // Browse Settings
   add_settings_section('drstk_browse_settings', 'Browse Settings', null, 'drstk_options');
   add_settings_field('drstk_browse_page_title', 'Browse Page Title', 'drstk_browse_page_title_callback', 'drstk_options', 'drstk_browse_settings');
   register_setting( 'drstk_options', 'drstk_browse_page_title' );
@@ -156,14 +155,13 @@ function register_drs_settings() {
   add_settings_field('drstk_facets', 'Facets to Display<br/><small>Select which facets you would like to display on the search and browse pages. Once selected, you may enter custom names for these facets. Drag and drop the order of the facets to change the order of display.</small>', 'drstk_facets_callback', 'drstk_options', 'drstk_facet_settings');
   register_setting( 'drstk_options', 'drstk_facets' );
   
-  $facet_options = drstk_facets_get_option(true);
+  $facet_options = drstk_facets_get_option('drstk', true);
   foreach($facet_options as $option){
     add_settings_field('drstk_'.$option.'_title', null, 'drstk_facet_title_callback', 'drstk_options', 'drstk_facet_settings', array('class'=>'hidden'));
     register_setting( 'drstk_options', 'drstk_'.$option.'_title');
   }
   add_settings_field('drstk_facet_sort_order', 'Default Facet Sort', 'drstk_facet_sort_callback', 'drstk_options', 'drstk_facet_settings');
   register_setting('drstk_options', 'drstk_facet_sort_order');
-
 
   add_settings_section('drstk_collections_settings', 'Collections Page Settings', null, 'drstk_options');
   add_settings_field('drstk_collections_page_title', 'Collections Page Title', 'drstk_collections_page_title_callback', 'drstk_options', 'drstk_collections_settings');
@@ -216,7 +214,7 @@ function register_drs_settings() {
                      'drstk_advanced',
                       array('class'=>'niec'));
   register_setting( 'drstk_options', 'drstk_niec_metadata' );
-  
+  $niec_facet_options = drstk_facets_get_option('niec', true);
   foreach($niec_facet_options as $option){
     add_settings_field('drstk_niec_'.$option.'_title',
                        null,
@@ -408,7 +406,7 @@ function drstk_get_facets_to_display(){
     if (get_option('drstk_niec_metadata') == NULL) {
       // this is a little weird, but it helps make the list of default facets more consistent -- PMJ
       // @TODO what happens here could probably be folded in to drstk_facets_get_option() eventually
-      $facet_options = drstk_facets_get_option(true);
+      $facet_options = drstk_facets_get_option('drstk', true);
     } else {
       $facet_options = array();
     }
@@ -600,7 +598,7 @@ function drstk_search_show_facets_callback(){
 }
 
 function drstk_facets_callback(){
-  $facet_options = drstk_facets_get_option(true);
+  $facet_options = drstk_facets_get_option('drstk', true);
   $facets_to_display = drstk_get_facets_to_display();
   echo "<table><tbody id='facets_sortable'>";
   foreach($facets_to_display as $option){
@@ -640,7 +638,7 @@ function drstk_niec_callback(){
 
 
 function drstk_niec_metadata_callback(){
-  global $niec_facet_options;
+  $niec_facet_options = drstk_facets_get_option('niec', true);;
   $niec_facets_to_display = get_option('drstk_niec_metadata');
   echo "<table><tbody id='niec_facets_sortable'>";
   if (is_array($niec_facets_to_display)){
@@ -1195,23 +1193,65 @@ function create_post_type() {
  * @TODO see if this can do the work in drstk_get_facets_to_display
  * @TODO check if we really do need to strip out defaults in some cases
  * 
+ * @param string $facet_type drstk or niec
  * @param boolean $default true to return the defaults, false (default) to return the data from options table
  * @return array
  */
 
-function drstk_facets_get_option($default = false)
+function drstk_facets_get_option($facet_type, $default = false)
 {
-  $default_facet_options = array("creator_sim",
-                                 "creation_year_sim",
-                                 "subject_sim",
-                                 "type_sim",
-                                 "community_name_ssim",
-                                 "drs_department_ssim",
-                                 "drs_degree_ssim",
-                                 "drs_course_number_ssim",
-                                 "drs_course_title_ssim");
-  if ($default) {
-    return $default_facet_options;
+  switch ($facet_type) {
+    case 'drstk':
+      $default_facet_options = array("creator_sim",
+                                     "creation_year_sim",
+                                     "subject_sim",
+                                     "type_sim",
+                                     "community_name_ssim",
+                                     "drs_department_ssim",
+                                     "drs_degree_ssim",
+                                     "drs_course_number_ssim",
+                                     "drs_course_title_ssim");
+      
+      
+      if ($default) {
+        return $default_facet_options;
+      }
+      return get_option('drstk_facets', $default_facet_options);
+      
+      
+      break;
+      
+    case 'niec':
+      $default_niec_facet_options = array("niec_gender_ssim",
+                                          "niec_age_ssim",
+                                          "niec_race_ssim",
+                                          "niec_sign_pace_ssim",
+                                          "niec_fingerspelling_extent_ssim",
+                                          "niec_fingerspelling_pace_ssim",
+                                          "niec_numbers_pace_ssim",
+                                          "niec_numbers_extent_ssim",
+                                          "niec_classifiers_extent_ssim",
+                                          "niec_use_of_space_extent_ssim",
+                                          "niec_how_space_used_ssim",
+                                          "niec_text_type_ssim",
+                                          "niec_register_ssim",
+                                          "niec_conversation_type_ssim",
+                                          "niec_audience_ssim",
+                                          "niec_signed_language_ssim",
+                                          "niec_spoken_language_ssim",
+                                          "niec_lends_itself_to_classifiers_ssim",
+                                          "niec_lends_itself_to_use_of_space_ssim");
+      
+      if ($default) {
+        return $default_niec_facet_options;
+      }
+      return get_option('drstk_niec_metadata', $default_niec_facet_options);
+      
+      break;
+      
+    default:
+      return array();
+      break;
   }
-  return get_option('drstk_facets', $default_facet_options);
+
 }
