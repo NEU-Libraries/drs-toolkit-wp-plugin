@@ -77,7 +77,8 @@ function drstk_timeline( $atts, $params ){
     $current_color_code_id_values = array();
     $current_color_legend_desc_values = array();
     $index_color_pair = array();
-    $facet_options = array("creator_sim","creation_year_sim","subject_sim","type_sim","drs_department_ssim", "drs_degree_ssim", "drs_course_number_ssim", "drs_course_title_ssim");
+    $facet_options = drstk_facets_get_option(true);
+    
     foreach($color_codes as $color_code=>$color_code_values){
         //$current_color_code_id_string = $color_code . "_id";
         //$current_color_legend_desc_string = $color_code . "_desc";
