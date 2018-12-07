@@ -119,19 +119,13 @@ $TEMPLATE_THEME = array(
 function register_drs_settings() {
   global $facet_options, $niec_facet_options;
 
-  add_settings_section('drstk_project', "Project Info", null, 'drstk_options');
+  //Project Settings
+  add_settings_section('drstk_project', "Project Settings", null, 'drstk_options');
   add_settings_field('drstk_collection', 'Project Collection or Set URL', 'drstk_collection_callback', 'drstk_options', 'drstk_project');
   register_setting( 'drstk_options', 'drstk_collection' );
   add_settings_field('drstk_home_url', 'Permalink/URL Base', 'drstk_home_url_callback', 'drstk_options', 'drstk_project');
   register_setting( 'drstk_options', 'drstk_home_url', 'drstk_home_url_validation' );
 
-    //Adding Map Leaflet API Field
-  add_settings_field('leaflet_api_key', 'Leaflet API Key', 'leaflet_api_key_callback', 'drstk_options', 'drstk_project');
-  register_setting( 'drstk_options', 'leaflet_api_key' );
-
-   //Adding Map Leaflet Project Field
-  add_settings_field('leaflet_project_key', 'Leaflet Project Key', 'leaflet_project_key_callback', 'drstk_options', 'drstk_project');
-  register_setting( 'drstk_options', 'leaflet_project_key' );
 
   add_settings_section('drstk_search_settings', 'Search Settings', null, 'drstk_options');
   add_settings_field('drstk_search_page_title', 'Search Page Title', 'drstk_search_page_title_callback', 'drstk_options', 'drstk_search_settings');
@@ -168,14 +162,7 @@ function register_drs_settings() {
   }
   add_settings_field('drstk_facet_sort_order', 'Default Facet Sort', 'drstk_facet_sort_callback', 'drstk_options', 'drstk_facet_settings');
   register_setting('drstk_options', 'drstk_facet_sort_order');
-  add_settings_field('drstk_niec', 'Does your project include NIEC metadata?', 'drstk_niec_callback', 'drstk_options', 'drstk_facet_settings');
-  register_setting('drstk_options', 'drstk_niec');
-  add_settings_field('drstk_niec_metadata', 'Facets and Metadata to Display', 'drstk_niec_metadata_callback', 'drstk_options', 'drstk_facet_settings', array('class'=>'niec'));
-  register_setting( 'drstk_options', 'drstk_niec_metadata' );
-  foreach($niec_facet_options as $option){
-    add_settings_field('drstk_niec_'.$option.'_title', null, 'drstk_niec_metadata_title_callback', 'drstk_options', 'drstk_facet_settings', array('class'=>'hidden'));
-    register_setting( 'drstk_options', 'drstk_niec_'.$option.'_title');
-  }
+
 
   add_settings_section('drstk_collections_settings', 'Collections Page Settings', null, 'drstk_options');
   add_settings_field('drstk_collections_page_title', 'Collections Page Title', 'drstk_collections_page_title_callback', 'drstk_options', 'drstk_collections_settings');
@@ -193,6 +180,7 @@ function register_drs_settings() {
   add_settings_field('drstk_mirador_url', 'Mirador URL', 'drstk_mirador_url_callback', 'drstk_options', 'drstk_mirador_settings', array('class'=>'mirador'));
   register_setting('drstk_options', 'drstk_mirador_url');
 
+  //Single Item Page
   add_settings_section('drstk_single_settings', 'Single Item Page Settings', null, 'drstk_options');
   add_settings_field('drstk_item_page_metadata', 'Metadata to Display<br/><small>If none are selected, all metadata will display in the default order. To reorder or limit the fields which display, select the desired fields and drag and drop to reorder. To add custom fields, click the add button and type in the label.</small>', 'drstk_item_page_metadata_callback', 'drstk_options', 'drstk_single_settings');
   register_setting( 'drstk_options', 'drstk_item_page_metadata' );
@@ -210,6 +198,48 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_annotations' );
   add_settings_field('drstk_item_extensions', 'Enable Item Page Custom Text', 'drstk_item_extensions_callback', 'drstk_options', 'drstk_single_settings');
   register_setting( 'drstk_options', 'drstk_item_extensions' );
+  
+  //Advanced Options
+  add_settings_section('drstk_advanced', "Advanced Options", null, 'drstk_options');
+  add_settings_field('drstk_niec',
+                     'Does your project include NIEC metadata?',
+                     'drstk_niec_callback',
+                     'drstk_options',
+                     'drstk_advanced');
+  register_setting('drstk_options', 'drstk_niec');
+  
+  add_settings_field('drstk_niec_metadata',
+                     'NIEC Facets and Metadata to Display',
+                     'drstk_niec_metadata_callback',
+                     'drstk_options',
+                     'drstk_advanced',
+                      array('class'=>'niec'));
+  register_setting( 'drstk_options', 'drstk_niec_metadata' );
+  
+  foreach($niec_facet_options as $option){
+    add_settings_field('drstk_niec_'.$option.'_title',
+                       null,
+                       'drstk_niec_metadata_title_callback',
+                       'drstk_options',
+                       'drstk_advanced',
+                       array('class'=>'hidden'));
+    register_setting( 'drstk_options', 'drstk_niec_'.$option.'_title');
+  }
+  
+  //Leaflet
+  add_settings_field('leaflet_api_key',
+                     'Leaflet API Key',
+                     'leaflet_api_key_callback',
+                     'drstk_options',
+                     'drstk_advanced');
+  register_setting( 'drstk_options', 'leaflet_api_key' );
+  add_settings_field('leaflet_project_key',
+                     'Leaflet Project Key',
+                     'leaflet_project_key_callback',
+                     'drstk_options',
+                     'drstk_advanced');
+  register_setting( 'drstk_options', 'leaflet_project_key' );
+  
 }
 add_action( 'admin_init', 'register_drs_settings' );
 add_action( 'admin_init', 'add_tinymce_plugin');
