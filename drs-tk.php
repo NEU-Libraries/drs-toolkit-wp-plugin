@@ -640,7 +640,7 @@ function drstk_niec_callback(){
 function drstk_niec_metadata_callback(){
   $niec_facet_options = drstk_facets_get_option('niec', true);;
   $niec_facets_to_display = get_option('drstk_niec_metadata');
-  echo "<table><tbody id='niec_facets_sortable'>";
+  echo "<table class='drstk_facets drstk_niec_facets'><tbody id='niec_facets_sortable'>";
   if (is_array($niec_facets_to_display)){
     foreach($niec_facets_to_display as $option){
       echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_niec_metadata[]" value="'.$option.'" checked="checked"/> <label> <span class="dashicons dashicons-move"></span> '.titleize($option).'</label></td>';
