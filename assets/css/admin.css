@@ -285,3 +285,28 @@
 	float: left;
 	width: 50%;
 }
+
+.settings_page_drstk_admin_menu table {
+	display: none;
+}
+
+.settings_page_drstk_admin_menu h2 {
+	cursor: pointer;
+}
+
+table.drstk_facets {
+	display: table;
+}
+
+.settings_page_drstk_admin_menu h2.closed::after {
+  content: "\f139";
+  font-family: dashicons;
+  vertical-align: middle;
+}
+
+.settings_page_drstk_admin_menu h2.open::after {
+	content: "\f140";
+  font-family: dashicons;
+  vertical-align: middle;
+}
+

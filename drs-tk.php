@@ -600,7 +600,7 @@ function drstk_search_show_facets_callback(){
 function drstk_facets_callback(){
   $facet_options = drstk_facets_get_option('drstk', true);
   $facets_to_display = drstk_get_facets_to_display();
-  echo "<table><tbody id='facets_sortable'>";
+  echo "<table class='drstk_facets'><tbody id='facets_sortable'>";
   foreach($facets_to_display as $option){
     echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_facets[]" value="'.$option.'" checked="checked"/> <label> <span class="dashicons dashicons-move"></span> '.titleize($option).'</label></td>';
     echo '<td style="padding:0;" class="title"><input type="text" name="drstk_'.$option.'_title" value="'.get_option('drstk_'.$option.'_title').'"></td></tr>';
