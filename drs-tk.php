@@ -694,7 +694,7 @@ function drstk_mirador_url_callback() {
 function drstk_item_page_metadata_callback(){
   global $all_meta_options;
   $item_options = get_option('drstk_item_page_metadata') != "" ? get_option('drstk_item_page_metadata') : array();
-  echo '<table><tbody id="item_metadata_sortable">';
+  echo '<table class="drstk_item_metadata"><tbody id="item_metadata_sortable">';
   foreach($item_options as $option){
     echo'<tr><td style="padding:0"><label><input type="checkbox" name="drstk_item_page_metadata[]" value="'.$option.'" ';
     if (is_array($item_options) && in_array($option, $item_options)){echo'checked="checked"';}

@@ -298,6 +298,10 @@ table.drstk_facets {
 	display: table;
 }
 
+table.drstk_item_metadata {
+	display: table;
+}
+
 .settings_page_drstk_admin_menu h2.closed::after {
   content: "\f139";
   font-family: dashicons;
