@@ -117,14 +117,14 @@ $TEMPLATE_THEME = array(
 function register_drs_settings() {
 
   //Project Settings
-  add_settings_section('drstk_project', "Project Settings", null, 'drstk_options');
+  add_settings_section('drstk_project', "Project", null, 'drstk_options');
   add_settings_field('drstk_collection', 'Project Collection or Set URL', 'drstk_collection_callback', 'drstk_options', 'drstk_project');
   register_setting( 'drstk_options', 'drstk_collection' );
   add_settings_field('drstk_home_url', 'Permalink/URL Base', 'drstk_home_url_callback', 'drstk_options', 'drstk_project');
   register_setting( 'drstk_options', 'drstk_home_url', 'drstk_home_url_validation' );
 
   //Search Settings
-  add_settings_section('drstk_search_settings', 'Search Settings', null, 'drstk_options');
+  add_settings_section('drstk_search_settings', 'Search', null, 'drstk_options');
   add_settings_field('drstk_search_page_title', 'Search Page Title', 'drstk_search_page_title_callback', 'drstk_options', 'drstk_search_settings');
   register_setting( 'drstk_options', 'drstk_search_page_title' );
   add_settings_field('drstk_search_placeholder', 'Search Box Placeholder Text', 'drstk_search_placeholder_callback', 'drstk_options', 'drstk_search_settings');
@@ -139,7 +139,7 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_search_show_facets' );
 
   // Browse Settings
-  add_settings_section('drstk_browse_settings', 'Browse Settings', null, 'drstk_options');
+  add_settings_section('drstk_browse_settings', 'Browse', null, 'drstk_options');
   add_settings_field('drstk_browse_page_title', 'Browse Page Title', 'drstk_browse_page_title_callback', 'drstk_options', 'drstk_browse_settings');
   register_setting( 'drstk_options', 'drstk_browse_page_title' );
   add_settings_field('drstk_browse_metadata', 'Metadata to Display', 'drstk_browse_metadata_callback', 'drstk_options', 'drstk_browse_settings');
@@ -163,15 +163,15 @@ function register_drs_settings() {
   add_settings_field('drstk_facet_sort_order', 'Default Facet Sort', 'drstk_facet_sort_callback', 'drstk_options', 'drstk_facet_settings');
   register_setting('drstk_options', 'drstk_facet_sort_order');
 
-  add_settings_section('drstk_collections_settings', 'Collections Page Settings', null, 'drstk_options');
+  add_settings_section('drstk_collections_settings', 'Collections Page', null, 'drstk_options');
   add_settings_field('drstk_collections_page_title', 'Collections Page Title', 'drstk_collections_page_title_callback', 'drstk_options', 'drstk_collections_settings');
   register_setting( 'drstk_options', 'drstk_collections_page_title' );
 
-  add_settings_section('drstk_collection_settings', 'Collection Page Settings', null, 'drstk_options');
+  add_settings_section('drstk_collection_settings', 'Collection Page', null, 'drstk_options');
   add_settings_field('drstk_collection_page_title', 'Collection Page Title', 'drstk_collection_page_title_callback', 'drstk_options', 'drstk_collection_settings');
   register_setting( 'drstk_options', 'drstk_collection_page_title' );
 
-  add_settings_section('drstk_mirador_settings', 'Mirador Page Settings', null, 'drstk_options');
+  add_settings_section('drstk_mirador_settings', 'Mirador Page', null, 'drstk_options');
   add_settings_field('drstk_assoc', 'Allow Mirador Page Viewer<br/><small>This requires a manifest file and modifications to a javascript file. Please contact the Toolkit team if you would like to enable this feature.</small>', 'drstk_mirador_callback', 'drstk_options', 'drstk_mirador_settings');
   register_setting( 'drstk_options', 'drstk_mirador' );
   add_settings_field('drstk_mirador_page_title', 'Mirador Page Title', 'drstk_mirador_page_title_callback', 'drstk_options', 'drstk_mirador_settings', array('class'=>'mirador'));
@@ -180,7 +180,7 @@ function register_drs_settings() {
   register_setting('drstk_options', 'drstk_mirador_url');
 
   //Single Item Page
-  add_settings_section('drstk_single_settings', 'Single Item Page Settings', null, 'drstk_options');
+  add_settings_section('drstk_single_settings', 'Single Item Page', null, 'drstk_options');
   add_settings_field('drstk_item_page_metadata', 'Metadata to Display<br/><small>If none are selected, all metadata will display in the default order. To reorder or limit the fields which display, select the desired fields and drag and drop to reorder. To add custom fields, click the add button and type in the label.</small>', 'drstk_item_page_metadata_callback', 'drstk_options', 'drstk_single_settings');
   register_setting( 'drstk_options', 'drstk_item_page_metadata' );
   add_settings_field('drstk_appears', 'Display Item Appears In', 'drstk_appears_callback', 'drstk_options', 'drstk_single_settings');
@@ -199,7 +199,7 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_item_extensions' );
   
   //Advanced Options
-  add_settings_section('drstk_advanced', "Advanced Options", null, 'drstk_options');
+  add_settings_section('drstk_advanced', "Advanced", null, 'drstk_options');
   add_settings_field('drstk_niec',
                      'Does your project include NIEC metadata?',
                      'drstk_niec_callback',
