@@ -615,12 +615,12 @@ function drstk_facets_callback(){
   $facets_to_display = drstk_get_facets_to_display();
   echo "<table class='drstk_facets'><tbody id='facets_sortable'>";
   foreach($facets_to_display as $option){
-    echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_facets[]" value="'.$option.'" checked="checked"/> <label> <span class="dashicons dashicons-move"></span> '.titleize($option).'</label></td>';
+    echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_facets[]" value="'.$option.'" checked="checked"/> <label> <span class="dashicons dashicons-sort"></span> '.titleize($option).'</label></td>';
     echo '<td style="padding:0;" class="title"><input type="text" name="drstk_'.$option.'_title" value="'.get_option('drstk_'.$option.'_title').'"></td></tr>';
   }
   foreach($facet_options as $option){
     if (!in_array($option, $facets_to_display)){
-      echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_facets[]" value="'.$option.'"/> <label> <span class="dashicons dashicons-move"></span> '.titleize($option).'</label></td>';
+      echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_facets[]" value="'.$option.'"/> <label> <span class="dashicons dashicons-sort"></span> '.titleize($option).'</label></td>';
       echo '<td style="padding:0;display:none" class="title"><input type="text" name="drstk_'.$option.'_title" value="'.get_option('drstk_'.$option.'_title').'"></td></tr>';
     }
   }
@@ -656,13 +656,13 @@ function drstk_niec_metadata_callback(){
   echo "<table class='drstk_facets drstk_niec_facets'><tbody id='niec_facets_sortable'>";
   if (is_array($niec_facets_to_display)){
     foreach($niec_facets_to_display as $option){
-      echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_niec_metadata[]" value="'.$option.'" checked="checked"/> <label> <span class="dashicons dashicons-move"></span> '.titleize($option).'</label></td>';
+      echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_niec_metadata[]" value="'.$option.'" checked="checked"/> <label> <span class="dashicons dashicons-sort"></span> '.titleize($option).'</label></td>';
       echo '<td style="padding:0;" class="title"><input type="text" name="drstk_niec_'.$option.'_title" value="'.get_option('drstk_niec_'.$option.'_title').'"></td></tr>';
     }
   }
   foreach($niec_facet_options as $option){
     if (!is_array($niec_facets_to_display) || (is_array($niec_facets_to_display) && !in_array($option, $niec_facets_to_display))){
-      echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_niec_metadata[]" value="'.$option.'"/> <label> <span class="dashicons dashicons-move"></span> '.titleize($option).'</label></td>';
+      echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_niec_metadata[]" value="'.$option.'"/> <label> <span class="dashicons dashicons-sort"></span> '.titleize($option).'</label></td>';
       echo '<td style="padding:0;display:none" class="title"><input type="text" name="drstk_niec_'.$option.'_title" value="'.get_option('drstk_niec_'.$option.'_title').'"></td></tr>';
     }
   }
@@ -711,13 +711,13 @@ function drstk_item_page_metadata_callback(){
   foreach($item_options as $option){
     echo'<tr><td style="padding:0"><label><input type="checkbox" name="drstk_item_page_metadata[]" value="'.$option.'" ';
     if (is_array($item_options) && in_array($option, $item_options)){echo'checked="checked"';}
-    echo'/> <span class="dashicons dashicons-move"></span> '.$option.' </label></td></tr>';
+    echo'/> <span class="dashicons dashicons-sort"></span> '.$option.' </label></td></tr>';
   }
   foreach($all_meta_options as $option){
     if (!in_array($option, $item_options)){
       echo'<tr><td style="padding:0"><label><input type="checkbox" name="drstk_item_page_metadata[]" value="'.$option.'" ';
       if (is_array($item_options) && in_array($option, $item_options)){echo'checked="checked"';}
-      echo'/> <span class="dashicons dashicons-move"></span> '.$option.' </label></td></tr>';
+      echo'/> <span class="dashicons dashicons-sort"></span> '.$option.' </label></td></tr>';
     }
   }
   echo '</tbody></table>';
