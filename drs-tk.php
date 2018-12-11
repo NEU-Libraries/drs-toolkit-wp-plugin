@@ -171,14 +171,6 @@ function register_drs_settings() {
   add_settings_field('drstk_collection_page_title', 'Collection Page Title', 'drstk_collection_page_title_callback', 'drstk_options', 'drstk_collection_settings');
   register_setting( 'drstk_options', 'drstk_collection_page_title' );
 
-  add_settings_section('drstk_mirador_settings', 'Mirador Page', null, 'drstk_options');
-  add_settings_field('drstk_assoc', 'Allow Mirador Page Viewer<br/><small>This requires a manifest file and modifications to a javascript file. Please contact the Toolkit team if you would like to enable this feature.</small>', 'drstk_mirador_callback', 'drstk_options', 'drstk_mirador_settings');
-  register_setting( 'drstk_options', 'drstk_mirador' );
-  add_settings_field('drstk_mirador_page_title', 'Mirador Page Title', 'drstk_mirador_page_title_callback', 'drstk_options', 'drstk_mirador_settings', array('class'=>'mirador'));
-  register_setting( 'drstk_options', 'drstk_mirador_page_title' );
-  add_settings_field('drstk_mirador_url', 'Mirador URL', 'drstk_mirador_url_callback', 'drstk_options', 'drstk_mirador_settings', array('class'=>'mirador'));
-  register_setting('drstk_options', 'drstk_mirador_url');
-
   //Single Item Page
   add_settings_section('drstk_single_settings', 'Single Item Page', null, 'drstk_options');
   add_settings_field('drstk_item_page_metadata', 'Metadata to Display<br/><small>If none are selected, all metadata will display in the default order. To reorder or limit the fields which display, select the desired fields and drag and drop to reorder. To add custom fields, click the add button and type in the label.</small>', 'drstk_item_page_metadata_callback', 'drstk_options', 'drstk_single_settings');
@@ -238,6 +230,27 @@ function register_drs_settings() {
                      'drstk_options',
                      'drstk_advanced');
   register_setting( 'drstk_options', 'leaflet_project_key' );
+  
+  add_settings_field('drstk_assoc',
+                     'Allow Mirador Page Viewer<br/><small>This requires a manifest file and modifications to a javascript file. Please contact the Toolkit team if you would like to enable this feature.</small>',
+                     'drstk_mirador_callback', 'drstk_options',
+                     'drstk_advanced');
+  register_setting( 'drstk_options', 'drstk_mirador' );
+  add_settings_field('drstk_mirador_page_title',
+                     'Mirador Page Title',
+                     'drstk_mirador_page_title_callback',
+                     'drstk_options',
+                     'drstk_advanced',
+                     array('class'=>'mirador'));
+  register_setting( 'drstk_options', 'drstk_mirador_page_title' );
+  add_settings_field('drstk_mirador_url',
+                     'Mirador URL',
+                     'drstk_mirador_url_callback',
+                     'drstk_options',
+                     'drstk_advanced',
+                      array('class'=>'mirador'));
+  register_setting('drstk_options', 'drstk_mirador_url');
+  
   
   //Google Maps key
   
