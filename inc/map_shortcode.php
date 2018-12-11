@@ -421,11 +421,21 @@ function drstk_map_shortcode_scripts() {
 
   global $post, $wp_query, $DRS_PLUGIN_URL;
 
-    if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_map') && !isset($wp_query->query_vars['drstk_template_type']) ) {
-    wp_register_script('drstk_leaflet',
-        $DRS_PLUGIN_URL .'/assets/js/leaflet/leaflet.js',
-        array( 'jquery' ));
-    wp_enqueue_script('drstk_leaflet');
+    if( is_a( $post, 'WP_Post' ) 
+        && has_shortcode( $post->post_content, 'drstk_map')
+        && !isset($wp_query->query_vars['drstk_template_type']) ) {
+    
+        wp_register_script('drstk_cdn_leaflet_js', 'https://unpkg.com/leaflet@1.3.4/dist/leaflet.js');
+        wp_enqueue_script('drstk_cdn_leaflet_js');
+        
+        wp_register_style('drstk_cdn_leaflet_css', 'https://unpkg.com/leaflet@1.3.4/dist/leaflet.css');
+        wp_enqueue_style('drstk_cdn_leaflet_css');
+        
+/*
+        wp_register_script('drstk_leaflet',
+          $DRS_PLUGIN_URL .'/assets/js/leaflet/leaflet.js',
+          array( 'jquery' ));
+        wp_enqueue_script('drstk_leaflet');
 
     wp_register_script('drstk_leaflet_marker_cluster',
         $DRS_PLUGIN_URL.'/assets/js/leaflet/leaflet.markercluster-src.js',
@@ -445,6 +455,8 @@ function drstk_map_shortcode_scripts() {
     wp_register_style('drstk_leaflet_css',
         $DRS_PLUGIN_URL.'/assets/css/leaflet.css');
     wp_enqueue_style('drstk_leaflet_css');
+    
+*/    
     wp_register_script( 'drstk_map',
         $DRS_PLUGIN_URL. '/assets/js/map.js',
         array( 'jquery' ));
@@ -468,3 +480,26 @@ function drstk_map_shortcode_scripts() {
   }
 }
 add_action( 'wp_enqueue_scripts', 'drstk_map_shortcode_scripts');
+
+
+function drstk_add_cdn_leaflet_js_atts($tag, $handle, $src) {
+  $tag = '<script type="text/javascript" src="' . $src . '" 
+              integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+              crossorigin=""></script>';
+  return $tag;          
+}
+
+function drstk_add_cdn_leaflet_css_atts($tag, $handle, $src) {
+  $tag = '<link rel="stylesheet" href="' . $src . '"
+              integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+              crossorigin=""></link>';
+  return $tag;
+}
+
+
+
+add_filter('script_loader_tag', 'drstk_add_cdn_leaflet_js_atts', 10, 3);
+add_filter('script_loader_tag', 'drstk_add_cdn_leaflet_css_atts', 10, 3);
+
+
+
