@@ -286,6 +286,8 @@
 	width: 50%;
 }
 
+/* styles for collapsible settings options */
+
 .settings_page_drstk_admin_menu table {
 	display: none;
 }
@@ -312,5 +314,9 @@ table.drstk_item_metadata {
 	content: "\f140";
   font-family: dashicons;
   vertical-align: middle;
+}
+
+.dashicons {
+	vertical-align: middle;
 }
 
