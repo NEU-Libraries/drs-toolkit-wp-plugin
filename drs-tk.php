@@ -775,7 +775,7 @@ function drstk_item_extensions_callback(){
 function drstk_display_settings(){
   ?>
     <div class="wrap">
-    <h1>DRS Settings</h1>
+    <h1>CERES Settings</h1>
     <form method="post" action="options.php" name="options">
         <?php
             settings_fields("drstk_options");
