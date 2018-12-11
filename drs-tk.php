@@ -46,11 +46,9 @@ $TEMPLATE_THEME = array(
 
  register_activation_hook( __FILE__, 'drstk_install' );
  register_deactivation_hook( __FILE__, 'drstk_deactivation' );
-
  $all_meta_options = array("Title","Alternative Title","Creator","Contributor","Publisher","Type of Resource","Genre","Language","Physical Description","Abstract/Description","Table of contents","Notes","Subjects and keywords","Related item","Identifier","Access condition","Location","uri","Format","Permanent URL","Date created","Date issued","Copyright date","Biographical/Historical","Biográfica/histórica", "Issuance","Frequency","Digital origin","Map data","Use and reproduction","Restriction on access");
  $all_assoc_meta_options = array("full_title_ssi","creator_tesim","abstract_tesim");
- $facet_options = array("creator_sim", "creation_year_sim", "subject_sim", "type_sim", "community_name_ssim", "drs_department_ssim", "drs_degree_ssim", "drs_course_number_ssim", "drs_course_title_ssim");
- $niec_facet_options = array("niec_gender_ssim", "niec_age_ssim", "niec_race_ssim", "niec_sign_pace_ssim", "niec_fingerspelling_extent_ssim", "niec_fingerspelling_pace_ssim", "niec_numbers_pace_ssim", "niec_numbers_extent_ssim", "niec_classifiers_extent_ssim", "niec_use_of_space_extent_ssim", "niec_how_space_used_ssim", "niec_text_type_ssim", "niec_register_ssim", "niec_conversation_type_ssim", "niec_audience_ssim", "niec_signed_language_ssim", "niec_spoken_language_ssim", "niec_lends_itself_to_classifiers_ssim", "niec_lends_itself_to_use_of_space_ssim");
+ 
 
  /**
   * Rewrite rules for the plugin.
@@ -117,23 +115,16 @@ $TEMPLATE_THEME = array(
 
 //This registers the settings
 function register_drs_settings() {
-  global $facet_options, $niec_facet_options;
 
-  add_settings_section('drstk_project', "Project Info", null, 'drstk_options');
+  //Project Settings
+  add_settings_section('drstk_project', "Project", null, 'drstk_options');
   add_settings_field('drstk_collection', 'Project Collection or Set URL', 'drstk_collection_callback', 'drstk_options', 'drstk_project');
   register_setting( 'drstk_options', 'drstk_collection' );
   add_settings_field('drstk_home_url', 'Permalink/URL Base', 'drstk_home_url_callback', 'drstk_options', 'drstk_project');
   register_setting( 'drstk_options', 'drstk_home_url', 'drstk_home_url_validation' );
 
-    //Adding Map Leaflet API Field
-  add_settings_field('leaflet_api_key', 'Leaflet API Key', 'leaflet_api_key_callback', 'drstk_options', 'drstk_project');
-  register_setting( 'drstk_options', 'leaflet_api_key' );
-
-   //Adding Map Leaflet Project Field
-  add_settings_field('leaflet_project_key', 'Leaflet Project Key', 'leaflet_project_key_callback', 'drstk_options', 'drstk_project');
-  register_setting( 'drstk_options', 'leaflet_project_key' );
-
-  add_settings_section('drstk_search_settings', 'Search Settings', null, 'drstk_options');
+  //Search Settings
+  add_settings_section('drstk_search_settings', 'Search', null, 'drstk_options');
   add_settings_field('drstk_search_page_title', 'Search Page Title', 'drstk_search_page_title_callback', 'drstk_options', 'drstk_search_settings');
   register_setting( 'drstk_options', 'drstk_search_page_title' );
   add_settings_field('drstk_search_placeholder', 'Search Box Placeholder Text', 'drstk_search_placeholder_callback', 'drstk_options', 'drstk_search_settings');
@@ -147,7 +138,8 @@ function register_drs_settings() {
   add_settings_field('drstk_search_show_facets', 'Show Facets', 'drstk_search_show_facets_callback', 'drstk_options', 'drstk_search_settings');
   register_setting( 'drstk_options', 'drstk_search_show_facets' );
 
-  add_settings_section('drstk_browse_settings', 'Browse Settings', null, 'drstk_options');
+  // Browse Settings
+  add_settings_section('drstk_browse_settings', 'Browse', null, 'drstk_options');
   add_settings_field('drstk_browse_page_title', 'Browse Page Title', 'drstk_browse_page_title_callback', 'drstk_options', 'drstk_browse_settings');
   register_setting( 'drstk_options', 'drstk_browse_page_title' );
   add_settings_field('drstk_browse_metadata', 'Metadata to Display', 'drstk_browse_metadata_callback', 'drstk_options', 'drstk_browse_settings');
@@ -162,38 +154,25 @@ function register_drs_settings() {
   add_settings_section('drstk_facet_settings', 'Facets', null, 'drstk_options');
   add_settings_field('drstk_facets', 'Facets to Display<br/><small>Select which facets you would like to display on the search and browse pages. Once selected, you may enter custom names for these facets. Drag and drop the order of the facets to change the order of display.</small>', 'drstk_facets_callback', 'drstk_options', 'drstk_facet_settings');
   register_setting( 'drstk_options', 'drstk_facets' );
+  
+  $facet_options = drstk_facets_get_option('drstk', true);
   foreach($facet_options as $option){
     add_settings_field('drstk_'.$option.'_title', null, 'drstk_facet_title_callback', 'drstk_options', 'drstk_facet_settings', array('class'=>'hidden'));
     register_setting( 'drstk_options', 'drstk_'.$option.'_title');
   }
   add_settings_field('drstk_facet_sort_order', 'Default Facet Sort', 'drstk_facet_sort_callback', 'drstk_options', 'drstk_facet_settings');
   register_setting('drstk_options', 'drstk_facet_sort_order');
-  add_settings_field('drstk_niec', 'Does your project include NIEC metadata?', 'drstk_niec_callback', 'drstk_options', 'drstk_facet_settings');
-  register_setting('drstk_options', 'drstk_niec');
-  add_settings_field('drstk_niec_metadata', 'Facets and Metadata to Display', 'drstk_niec_metadata_callback', 'drstk_options', 'drstk_facet_settings', array('class'=>'niec'));
-  register_setting( 'drstk_options', 'drstk_niec_metadata' );
-  foreach($niec_facet_options as $option){
-    add_settings_field('drstk_niec_'.$option.'_title', null, 'drstk_niec_metadata_title_callback', 'drstk_options', 'drstk_facet_settings', array('class'=>'hidden'));
-    register_setting( 'drstk_options', 'drstk_niec_'.$option.'_title');
-  }
 
-  add_settings_section('drstk_collections_settings', 'Collections Page Settings', null, 'drstk_options');
+  add_settings_section('drstk_collections_settings', 'Collections Page', null, 'drstk_options');
   add_settings_field('drstk_collections_page_title', 'Collections Page Title', 'drstk_collections_page_title_callback', 'drstk_options', 'drstk_collections_settings');
   register_setting( 'drstk_options', 'drstk_collections_page_title' );
 
-  add_settings_section('drstk_collection_settings', 'Collection Page Settings', null, 'drstk_options');
+  add_settings_section('drstk_collection_settings', 'Collection Page', null, 'drstk_options');
   add_settings_field('drstk_collection_page_title', 'Collection Page Title', 'drstk_collection_page_title_callback', 'drstk_options', 'drstk_collection_settings');
   register_setting( 'drstk_options', 'drstk_collection_page_title' );
 
-  add_settings_section('drstk_mirador_settings', 'Mirador Page Settings', null, 'drstk_options');
-  add_settings_field('drstk_assoc', 'Allow Mirador Page Viewer<br/><small>This requires a manifest file and modifications to a javascript file. Please contact the Toolkit team if you would like to enable this feature.</small>', 'drstk_mirador_callback', 'drstk_options', 'drstk_mirador_settings');
-  register_setting( 'drstk_options', 'drstk_mirador' );
-  add_settings_field('drstk_mirador_page_title', 'Mirador Page Title', 'drstk_mirador_page_title_callback', 'drstk_options', 'drstk_mirador_settings', array('class'=>'mirador'));
-  register_setting( 'drstk_options', 'drstk_mirador_page_title' );
-  add_settings_field('drstk_mirador_url', 'Mirador URL', 'drstk_mirador_url_callback', 'drstk_options', 'drstk_mirador_settings', array('class'=>'mirador'));
-  register_setting('drstk_options', 'drstk_mirador_url');
-
-  add_settings_section('drstk_single_settings', 'Single Item Page Settings', null, 'drstk_options');
+  //Single Item Page
+  add_settings_section('drstk_single_settings', 'Single Item Page', null, 'drstk_options');
   add_settings_field('drstk_item_page_metadata', 'Metadata to Display<br/><small>If none are selected, all metadata will display in the default order. To reorder or limit the fields which display, select the desired fields and drag and drop to reorder. To add custom fields, click the add button and type in the label.</small>', 'drstk_item_page_metadata_callback', 'drstk_options', 'drstk_single_settings');
   register_setting( 'drstk_options', 'drstk_item_page_metadata' );
   add_settings_field('drstk_appears', 'Display Item Appears In', 'drstk_appears_callback', 'drstk_options', 'drstk_single_settings');
@@ -210,6 +189,75 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_annotations' );
   add_settings_field('drstk_item_extensions', 'Enable Item Page Custom Text', 'drstk_item_extensions_callback', 'drstk_options', 'drstk_single_settings');
   register_setting( 'drstk_options', 'drstk_item_extensions' );
+  
+  //Advanced Options
+  add_settings_section('drstk_advanced', "Advanced", null, 'drstk_options');
+  add_settings_field('drstk_niec',
+                     'Does your project include NIEC metadata?',
+                     'drstk_niec_callback',
+                     'drstk_options',
+                     'drstk_advanced');
+  register_setting('drstk_options', 'drstk_niec');
+  
+  add_settings_field('drstk_niec_metadata',
+                     'NIEC Facets and Metadata to Display',
+                     'drstk_niec_metadata_callback',
+                     'drstk_options',
+                     'drstk_advanced',
+                      array('class'=>'niec'));
+  register_setting( 'drstk_options', 'drstk_niec_metadata' );
+  $niec_facet_options = drstk_facets_get_option('niec', true);
+  foreach($niec_facet_options as $option){
+    add_settings_field('drstk_niec_'.$option.'_title',
+                       null,
+                       'drstk_niec_metadata_title_callback',
+                       'drstk_options',
+                       'drstk_advanced',
+                       array('class'=>'hidden'));
+    register_setting( 'drstk_options', 'drstk_niec_'.$option.'_title');
+  }
+  
+  //Leaflet
+  add_settings_field('leaflet_api_key',
+                     'Leaflet API Key',
+                     'leaflet_api_key_callback',
+                     'drstk_options',
+                     'drstk_advanced');
+  register_setting( 'drstk_options', 'leaflet_api_key' );
+  add_settings_field('leaflet_project_key',
+                     'Leaflet Project Key',
+                     'leaflet_project_key_callback',
+                     'drstk_options',
+                     'drstk_advanced');
+  register_setting( 'drstk_options', 'leaflet_project_key' );
+  
+  add_settings_field('drstk_assoc',
+                     'Allow Mirador Page Viewer<br/><small>This requires a manifest file and modifications to a javascript file. Please contact the Toolkit team if you would like to enable this feature.</small>',
+                     'drstk_mirador_callback', 'drstk_options',
+                     'drstk_advanced');
+  register_setting( 'drstk_options', 'drstk_mirador' );
+  add_settings_field('drstk_mirador_page_title',
+                     'Mirador Page Title',
+                     'drstk_mirador_page_title_callback',
+                     'drstk_options',
+                     'drstk_advanced',
+                     array('class'=>'mirador'));
+  register_setting( 'drstk_options', 'drstk_mirador_page_title' );
+  add_settings_field('drstk_mirador_url',
+                     'Mirador URL',
+                     'drstk_mirador_url_callback',
+                     'drstk_options',
+                     'drstk_advanced',
+                      array('class'=>'mirador'));
+  register_setting('drstk_options', 'drstk_mirador_url');
+  
+  
+  //Google Maps key
+  
+  //DPLA key
+  
+  
+  
 }
 add_action( 'admin_init', 'register_drs_settings' );
 add_action( 'admin_init', 'add_tinymce_plugin');
@@ -369,7 +417,9 @@ function drstk_get_facets_to_display(){
   $facet_options = get_option('drstk_facets');
   if ($facet_options == NULL){
     if (get_option('drstk_niec_metadata') == NULL) {
-      $facet_options = array("creator_sim","creation_year_sim","subject_sim","type_sim");
+      // this is a little weird, but it helps make the list of default facets more consistent -- PMJ
+      // @TODO what happens here could probably be folded in to drstk_facets_get_option() eventually
+      $facet_options = drstk_facets_get_option('drstk', true);
     } else {
       $facet_options = array();
     }
@@ -561,16 +611,16 @@ function drstk_search_show_facets_callback(){
 }
 
 function drstk_facets_callback(){
-  global $facet_options;
+  $facet_options = drstk_facets_get_option('drstk', true);
   $facets_to_display = drstk_get_facets_to_display();
-  echo "<table><tbody id='facets_sortable'>";
+  echo "<table class='drstk_facets'><tbody id='facets_sortable'>";
   foreach($facets_to_display as $option){
-    echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_facets[]" value="'.$option.'" checked="checked"/> <label> <span class="dashicons dashicons-move"></span> '.titleize($option).'</label></td>';
+    echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_facets[]" value="'.$option.'" checked="checked"/> <label> <span class="dashicons dashicons-sort"></span> '.titleize($option).'</label></td>';
     echo '<td style="padding:0;" class="title"><input type="text" name="drstk_'.$option.'_title" value="'.get_option('drstk_'.$option.'_title').'"></td></tr>';
   }
   foreach($facet_options as $option){
     if (!in_array($option, $facets_to_display)){
-      echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_facets[]" value="'.$option.'"/> <label> <span class="dashicons dashicons-move"></span> '.titleize($option).'</label></td>';
+      echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_facets[]" value="'.$option.'"/> <label> <span class="dashicons dashicons-sort"></span> '.titleize($option).'</label></td>';
       echo '<td style="padding:0;display:none" class="title"><input type="text" name="drstk_'.$option.'_title" value="'.get_option('drstk_'.$option.'_title').'"></td></tr>';
     }
   }
@@ -601,18 +651,18 @@ function drstk_niec_callback(){
 
 
 function drstk_niec_metadata_callback(){
-  global $niec_facet_options;
+  $niec_facet_options = drstk_facets_get_option('niec', true);;
   $niec_facets_to_display = get_option('drstk_niec_metadata');
-  echo "<table><tbody id='niec_facets_sortable'>";
+  echo "<table class='drstk_facets drstk_niec_facets'><tbody id='niec_facets_sortable'>";
   if (is_array($niec_facets_to_display)){
     foreach($niec_facets_to_display as $option){
-      echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_niec_metadata[]" value="'.$option.'" checked="checked"/> <label> <span class="dashicons dashicons-move"></span> '.titleize($option).'</label></td>';
+      echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_niec_metadata[]" value="'.$option.'" checked="checked"/> <label> <span class="dashicons dashicons-sort"></span> '.titleize($option).'</label></td>';
       echo '<td style="padding:0;" class="title"><input type="text" name="drstk_niec_'.$option.'_title" value="'.get_option('drstk_niec_'.$option.'_title').'"></td></tr>';
     }
   }
   foreach($niec_facet_options as $option){
     if (!is_array($niec_facets_to_display) || (is_array($niec_facets_to_display) && !in_array($option, $niec_facets_to_display))){
-      echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_niec_metadata[]" value="'.$option.'"/> <label> <span class="dashicons dashicons-move"></span> '.titleize($option).'</label></td>';
+      echo '<tr><td style="padding:0;"><input type="checkbox" name="drstk_niec_metadata[]" value="'.$option.'"/> <label> <span class="dashicons dashicons-sort"></span> '.titleize($option).'</label></td>';
       echo '<td style="padding:0;display:none" class="title"><input type="text" name="drstk_niec_'.$option.'_title" value="'.get_option('drstk_niec_'.$option.'_title').'"></td></tr>';
     }
   }
@@ -657,17 +707,17 @@ function drstk_mirador_url_callback() {
 function drstk_item_page_metadata_callback(){
   global $all_meta_options;
   $item_options = get_option('drstk_item_page_metadata') != "" ? get_option('drstk_item_page_metadata') : array();
-  echo '<table><tbody id="item_metadata_sortable">';
+  echo '<table class="drstk_item_metadata"><tbody id="item_metadata_sortable">';
   foreach($item_options as $option){
     echo'<tr><td style="padding:0"><label><input type="checkbox" name="drstk_item_page_metadata[]" value="'.$option.'" ';
     if (is_array($item_options) && in_array($option, $item_options)){echo'checked="checked"';}
-    echo'/> <span class="dashicons dashicons-move"></span> '.$option.' </label></td></tr>';
+    echo'/> <span class="dashicons dashicons-sort"></span> '.$option.' </label></td></tr>';
   }
   foreach($all_meta_options as $option){
     if (!in_array($option, $item_options)){
       echo'<tr><td style="padding:0"><label><input type="checkbox" name="drstk_item_page_metadata[]" value="'.$option.'" ';
       if (is_array($item_options) && in_array($option, $item_options)){echo'checked="checked"';}
-      echo'/> <span class="dashicons dashicons-move"></span> '.$option.' </label></td></tr>';
+      echo'/> <span class="dashicons dashicons-sort"></span> '.$option.' </label></td></tr>';
     }
   }
   echo '</tbody></table>';
@@ -725,7 +775,7 @@ function drstk_item_extensions_callback(){
 function drstk_display_settings(){
   ?>
     <div class="wrap">
-    <h1>DRS Settings</h1>
+    <h1>CERES Settings</h1>
     <form method="post" action="options.php" name="options">
         <?php
             settings_fields("drstk_options");
@@ -1148,4 +1198,73 @@ function create_post_type() {
       )
     );
   }
+}
+
+/**
+ * Wrapper around get_option('drstk_facets') to return a consistent default array
+ * without resorting to a global variable
+ * @TODO see if this can do the work in drstk_get_facets_to_display
+ * @TODO check if we really do need to strip out defaults in some cases
+ * 
+ * @param string $facet_type drstk or niec
+ * @param boolean $default true to return the defaults, false (default) to return the data from options table
+ * @return array
+ */
+
+function drstk_facets_get_option($facet_type, $default = false)
+{
+  switch ($facet_type) {
+    case 'drstk':
+      $default_facet_options = array("creator_sim",
+                                     "creation_year_sim",
+                                     "subject_sim",
+                                     "type_sim",
+                                     "community_name_ssim",
+                                     "drs_department_ssim",
+                                     "drs_degree_ssim",
+                                     "drs_course_number_ssim",
+                                     "drs_course_title_ssim");
+      
+      
+      if ($default) {
+        return $default_facet_options;
+      }
+      return get_option('drstk_facets', $default_facet_options);
+      
+      
+      break;
+      
+    case 'niec':
+      $default_niec_facet_options = array("niec_gender_ssim",
+                                          "niec_age_ssim",
+                                          "niec_race_ssim",
+                                          "niec_sign_pace_ssim",
+                                          "niec_fingerspelling_extent_ssim",
+                                          "niec_fingerspelling_pace_ssim",
+                                          "niec_numbers_pace_ssim",
+                                          "niec_numbers_extent_ssim",
+                                          "niec_classifiers_extent_ssim",
+                                          "niec_use_of_space_extent_ssim",
+                                          "niec_how_space_used_ssim",
+                                          "niec_text_type_ssim",
+                                          "niec_register_ssim",
+                                          "niec_conversation_type_ssim",
+                                          "niec_audience_ssim",
+                                          "niec_signed_language_ssim",
+                                          "niec_spoken_language_ssim",
+                                          "niec_lends_itself_to_classifiers_ssim",
+                                          "niec_lends_itself_to_use_of_space_ssim");
+      
+      if ($default) {
+        return $default_niec_facet_options;
+      }
+      return get_option('drstk_niec_metadata', $default_niec_facet_options);
+      
+      break;
+      
+    default:
+      return array();
+      break;
+  }
+
 }

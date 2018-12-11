@@ -54,5 +54,16 @@ jQuery(document).ready(function(){
       }
     });
   }
+  
+  // WP doesn't make it easy to add a class to settings page section headers,
+  // so cheekily stuffing it in here
+  
+  jQuery('.settings_page_drstk_admin_menu h2').addClass('closed');
+  
+  jQuery('body').on('click', 'h2', function(e) {
+     var sectionHeader = jQuery(e.target);
+     sectionHeader.toggleClass('open closed');
+     sectionHeader.next().toggle('slow');
+  });
 
 });
