@@ -41,7 +41,6 @@ function reloadRemainingMap_ajax_handler()
 /* adds shortcode */
 add_shortcode( 'drstk_map', 'drstk_map' );
 function drstk_map( $atts , $params) {
-  global $DRS_PLUGIN_URL;
   $errors = drstk_get_errors();
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
   if($cache != NULL
@@ -390,7 +389,7 @@ function drstk_map( $atts , $params) {
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
 
     if(isset($atts['collection_id'])) {
-        wp_register_script('drstk_map_col', $DRS_PLUGIN_URL . '/assets/js/mapCollection.js', array('jquery'));
+        wp_register_script('drstk_map_col', DRS_PLUGIN_URL . '/assets/js/mapCollection.js', array('jquery'));
         wp_enqueue_script('drstk_map_col');
 
         $reload_filtered_set_drs_nonce = wp_create_nonce('reload_filtered_set_drs');
@@ -419,7 +418,7 @@ function drstk_map( $atts , $params) {
 
 function drstk_map_shortcode_scripts() {
 
-  global $post, $wp_query, $DRS_PLUGIN_URL;
+  global $post, $wp_query;
 
     if( is_a( $post, 'WP_Post' ) 
         && has_shortcode( $post->post_content, 'drstk_map')
@@ -463,12 +462,12 @@ function drstk_map_shortcode_scripts() {
         
         
         wp_register_style('drstk_leaflet_css',
-            $DRS_PLUGIN_URL.'/assets/css/leaflet.css');
+            DRS_PLUGIN_URL.'/assets/css/leaflet.css');
         wp_enqueue_style('drstk_leaflet_css');
         
      
         wp_register_script( 'drstk_map',
-            $DRS_PLUGIN_URL. '/assets/js/map.js',
+            DRS_PLUGIN_URL. '/assets/js/map.js',
             array( 'jquery' ));
         wp_enqueue_script('drstk_map');
     

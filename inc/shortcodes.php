@@ -9,13 +9,12 @@ add_action('media_buttons', 'add_drs_button', 1000);
 
 /*enques extra js*/
 function drstk_enqueue_page_scripts( $hook ) {
-  global $DRS_PLUGIN_PATH, $DRS_PLUGIN_URL;
-  $errors = drstk_get_errors();
-    wp_enqueue_style( 'drstk_admin_js', $DRS_PLUGIN_URL . '/assets/css/admin.css' );
+    $errors = drstk_get_errors();
+    wp_enqueue_style( 'drstk_admin_js', DRS_PLUGIN_URL . '/assets/css/admin.css' );
     if ($hook == 'post.php' || $hook == 'post-new.php') {
 
-      include $DRS_PLUGIN_PATH.'templates/modal.php';
-      wp_enqueue_script( 'drstk_admin_js', $DRS_PLUGIN_URL . '/assets/js/admin.js', array(
+      include DRS_PLUGIN_PATH.'templates/modal.php';
+      wp_enqueue_script( 'drstk_admin_js', DRS_PLUGIN_URL . '/assets/js/admin.js', array(
         'jquery',
         'jquery-ui-core',
         'backbone',

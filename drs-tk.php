@@ -23,9 +23,10 @@ require_once( plugin_dir_path( __FILE__ ) . 'config.php' );
 
 
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
-$DRS_PLUGIN_PATH = plugin_dir_path( __FILE__ );
-$DRS_PLUGIN_URL = plugin_dir_url( __FILE__ );
-define('DPLA_FALLBACK_IMAGE_URL', $DRS_PLUGIN_URL . '/assets/images/DPLA-square-logo-color.jpeg');
+define('DRS_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
+define('DRS_PLUGIN_URL', plugin_dir_url(__FILE__));
+
+define('DPLA_FALLBACK_IMAGE_URL', DRS_PLUGIN_URL . '/assets/images/DPLA-square-logo-color.jpeg');
 
 $VERSION = '1.1.1';
 
@@ -392,8 +393,7 @@ function add_tinymce_plugin(){
 }
 
 function mce_plugin($plugin_array){
-  global $DRS_PLUGIN_URL;
-  $plugin_array['drstkshortcodes'] = $DRS_PLUGIN_URL.'/assets/js/mce-button.js';
+  $plugin_array['drstkshortcodes'] = DRS_PLUGIN_URL.'/assets/js/mce-button.js';
   return $plugin_array;
 }
 
