@@ -1997,7 +1997,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                 }
                 colors += ">" + color.charAt(0).toUpperCase() + color.slice(1) + "</option>";
             });
-            jQuery("#selected #sortable-" + tab_name + "-list").find("li:last-of-type label").append('<br/>Select: <select name="color"><option value="">Choose one</option>' + colors + '</select>');
+            jQuery("#selected #sortable-" + tab_name + "-list").find("li:last-of-type label").append('<br/>Color label (see Settings tab):<br/> <select name="color"><option value="">Color Label</option>' + colors + '</select>');
         }
         if (this.shortcode.items.where({
                 pid: item.attributes.pid
