@@ -15,6 +15,8 @@ jQuery(document).ready(function($) {
   var facets_to_display = browse_obj.facets_to_display;
   
   facets_to_display.etd_year_awarded_ssim = "Year Awarded";
+  facets_to_display.etd_advisor_ssim = "Advisor";
+  
   var niec_facets = 'niec_facets_to_display' in browse_obj ? browse_obj.niec_facets_to_display : null;
   if ((q) && (q != '')){
     $("#drs-selection").show();
