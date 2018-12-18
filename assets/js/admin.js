@@ -1320,14 +1320,15 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                                         }
                                         return 0; // a must be equal to b
                                     });
-                                    var i = 0;
+                                    var facet_html = "<table class='facets-filter'><tbody>";
                                     for (var i = 0; i <= 4; i++) {
                                         if (sorted[i] != undefined) {
                                             key = Object.keys(sorted[i])[0];
                                             // this puts spaces around subject headings (or other) that create super long string,
                                             // which bork up the layout
                                             var spacedKey = key.replace(/--/g, ' -- ');
-                                            facet_html = "<tr>" +
+                                            
+                                            facet_html += "<tr>" +
                                             		        "<td>" +
                                             		          "<a href='' data-facet-val='" + key + "' data-facet-name='" + this_facet + "' class='drs-facet-add'>" + spacedKey + "</a>" +
                                             		        "</td>" +
@@ -1335,11 +1336,13 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                                             		          "<span class='facet-value'>" + sorted[i][key] + "</span>" +
                                             		        "</td>" +
                                             		      "</tr>";
-                                            jQuery(".drs-" + this_facet).append(facet_html);
                                         }
                                     }
+                                    facet_html += '</tbody></table>';
+                                    jQuery(".drs-" + this_facet).append(facet_html);
                                     if (sorted.length > 5) {
-                                        facet_html = "<a href='' class='drs-expand-facet' data-facet-name='" + this_facet + "'>View More</a><div class='drs-expanded-facet-" + this_facet + " hidden'><table>";
+                                        facet_html = "<a href='' class='drs-expand-facet' data-facet-name='" + this_facet + "'>View More</a><div class='drs-expanded-facet-" + this_facet + " hidden'>" +
+                                        		"<table class='facets-filter>";
                                         _.each(sorted, function(facet_obj, i) {
                                             if (i > 4) { //don't repeat already displayed facets
                                                 key = Object.keys(facet_obj)[0];
@@ -1356,9 +1359,10 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                                                 		      "</tr>";
                                             }
                                         });
-                                        facet_html += "</table></div>";
+                                        facet_html += "</table>";
                                         jQuery(".drs-" + this_facet).append(facet_html);
                                     }
+                                    jQuery(".drs-" + this_facet).append('</div>');
                                 }
                             }
                         }
