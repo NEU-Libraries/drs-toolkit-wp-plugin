@@ -418,10 +418,9 @@ function drstk_timeline( $atts, $params ){
     $cache_output = $shortcode;
     $cache_time = 1000;
     set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
-    global $DRS_PLUGIN_URL;
 
     if(isset($atts['collection_id'])) {
-        wp_register_script('drstk_timelineCollection', $DRS_PLUGIN_URL . '/assets/js/timelineCollection.js', array('jquery'));
+        wp_register_script('drstk_timelineCollection', DRS_PLUGIN_URL . '/assets/js/timelineCollection.js', array('jquery'));
         wp_enqueue_script('drstk_timelineCollection');
 
         $reload_filtered_set_drs_nonce = wp_create_nonce('reload_filtered_set_drs');
@@ -452,17 +451,17 @@ function drstk_timeline( $atts, $params ){
 
 
 function drstk_timeline_shortcode_scripts() {
-    global $post, $wp_query, $DRS_PLUGIN_URL;
+    global $post, $wp_query;
 
     if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_timeline') && !isset($wp_query->query_vars['drstk_template_type']) ) {
         wp_register_script( 'drstk_timelinejs',
-            $DRS_PLUGIN_URL . '/assets/js/timeline/timeline.js',
+            'https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js',
             array( 'jquery' ));
         wp_enqueue_script('drstk_timelinejs');
-        wp_register_style( 'drstk_timelinejs_css', $DRS_PLUGIN_URL . '/assets/css/timeline.css');
-        wp_enqueue_style( 'drstk_timelinejs_css');
+        wp_register_style( 'drstk_cdn_timeline_css', 'https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css');
+        wp_enqueue_style( 'drstk_cdn_timeline_css');
         wp_register_script( 'drstk_timelinepage',
-            $DRS_PLUGIN_URL . '/assets/js/timelinepage.js',
+            DRS_PLUGIN_URL . '/assets/js/timelinepage.js',
             array( 'jquery' ));
         wp_enqueue_script('drstk_timelinepage');
 

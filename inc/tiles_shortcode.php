@@ -156,14 +156,14 @@ function drstk_tiles( $atts ){
 }
 
 function drstk_tile_shortcode_scripts() {
-	global $post, $wp_query, $DRS_PLUGIN_URL;
+	global $post, $wp_query;
 	if( is_a( $post, 'WP_Post' ) && (has_shortcode( $post->post_content, 'drstk_tiles') || has_shortcode( $post->post_content, 'drstk_tile')) && !isset($wp_query->query_vars['drstk_template_type']) ) {
     wp_register_script('drstk_freewall',
-        $DRS_PLUGIN_URL . "/assets/js/freewall/freewall.js",
+        DRS_PLUGIN_URL . "/assets/js/freewall/freewall.js",
         array( 'jquery' ));
     wp_enqueue_script('drstk_freewall');
     wp_register_script( 'drstk_tiles',
-        $DRS_PLUGIN_URL . '/assets/js/tiles.js',
+        DRS_PLUGIN_URL . '/assets/js/tiles.js',
         array( 'jquery' ));
     wp_enqueue_script('drstk_tiles');
 	}

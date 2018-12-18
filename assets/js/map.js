@@ -16,7 +16,6 @@ jQuery(document).ready(function($) {
     var items = getItemsFromJqueryArray($('.coordinates'));
 
     var mymap = createMap('map');
-
     addTileLayerToMap(mymap, apiKey, projectKey);
 
     var markerCluster = addPopupsToItems(items, mymap, colorGroups, home_url,colorHex);

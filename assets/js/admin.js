@@ -1320,25 +1320,49 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                                         }
                                         return 0; // a must be equal to b
                                     });
-                                    var i = 0;
+                                    var facet_html = "<table class='facets-filter'><tbody>";
                                     for (var i = 0; i <= 4; i++) {
                                         if (sorted[i] != undefined) {
                                             key = Object.keys(sorted[i])[0];
-                                            facet_html = "<tr><td><a href='' data-facet-val='" + key + "' data-facet-name='" + this_facet + "' class='drs-facet-add'>" + key + "</a></td><td><a href=''>" + sorted[i][key] + "</a></td></tr>";
-                                            jQuery(".drs-" + this_facet).append(facet_html);
+                                            // this puts spaces around subject headings (or other) that create super long string,
+                                            // which bork up the layout
+                                            var spacedKey = key.replace(/--/g, ' -- ');
+                                            
+                                            facet_html += "<tr>" +
+                                            		        "<td>" +
+                                            		          "<a href='' data-facet-val='" + key + "' data-facet-name='" + this_facet + "' class='drs-facet-add'>" + spacedKey + "</a>" +
+                                            		        "</td>" +
+                                            		        "<td>" +
+                                            		          "<span class='facet-value'>" + sorted[i][key] + "</span>" +
+                                            		        "</td>" +
+                                            		      "</tr>";
                                         }
                                     }
+                                    facet_html += '</tbody></table>';
+                                    jQuery(".drs-" + this_facet).append(facet_html);
                                     if (sorted.length > 5) {
-                                        facet_html = "<a href='' class='drs-expand-facet' data-facet-name='" + this_facet + "'>View More</a><div class='drs-expanded-facet-" + this_facet + " hidden'><table>";
+                                        facet_html = "<a href='' class='drs-expand-facet' data-facet-name='" + this_facet + "'>View More</a><div class='drs-expanded-facet-" + this_facet + " hidden'>" +
+                                        		"<table class='facets-filter>";
                                         _.each(sorted, function(facet_obj, i) {
                                             if (i > 4) { //don't repeat already displayed facets
                                                 key = Object.keys(facet_obj)[0];
-                                                facet_html += "<tr><td><a href='' data-facet-val='" + key + "' data-facet-name='" + this_facet + "' class='drs-facet-add'>" + key + "</a></td><td><a href=''>" + facet_obj[key] + "</a></td></tr>";
+                                                // this puts spaces around subject headings (or other) that create super long string,
+                                                // which bork up the layout
+                                                var spacedKey = key.replace(/--/g, ' -- ');
+                                                facet_html += "<tr>" +
+                                                		        "<td>" +
+                                                		          "<a href='' data-facet-val='" + key + "' data-facet-name='" + this_facet + "' class='drs-facet-add'>" + spacedKey + "</a>" +
+                                                		        "</td>" +
+                                                		        "<td>" +
+                                                		          "<span class='facet-value'>" + facet_obj[key] + "</span>" +
+                                                		        "</td>" +
+                                                		      "</tr>";
                                             }
                                         });
-                                        facet_html += "</table></div>";
+                                        facet_html += "</table>";
                                         jQuery(".drs-" + this_facet).append(facet_html);
                                     }
+                                    jQuery(".drs-" + this_facet).append('</div>');
                                 }
                             }
                         }
@@ -1997,7 +2021,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                 }
                 colors += ">" + color.charAt(0).toUpperCase() + color.slice(1) + "</option>";
             });
-            jQuery("#selected #sortable-" + tab_name + "-list").find("li:last-of-type label").append('<br/>Select: <select name="color"><option value="">Choose one</option>' + colors + '</select>');
+            jQuery("#selected #sortable-" + tab_name + "-list").find("li:last-of-type label").append('<br/>Color label (see Settings tab):<br/> <select name="color"><option value="">Color Label</option>' + colors + '</select>');
         }
         if (this.shortcode.items.where({
                 pid: item.attributes.pid

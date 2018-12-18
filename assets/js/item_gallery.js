@@ -1,7 +1,5 @@
 jQuery(document).ready(function($) {
-	$('.carousel').carousel({
-		interval: false
-	});
+	$('.carousel').carousel();
   var cHeight = 0;
   $('.carousel').on('slide.bs.carousel', function(e) {
     var $nextImage = $(e.relatedTarget).find('img');

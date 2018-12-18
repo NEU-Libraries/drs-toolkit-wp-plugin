@@ -3,9 +3,7 @@ jQuery(document).ready(function($) {
 	if($().carousel) {
 		$(".carousel").each(function(){
 			var this_carousel = $(this);
-			$(this).carousel({
-				interval: false
-			});
+			$(this).carousel();
 
 			$(window).on('load', function(){
 				fix_dimensions(this_carousel);

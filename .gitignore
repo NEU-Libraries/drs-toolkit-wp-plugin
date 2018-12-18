@@ -1,6 +1,7 @@
 .DS_Store
 */.DS_Store
 deploy.sh
+config.php
 .idea/
 node_modules/
 specs/results/

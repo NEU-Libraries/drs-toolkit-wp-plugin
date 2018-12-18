@@ -41,7 +41,6 @@ function reloadRemainingMap_ajax_handler()
 /* adds shortcode */
 add_shortcode( 'drstk_map', 'drstk_map' );
 function drstk_map( $atts , $params) {
-  global $DRS_PLUGIN_URL;
   $errors = drstk_get_errors();
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
   if($cache != NULL
@@ -390,7 +389,7 @@ function drstk_map( $atts , $params) {
   set_transient(md5('PREFIX'.serialize($atts)) , $cache_output, $cache_time * 60);
 
     if(isset($atts['collection_id'])) {
-        wp_register_script('drstk_map_col', $DRS_PLUGIN_URL . '/assets/js/mapCollection.js', array('jquery'));
+        wp_register_script('drstk_map_col', DRS_PLUGIN_URL . '/assets/js/mapCollection.js', array('jquery'));
         wp_enqueue_script('drstk_map_col');
 
         $reload_filtered_set_drs_nonce = wp_create_nonce('reload_filtered_set_drs');
@@ -419,52 +418,102 @@ function drstk_map( $atts , $params) {
 
 function drstk_map_shortcode_scripts() {
 
-  global $post, $wp_query, $DRS_PLUGIN_URL;
+  global $post, $wp_query;
 
-    if( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'drstk_map') && !isset($wp_query->query_vars['drstk_template_type']) ) {
-    wp_register_script('drstk_leaflet',
-        $DRS_PLUGIN_URL .'/assets/js/leaflet/leaflet.js',
-        array( 'jquery' ));
-    wp_enqueue_script('drstk_leaflet');
-
-    wp_register_script('drstk_leaflet_marker_cluster',
-        $DRS_PLUGIN_URL.'/assets/js/leaflet/leaflet.markercluster-src.js',
-        array('jquery', 'drstk_leaflet'));
-    wp_enqueue_script('drstk_leaflet_marker_cluster');
-
-    wp_register_script('drstk_leaflet_message_box',
-        $DRS_PLUGIN_URL.'/assets/js/leaflet/leaflet.messagebox-src.js',
-        array('jquery', 'drstk_leaflet'));
-    wp_enqueue_script('drstk_leaflet_message_box');
-
-    wp_register_script('drstk_leaflet_easy_button',
-        $DRS_PLUGIN_URL.'/assets/js/leaflet/leaflet.easybutton-src.js',
-        array('jquery', 'drstk_leaflet'));
-    wp_enqueue_script('drstk_leaflet_easy_button');
-
-    wp_register_style('drstk_leaflet_css',
-        $DRS_PLUGIN_URL.'/assets/css/leaflet.css');
-    wp_enqueue_style('drstk_leaflet_css');
-    wp_register_script( 'drstk_map',
-        $DRS_PLUGIN_URL. '/assets/js/map.js',
-        array( 'jquery' ));
-    wp_enqueue_script('drstk_map');
-
-    $map_nonce = wp_create_nonce( 'map_nonce' );
-    $temp =  shortcode_parse_atts($post->post_content);
-    $collectionSet = "";
-
-    if(isset($temp['collection_id']) && $temp['collection_id'] != '') {
-        $collectionSet = "checked";
-    }
-    $map_obj = array(
-      'ajax_url' => admin_url('admin-ajax.php'),
-      'nonce'    => $map_nonce,
-      'home_url' => drstk_home_url(),
-      'post_id' => $post->ID,
-      'collectionSet' => $collectionSet
-    );
-    wp_localize_script( 'drstk_map', 'map_obj', $map_obj );
+    if( is_a( $post, 'WP_Post' ) 
+        && has_shortcode( $post->post_content, 'drstk_map')
+        && !isset($wp_query->query_vars['drstk_template_type']) ) {
+    
+        wp_register_script('drstk_cdn_leaflet_js',
+                           'https://unpkg.com/leaflet@1.3.4/dist/leaflet.js',
+                            array( 'jquery' ));
+        wp_enqueue_script('drstk_cdn_leaflet_js');
+        
+        wp_register_style('drstk_cdn_leaflet_css', 'https://unpkg.com/leaflet@1.3.4/dist/leaflet.css');
+        wp_enqueue_style('drstk_cdn_leaflet_css');
+        
+        wp_register_script('drstk_cdn_leaflet_marker_cluster_js',
+                           'https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js',
+                            array('jquery', 'drstk_cdn_leaflet_js')
+            
+            );
+        wp_enqueue_script('drstk_cdn_leaflet_marker_cluster_js');
+        
+        
+        wp_register_style('drstk_cdn_leaflet_marker_cluster_css',
+            'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css');
+        wp_enqueue_style('drstk_cdn_leaflet_marker_cluster_css');
+        
+        wp_register_style('drstk_cdn_leaflet_marker_cluster_default_css',
+            'https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css');
+        wp_enqueue_style('drstk_cdn_leaflet_marker_cluster_default_css');
+        
+        
+        wp_register_script('drstk_cdn_leaflet_easy_button_js',
+            'https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js',
+            array('jquery', 'drstk_cdn_leaflet_js')
+            );
+        wp_enqueue_script('drstk_cdn_leaflet_easy_button_js');
+        
+        wp_register_style('drstk_cdn_leaflet_easy_button_css',
+                          'https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css');
+        wp_enqueue_style('drstk_cdn_leaflet_easy_button_css');
+        
+        
+        
+        wp_register_style('drstk_leaflet_css',
+            DRS_PLUGIN_URL.'/assets/css/leaflet.css');
+        wp_enqueue_style('drstk_leaflet_css');
+        
+     
+        wp_register_script( 'drstk_map',
+            DRS_PLUGIN_URL. '/assets/js/map.js',
+            array( 'jquery' ));
+        wp_enqueue_script('drstk_map');
+    
+        $map_nonce = wp_create_nonce( 'map_nonce' );
+        $temp =  shortcode_parse_atts($post->post_content);
+        $collectionSet = "";
+    
+        if(isset($temp['collection_id']) && $temp['collection_id'] != '') {
+            $collectionSet = "checked";
+        }
+        $map_obj = array(
+          'ajax_url' => admin_url('admin-ajax.php'),
+          'nonce'    => $map_nonce,
+          'home_url' => drstk_home_url(),
+          'post_id' => $post->ID,
+          'collectionSet' => $collectionSet
+        );
+        wp_localize_script( 'drstk_map', 'map_obj', $map_obj );
   }
 }
 add_action( 'wp_enqueue_scripts', 'drstk_map_shortcode_scripts');
+
+// the filter doesn't target based on what's passed,
+// so make one general use of the filter and hope it doesn't get too long (it will)
+function drstk_script_loader_tag_filter($tag, $handle, $src) {
+  switch ($handle) {
+    case 'drstk_add_cdn_leaflet_js_atts':
+      $tag = '<script type="text/javascript" src="' . $src . '"
+              integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+              crossorigin=""></script>';
+      break;
+      
+  }
+  return $tag;
+}
+
+function drstk_style_loader_tag_filter($tag, $handle, $href) {
+  switch ($handle) {
+    case 'drstk_add_cdn_leaflet_css_atts':
+      $tag = '<link rel="stylesheet" href="' . $href . '"
+              integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+              crossorigin=""></link>';
+      break;
+  }
+  return $tag;
+}
+
+add_filter('script_loader_tag', 'drstk_script_loader_tag_filter', 10, 3);
+add_filter('style_loader_tag', 'drstk_style_loader_tag_filter', 10, 3);
