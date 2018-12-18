@@ -1324,7 +1324,17 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                                     for (var i = 0; i <= 4; i++) {
                                         if (sorted[i] != undefined) {
                                             key = Object.keys(sorted[i])[0];
-                                            facet_html = "<tr><td><a href='' data-facet-val='" + key + "' data-facet-name='" + this_facet + "' class='drs-facet-add'>" + key + "</a></td><td><a href=''>" + sorted[i][key] + "</a></td></tr>";
+                                            // this puts spaces around subject headings (or other) that create super long string,
+                                            // which bork up the layout
+                                            var spacedKey = key.replace(/--/g, ' -- ');
+                                            facet_html = "<tr>" +
+                                            		        "<td>" +
+                                            		          "<a href='' data-facet-val='" + key + "' data-facet-name='" + this_facet + "' class='drs-facet-add'>" + spacedKey + "</a>" +
+                                            		        "</td>" +
+                                            		        "<td>" +
+                                            		          "<a href=''>" + sorted[i][key] + "</a>" +
+                                            		        "</td>" +
+                                            		      "</tr>";
                                             jQuery(".drs-" + this_facet).append(facet_html);
                                         }
                                     }
@@ -1333,7 +1343,17 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                                         _.each(sorted, function(facet_obj, i) {
                                             if (i > 4) { //don't repeat already displayed facets
                                                 key = Object.keys(facet_obj)[0];
-                                                facet_html += "<tr><td><a href='' data-facet-val='" + key + "' data-facet-name='" + this_facet + "' class='drs-facet-add'>" + key + "</a></td><td><a href=''>" + facet_obj[key] + "</a></td></tr>";
+                                                // this puts spaces around subject headings (or other) that create super long string,
+                                                // which bork up the layout
+                                                var spacedKey = key.replace(/--/g, ' -- ');
+                                                facet_html += "<tr>" +
+                                                		        "<td>" +
+                                                		          "<a href='' data-facet-val='" + key + "' data-facet-name='" + this_facet + "' class='drs-facet-add'>" + spacedKey + "</a>" +
+                                                		        "</td>" +
+                                                		        "<td>" +
+                                                		          "<a href=''>" + facet_obj[key] + "</a>" +
+                                                		        "</td>" +
+                                                		      "</tr>";
                                             }
                                         });
                                         facet_html += "</table></div>";
