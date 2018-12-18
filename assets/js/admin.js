@@ -1332,7 +1332,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                                             		          "<a href='' data-facet-val='" + key + "' data-facet-name='" + this_facet + "' class='drs-facet-add'>" + spacedKey + "</a>" +
                                             		        "</td>" +
                                             		        "<td>" +
-                                            		          "<a href=''>" + sorted[i][key] + "</a>" +
+                                            		          "<span class='facet-value'>" + sorted[i][key] + "</span>" +
                                             		        "</td>" +
                                             		      "</tr>";
                                             jQuery(".drs-" + this_facet).append(facet_html);
@@ -1351,7 +1351,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                                                 		          "<a href='' data-facet-val='" + key + "' data-facet-name='" + this_facet + "' class='drs-facet-add'>" + spacedKey + "</a>" +
                                                 		        "</td>" +
                                                 		        "<td>" +
-                                                		          "<a href=''>" + facet_obj[key] + "</a>" +
+                                                		          "<span class='facet-value'>" + facet_obj[key] + "</span>" +
                                                 		        "</td>" +
                                                 		      "</tr>";
                                             }
