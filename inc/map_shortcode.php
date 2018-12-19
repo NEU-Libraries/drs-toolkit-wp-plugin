@@ -61,7 +61,6 @@ function drstk_map( $atts , $params) {
   $story = isset($atts['story']) ? $atts['story'] : "no";
   $map_html = "";
 
-
   $shortcode = "<div id='map' data-story='".$story."' data-map_api_key='".$map_api_key."' data-map_project_key='".$map_project_key."'";
   foreach($atts as $key => $value){
         if(preg_match('/(.*)_color_desc_id/',$key)) {
@@ -424,13 +423,18 @@ function drstk_map_shortcode_scripts() {
         && has_shortcode( $post->post_content, 'drstk_map')
         && !isset($wp_query->query_vars['drstk_template_type']) ) {
     
+          
+        wp_register_style('drstk_cdn_leaflet_css', 'https://unpkg.com/leaflet@1.3.4/dist/leaflet.css');
+        wp_enqueue_style('drstk_cdn_leaflet_css');
+        
+        wp_add_inline_style('drstk_cdn_leaflet_css', "#map {height: 600px}");
+          
         wp_register_script('drstk_cdn_leaflet_js',
                            'https://unpkg.com/leaflet@1.3.4/dist/leaflet.js',
                             array( 'jquery' ));
         wp_enqueue_script('drstk_cdn_leaflet_js');
         
-        wp_register_style('drstk_cdn_leaflet_css', 'https://unpkg.com/leaflet@1.3.4/dist/leaflet.css');
-        wp_enqueue_style('drstk_cdn_leaflet_css');
+
         
         wp_register_script('drstk_cdn_leaflet_marker_cluster_js',
                            'https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js',
@@ -459,13 +463,6 @@ function drstk_map_shortcode_scripts() {
                           'https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css');
         wp_enqueue_style('drstk_cdn_leaflet_easy_button_css');
         
-        
-        
-        wp_register_style('drstk_leaflet_css',
-            DRS_PLUGIN_URL.'/assets/css/leaflet.css');
-        wp_enqueue_style('drstk_leaflet_css');
-        
-     
         wp_register_script( 'drstk_map',
             DRS_PLUGIN_URL. '/assets/js/map.js',
             array( 'jquery' ));
@@ -489,6 +486,8 @@ function drstk_map_shortcode_scripts() {
   }
 }
 add_action( 'wp_enqueue_scripts', 'drstk_map_shortcode_scripts');
+
+
 
 // the filter doesn't target based on what's passed,
 // so make one general use of the filter and hope it doesn't get too long (it will)
