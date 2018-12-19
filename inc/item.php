@@ -89,12 +89,21 @@ function parse_metadata($data, $html, $solr=false, $dpla=false, $special_options
       $html .= "</b></div><div class='drs-field-value'>";
       if (is_array($value)){
         for ($i =0; $i<count($value); $i++){
-          if (substr($value[$i], 0, 4) == "http"){
-            $html .= '<a href="'.$value[$i].'" target="_blank">'.$value[$i].'</a>';
-          } elseif ((strpos($value[$i], 'Read Online') !== false) && $key == "Location") {
-            $html .= $value[$i];
+          
+          $fieldValue = $value[$i];
+          // @TODO this is a band aid. There's lots to figure out about how
+          // this actually works with the data sources, especially DPLA
+          // see https://github.com/NEU-Libraries/drs-toolkit-wp-plugin/issues/166
+          if (is_array($fieldValue)) {
+            $fieldValue = $fieldValue[0];
+          }
+          if (substr($fieldValue, 0, 4) == "http"){
+            $html .= '<a href="'.$fieldValue.'" target="_blank">'.$fieldValue.'</a>';
+          } elseif ((strpos($fieldValue, 'Read Online') !== false) && $key == "Location") {
+            $html .= $fieldValue;
           } else {
-            $string = $value[$i];
+            $string = $fieldValue;
+            
             $link_pattern = "/(?i)\\b(?:https?:\\/\\/|www\\d{0,3}[.]|[a-z0-9.\\-]+[.][a-z]{2,4}\\/)(?:[^\\s()<>]+|\\([^\\s()<>]+|\\([^\\s()<>]+\\)*\\))+(?:\\([^\\s()<>]+|\\([^\\s()<>]+\\)*\\)|[^\\s`!()\\[\\]{};:'\".,<>?«»“”‘’])/i";
             $email_pattern = "/[A-Z0-9_\\.%\\+\\-\\']+@(?:[A-Z0-9\\-]+\\.)+(?:[A-Z]{2,4}|museum|travel)/i";
             preg_match_all($link_pattern, $string, $link_matches);
