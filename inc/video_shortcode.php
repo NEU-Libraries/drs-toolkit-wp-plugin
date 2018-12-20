@@ -166,7 +166,7 @@ function drstk_collection_playlist($atts){
 }
 
 function drstk_video_shortcode_scripts() {
-    global $post, $VERSION, $wp_query;
+    global $post, $wp_query;
     if( is_a( $post, 'WP_Post' ) && (has_shortcode( $post->post_content, 'drstk_collection_playlist') || has_shortcode( $post->post_content, 'drstk_media')) && !isset($wp_query->query_vars['drstk_template_type']) ) {
       wp_register_script('drstk_cdn_jwplayer', 'https://content.jwplatform.com/libraries/dTFl0VEe.js');
       wp_enqueue_script('drstk_cdn_jwplayer');

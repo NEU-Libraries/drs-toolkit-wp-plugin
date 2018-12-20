@@ -115,7 +115,10 @@ function drstk_gallery( $atts ){
          $data->creator_tesim = is_array($dpla->docs[0]->sourceResource->creator) ? $dpla->docs[0]->sourceResource->creator : array($dpla->docs[0]->sourceResource->creator);
 
        }
-       $data->date_ssi = $dpla->docs[0]->sourceResource->date->displayDate;
+       if (isset ($dpla->docs[0]->sourceResource->date)) {
+         $data->date_ssi = $dpla->docs[0]->sourceResource->date->displayDate;
+       }
+       
      }
        if (!isset($data->error)){
         $pid = $id;
