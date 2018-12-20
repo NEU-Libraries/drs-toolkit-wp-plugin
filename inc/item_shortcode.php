@@ -247,8 +247,8 @@ function drstk_item_shortcode_scripts() {
     wp_enqueue_script('drstk_elevatezoom');
     wp_register_script( 'drstk_zoom', DRS_PLUGIN_URL . '/assets/js/zoom.js', array( 'jquery' ));
     wp_enqueue_script('drstk_zoom');
-    wp_register_script('drstk_jwplayer', DRS_PLUGIN_URL.'/assets/js/jwplayer/jwplayer.js', array(), $VERSION, false );
-    wp_enqueue_script('drstk_jwplayer');
+    wp_register_script('drstk_cdn_jwplayer', 'https://content.jwplatform.com/libraries/dTFl0VEe.js');
+    wp_enqueue_script('drstk_cdn_jwplayer');
   }
 }
 
