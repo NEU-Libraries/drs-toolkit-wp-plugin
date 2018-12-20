@@ -130,6 +130,14 @@ function drstk_collection_playlist($atts){
           layout: "basic"
         },';
     }
+    
+      // $playlist is only set to something for wp content,
+      // so cheesily cover up the NOTICE when it isn't set in the jwplayer setup for safari
+      // @TODO I'd (PMJ would prefer a better way to build the JS
+      // to branch around that, but whatevs for now
+      if(empty($playlist)) {
+        $playlist = '';
+      }
       $cache_output .= 'playlist: [ '. $playlists . ']
         });
         jwplayer("'.$pid_selector.'").on("ready", function() {
