@@ -33,7 +33,9 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
     git clone https://github.com/NEU-Libraries/drs-toolkit-wp-theme.git quest-child
   ```
 
-6. Register your site on google analytics and add your code to a git-ignored file called analytics.php
+6. Copy a valid `config.php` file with the correct credentials into the root folder
+
+7. Register your site on google analytics and add your code to a git-ignored file called analytics.php
 
   ```
     cd /wp-content/themes/quest-child
@@ -55,7 +57,7 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
       ";
   ```
 
-7. If you would like to override some of the functionality and styles or this child theme you may create a sub-directory named `overrides`.  This directory will be ignored by git and your changes won't be overwritten by future git pulls from the main repo.  Additionally, you can initialize this repository as a git-submodule and track your own changes in your own repo.
+8. If you would like to override some of the functionality and styles or this child theme you may create a sub-directory named `overrides`.  This directory will be ignored by git and your changes won't be overwritten by future git pulls from the main repo.  Additionally, you can initialize this repository as a git-submodule and track your own changes in your own repo.
 
   ```
     cd wp-content/themes/quest-child
@@ -64,7 +66,7 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
     echo "<?php //silence is golden" > overrides/functions.php
   ```
 
-8. Delete extra themes to avoid user confusion
+9. Delete extra themes to avoid user confusion
 
   ```
     cd wp-content/themes
@@ -73,33 +75,33 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
     rm -rf twentyseventeen
   ```
 
-9. Go to /wp-admin/plugins.php in your browser. Install dependent plugins: Relevanssi, Page Builder by SiteOrigin, Black Studio TinyMCE Widget, and Widget Context and activate them.
+10. Go to /wp-admin/plugins.php in your browser. Install dependent plugins: Relevanssi, Page Builder by SiteOrigin, Black Studio TinyMCE Widget, and Widget Context and activate them.
 
-10. Go to /wp-admin/plugins.php in your browser. Activate CERES: Exhibit Toolkit Plugin
+11. Go to /wp-admin/plugins.php in your browser. Activate CERES: Exhibit Toolkit Plugin
 
-11. Go to Settings > Reading and set Front Page Displays to a static page then choose a static page.
+12. Go to Settings > Reading and set Front Page Displays to a static page then choose a static page.
 
-12. Go to Settings > Discussion and uncheck the box that says 'Allow people to post comments on new articles' to disable comments by default
+13. Go to Settings > Discussion and uncheck the box that says 'Allow people to post comments on new articles' to disable comments by default
 
-13. Go to Settings > CERES: Exhibit Toolkit and enter collection URL and add modify any other settings then click Update.
+14. Go to Settings > CERES: Exhibit Toolkit and enter collection URL and add modify any other settings then click Update.
 
-14. Go to Appearance > Themes and activate CERES: Exhibit Toolkit (Quest Child Theme)
+15. Go to Appearance > Themes and activate CERES: Exhibit Toolkit (Quest Child Theme)
 
-15. Go to Appearance > Customize > Layout > Search Results. Change sidebar to none.
+16. Go to Appearance > Customize > Layout > Search Results. Change sidebar to none.
 
-16. Go to Appearance > Customize > Colors > Global. Change Accent Color and  Accent Shade Color to #c00
+17. Go to Appearance > Customize > Colors > Global. Change Accent Color and  Accent Shade Color to #c00
 
-17. Click the '<' arrow then Header. Change Secondary Header > Background Color to #494949, Text Color and Social Icon Color to #AFAFAF, Top Border Color to #3C3C3C and Social Icon Hover Color and Social Icon Hover background Color to #EFEFEF
+18. Click the '<' arrow then Header. Change Secondary Header > Background Color to #494949, Text Color and Social Icon Color to #AFAFAF, Top Border Color to #3C3C3C and Social Icon Hover Color and Social Icon Hover background Color to #EFEFEF
 
-18. Click the '<' arrow then Main Menu. Change Menu Items > Text Hover/Focus Color and SubMenu Items Hover/Focus Text Color to #c00.
+19. Click the '<' arrow then Main Menu. Change Menu Items > Text Hover/Focus Color and SubMenu Items Hover/Focus Text Color to #c00.
 
-19. Click the '<' arrow then Footer. Change Social Icon Hover Color and Social Icon Hover background color to #c00. Change Secondary Footer Background Color to #3C3C3C.
+20. Click the '<' arrow then Footer. Change Social Icon Hover Color and Social Icon Hover background color to #c00. Change Secondary Footer Background Color to #3C3C3C.
 
-20. Go to Pages > Delete the 'Sample Page'. Go to Posts > Delete the 'Hello World'.
+21. Go to Pages > Delete the 'Sample Page'. Go to Posts > Delete the 'Hello World'.
 
-21. Add site to deploy script (deploy.sh) - see [secret gist](https://gist.github.com/elizoller/2412436c2148d694efc1)
+22. Add site to deploy script (deploy.sh) - see [secret gist](https://gist.github.com/elizoller/2412436c2148d694efc1)
 
-22. Add users based on requests from project team
+23. Add users based on requests from project team
 
 ---
 If you would like breadcrumbs on single pages/posts (not drs items) that reflect hierarchy, simply drag and drop the pages in the wp-admin pages screen to nest.
