@@ -43,7 +43,7 @@ function drstk_collection_playlist($atts){
       if ($repo != "drs"){$pid = explode(":",$video); $pid = $pid[1];} else {$pid = $video;}
       $poster;
       if ($repo == "drs"){
-        $url = drstk_api_url("drs", $video, "files", "solr_only=true");
+        $url = drstk_api_url("drs", $video, "files", null, "solr_only=true");
         $response = get_response($url);
         $data = json_decode($response['output']);
         $data = $data->_source;
