@@ -13,9 +13,14 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
 
 [Corresponding theme](https://github.com/NEU-Libraries/drs-toolkit-wp-theme)
 
+### New in version v1.2
+
+First, it has a version in git. This will allow for better tracking and debugging. It also cleans up many code and logic issues, and moves toward a more generalized error-reporting mechanism. See [Release Notes](https://github.com/NEU-Libraries/drs-toolkit-wp-plugin/releases) for details.
+
+
 ### Setup
 
-1. Ask Karl for clean install of WP on correct server (will need to provide a directory name)
+1. Ask Karl for clean install of WP on correct server (will need to provide a directory name and domain info)
 
 2. Log in to new Wordpress site as admin user
 
@@ -35,7 +40,7 @@ Relies on Javascript being enabled and AJAX - Should work in IE10 and up, Chrome
 
 6. Copy a valid `config.php` file with the correct credentials into the root folder
 
-7. Register your site on google analytics and add your code to a git-ignored file called analytics.php
+7. Optionally, register your site on google analytics and add your code to a git-ignored file called analytics.php
 
   ```
     cd /wp-content/themes/quest-child
