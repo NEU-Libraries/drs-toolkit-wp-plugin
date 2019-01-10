@@ -26,7 +26,7 @@ define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without exte
 define('DRS_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
 define('DRS_PLUGIN_URL', plugin_dir_url(__FILE__));
 
-define('DPLA_FALLBACK_IMAGE_URL', DRS_PLUGIN_URL . '/assets/images/DPLA-square-logo-color.jpeg');
+define('DPLA_FALLBACK_IMAGE_URL', DRS_PLUGIN_URL . 'assets/images/DPLA-square-logo-color.jpeg');
 
 // Set template names here so we don't have to go into the code.
 $TEMPLATE = array(
