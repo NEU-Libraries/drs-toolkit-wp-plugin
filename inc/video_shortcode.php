@@ -103,7 +103,7 @@ function drstk_collection_playlist($atts){
         <img style="width: 100%;" src="' . $poster[0] .'" />
       </div>
       <script type="text/javascript">
-      jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc=";
+        jwplayer.key="' . JWPLAYER_KEY . '=";
         var primary = "html5";
         var provider = "'.$provider.'";
         var is_chrome = navigator.userAgent.indexOf(\'Chrome\') > -1;

@@ -517,7 +517,7 @@ function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) 
   $html = '<img id="'.$id_img.'" src="'.$drs_item_img.'" class="replace_thumbs"/>';
   $html .= '<div id="'.$id_video.'"></div>';
   $html .= '<script type="text/javascript">
-  jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc=";
+  jwplayer.key="' . JWPLAYER_KEY . '=";
   var primary = "html5";
   var provider = "'.$av_provider.'";
   var is_chrome = navigator.userAgent.indexOf(\'Chrome\') > -1;
