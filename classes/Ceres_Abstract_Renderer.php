@@ -6,7 +6,7 @@ abstract class Ceres_Abstract_Renderer {
   
   protected $html = '';
   
-  protected $dataToRender;
+  protected $responseData;
   
   protected $resourceId;
   
@@ -14,11 +14,12 @@ abstract class Ceres_Abstract_Renderer {
   
   private $template;
   
-  public function __construct(Ceres_Abstract_Fetcher $fetcher, $resourceId = '') {
-    $this->fetcher = $fetcher;
+  public function __construct(array $responseData, $resourceId = '') {
+    $this->responseData = $responseData;
     $this->resourceId = $this->setResourceId($resourceId);
-  
   }
+  
+  abstract function render();
   
   public function setResourceId($resourceId) {
     $this->resourceId = $resoureId;
@@ -28,12 +29,12 @@ abstract class Ceres_Abstract_Renderer {
     return $this->resourceId;
   }
   
-  public function setDataToRender($data) {
-    $this->dataToRender = $data;
+  public function setResponse($response) {
+    $this->response = $response;
   }
   
-  public function getDataToRender() {
-    return $this->dataToRender;
+  public function getResponseData() {
+    return $this->responseData;
   }
   
   public function setOptions(array $options) {

@@ -31,15 +31,7 @@ abstract class Ceres_Abstract_Fetcher {
    * @var array
    */
   
-  protected $response = array();
-  
-  /**
-   * Whether the curl response gave 200 HTTP status or not
-   * @var bool
-   */
-  
-  protected $hasError = false;
-  
+  protected $responseData = array();
 
   abstract public function buildQueryString();
   
@@ -67,10 +59,6 @@ abstract class Ceres_Abstract_Fetcher {
       $responseStatus = $responseStatusArray['http_code'];
     }
     
-    if ($responseStatus != 200) {
-      $this->hasError = true;
-    }
-    
     switch ($responseStatus) {
       case 200:
         $output = $rawResponse;
@@ -96,7 +84,7 @@ abstract class Ceres_Abstract_Fetcher {
         break;
         
     }
-    $this->response = array(
+    $this->responseData = array(
         'status' => $responseStatus,
         'statusMessage' => $statusMessage,
         'output' => $output,
@@ -104,12 +92,8 @@ abstract class Ceres_Abstract_Fetcher {
     curl_close($ch);
   }
   
-  public function getData() {
-    return $this->response['output'];
-  }
-  
-  public function getResponse() {
-    return $this->response;
+  public function getResponseData() {
+    return $this->responseData;
   }
   
   public function hasError() {
