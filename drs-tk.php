@@ -1262,3 +1262,33 @@ function drstk_facets_get_option($facet_type, $default = false)
   }
 
 }
+
+
+/* Dev on Podcast site options */ 
+add_filter( 'template_include', 'podcast_page_template', 100 );
+
+function podcast_page_template( $template ) {
+  //is_page takes the id, so this should be set in the CERES settings for a podcast site. testing site has 348
+  if ( is_page( 348 ) ) {
+    $file_name = 'podcast-template.php';
+    if ( locate_template( $file_name ) ) {
+      $template = locate_template( $file_name );
+    } else {
+      // Template not found in theme's folder, use plugin's template as a fallback
+      $template = dirname( __FILE__ ) . '/templates/' . $file_name;
+    }
+  }
+  
+  return $template;
+}
+
+add_action('wp_footer', 'wpshout_action_example');
+function wpshout_action_example() {
+  echo '<div style="background: green; color: white; text-align: right;">WPShout was here.</div>';
+}
+
+/* End Dev on Podcast site */
+
+
+
+
