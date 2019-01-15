@@ -61,11 +61,8 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
       if ($token != false && is_string($token))
         $url .= "token=$token";
     }
-    //return urlencode($url);
     return $url;
   }
-  
-  function fetchNextPage() {}
   
   /**
    * The DRS part of the nee DRS Toolkit sets basically a default collection or set to draw from in the plugin's
@@ -81,8 +78,24 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
   }
   
   public function parseItemsData() {
-    
     $this->itemsData = $this->responseData['output']['response']['response']['docs'];
+  }
+  
+  public function fetchNextPage() {
+    $paginationData = $this->responseData['output']['pagination']['table'];
+    $currentPage = $paginationData['current_page'];
+    $lastPage = $paginationData['num_pages'];
+    $start = $paginationData['start'];
+    $perPage = $paginationData['per_page'];
+    if ($currentPage <= $lastPage) {
+      $nextStartPage = $currentPage++;
+    } else {
+      return false;
+    }
+    
+    $this->setParam('page', $nextStartPage);
+    $this->buildQueryString();
+    $this->fetchData();
   }
   
   /*DRS API Authenticate helper method*/

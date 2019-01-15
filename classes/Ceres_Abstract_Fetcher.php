@@ -25,8 +25,6 @@ abstract class Ceres_Abstract_Fetcher {
   
   protected $queryParams = array();
   
-  protected $nextPage = false;
-  
   /**
    * The parsed response, including the handling of errors and output message (i.e., not the direct
    * curl response, though that's up for @TODO debate
@@ -92,6 +90,7 @@ abstract class Ceres_Abstract_Fetcher {
         break;
         
     }
+    
     $this->responseData = array(
         'status' => $responseStatus,
         'statusMessage' => $statusMessage,
