@@ -25,20 +25,28 @@ abstract class Ceres_Abstract_Fetcher {
   
   protected $queryParams = array();
   
+  protected $nextPage = false;
+  
   /**
    * The parsed response, including the handling of errors and output message (i.e., not the direct
    * curl response, though that's up for @TODO debate
    * @var array
    */
   
-  protected $responseData = array();
+  public $responseData = array();
+  
+  public $itemsData = array();
 
   abstract public function buildQueryString();
   
-  public function __construct(string $resourceId = '', array $queryOptions = array(), array $queryParams = array() ) {
+  abstract public function parseItemsData();
+  
+  abstract public function fetchNextPage();
+  
+  public function __construct(array $queryOptions = array(), array $queryParams = array(), $resourceId = null ) {
     $this->setQueryParams($queryParams);
     $this->setQueryOptions($queryOptions);
-    $this->resourceId = $resourceId;
+    $this->setResourceId($resourceId);
   }
   
   public function fetchData() {
@@ -87,7 +95,7 @@ abstract class Ceres_Abstract_Fetcher {
     $this->responseData = array(
         'status' => $responseStatus,
         'statusMessage' => $statusMessage,
-        'output' => $output,
+        'output' => json_decode($output, true),
     );
     curl_close($ch);
   }
@@ -140,11 +148,16 @@ abstract class Ceres_Abstract_Fetcher {
     return $this->queryOptions[$option];
   }
   
-  public function setResourceId(string $resourceId) {
+  public function setResourceId($resourceId) {
     $this->resourceId = $resourceId;
   }
   
   public function getResourceId() {
     return $this->resourceId;
   }
+  
+  public function getItemsData() {
+    return $this->itemsData;
+  }
+
 }

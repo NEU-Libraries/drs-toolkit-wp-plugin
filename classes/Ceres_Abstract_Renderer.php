@@ -6,17 +6,15 @@ abstract class Ceres_Abstract_Renderer {
   
   protected $html = '';
   
-  protected $responseData;
+  protected $fetcher;
   
   protected $resourceId;
   
-  private $fetcher;
-  
   private $template;
   
-  public function __construct(array $responseData, $resourceId = '') {
-    $this->responseData = $responseData;
-    $this->resourceId = $this->setResourceId($resourceId);
+  public function __construct($fetcher, $resourceId = null) {
+    $this->fetcher = $fetcher;
+    $this->setResourceId($resourceId);
   }
   
   abstract function render();
@@ -44,7 +42,6 @@ abstract class Ceres_Abstract_Renderer {
   public function getOptions() {
     return $this->options;
   }
-
   
   public function setOption(string $option, string $value = '') {
     if ($value == '') {
@@ -57,8 +54,6 @@ abstract class Ceres_Abstract_Renderer {
   public function getOption(string $option) {
     return $this->options[$option];
   }
-  
-  
 }
 
 

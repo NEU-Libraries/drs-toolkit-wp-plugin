@@ -20,10 +20,11 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/timeline_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/metabox.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'config.php' );
 
-
+/* Moving toward a Ceres namespace for podcasting */
 require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Abstract_Fetcher.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Drs_Fetcher.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Abstract_Renderer.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Drs_Fetcher.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Podcast_Renderer.php' );
 
 
 
@@ -197,6 +198,21 @@ function register_drs_settings() {
   
   //Advanced Options
   add_settings_section('drstk_advanced', "Advanced", null, 'drstk_options');
+  add_settings_field('drstk_is_podcast',
+                     'Is this a podcast site?',
+                     'drstk_is_podcast_callback',
+                     'drstk_options',
+                     'drstk_advanced');
+  register_setting('drstk_options', 'drstk_is_podcast');
+  
+  add_settings_field('drstk_podcast_page',
+                     'Select page to contain your podcast list',
+                     'drstk_podcast_page_callback',
+                     'drstk_options',
+                     'drstk_advanced');
+  register_setting('drstk_options', 'drstk_podcast_page');
+  
+  
   add_settings_field('drstk_niec',
                      'Does your project include NIEC metadata?',
                      'drstk_niec_callback',
@@ -211,6 +227,7 @@ function register_drs_settings() {
                      'drstk_advanced',
                       array('class'=>'niec'));
   register_setting( 'drstk_options', 'drstk_niec_metadata' );
+  
   $niec_facet_options = drstk_facets_get_option('niec', true);
   foreach($niec_facet_options as $option){
     add_settings_field('drstk_niec_'.$option.'_title',
@@ -229,6 +246,7 @@ function register_drs_settings() {
                      'drstk_options',
                      'drstk_advanced');
   register_setting( 'drstk_options', 'leaflet_api_key' );
+  
   add_settings_field('leaflet_project_key',
                      'Leaflet Project Key',
                      'leaflet_project_key_callback',
@@ -241,6 +259,7 @@ function register_drs_settings() {
                      'drstk_mirador_callback', 'drstk_options',
                      'drstk_advanced');
   register_setting( 'drstk_options', 'drstk_mirador' );
+  
   add_settings_field('drstk_mirador_page_title',
                      'Mirador Page Title',
                      'drstk_mirador_page_title_callback',
@@ -248,6 +267,7 @@ function register_drs_settings() {
                      'drstk_advanced',
                      array('class'=>'mirador'));
   register_setting( 'drstk_options', 'drstk_mirador_page_title' );
+  
   add_settings_field('drstk_mirador_url',
                      'Mirador URL',
                      'drstk_mirador_url_callback',
@@ -508,6 +528,26 @@ function drstk_home_url_validation($input){
     }
   }
   return $url_base;
+}
+
+function drstk_is_podcast_callback() {
+  $is_podcast = get_option('drstk_is_podcast');
+  if (get_option('drstk_is_podcast')) {
+    $checked_attribute = "checked='checked'";
+  } else {
+    $checked_attribute = '';
+  }
+  echo "<input name='drstk_is_podcast' type='checkbox' $checked_attribute></input>";
+}
+
+function drstk_podcast_page_callback() {
+  $selected = get_option('drstk_podcast_page');
+  wp_dropdown_pages( array(
+                            'selected' => $selected,
+                            'name' => 'drstk_podcast_page',
+                            'id' => 'drstk_podcast_page'
+                          )         
+  );
 }
 
 function leaflet_api_key_callback(){
@@ -1274,8 +1314,9 @@ function drstk_facets_get_option($facet_type, $default = false)
 add_filter( 'template_include', 'podcast_page_template', 100 );
 
 function podcast_page_template( $template ) {
-  //is_page takes the id, so this should be set in the CERES settings for a podcast site. testing site has 348
-  if ( is_page( 348 ) ) {
+  //is_page takes the id, so this should be set in the CERES settings for a podcast site.
+  $podcast_page = get_option('drstk_podcast_page');
+  if ( is_page( $podcast_page ) ) {
     $file_name = 'podcast-template.php';
     if ( locate_template( $file_name ) ) {
       $template = locate_template( $file_name );

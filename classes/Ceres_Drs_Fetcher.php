@@ -4,19 +4,18 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
   
   protected $endpoint = "https://repository.library.northeastern.edu/api/v1";
   
-  public function __construct(string $resourceId = '', array $queryOptions = array(), array $queryParams = array() ) {
-    parent::__construct($resourceId, $queryOptions, $queryParams);
-    if ($resourceId == '') {
-      $this->resourceId = $this->getSettingsPid();
+  public function __construct(array $queryOptions = array(), array $queryParams = array(), $resourceId = null) {
+    
+    parent::__construct($queryOptions, $queryParams, $resourceId);
+    
+    if (is_null($resourceId)) {
+      $this->resourceId = $this->getPidFromSettings();
+    } else {
+      $this->resourceId = $resourceId;
     }
   }
   
   public function buildQueryString() {
-    
-    $dak = constant("DPLA_API_KEY");
-    $dau = constant("DRS_API_USER");
-    $dap = constant("DRS_API_PASSWORD");
-    
     $url = $this->endpoint;
     $url .= '/' . $this->queryOptions['action'];
     
@@ -38,26 +37,35 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
           //most common url construction
           $url .= "{$this->queryOptions['sub_action']}/{$this->resourceId}";
           break;
-          
       }
+    } else {
+      $url .= '/' . $this->resourceId;
     }
     
     if (! empty($this->queryParams)) {
       $url .= '?';
       foreach ($this->queryParams as $param=>$value) {
+        if ($param == 'q') {
+          $value = sanitize_text_field($value);
+        }
         $url .= "$param=$value&";
       }
     }
-
     
-    if(!(empty($dau) || empty($dap))){
+    $dau = constant("DRS_API_USER");
+    $dap = constant("DRS_API_PASSWORD");
+    
+    if(!(empty($dau) || empty($dap))) {
+
       $token = $this->drsAuth();
       if ($token != false && is_string($token))
         $url .= "token=$token";
     }
-    
+    //return urlencode($url);
     return $url;
   }
+  
+  function fetchNextPage() {}
   
   /**
    * The DRS part of the nee DRS Toolkit sets basically a default collection or set to draw from in the plugin's
@@ -66,14 +74,22 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
    * @return string
    */
   
-  public function getSettingsPid() {
+  public function getPidFromSettings() {
     $collectionSetting = get_option('drstk_collection');
     $explodedCollectionSetting = explode("/", $collectionSetting);
     return end($explodedCollectionSetting);
   }
   
+  public function parseItemsData() {
+    
+    $this->itemsData = $this->responseData['output']['response']['response']['docs'];
+  }
+  
   /*DRS API Authenticate helper method*/
-  public function drsAuth(){
+  // @TODO consider if this can be rolled into the rest of the fetching system?
+  // comes from a site-specific customization in DRSTK
+  public function drsAuth() {
+    
     if(drstk_api_auth_enabled() == true){
       // Token is only good for one hour
       
