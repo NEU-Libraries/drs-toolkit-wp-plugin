@@ -35,7 +35,7 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
           
         default:
           //most common url construction
-          $url .= "{$this->queryOptions['sub_action']}/{$this->resourceId}";
+          $url .= "/{$this->queryOptions['sub_action']}/{$this->resourceId}";
           break;
       }
     } else {
@@ -94,7 +94,6 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
     }
     
     $this->setParam('page', $nextStartPage);
-    $this->buildQueryString();
     $this->fetchData();
   }
   

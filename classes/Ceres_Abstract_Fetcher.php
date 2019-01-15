@@ -57,7 +57,6 @@ abstract class Ceres_Abstract_Fetcher {
     curl_setopt($ch, CURLOPT_FAILONERROR, false);
     $rawResponse = curl_exec($ch);
     $responseStatus = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-    
     //fallback for PHP < 5.5
     // @TODO remove this once our servers are upgraded, so we can keep using modern(ish) PHP practices
     if (! $responseStatus) {
@@ -82,15 +81,14 @@ abstract class Ceres_Abstract_Fetcher {
         } else {
           $output = 'An unknown error occured -- ' . $response_status;
         }
-        $statusMessageessage = 'The resource has moved or is no longer available';
+        $statusMessage = 'The resource has moved or is no longer available';
         break;
       default:
         $output = 'An unknown error occured.' . $response_status;
         $statusMessage = 'An unkown error occured. Please try again';
         break;
-        
     }
-    
+   
     $this->responseData = array(
         'status' => $responseStatus,
         'statusMessage' => $statusMessage,
@@ -101,10 +99,6 @@ abstract class Ceres_Abstract_Fetcher {
   
   public function getResponseData() {
     return $this->responseData;
-  }
-  
-  public function hasError() {
-    return $this->hasError;
   }
   
   public function setQueryParams(array $queryParams) {

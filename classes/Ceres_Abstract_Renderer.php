@@ -20,19 +20,11 @@ abstract class Ceres_Abstract_Renderer {
   abstract function render();
   
   public function setResourceId($resourceId) {
-    $this->resourceId = $resoureId;
+    $this->resourceId = $resourceId;
   }
   
   public function getResourceId() {
     return $this->resourceId;
-  }
-  
-  public function setResponse($response) {
-    $this->response = $response;
-  }
-  
-  public function getResponseData() {
-    return $this->responseData;
   }
   
   public function setOptions(array $options) {
