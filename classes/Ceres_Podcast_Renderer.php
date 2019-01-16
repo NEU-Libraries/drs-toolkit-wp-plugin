@@ -47,6 +47,19 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
   // there would then by Ceres_Jwplayer_Renderer that could be instantiated by other Renderers
   // (damn, this is getting ZF3-ish!)
     
+    /* data needed:
+     * 
+     * posterImage
+     * mimeType (to choose audio or video provider and type)
+     * resource id to build html ids
+     * data source URL
+     * ? array of addtional options?
+     * 
+     * 
+     * 
+     */
+    
+    
     /*
     $val = current($data->canonical_object);
     $key = key($data->canonical_object);
@@ -99,8 +112,8 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
     if (!isset($av_poster)){
       $av_poster = $drs_item_img;
     }
-    $html = '<img id="'.$id_img.'" src="'.$drs_item_img.'" class="replace_thumbs"/>';
-    $html .= '<div id="'.$id_video.'"></div>';
+    $html = "<img id='$id_img' src='$drs_item_img' class='replace_thumbs'/>";
+    $html .= "<div id='$id_video'></div>";
     
     $scriptHtml = "
       <script type='text/javascript'>
@@ -108,7 +121,7 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
       const jwPlayerKey = {JWPLAYER_KEY};
       let avProvider = $av_provider;
       let avPoster = $av_poster;
-      let avType = strtolower($av_type);
+      let avType = {strtolower($av_type)};
       let avPid = $av_pid;
       let idImg = $id_img;
       let idVideo = $id_video;
