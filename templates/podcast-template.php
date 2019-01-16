@@ -42,20 +42,7 @@ $itemsData = $fetcher->getItemsData();
 						  <div class="row">
 						    <?php echo apply_filters('the_content', $page_object->post_content);?>
 						  </div>
-						  <?php foreach($itemsData as $itemData): ?>
-  							<div class="row">
-  								<article>
-  									<h3><?php echo $itemData['title_info_title_ssi']; ?></h3>
-  									<p><?php echo implode('; ', $itemData['personal_creators_tesim']); ?></p>
-  									<p><?php echo $itemData['date_ssi']; ?></p>
-  									<p><?php echo $itemData['abstract_tesim'][0]; ?></p>
-  										<a href="https://repository.library.northeastern.edu/files/neu:f1881k95p/audio.mp3">
-  											<strong>Download Episode</strong>
-  										</a>
-  								</article>
-								</div>
-							<?php endforeach; ?>
-  																
+								<?php echo $renderer->render(); ?>  																
   							<div id="drs-facets" class="one_fourth col-md-3 hidden-phone hidden-xs hidden-sm"></div>
   					  	<div id="drs-docs" class="three_fourth col-md-9 last"></div>
 						</div>

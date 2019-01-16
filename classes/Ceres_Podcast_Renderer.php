@@ -13,10 +13,12 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
     }
     
     $html .= "";
+    
+    return $html;
   }
   
   public function renderPodcastArticle($itemData) {
-    
+    // @TODO: this ties the Renderer to the DRS_Fetcher explicitly to the DRS. I want to avoid that
     $podcastArticleHtml = 
     "<div class='row'>
          <article>
@@ -40,7 +42,7 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
   }
   
   public function renderJwplayer($av_pid, $canonical_object_type, $itemData, $drs_item_img) {
-  //eventually the Fetcher injected into the render should know how to parse out
+  //eventually the Fetcher injected into the Renderer should know how to parse out
   // the data needed by jwPlayer, so the Renderer can get it and pass it along
   // without the Renderer knowing what the data source is
   // that's to keep the principle of Renderers not caring where the data comes from (MV-ish)
@@ -52,15 +54,16 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
      * posterImage
      * mimeType (to choose audio or video provider and type)
      * resource id to build html ids
-     * data source URL
+     * data (i.e. media) source URL
      * ? array of addtional options?
+     * ----whether to use a posterImage?
      * 
      * 
      * 
      */
     
     
-    /*
+    /* from the current master item.php insert_jwplayer and what calls it
     $val = current($data->canonical_object);
     $key = key($data->canonical_object);
     if (isset($data->thumbnails)){
