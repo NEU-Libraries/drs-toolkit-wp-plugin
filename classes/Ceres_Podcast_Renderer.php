@@ -133,7 +133,7 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
       });
       </script>
     ";
-    $html .= $scriptHtml;
+    //$html .= $scriptHtml;
     
     return $html;
   }
