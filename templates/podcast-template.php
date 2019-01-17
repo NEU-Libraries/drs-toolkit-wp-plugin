@@ -19,7 +19,7 @@ $queryOptions = array(
 
 $queryParams = array(
   'sort' => 'date_ssi+desc',
-  'per_page' => '20',
+  'per_page' => '1',
 );
 
 $resourceId = drstk_get_pid();
@@ -45,42 +45,51 @@ $itemsData = $fetcher->getItemsData();
 					
 						<h2><?php echo apply_filters('the_title', $page_object->post_title); ?></h2>
 							<ul class='republisher-links'>
-							  
+							  <?php // if($itunesLink = get_option('drstk_itunes_link') ): ?>
+							  <?php if(true): ?>
 						  	<li class='republisher-link' id='itunes-link'>
-						  		<a href='$itunesLink'>
+						  		<a href='<?php echo $itunesLink; ?>'>
 						  			<img src='<?php echo DRS_PLUGIN_URL . "assets/images/subscribe-iTunes-300x91.png"; ?>' 
 						  			   alt='Subscribe in iTunes' />
 						  		</a>
 						  	</li>
+						  	<?php  endif; ?>
 						  	
-						  	
+						  	<?php if($stitcherLink = get_option('drstk_stitcher_link') ): ?>
 						  	<li class='republisher-link' id='stitcher-link'>
-						  		<a href=''>
+						  		<a href='<?php echo $stitcherLink; ?>'>
 						  			<img src='<?php echo DRS_PLUGIN_URL . "assets/images/Stitcher-button-300x110.jpg"; ?>' 
 						  			   alt='Subscribe in Stitcher' />
 						  		</a>
 						  	</li>
+						  	<?php  endif; ?>
 						  	
+						  	<?php if($overcastLink = get_option('drstk_overcast_link') ): ?>
 						  	<li class='republisher-link' id='overcast-link'>
-						  		<a href=''>
+						  		<a href='<?php echo $overcastLink; ?>'>
 						  			<img src='<?php echo DRS_PLUGIN_URL . "assets/images/Overcastbutton2-300x106.png"; ?>' 
 						  			   alt='Subscribe in Overcast' />
 						  		</a>
 						  	</li>
+						  	<?php  endif; ?>
 						  	
+						  	<?php if($googleplayLink = get_option('drstk_googleplay_link') ): ?>
 						  	<li class='republisher-link' id='googleplay-link'>
-						  		<a href=''>
+						  		<a href='<?php echo $googleplayLink; ?>'>
 						  			<img src='<?php echo DRS_PLUGIN_URL . "assets/images/PodcastAvailableonGooglePlayMusic-300x110.png"; ?>' 
 						  			   alt='Subscribe in Google Play' />
 						  		</a>
 						  	</li>
+						  	<?php  endif; ?>
 						  	
+						  	<?php if($spotifyLink = get_option('drstk_spotify_link') ): ?>
 						  	<li class='republisher-link' id='spotify-link'>
-						  		<a href=''>
+						  		<a href='<?php echo $spotifyLink; ?>'>
 						  			<img src='<?php echo DRS_PLUGIN_URL . "assets/images/Spotify-images-300x110.png"; ?>' 
 						  			   alt='Subscribe in Spotify' />
 						  		</a>
-						  	</li>						  							  							  	
+						  	</li>
+						  	<?php  endif; ?>  							  							  	
 						  </ul>
 						
 						<div id="drs-content" class="container">
