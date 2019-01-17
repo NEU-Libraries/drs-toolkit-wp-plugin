@@ -1,5 +1,8 @@
 <?php 
 
+wp_register_script('drstk_cdn_jwplayer', 'https://content.jwplatform.com/libraries/dTFl0VEe.js');
+wp_enqueue_script('drstk_cdn_jwplayer');
+
 get_header();
 
 $page_id = get_option('drstk_podcast_page');

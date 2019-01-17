@@ -133,4 +133,22 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
       return false;
     }
   }
+  
+  public function parseJwPlayerData($itemData) {
+    
+    $imageUrl = 'https://repository.library.northeastern.edu' . $itemData['fields_thumbnail_list_tesim'][3];
+    
+    $mediaUrl = 'https://repository.library.northeastern.edu/files/' . $itemData['id'] . '/audio.mp3';
+    
+    switch ($itemData['canonical_class_tesim'][0]) {
+      case 'AudioFile':
+        $type = 'mp3';
+        break;
+        
+      case 'VideoFile':
+        $type = 'mp4';
+        break;
+    }
+    return array($mediaUrl, $type, $imageUrl);
+  }
 }
