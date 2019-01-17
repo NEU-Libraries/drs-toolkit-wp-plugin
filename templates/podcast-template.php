@@ -19,14 +19,13 @@ $queryOptions = array(
 
 $queryParams = array(
   'sort' => 'date_ssi+desc',
-  'per_page' => '1',
+  'per_page' => '20',
 );
 
 $resourceId = drstk_get_pid();
 
 $fetcher = new Ceres_Drs_Fetcher($queryOptions, $queryParams);
 $renderer = new Ceres_Podcast_Renderer($fetcher, $resourceId);
-echo $fetcher->buildQueryString();
 $fetcher->fetchData();
 $fetcher->parseItemsData();
 $itemsData = $fetcher->getItemsData();
@@ -44,14 +43,16 @@ $itemsData = $fetcher->getItemsData();
 				
 					<main id="main" class="site-main" role="main">
 					
-						<h2><?php echo apply_filters('the_title', $page_object->post_title);?></h2>
+						<h2><?php echo apply_filters('the_title', $page_object->post_title); ?></h2>
 							<ul class='republisher-links'>
+							  
 						  	<li class='republisher-link' id='itunes-link'>
-						  		<a href=''>
+						  		<a href='$itunesLink'>
 						  			<img src='<?php echo DRS_PLUGIN_URL . "assets/images/subscribe-iTunes-300x91.png"; ?>' 
 						  			   alt='Subscribe in iTunes' />
 						  		</a>
 						  	</li>
+						  	
 						  	
 						  	<li class='republisher-link' id='stitcher-link'>
 						  		<a href=''>
@@ -88,9 +89,7 @@ $itemsData = $fetcher->getItemsData();
 						  </div>
 
 						  
-						  <?php echo $renderer->render(); ?>  																
-  						<div id="drs-facets" class="one_fourth col-md-3 hidden-phone hidden-xs hidden-sm"></div>
-  					  <div id="drs-docs" class="three_fourth col-md-9 last"></div>
+						  <?php echo $renderer->render(); ?>
 						</div>
 
 					</main>

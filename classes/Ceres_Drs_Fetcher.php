@@ -151,4 +151,25 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
     }
     return array($mediaUrl, $type, $imageUrl);
   }
+  
+  public function parseContentObjectId($itemId) {
+    //it's somewhat amiss to not use the methods in this class to build the string
+    //but if I'm looping through a search result I don't want to reset the params
+    //and break pagination
+    
+    $queryString = $this->endpoint . "/files/$itemId/content_objects";
+    $contentObjectsData = $this->fetchData($queryString, true);
+
+    //PHP 7 has array_first_key() to avoid this reset/key stuff, but I can't assume PHP7
+    reset($contentObjectsData['output']['canonical_object']);
+    $canonicalObjectUrl = key($contentObjectsData['output']['canonical_object']);
+    $canonicalObjectUrlParts = explode('/', $canonicalObjectUrl);
+    
+    $parsedCanonicalObjectUrl = parse_url($canonicalObjectUrl);
+    $explodedPath = explode('/', $parsedCanonicalObjectUrl['path']);
+    
+    //explodedPath looks like /downloads/{pid}
+    $canonicalObjectId = $explodedPath[2];
+    return $canonicalObjectId;
+  }
 }

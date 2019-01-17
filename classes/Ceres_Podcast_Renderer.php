@@ -46,15 +46,16 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
   }
   
   public function renderJwplayer($mediaUrl, $resourceId, $type, $imageUrl, $itemData = array(), $options = array()) {
-    $av_pid = $resourceId;
-//$resourceId = 'neu:m043nx64v';
+    $av_pid = $this->fetcher->parseContentObjectId($resourceId);
     switch ($type) {
       case 'mp3':
         $av_provider = 'sound';
+        $aspectRatio = '';
         break;
         
       case 'mp4':
         $av_provider = 'video';
+        $aspectRatio = '16:9';
         break;
     }
     
@@ -87,13 +88,13 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
               androidhls: true,
               primary: 'html5',
               hlshtml: true,
-              aspectratio: '16:9',
+              aspectratio: '$aspectRatio',
 
               sources:[ {
-                  file: 'https://repository.library.northeastern.edu/wowza/$resourceId/plain', type: '$type'
+                  file: 'https://repository.library.northeastern.edu/wowza/$av_pid/plain', type: '$type'
               },
               {
-                  file: 'https://repository.library.northeastern.edu/wowza/$resourceId/playlist.m3u8'
+                  file: 'https://repository.library.northeastern.edu/wowza/$av_pid/playlist.m3u8'
               }]
 
 
@@ -133,7 +134,7 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
       });
       </script>
     ";
-    //$html .= $scriptHtml;
+    $html .= $scriptHtml;
     
     return $html;
   }

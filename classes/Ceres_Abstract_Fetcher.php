@@ -47,8 +47,19 @@ abstract class Ceres_Abstract_Fetcher {
     $this->setResourceId($resourceId);
   }
   
-  public function fetchData() {
-    $url = $this->buildQueryString();
+  /**
+   * The params are to to bypass the usual class-based props, e.g. when needing to 
+   * query just a snippet that diverges from the 'starting point' of the fetcher,
+   * like DRS grabbing content_object data when looping through a search response
+   * 
+   * @param $url
+   * @param boolean $returnWithoutSetting
+   */
+  
+  public function fetchData($url = null, $returnWithoutSetting = false) {
+    if (is_null($url)) {
+      $url = $this->buildQueryString();
+    }
     
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -88,12 +99,18 @@ abstract class Ceres_Abstract_Fetcher {
         $statusMessage = 'An unkown error occured. Please try again';
         break;
     }
-   
-    $this->responseData = array(
+    
+    $responseData = array(
         'status' => $responseStatus,
         'statusMessage' => $statusMessage,
         'output' => json_decode($output, true),
     );
+    
+    if($returnWithoutSetting) {
+      return $responseData;
+    }
+    
+    $this->responseData = $responseData;
     curl_close($ch);
   }
   
