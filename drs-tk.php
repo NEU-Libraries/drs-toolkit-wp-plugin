@@ -25,6 +25,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Abstract_Fetcher.php'
 require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Abstract_Renderer.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Drs_Fetcher.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Podcast_Renderer.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Jwplayer_Renderer.php' );
 
 
 
@@ -1386,28 +1387,26 @@ function drstk_facets_get_option($facet_type, $default = false)
       return array();
       break;
   }
+}
 
-  function drstk_dev_site_status_admin_notice() {
-    $stringfromfile = file('.git/HEAD', FILE_USE_INCLUDE_PATH);
-    $firstLine = $stringfromfile[0]; //get the string from the array
-    $explodedstring = explode("/", $firstLine, 3); //seperate out by the "/" in the string
-    $branchname = $explodedstring[2]; //get the one that is always the branch name
-    
-    $html = "
+
+function drstk_dev_site_status_admin_notice() {
+  $stringfromfile = file('.git/HEAD', FILE_USE_INCLUDE_PATH);
+  $firstLine = $stringfromfile[0]; //get the string from the array
+  $explodedstring = explode("/", $firstLine, 3); //seperate out by the "/" in the string
+  $branchname = $explodedstring[2]; //get the one that is always the branch name
+  
+  $html = "
           <div class='updated notice'>
             <p>This is a dev site.</p>
             <p>On branch: $branchname</p>
           </div>
   ";
-    echo $html;
-  }
-  
-  if(WP_DEBUG) {
-    add_action( 'admin_notices', 'drstk_dev_site_status_admin_notice' );
-  }
-  
-  
-  
+  echo $html;
+}
+
+if(WP_DEBUG) {
+  add_action( 'admin_notices', 'drstk_dev_site_status_admin_notice' );
 }
 
 
@@ -1415,7 +1414,7 @@ function drstk_facets_get_option($facet_type, $default = false)
 add_filter( 'template_include', 'drstk_podcast_page_template', 100 );
 
 function drstk_podcast_page_template( $template ) {
-  //is_page takes the id, so this should be set in the CERES settings for a podcast site.
+  //is_page takes the id, so this is set in the CERES settings for a podcast site.
   $podcast_page = get_option('drstk_podcast_page');
   if ( is_page( $podcast_page ) ) {
     $file_name = 'podcast-template.php';
@@ -1428,11 +1427,6 @@ function drstk_podcast_page_template( $template ) {
   }
   
   return $template;
-}
-
-add_action('wp_footer', 'wpshout_action_example');
-function wpshout_action_example() {
-  echo '<div style="background: green; color: white; text-align: right;">WPShout was here.</div>';
 }
 
 /* End Dev on Podcast site */

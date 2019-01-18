@@ -19,7 +19,7 @@ $queryOptions = array(
 
 $queryParams = array(
   'sort' => 'date_ssi+desc',
-  'per_page' => '1',
+  'per_page' => '2',
 );
 
 $resourceId = drstk_get_pid();
@@ -95,8 +95,6 @@ $itemsData = $fetcher->getItemsData();
 						  <div class="row">
 						    <?php echo apply_filters('the_content', $page_object->post_content);?>
 						  </div>
-
-						  
 						  <?php echo $renderer->render(); ?>
 						</div>
 
@@ -111,7 +109,5 @@ $itemsData = $fetcher->getItemsData();
 	</div>
 	<!-- .quest-row -->
 </div><!-- #content -->
-
-
 
 <?php get_footer(); ?>

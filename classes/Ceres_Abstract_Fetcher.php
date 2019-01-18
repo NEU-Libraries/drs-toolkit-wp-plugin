@@ -41,6 +41,8 @@ abstract class Ceres_Abstract_Fetcher {
   
   abstract public function fetchNextPage();
   
+  abstract public function getItemDataById($itemId);
+  
   public function __construct(array $queryOptions = array(), array $queryParams = array(), $resourceId = null ) {
     $this->setQueryParams($queryParams);
     $this->setQueryOptions($queryOptions);

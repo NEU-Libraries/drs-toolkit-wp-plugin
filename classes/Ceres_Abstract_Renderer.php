@@ -12,9 +12,10 @@ abstract class Ceres_Abstract_Renderer {
   
   private $template;
   
-  public function __construct($fetcher, $resourceId = null) {
+  public function __construct($fetcher, $resourceId = null, $options = array()) {
     $this->fetcher = $fetcher;
     $this->setResourceId($resourceId);
+    $this->setOptions($options);
   }
   
   abstract function render();

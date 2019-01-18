@@ -134,11 +134,23 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
     }
   }
   
-  public function parseJwPlayerData($itemData) {
+  public function getItemDataById($itemId) {
+    //there's discussion about indexing the response by id, so hopefully
+    //someday this looping won't be needed 
+    foreach($this->itemsData as $itemData) {
+      if($itemData['id'] == $itemId) {
+        return $itemData;
+      }
+    }
+  }
+  
+  public function parseJwPlayerData($itemId) {
+    $itemData = $this->getItemDataById($itemId);
+    $mediaPid = $this->parseContentObjectId($itemId);
     
     $imageUrl = 'https://repository.library.northeastern.edu' . $itemData['fields_thumbnail_list_tesim'][3];
-    
-    $mediaUrl = 'https://repository.library.northeastern.edu/files/' . $itemData['id'] . '/audio.mp3';
+    $plainMediaUrl = "https://repository.library.northeastern.edu/wowza/$mediaPid/plain";
+    $playlistMediaUrl = "https://repository.library.northeastern.edu/wowza/$mediaPid/playlist.m3u8";
     
     switch ($itemData['canonical_class_tesim'][0]) {
       case 'AudioFile':
@@ -149,7 +161,7 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
         $type = 'mp4';
         break;
     }
-    return array($mediaUrl, $type, $imageUrl);
+    return array($plainMediaUrl, $playlistMediaUrl, $type, $imageUrl);
   }
   
   public function parseContentObjectId($itemId) {
