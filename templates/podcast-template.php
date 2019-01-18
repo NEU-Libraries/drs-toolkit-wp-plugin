@@ -45,8 +45,7 @@ $itemsData = $fetcher->getItemsData();
 					
 						<h2><?php echo apply_filters('the_title', $page_object->post_title); ?></h2>
 							<ul class='republisher-links'>
-							  <?php // if($itunesLink = get_option('drstk_itunes_link') ): ?>
-							  <?php if(true): ?>
+							  <?php if($itunesLink = get_option('drstk_itunes_link') ): ?>
 						  	<li class='republisher-link' id='itunes-link'>
 						  		<a href='<?php echo $itunesLink; ?>'>
 						  			<img src='<?php echo DRS_PLUGIN_URL . "assets/images/subscribe-iTunes-300x91.png"; ?>' 

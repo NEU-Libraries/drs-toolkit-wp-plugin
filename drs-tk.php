@@ -204,13 +204,52 @@ function register_drs_settings() {
                      'drstk_options',
                      'drstk_advanced');
   register_setting('drstk_options', 'drstk_is_podcast');
+
   
   add_settings_field('drstk_podcast_page',
-                     'Select page to contain your podcast list',
-                     'drstk_podcast_page_callback',
+      'Select page to contain your podcast list',
+      'drstk_podcast_page_callback',
+      'drstk_options',
+      'drstk_advanced');
+  register_setting('drstk_options', 'drstk_podcast_page');
+  
+  add_settings_field('drstk_itunes_link',
+                     'Link to iTunes',
+                     'drstk_itunes_link_callback',
                      'drstk_options',
                      'drstk_advanced');
-  register_setting('drstk_options', 'drstk_podcast_page');
+  register_setting('drstk_options', 'drstk_itunes_link');
+
+  add_settings_field('drstk_googleplay_link',
+                     'Link to Google Play',
+                     'drstk_googleplay_link_callback',
+                     'drstk_options',
+                     'drstk_advanced');
+  register_setting('drstk_options', 'drstk_googleplay_link');
+  
+  add_settings_field('drstk_spotify_link',
+                     'Link to Spotify',
+                     'drstk_spotify_link_callback',
+                     'drstk_options',
+                     'drstk_advanced');
+  register_setting('drstk_options', 'drstk_spotify_link');
+  
+  add_settings_field('drstk_stitcher_link',
+                     'Link to Stitcher',
+                     'drstk_stitcher_link_callback',
+                     'drstk_options',
+                     'drstk_advanced');
+  register_setting('drstk_options', 'drstk_stitcher_link');
+  
+  add_settings_field('drstk_overcast_link',
+                     'Link to Overcast',
+                     'drstk_overcast_link_callback',
+                     'drstk_options',
+                     'drstk_advanced');
+  register_setting('drstk_options', 'drstk_overcast_link');
+  
+  
+
   
   
   add_settings_field('drstk_niec',
@@ -814,6 +853,47 @@ function drstk_item_extensions_callback(){
   echo '/>Enable</label>';
 }
 
+function drstk_itunes_link_callback() {
+  $link = get_option('drstk_itunes_link');
+  echo $link . "hi";
+  echo '<input name="drstk_itunes_link" type="text" 
+               value="'.$link.'" style="width:100%;">
+        </input><br/>
+        <small>When you register your podcast with this service, it will tell you the URL to use.</small>';
+}
+
+function drstk_spotify_link_callback() {
+  $link = get_option('drstk_spotify_link');
+  echo '<input name="drstk_spotify_link" type="text"
+               value="'.$link.'" style="width:100%;">
+        </input><br/>
+        <small>When you register your podcast with this service, it will tell you the URL to use.</small>';
+}
+
+function drstk_googleplay_link_callback() {
+  $link = get_option('drstk_googleplay_link');
+  echo '<input name="drstk_googleplay_link" type="text"
+               value="'.$link.'" style="width:100%;">
+        </input><br/>
+        <small>When you register your podcast with this service, it will tell you the URL to use.</small>';
+}
+
+function drstk_overcast_link_callback() {
+  $link = get_option('drstk_overcast_link');
+  echo '<input name="drstk_overcast_link" type="text"
+               value="'.$link.'" style="width:100%;">
+        </input><br/>
+        <small>When you register your podcast with this service, it will tell you the URL to use.</small>';
+}
+
+function drstk_stitcher_link_callback() {
+  $link = get_option('drstk_stitcher_link');
+  echo '<input name="drstk_stitcher_link" type="text"
+               value="'.$link.'" style="width:100%;">
+        </input><br/>
+        <small>When you register your podcast with this service, it will tell you the URL to use.</small>';
+}
+
 
 //this creates the form for the drstk settings page
 function drstk_display_settings(){
@@ -1311,9 +1391,9 @@ function drstk_facets_get_option($facet_type, $default = false)
 
 
 /* Dev on Podcast site options */ 
-add_filter( 'template_include', 'podcast_page_template', 100 );
+add_filter( 'template_include', 'drstk_podcast_page_template', 100 );
 
-function podcast_page_template( $template ) {
+function drstk_podcast_page_template( $template ) {
   //is_page takes the id, so this should be set in the CERES settings for a podcast site.
   $podcast_page = get_option('drstk_podcast_page');
   if ( is_page( $podcast_page ) ) {
