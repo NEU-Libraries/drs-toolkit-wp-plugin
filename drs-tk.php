@@ -856,42 +856,42 @@ function drstk_item_extensions_callback(){
 
 function drstk_itunes_link_callback() {
   $link = get_option('drstk_itunes_link');
-  echo '<input name="drstk_itunes_link" type="text" 
-               value="'.$link.'" style="width:100%;">
+  echo "<input name='drstk_itunes_link' type='text' 
+               value='$link' class='drstk_podcast_link_setting'>
         </input><br/>
-        <small>When you register your podcast with this service, it will tell you the URL to use.</small>';
+        <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
 }
 
 function drstk_spotify_link_callback() {
   $link = get_option('drstk_spotify_link');
-  echo '<input name="drstk_spotify_link" type="text"
-               value="'.$link.'" style="width:100%;">
+  echo "<input name='drstk_spotify_link' type='text'
+               value='$link' class='drstk_podcast_link_setting'>
         </input><br/>
-        <small>When you register your podcast with this service, it will tell you the URL to use.</small>';
+        <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
 }
 
 function drstk_googleplay_link_callback() {
   $link = get_option('drstk_googleplay_link');
-  echo '<input name="drstk_googleplay_link" type="text"
-               value="'.$link.'" style="width:100%;">
+  echo "<input name='drstk_googleplay_link' type='text'
+               value='$link' class='drstk_podcast_link_setting'>
         </input><br/>
-        <small>When you register your podcast with this service, it will tell you the URL to use.</small>';
+        <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
 }
 
 function drstk_overcast_link_callback() {
   $link = get_option('drstk_overcast_link');
-  echo '<input name="drstk_overcast_link" type="text"
-               value="'.$link.'" style="width:100%;">
+  echo "<input name='drstk_overcast_link' type='text'
+               value='$link' class='drstk_podcast_link_setting'>
         </input><br/>
-        <small>When you register your podcast with this service, it will tell you the URL to use.</small>';
+        <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
 }
 
 function drstk_stitcher_link_callback() {
   $link = get_option('drstk_stitcher_link');
-  echo '<input name="drstk_stitcher_link" type="text"
-               value="'.$link.'" style="width:100%;">
+  echo "<input name='drstk_stitcher_link' type='text'
+               value='$link' class='drstk_podcast_link_setting'>
         </input><br/>
-        <small>When you register your podcast with this service, it will tell you the URL to use.</small>';
+        <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
 }
 
 
