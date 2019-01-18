@@ -856,7 +856,6 @@ function drstk_item_extensions_callback(){
 
 function drstk_itunes_link_callback() {
   $link = get_option('drstk_itunes_link');
-  echo $link . "hi";
   echo '<input name="drstk_itunes_link" type="text" 
                value="'.$link.'" style="width:100%;">
         </input><br/>
