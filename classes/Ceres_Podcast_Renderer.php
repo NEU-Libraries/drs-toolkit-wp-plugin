@@ -28,11 +28,9 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
   									<p>" . $itemData['date_ssi'] . "</p>
   									<p>" . $itemData['abstract_tesim'][0] ."</p>
                     <div>" . $this->renderJwplayer($mediaUrl, $itemData['id'], $type, $imageUrl) . "</div>
-
-
-  										<a href='https://repository.library.northeastern.edu/files/" . $itemData['id'] . "/audio.mp3'>
-  											<strong>Download Episode</strong>
-  										</a>
+										<a href='https://repository.library.northeastern.edu/files/" . $itemData['id'] . "/audio.mp3'>
+											<strong>Download Episode</strong>
+										</a>
 					</article>
     </div>";
     
@@ -81,25 +79,19 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
               rtmp: {
                   bufferlength: 5
               },
-              
-
               image: '$imageUrl',
               provider: '$av_provider',
               androidhls: true,
               primary: 'html5',
               hlshtml: true,
               aspectratio: '$aspectRatio',
-
               sources:[ {
                   file: 'https://repository.library.northeastern.edu/wowza/$av_pid/plain', type: '$type'
               },
               {
                   file: 'https://repository.library.northeastern.edu/wowza/$av_pid/playlist.m3u8'
               }]
-
-
             }
-
           );
 
           jwplayer('$id_video').on('ready', function () {
@@ -135,7 +127,6 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
       </script>
     ";
     $html .= $scriptHtml;
-    
     return $html;
   }
 }
