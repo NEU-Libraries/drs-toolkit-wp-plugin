@@ -81,20 +81,24 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
     $this->itemsData = $this->responseData['output']['response']['response']['docs'];
   }
   
-  public function fetchNextPage() {
+  public function hasNextPage() {
     $paginationData = $this->responseData['output']['pagination']['table'];
     $currentPage = $paginationData['current_page'];
     $lastPage = $paginationData['num_pages'];
-    $start = $paginationData['start'];
-    $perPage = $paginationData['per_page'];
-    if ($currentPage <= $lastPage) {
-      $nextStartPage = $currentPage++;
-    } else {
-      return false;
+    if ($currentPage < $lastPage) {
+      return true;
     }
-    
-    $this->setParam('page', $nextStartPage);
-    $this->fetchData();
+    return false;
+  }
+  
+  public function fetchNextPage() {
+    if ($this->hasNextPage()) {
+      $paginationData = $this->responseData['output']['pagination']['table'];
+      $currentPage = $paginationData['current_page'];
+      $nextStartPage = $currentPage + 1;
+      $this->setQueryParam('page', $nextStartPage);
+      $this->fetchData();
+    }
   }
   
   /*DRS API Authenticate helper method*/

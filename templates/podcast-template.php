@@ -6,7 +6,6 @@ wp_enqueue_script('drstk_cdn_jwplayer');
 wp_register_style('drstk_podcasts_style', DRS_PLUGIN_URL . "assets/css/podcasts.css");
 wp_enqueue_style('drstk_podcasts_style');
 
-
 get_header();
 
 $page_id = get_option('drstk_podcast_page');
@@ -19,18 +18,14 @@ $queryOptions = array(
 
 $queryParams = array(
   'sort' => 'date_ssi+desc',
-  'per_page' => '2',
+  'per_page' => '40',
 );
 
+//the default collection/set for the podcasts, from CERES Settings page
 $resourceId = drstk_get_pid();
 
 $fetcher = new Ceres_Drs_Fetcher($queryOptions, $queryParams);
 $renderer = new Ceres_Podcast_Renderer($fetcher, $resourceId);
-$fetcher->fetchData();
-$fetcher->parseItemsData();
-$itemsData = $fetcher->getItemsData();
-
-
 ?>
 
 

@@ -3,16 +3,20 @@
 class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
   
   public function render() {
-    $this->fetcher->parseItemsData();
-    $itemsData = $this->fetcher->getItemsData();
-    
+    $this->fetcher->fetchData();
     $html = "";
-    foreach($itemsData as $itemData) {
-      $html .= $this->renderPodcastArticle($itemData);
-    }
-    
-    $html .= "";
-    
+    do {
+      $this->fetcher->parseItemsData();
+      $itemsData = $this->fetcher->getItemsData();
+      foreach($itemsData as $itemData) {
+        $html .= $this->renderPodcastArticle($itemData);
+      }
+      // I (PMJ) not entirely happy with this pagination technique,
+      // but we'll see if something better reveals itself
+      if ($hasNextPage = $this->fetcher->hasNextPage()) {
+        $this->fetcher->fetchNextPage();
+      }
+    } while ($hasNextPage);
     return $html;
   }
   
