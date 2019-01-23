@@ -1428,6 +1428,32 @@ function drstk_podcast_page_template( $template ) {
   return $template;
 }
 
+add_action('init', 'drstk_add_podcast_feed');
+function drstk_add_podcast_feed() {
+  add_feed('podcasts', 'drstk_render_podcast_feed');
+}
+
+function drstk_render_podcast_feed() {
+  error_log('rendering feed -- it goes in ?feed=podcasts instead of feed/podcasts for some reason');
+  $queryOptions = array(
+      'action' => 'search',
+      'sub_action' => 'av',
+  );
+  
+  $queryParams = array(
+      'sort' => 'date_ssi+desc',
+      'per_page' => '40',
+  );
+  
+  //the default collection/set for the podcasts, from CERES Settings page
+  $resourceId = drstk_get_pid();
+  
+  $fetcher = new Ceres_Drs_Fetcher($queryOptions, $queryParams);
+  $renderer = new Ceres_Podcast_Rss_Renderer($fetcher, $resourceId);
+  echo $renderer->render();
+}
+
+
 /* End Dev on Podcast site */
 
 
