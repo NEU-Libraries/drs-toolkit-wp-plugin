@@ -216,6 +216,8 @@ jQuery(document).ready(function($) {
         facet_html += "<div class='panel panel-default'><div class='panel-heading'>";
         facet_html += "<b class='drs-facet-name'>" + facet_name + "</b><";
         facet_html += "/div><div class='panel-body'>"+facet_values;
+        
+        // @TODO: note that the facet_modal should not be build before we know we need it
         if (Object.keys(data.facet_fields[facet]).length > 5){
           facet_html += facet_modal;
         }
