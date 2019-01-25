@@ -25,6 +25,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Abstract_Fetcher.php'
 require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Abstract_Renderer.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Drs_Fetcher.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Podcast_Renderer.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Podcast_Rss_Renderer.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Jwplayer_Renderer.php' );
 
 
@@ -213,6 +214,14 @@ function register_drs_settings() {
       'drstk_options',
       'drstk_advanced');
   register_setting('drstk_options', 'drstk_podcast_page');
+  
+  
+  add_settings_field('drstk_podcast_image_url',
+      'Image for podcast feed',
+      'drstk_podcast_image_url_callback',
+      'drstk_options',
+      'drstk_advanced');
+  register_setting('drstk_options', 'drstk_podcast_image_url');
   
   add_settings_field('drstk_itunes_link',
                      'Link to iTunes',
@@ -894,6 +903,13 @@ function drstk_stitcher_link_callback() {
         <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
 }
 
+function drstk_podcast_image_url_callback() {
+  $url = get_option('drstk_podcast_image_url');
+  echo "<input name='drstk_podcast_image_url' type='text'
+               value='$url' class='drstk_podcast_link_setting'>
+        </input><br/>
+        <small>URL to an image to use in your podcast feed (usually something you upload to Media).</small>";
+}
 
 //this creates the form for the drstk settings page
 function drstk_display_settings(){
@@ -1430,11 +1446,17 @@ function drstk_podcast_page_template( $template ) {
 
 add_action('init', 'drstk_add_podcast_feed');
 function drstk_add_podcast_feed() {
-  add_feed('podcasts', 'drstk_render_podcast_feed');
+  
+  add_feed('podcast', 'drstk_render_podcast_feed');
 }
 
 function drstk_render_podcast_feed() {
-  error_log('rendering feed -- it goes in ?feed=podcasts instead of feed/podcasts for some reason');
+  
+  header('Content-Type: application/rss+xml; charset=UTF-8', true);
+  
+  //goes to ?feed=podcasts instead of feed/podcasts for some reason');
+  //weirdly, reloading the page puts in the URL rewrite to /feed/podcasts at least in FF
+  //hopefully that won't matter to the feed readers
   $queryOptions = array(
       'action' => 'search',
       'sub_action' => 'av',
@@ -1447,12 +1469,17 @@ function drstk_render_podcast_feed() {
   
   //the default collection/set for the podcasts, from CERES Settings page
   $resourceId = drstk_get_pid();
-  
+  $rssImageUrl = get_option('drstk_podcast_image_url');
   $fetcher = new Ceres_Drs_Fetcher($queryOptions, $queryParams);
-  $renderer = new Ceres_Podcast_Rss_Renderer($fetcher, $resourceId);
+  $renderer = new Ceres_Podcast_Rss_Renderer($fetcher, $resourceId, array('rssImageUrl' => $rssImageUrl));
   echo $renderer->render();
 }
 
+//@TODO: delete this. it's for debugging
+function debug_change_feed_cache_transient_lifetime($seconds) {
+  return 5;
+}
+add_filter( 'wp_feed_cache_transient_lifetime', 'debug_change_feed_cache_transient_lifetime', 200000);
 
 /* End Dev on Podcast site */
 
