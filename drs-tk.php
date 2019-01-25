@@ -2,8 +2,8 @@
 /**
  * Plugin Name: CERES: Exhibit Toolkit Plugin
  * Plugin URI:
- * Version: 1.1.1
- * Author: Eli Zoller
+ * Version: 1.2
+ * Author: Digital Scholarship Group, Northeastern University. Eli Zoller, Patrick Murray-John, et al.
  * Description: This plugin provides the core functionality of the CERES: Exhibit Toolkit and brings the content of a project from the DRS into Wordpress using the DRS API.
  */
 
@@ -26,9 +26,7 @@ define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without exte
 define('DRS_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
 define('DRS_PLUGIN_URL', plugin_dir_url(__FILE__));
 
-define('DPLA_FALLBACK_IMAGE_URL', DRS_PLUGIN_URL . '/assets/images/DPLA-square-logo-color.jpeg');
-
-$VERSION = '1.1.1';
+define('DPLA_FALLBACK_IMAGE_URL', DRS_PLUGIN_URL . 'assets/images/DPLA-square-logo-color.jpeg');
 
 // Set template names here so we don't have to go into the code.
 $TEMPLATE = array(
@@ -473,10 +471,22 @@ function drstk_get_map_project_key(){
 }
 
 /*callback functions for display fields on settings page*/
-function drstk_collection_callback(){
+function drstk_collection_callback() {
   $collection_pid = (get_option('drstk_collection') != '') ? get_option('drstk_collection') : 'https://repository.library.northeastern.edu/collections/neu:1';
   echo '<input name="drstk_collection" type="text" value="'.$collection_pid.'" style="width:100%;"></input><br/>
      <small>Ie. <a href="https://repository.library.northeastern.edu/collections/neu:6012">https://repository.library.northeastern.edu/collections/neu:6012</a></small>';
+  
+  if (WP_DEBUG) {
+    $commonPidsHtml = "
+    <p>Reference PIDs for dev and testing:</p>
+    <ul>
+      <li>ETD: https://repository.library.northeastern.edu/sets/neu:cj82r3884</li>
+      <li>What's New: https://repository.library.northeastern.edu/collections/neu:cj82q862v</li>
+    </ul>
+    ";
+    echo $commonPidsHtml;
+  }
+  
 }
 
 function drstk_home_url_callback() {
@@ -881,7 +891,6 @@ function drstk_content_template( $template ) {
  */
 function drstk_browse_script() {
     global $wp_query;
-    global $VERSION;
     global $sub_collection_pid;
     $errors = drstk_get_errors();
     //this enqueues the JS file
@@ -942,7 +951,6 @@ function drstk_browse_script() {
  * Load scripts for the doc/page views
  */
 function drstk_item_script() {
-    global $VERSION;
     global $wp_query;
     global $item_pid;
     
@@ -950,11 +958,11 @@ function drstk_item_script() {
     $item_nonce = wp_create_nonce( 'item_drs' );
 
     //this enqueues the JS file
-    wp_register_script('drstk_cloud_jwplayer', 'https://content.jwplatform.com/libraries/dTFl0VEe.js');
-    wp_enqueue_script('drstk_cloud_jwplayer');
+    wp_register_script('drstk_cdn_jwplayer', 'https://content.jwplatform.com/libraries/dTFl0VEe.js');
+    wp_enqueue_script('drstk_cdn_jwplayer');
     wp_register_script('drstk_elevatezoom',plugins_url('/assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__), array());
     wp_enqueue_script('drstk_elevatezoom');
-    wp_register_script('drstk_item_gallery', plugins_url('/assets/js/item_gallery.js', __FILE__), array(), $VERSION, false );
+    wp_register_script('drstk_item_gallery', plugins_url('/assets/js/item_gallery.js', __FILE__));
     wp_enqueue_script('drstk_item_gallery');
 
     //this allows an ajax call from browse.js
@@ -970,7 +978,6 @@ function drstk_item_script() {
 
 function drstk_breadcrumb_script(){
   global $wp_query;
-  global $VERSION;
   global $sub_collection_pid;
   global $item_pid;
 
@@ -993,13 +1000,12 @@ function drstk_breadcrumb_script(){
 }
 
 function drstk_mirador_script() {
-    global $VERSION;
     global $wp_query;
     // this appears unused, but at least it isn't the global it used to be
     $errors = drstk_get_errors();
     
     //this enqueues the JS file
-    wp_register_script('drstk_mirador', plugins_url('/assets/mirador/mirador.js', __FILE__), array(), $VERSION, false );
+    wp_register_script('drstk_mirador', plugins_url('/assets/mirador/mirador.js', __FILE__));
     wp_enqueue_script('drstk_mirador');
     wp_register_script('drstk_mirador_manifest',plugins_url('/assets/mirador/mirador_manifest.js', __FILE__), array());
     wp_enqueue_script('drstk_mirador_manifest');
@@ -1267,4 +1273,25 @@ function drstk_facets_get_option($facet_type, $default = false)
       break;
   }
 
+  function drstk_dev_site_status_admin_notice() {
+    $stringfromfile = file('.git/HEAD', FILE_USE_INCLUDE_PATH);
+    $firstLine = $stringfromfile[0]; //get the string from the array
+    $explodedstring = explode("/", $firstLine, 3); //seperate out by the "/" in the string
+    $branchname = $explodedstring[2]; //get the one that is always the branch name
+    
+    $html = "
+          <div class='updated notice'>
+            <p>This is a dev site.</p>
+            <p>On branch: $branchname</p>
+          </div>
+  ";
+    echo $html;
+  }
+  
+  if(WP_DEBUG) {
+    add_action( 'admin_notices', 'drstk_dev_site_status_admin_notice' );
+  }
+  
+  
+  
 }

@@ -457,37 +457,8 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     /* inserts shortcode and closes modal */
     insertShortcode: function(e) {
         var items = this.shortcode.items;
-        
-        //without some heavy refactoring, PMJ is forced to dig up the direct inserts first
-        //to get around the original checks on whether items are empty
         var ids = [];
-        var directIds = jQuery('input.drstk-direct-insert');
-        jQuery.each(directIds, function(index, input) {
-          var jqInput = jQuery(input);
-          var urlValue = jqInput.val();
-          if (urlValue != '') {
-            //it's possible students will end up with a full query string, especially from DPLA
-            var queryIndex = urlValue.indexOf('?');
-            if (queryIndex != -1) {
-                urlValue = urlValue.substring(0, queryIndex);
-            }
-            
-            //kill trailing slashes
-            if (urlValue.endsWith('/')) {
-                urlValue = urlValue.slice(0, -1);
-            }
-            
-            var parsedUrl = urlValue.split('/');
-            var parsedId = parsedUrl[parsedUrl.length - 1];
-            
-            if ( ! parsedId.startsWith('neu:')) {
-                parsedId = 'dpla:'.concat(parsedId);
-            }
-            
-            ids.push(parsedId);
-          }
 
-        });
         if (items != undefined || ids.length != 0) {
             start_date = this.shortcode.get('settings').where({
                 name: 'start-date'

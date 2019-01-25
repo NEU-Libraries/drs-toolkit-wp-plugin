@@ -43,7 +43,7 @@ function drstk_collection_playlist($atts){
       if ($repo != "drs"){$pid = explode(":",$video); $pid = $pid[1];} else {$pid = $video;}
       $poster;
       if ($repo == "drs"){
-        $url = drstk_api_url("drs", $video, "files", "solr_only=true");
+        $url = drstk_api_url("drs", $video, "files", null, "solr_only=true");
         $response = get_response($url);
         $data = json_decode($response['output']);
         $data = $data->_source;
@@ -103,7 +103,7 @@ function drstk_collection_playlist($atts){
         <img style="width: 100%;" src="' . $poster[0] .'" />
       </div>
       <script type="text/javascript">
-      jwplayer.key="6keHwedw4fQnScJOPJbFMey9UxSWktA1KWf1vIe5fGc=";
+        jwplayer.key="' . JWPLAYER_KEY . '";
         var primary = "html5";
         var provider = "'.$provider.'";
         var is_chrome = navigator.userAgent.indexOf(\'Chrome\') > -1;
@@ -130,6 +130,14 @@ function drstk_collection_playlist($atts){
           layout: "basic"
         },';
     }
+    
+      // $playlist is only set to something for wp content,
+      // so cheesily cover up the NOTICE when it isn't set in the jwplayer setup for safari
+      // @TODO I'd (PMJ would prefer a better way to build the JS
+      // to branch around that, but whatevs for now
+      if(empty($playlist)) {
+        $playlist = '';
+      }
       $cache_output .= 'playlist: [ '. $playlists . ']
         });
         jwplayer("'.$pid_selector.'").on("ready", function() {
@@ -166,10 +174,10 @@ function drstk_collection_playlist($atts){
 }
 
 function drstk_video_shortcode_scripts() {
-    global $post, $VERSION, $wp_query;
+    global $post, $wp_query;
     if( is_a( $post, 'WP_Post' ) && (has_shortcode( $post->post_content, 'drstk_collection_playlist') || has_shortcode( $post->post_content, 'drstk_media')) && !isset($wp_query->query_vars['drstk_template_type']) ) {
-      wp_register_script('drstk_jwplayer7', DRS_PLUGIN_URL . '/assets/js/jwplayer/jwplayer.js', array(), $VERSION, false );
-      wp_enqueue_script('drstk_jwplayer7');
+      wp_register_script('drstk_cdn_jwplayer', 'https://content.jwplatform.com/libraries/dTFl0VEe.js');
+      wp_enqueue_script('drstk_cdn_jwplayer');
     }
 }
 add_action( 'wp_enqueue_scripts', 'drstk_video_shortcode_scripts');

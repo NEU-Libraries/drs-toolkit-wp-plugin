@@ -44,6 +44,7 @@ function drstk_gallery( $atts ){
        $data = $data->_source;
        $thumbnail = "https://repository.library.northeastern.edu".$data->fields_thumbnail_list_tesim[$num];
      }
+     
      if ($repo == "wp"){
        $post = get_post($pid);
        $data = new StdClass;
@@ -52,24 +53,40 @@ function drstk_gallery( $atts ){
        $thumb_base = explode("/",$thumb_base);
        $arr = array_pop($thumb_base);
        $thumb_base = implode("/", $thumb_base);
-       // @TODO a switch seems appropriate here
-       if ($num == 1){ $thumbnail = $thumb_base."/".$meta['sizes']['thumbnail']['file'];}
-       if ($num == 2){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
-       if ($num == 3){ $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];}
-       if ($num == 4){
-        if (isset($meta['sizes']['large'])){
-          $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
-        } else {
-          $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
-        }
+       
+       // @TODO $num refers to the image size from the settings tab. a problem area for refactoring
+       switch ($num) {
+         case 1:
+           $thumbnail = $thumb_base."/".$meta['sizes']['thumbnail']['file'];
+           break;
+           
+         case 2:
+         case 3:
+           // small uploads don't get a medium derivative, so provide a fallback to thumbnail
+           if (isset($meta['sizes']['medium'])) {
+             $thumbnail = $thumb_base."/".$meta['sizes']['medium']['file'];
+           } else {
+             $thumbnail = $thumb_base."/".$meta['sizes']['thumbnail']['file'];
+           }
+           break;
+           
+         case 4:
+           if (isset($meta['sizes']['large'])){
+             $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
+           } else {
+             $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+           }
+           break;
+           
+         case 5:
+           if (isset($meta['sizes']['large'])){
+             $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
+           } else {
+             $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+           }
+           break;
        }
-       if ($num == 5){
-        if (isset($meta['sizes']['large'])){
-          $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
-        } else {
-          $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
-        }
-       }
+
        $master = $post->guid;
        $data->full_title_ssi = $post->post_title;
        $data->abstract_tesim = array($post->post_excerpt);
@@ -98,7 +115,10 @@ function drstk_gallery( $atts ){
          $data->creator_tesim = is_array($dpla->docs[0]->sourceResource->creator) ? $dpla->docs[0]->sourceResource->creator : array($dpla->docs[0]->sourceResource->creator);
 
        }
-       $data->date_ssi = $dpla->docs[0]->sourceResource->date->displayDate;
+       if (isset ($dpla->docs[0]->sourceResource->date)) {
+         $data->date_ssi = $dpla->docs[0]->sourceResource->date->displayDate;
+       }
+       
      }
        if (!isset($data->error)){
         $pid = $id;
