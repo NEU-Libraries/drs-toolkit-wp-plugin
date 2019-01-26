@@ -1272,26 +1272,25 @@ function drstk_facets_get_option($facet_type, $default = false)
       return array();
       break;
   }
+}
 
-  function drstk_dev_site_status_admin_notice() {
-    $stringfromfile = file('.git/HEAD', FILE_USE_INCLUDE_PATH);
-    $firstLine = $stringfromfile[0]; //get the string from the array
-    $explodedstring = explode("/", $firstLine, 3); //seperate out by the "/" in the string
-    $branchname = $explodedstring[2]; //get the one that is always the branch name
-    
-    $html = "
+
+function drstk_dev_site_status_admin_notice() {
+  $stringfromfile = file('.git/HEAD', FILE_USE_INCLUDE_PATH);
+  $firstLine = $stringfromfile[0]; //get the string from the array
+  $explodedstring = explode("/", $firstLine, 3); //seperate out by the "/" in the string
+  $branchname = $explodedstring[2]; //get the one that is always the branch name
+  
+  $html = "
           <div class='updated notice'>
             <p>This is a dev site.</p>
             <p>On branch: $branchname</p>
           </div>
   ";
-    echo $html;
-  }
-  
-  if(WP_DEBUG) {
-    add_action( 'admin_notices', 'drstk_dev_site_status_admin_notice' );
-  }
-  
-  
-  
+  echo $html;
 }
+
+if(WP_DEBUG) {
+  add_action( 'admin_notices', 'drstk_dev_site_status_admin_notice' );
+}
+
