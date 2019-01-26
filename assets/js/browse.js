@@ -196,8 +196,28 @@ jQuery(document).ready(function($) {
           }
           i++;
         });
-        facet_modal = '<button type="button" class="themebutton btn btn-more" data-toggle="modal" data-target="#drs_modal_'+facet+'">More '+facet_name+'s</button><div class="modal fade" id="drs_modal_'+facet+'"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">All '+facet_name+'s</h4></div><div class="modal-body">'+facet_modal_vals+'</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div><!-- /.modal-content --></div><!-- /.modal-dialog --></div><!-- /.modal -->';
-        facet_html += "<div id='drs_"+facet+"' class='drs-facet'><div class='panel panel-default'><div class='panel-heading'><b class='drs-facet-name'>" + facet_name + "</b></div><div class='panel-body'>"+facet_values;
+        
+        // @TODO: convert this into a template to copy and insert the variables into
+        facet_modal = '<button type="button" ';
+        facet_modal += 'class="themebutton btn btn-more" ';
+        facet_modal += 'data-toggle="modal" ';
+        facet_modal += 'data-target="#drs_modal_'+facet+'">More Options</button>';
+        facet_modal += '<div class="modal fade" id="drs_modal_'+facet+'">';
+        facet_modal += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header">';
+        facet_modal += '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
+        facet_modal += '<span aria-hidden="true">&times;</span></button>';
+        facet_modal += '<h4 class="modal-title">All '+facet_name+'s</h4></div>';
+        facet_modal += '<div class="modal-body">'+facet_modal_vals+'</div>';
+        facet_modal += '<div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">';
+        facet_modal += 'Close</button></div></div>';
+        facet_modal += '<!-- /.modal-content --></div><!-- /.modal-dialog --></div><!-- /.modal -->';
+        
+        facet_html += "<div id='drs_"+facet+"' class='drs-facet'>";
+        facet_html += "<div class='panel panel-default'><div class='panel-heading'>";
+        facet_html += "<b class='drs-facet-name'>" + facet_name + "</b><";
+        facet_html += "/div><div class='panel-body'>"+facet_values;
+        
+        // @TODO: note that the facet_modal should not be build before we know we need it
         if (Object.keys(data.facet_fields[facet]).length > 5){
           facet_html += facet_modal;
         }
