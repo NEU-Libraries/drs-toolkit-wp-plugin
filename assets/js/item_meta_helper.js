@@ -1,5 +1,6 @@
 jQuery(document).ready(function(){
   function assoc_checked(input, klass){
+    // @TODO: this has clear signs of functionality creep beyond any semantic connection (PMJ)
     if (jQuery(input).is(":checked")){
       jQuery(klass).css("display","table-row");
     } else {
@@ -11,6 +12,7 @@ jQuery(document).ready(function(){
   assoc_checked("input[name='drstk_niec']", ".niec");
   assoc_checked("input[name='drstk_appears']", ".appears");
   assoc_checked("input[name='drstk_mirador']", ".mirador");
+  assoc_checked("input[name='drstk_is_podcast']", ".drstk_podcast_options");
 
   jQuery("input[name='drstk_assoc']").on('change', function(){
     assoc_checked("input[name='drstk_assoc']", ".assoc");
@@ -25,6 +27,12 @@ jQuery(document).ready(function(){
     assoc_checked("input[name='drstk_mirador']", ".mirador");
   });
 
+  jQuery("input[name='drstk_is_podcast']").on('change', function(){
+      assoc_checked("input[name='drstk_is_podcast']", ".drstk_podcast_options");
+    });
+
+  
+  
   jQuery("input[name='drstk_facets[]'], input[name='drstk_niec_metadata[]']").on('change', function(){
     if (jQuery(this).is(":checked")){
       jQuery(this).parents("td").next(".title").css("display","table-cell");
