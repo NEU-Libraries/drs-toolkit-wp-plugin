@@ -10,20 +10,6 @@ jQuery(document).ready(function($) {
   var sort = "score+desc%2C+system_create_dtsi+desc";
   var params = {q:q, per_page:10, page:page, f:f, sort:sort, show_facets:false};
   
-  // this is some sketchy data-passing of JSON from one page to another
-  // the selected facets need to be remembered to navigate back to the 
-  // search page after clicking an item. and there's a hand-written
-  // page that's an index to specific facet combination that need to get passed along -- PMJ
-  
-  var selectedFacets = urlSearchParams.get('selectedFacets');
-  var selectedFacetsObject = JSON.parse(decodeURIComponent(selectedFacets));
-  console.log(selectedFacets);
-  console.log(selectedFacetsObject);
-  if (selectedFacetsObject !== null) {
-      params.f = selectedFacetsObject;
-  }
- // console.log('drs_department_ssim: ' + urlSearchParams.get('drs_department_ssim'));
- // params.f = { drs_department_ssim: "School of Education", drs_degree_ssim: "Ed.D." };
   
   
   var template = browse_obj.template;
@@ -34,7 +20,24 @@ jQuery(document).ready(function($) {
   
   facets_to_display.etd_year_awarded_ssim = "Year Awarded";
   facets_to_display.etd_advisor_ssim = "Advisor";
+
   
+  // this is some sketchy data-passing of JSON from one page to another
+  // the selected facets need to be remembered to navigate back to the 
+  // search page after clicking an item. and there's a hand-written
+  // page that's an index to specific facet combination that need to get passed along -- PMJ
+  
+  var selectedFacets = urlSearchParams.get('selectedFacets');
+  var selectedFacetsObject = JSON.parse(decodeURIComponent(selectedFacets));
+  if (selectedFacetsObject !== null) {
+      params.f = selectedFacetsObject;
+      $("#drs-selection").show();
+      for (const facet of Object.keys(selectedFacetsObject)) {
+          const facet_val = selectedFacetsObject[facet];
+          $("#drs-selection .col-md-10").append("<a class='themebutton btn btn-more' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+" <span class='fa fa-close'></span></a>");
+      }
+  }
+
   var niec_facets = 'niec_facets_to_display' in browse_obj ? browse_obj.niec_facets_to_display : null;
   if ((q) && (q != '')){
     $("#drs-selection").show();
@@ -386,7 +389,6 @@ jQuery(document).ready(function($) {
       params.page = 1;
       $("#drs-selection").show();
       $("#drs-selection .col-md-10").append("<a class='themebutton btn btn-more' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+" <span class='fa fa-close'></span></a>");
-      console.log(params);
       get_data(params);
     });
 
