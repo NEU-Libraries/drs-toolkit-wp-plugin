@@ -6,7 +6,7 @@ jQuery(document).ready(function($) {
   var urlSearchParams = new URLSearchParams(pageUrl.search);
   var q = urlSearchParams.get('q');
   var page = 1;
-  var f = {};
+  var f = null;
   var sort = "score+desc%2C+system_create_dtsi+desc";
   var params = {q:q, per_page:10, page:page, f:f, sort:sort, show_facets:false};
   
@@ -277,6 +277,9 @@ jQuery(document).ready(function($) {
         this_doc_url = home_url + 'collection/' + doc_vals.id;
       } else if (doc_vals.active_fedora_model_ssi == 'CoreFile') {
         this_doc_url = home_url + 'item/' + doc_vals.id;
+        if (params.f !== null) {
+            this_doc_url += '?selectedFacets=' + encodeURIComponent(JSON.stringify(params.f));
+        }
       }
       var this_doc = '';
       if (template == 'search'){

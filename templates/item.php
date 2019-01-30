@@ -11,6 +11,24 @@ get_header();
 		<div class="<?php echo apply_filters( 'quest_content_container_cls', 'container' ); ?> title-container">
 			<div class="row">
 				<div class="col-md-6">
+					<?php 
+					//for ETD site, selected facets get stuffed into a GET param. 
+					//if it turns out that none are selected this ends up as an empty JSON {}
+					//which could be better, but putting off that fine-tuning until more requirements
+					//come in -- PMJ
+					if (isset($_GET['selectedFacets'])) {
+					  $baseSearchUrl = get_site_url(null, 'search');
+					  if ($_GET['selectedFacets'] == '{}') {
+					    echo "<a href='$baseSearchUrl'>Back to Search</a>";
+					  } else {
+					    $selectedFacetsString = $_GET['selectedFacets'];
+					    $selectedFacets = json_decode(stripslashes($_GET['selectedFacets']), true);
+					    
+					    $encodedFacetsString = urlencode(stripslashes($selectedFacetsString));
+					    echo "<a href='$baseSearchUrl?selectedFacets=$encodedFacetsString'>Back to: " . implode(' + ', $selectedFacets) . "</a>";
+					  }
+					}
+					?>
 					<h3><?php get_item_title(); ?></h3>
 				</div>
 				<div class="col-md-6">
