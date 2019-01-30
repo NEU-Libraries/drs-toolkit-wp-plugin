@@ -2,12 +2,30 @@
 
 jQuery(document).ready(function($) {
   $(".breadcrumbs").children("li").remove();
-  var q = '';
-  q = GetURLParameter(window.location.search.substring(1), 'q');
+  var pageUrl = new URL(window.location);
+  var urlSearchParams = new URLSearchParams(pageUrl.search);
+  var q = urlSearchParams.get('q');
   var page = 1;
   var f = {};
   var sort = "score+desc%2C+system_create_dtsi+desc";
   var params = {q:q, per_page:10, page:page, f:f, sort:sort, show_facets:false};
+  
+  // this is some sketchy data-passing of JSON from one page to another
+  // the selected facets need to be remembered to navigate back to the 
+  // search page after clicking an item. and there's a hand-written
+  // page that's an index to specific facet combination that need to get passed along -- PMJ
+  
+  var selectedFacets = urlSearchParams.get('selectedFacets');
+  var selectedFacetsObject = JSON.parse(decodeURIComponent(selectedFacets));
+  console.log(selectedFacets);
+  console.log(selectedFacetsObject);
+  if (selectedFacetsObject !== null) {
+      params.f = selectedFacetsObject;
+  }
+ // console.log('drs_department_ssim: ' + urlSearchParams.get('drs_department_ssim'));
+ // params.f = { drs_department_ssim: "School of Education", drs_degree_ssim: "Ed.D." };
+  
+  
   var template = browse_obj.template;
   var search_options = browse_obj.search_options;
   var browse_options = browse_obj.browse_options;
@@ -368,6 +386,7 @@ jQuery(document).ready(function($) {
       params.page = 1;
       $("#drs-selection").show();
       $("#drs-selection .col-md-10").append("<a class='themebutton btn btn-more' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+" <span class='fa fa-close'></span></a>");
+      console.log(params);
       get_data(params);
     });
 
@@ -414,17 +433,6 @@ jQuery(document).ready(function($) {
       str = str.replace("_", " ");
       str = str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
       return str;
-    }
-  }
-
-  function GetURLParameter(url, sParam){
-    var sPageURL = url;
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++){
-      var sParameterName = sURLVariables[i].split('=');
-      if (sParameterName[0] == sParam){
-        return sParameterName[1];
-      }
     }
   }
 
