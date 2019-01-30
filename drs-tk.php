@@ -1045,7 +1045,8 @@ function get_response($url) {
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
   curl_setopt($ch, CURLOPT_FAILONERROR, false);
   $raw_response = curl_exec($ch);
-  $response_status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+  // @TODO:  when we're up to PHP > 5.5, CURLINFO_HTTP_CODE should be CURLINFO_RESPONSE_CODE
+  $response_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
   
   //fallback for PHP < 5.5
   // @TODO remove this once our servers are upgraded, so we can keep using modern(ish) PHP practices
@@ -1272,26 +1273,25 @@ function drstk_facets_get_option($facet_type, $default = false)
       return array();
       break;
   }
+}
 
-  function drstk_dev_site_status_admin_notice() {
-    $stringfromfile = file('.git/HEAD', FILE_USE_INCLUDE_PATH);
-    $firstLine = $stringfromfile[0]; //get the string from the array
-    $explodedstring = explode("/", $firstLine, 3); //seperate out by the "/" in the string
-    $branchname = $explodedstring[2]; //get the one that is always the branch name
-    
-    $html = "
+
+function drstk_dev_site_status_admin_notice() {
+  $stringfromfile = file('.git/HEAD', FILE_USE_INCLUDE_PATH);
+  $firstLine = $stringfromfile[0]; //get the string from the array
+  $explodedstring = explode("/", $firstLine, 3); //seperate out by the "/" in the string
+  $branchname = $explodedstring[2]; //get the one that is always the branch name
+  
+  $html = "
           <div class='updated notice'>
             <p>This is a dev site.</p>
             <p>On branch: $branchname</p>
           </div>
   ";
-    echo $html;
-  }
-  
-  if(WP_DEBUG) {
-    add_action( 'admin_notices', 'drstk_dev_site_status_admin_notice' );
-  }
-  
-  
-  
+  echo $html;
 }
+
+if(WP_DEBUG) {
+  add_action( 'admin_notices', 'drstk_dev_site_status_admin_notice' );
+}
+
