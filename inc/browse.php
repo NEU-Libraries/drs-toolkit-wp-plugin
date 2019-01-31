@@ -35,7 +35,7 @@ function browse_ajax_handler() {
     if (isset($_POST['params']['page'])) {
       $url .= "&page=" . $_POST['params']['page'];
     }
-    if (isset($_POST['params']['f'])) {
+    if (! empty($_POST['params']['f'])) {
       foreach($_POST['params']['f'] as $facet=>$facet_val){
         $url .= "&f[" . $facet . "][]=" . urlencode($facet_val);
       }

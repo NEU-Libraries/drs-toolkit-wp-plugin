@@ -6,7 +6,7 @@ jQuery(document).ready(function($) {
   var urlSearchParams = new URLSearchParams(pageUrl.search);
   var q = urlSearchParams.get('q');
   var page = 1;
-  var f = null;
+  var f = {};
   var sort = "score+desc%2C+system_create_dtsi+desc";
   var params = {q:q, per_page:10, page:page, f:f, sort:sort, show_facets:false};
   
@@ -28,6 +28,9 @@ jQuery(document).ready(function($) {
   // page that's an index to specific facet combination that need to get passed along -- PMJ
   
   var selectedFacets = urlSearchParams.get('selectedFacets');
+  console.log(facets_to_display);
+  console.log(selectedFacets);
+  console.log(encodeURIComponent(JSON.stringify(selectedFacets)));
   var selectedFacetsObject = JSON.parse(decodeURIComponent(selectedFacets));
   if (selectedFacetsObject !== null) {
       params.f = selectedFacetsObject;
@@ -201,8 +204,15 @@ jQuery(document).ready(function($) {
         var facet_modal = facet_modal_vals = '';
         var i=1;
         var facet_array = [];
+        
         $.each(data.facet_fields[facet],function(index, val_q){
-          facet_array.push({v:index, k:val_q});
+            // for printing the list of targets for the hard-coded page links
+            /*
+            if (facet == 'drs_department_ssim') {
+              console.log(index + ", https://etd.library.northeastern.edu/search?selectedFacets={%22drs_department_ssim%22%3A%22" + encodeURIComponent(index) + "%22%2C%22drs_degree_ssim%22%3A%22Ed.D.%22}");
+            }
+            */
+            facet_array.push({v:index, k:val_q});
         });
         facet_array.sort(function(a,b){
           var sortBy = (browse_obj.default_facet_sort !== "" ? browse_obj.default_facet_sort : "fc_desc");
@@ -277,7 +287,7 @@ jQuery(document).ready(function($) {
         this_doc_url = home_url + 'collection/' + doc_vals.id;
       } else if (doc_vals.active_fedora_model_ssi == 'CoreFile') {
         this_doc_url = home_url + 'item/' + doc_vals.id;
-        if (params.f !== null) {
+        if (Object.keys(params.f).length !== 0) {
             this_doc_url += '?selectedFacets=' + encodeURIComponent(JSON.stringify(params.f));
         }
       }
