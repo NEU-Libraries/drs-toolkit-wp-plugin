@@ -1,26 +1,25 @@
 <?php
 
 class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
-  
+
   protected $endpoint = "https://repository.library.northeastern.edu/api/v1";
-  
+
   public function __construct(array $queryOptions = array(), array $queryParams = array(), $resourceId = null) {
-    
     parent::__construct($queryOptions, $queryParams, $resourceId);
-    
+
     if (is_null($resourceId)) {
       $this->resourceId = $this->getPidFromSettings();
     } else {
       $this->resourceId = $resourceId;
     }
   }
-  
+
   public function buildQueryString() {
     $url = $this->endpoint;
     $url .= '/' . $this->queryOptions['action'];
-    
+
     if (isset($this->queryOptions['sub_action'])) {
-      
+
       //DRS subaction of content_objects has special needs for building the URL
       //PMJ assuming this only gets invoked when the action is 'files'
       switch ($this->queryOptions['sub_action']) {
@@ -63,24 +62,24 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
     }
     return $url;
   }
-  
+
   /**
    * The DRS part of the nee DRS Toolkit sets basically a default collection or set to draw from in the plugin's
    * settings, so this maintains using that setting if a $resourceId is omitted
    * 
    * @return string
    */
-  
+
   public function getPidFromSettings() {
     $collectionSetting = get_option('drstk_collection');
     $explodedCollectionSetting = explode("/", $collectionSetting);
     return end($explodedCollectionSetting);
   }
-  
+
   public function parseItemsData() {
     $this->itemsData = $this->responseData['output']['response']['response']['docs'];
   }
-  
+
   public function hasNextPage() {
     $paginationData = $this->responseData['output']['pagination']['table'];
     $currentPage = $paginationData['current_page'];
@@ -90,7 +89,7 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
     }
     return false;
   }
-  
+
   public function fetchNextPage() {
     if ($this->hasNextPage()) {
       $paginationData = $this->responseData['output']['pagination']['table'];
@@ -100,7 +99,7 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
       $this->fetchData();
     }
   }
-  
+
   /*DRS API Authenticate helper method*/
   // @TODO consider if this can be rolled into the rest of the fetching system?
   // comes from a site-specific customization in DRSTK
@@ -137,7 +136,7 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
       return false;
     }
   }
-  
+
   public function getItemDataById($itemId) {
     //there's discussion about indexing the response by id, so hopefully
     //someday this looping won't be needed 
@@ -147,7 +146,7 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
       }
     }
   }
-  
+
   public function parseJwPlayerData($itemId) {
     $itemData = $this->getItemDataById($itemId);
     $mediaPid = $this->parseContentObjectId($itemId);
@@ -167,7 +166,7 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
     }
     return array($plainMediaUrl, $playlistMediaUrl, $type, $imageUrl);
   }
-  
+
   public function parseContentObjectId($itemId) {
     //it's somewhat amiss to not use the methods in this class to build the string
     //but if I'm looping through a search result I don't want to reset the params

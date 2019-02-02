@@ -1,7 +1,7 @@
 <?php
 
 class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
-  
+
   public function render() {
     $this->fetcher->fetchData();
     $html = "";
@@ -19,24 +19,25 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
     } while ($hasNextPage);
     return $html;
   }
-  
+
   public function renderPodcastArticle($itemData) {
-    // @TODO: This ties the Renderer to the DRS_Fetcher explicitly to the DRS. I want to avoid that
+    // @TODO: This ties the Renderer to the DRS_Fetcher explicitly to the DRS. I want to avoid that.
     // that's a more general problem of not having a normalized metadata structure
+    // the class='row' business also ties it to the theme or SiteBuilder plugin crap
     $podcastArticleHtml = 
     "<div class='row'>
          <article>
-            <h3>" . $itemData['title_info_title_ssi'] ."</h3>
+            <h3>" . $itemData['title_info_title_ssi'] . "</h3>
   									<p>" . implode('; ', $itemData['personal_creators_tesim']) . "</p>
   									<p>" . $itemData['date_ssi'] . "</p>
-  									<p>" . $itemData['abstract_tesim'][0] ."</p>
+  									<p>" . $itemData['abstract_tesim'][0] . "</p>
                     <div>" . $this->renderJwplayer($itemData['id']) . "</div>
 										<a href='https://repository.library.northeastern.edu/files/" . $itemData['id'] . "/audio.mp3'>
 											<strong>Download Episode</strong>
 										</a>
 					</article>
     </div>";
-    
+
     return $podcastArticleHtml;
   }
 

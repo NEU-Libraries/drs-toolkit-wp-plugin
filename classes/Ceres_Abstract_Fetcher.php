@@ -1,48 +1,55 @@
 <?php 
 
 abstract class Ceres_Abstract_Fetcher {
-  
+
   protected $endpoint;
-  
+
   /**
    * refers to additional URL path options, generally for a RESTful API pattern
    * @var array
    */
-  
+
   protected $queryOptions = array();
 
   /**
    * The ID of the remote resource (DRS pid, DPLA hash id, etc)
-   * @var unknown
+   * @var string
    */
-  
+
   protected $resourceId;
   
   /**
    * GET params to tack on to the $endpoint + $queryOptions path
    * @var array
    */
-  
+
   protected $queryParams = array();
-  
+
   /**
    * The parsed response, including the handling of errors and output message (i.e., not the direct
    * curl response, though that's up for @TODO debate
    * @var array
    */
+
+  protected $responseData = array();
   
-  public $responseData = array();
-  
-  public $itemsData = array();
+  /**
+   * The items data, parsed out from the response
+   * @TODO: figure out if/how to normalize this across APIs to decouple Fetchers from Renderers
+   * 
+   * @var array
+   */
+
+  protected $itemsData = array();
 
   abstract public function buildQueryString();
-  
+
   abstract public function parseItemsData();
-  
+
   abstract public function fetchNextPage();
-  
+
   abstract public function getItemDataById($itemId);
-  
+
   public function __construct(array $queryOptions = array(), array $queryParams = array(), $resourceId = null ) {
     $this->setQueryParams($queryParams);
     $this->setQueryOptions($queryOptions);
@@ -55,9 +62,9 @@ abstract class Ceres_Abstract_Fetcher {
    * like DRS grabbing content_object data when looping through a search response
    * 
    * @param $url
-   * @param boolean $returnWithoutSetting
+   * @param boolean $returnWithoutSetting Just send back the data, but don't keep it in the prop
    */
-  
+
   public function fetchData($url = null, $returnWithoutSetting = false) {
     if (is_null($url)) {
       $url = $this->buildQueryString();
@@ -115,19 +122,19 @@ abstract class Ceres_Abstract_Fetcher {
     $this->responseData = $responseData;
     curl_close($ch);
   }
-  
+
   public function getResponseData() {
     return $this->responseData;
   }
-  
+
   public function setQueryParams(array $queryParams) {
     $this->queryParams = $queryParams;
   }
-  
+
   public function getQueryParams() {
     return $this->queryParams;
   }
-  
+
   public function setQueryParam(string $param, string $value = '') {
     if ($value == '') {
       unset($this->queryParams[$param]);
@@ -135,19 +142,19 @@ abstract class Ceres_Abstract_Fetcher {
       $this->queryParams[$param] = $value;
     }
   }
-  
+
   public function getQueryParam($param) {
     return $this->queryParams[$param];
   }
-  
+
   public function setQueryOptions(array $queryOptions) {
     $this->queryOptions = $queryOptions;
   }
-  
+
   public function getQueryOptions() {
     return $this->queryOptions;
   }
-  
+
   public function setQueryOption(string $option, string $value = '') {
     if ($value == '') {
       unset($this->queryOptions[$option]);
@@ -155,21 +162,20 @@ abstract class Ceres_Abstract_Fetcher {
       $this->queryOptions[$option] = $value;
     }
   }
-  
+
   public function getQueryOption($option) {
     return $this->queryOptions[$option];
   }
-  
+
   public function setResourceId($resourceId) {
     $this->resourceId = $resourceId;
   }
-  
+
   public function getResourceId() {
     return $this->resourceId;
   }
-  
+
   public function getItemsData() {
     return $this->itemsData;
   }
-
 }
