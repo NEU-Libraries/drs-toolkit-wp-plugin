@@ -135,7 +135,7 @@ abstract class Ceres_Abstract_Fetcher {
     return $this->queryParams;
   }
 
-  public function setQueryParam(string $param, string $value = '') {
+  public function setQueryParam(string $param, string $value = null) {
     if ($value == '') {
       unset($this->queryParams[$param]);
     } else {
