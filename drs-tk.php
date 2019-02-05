@@ -1202,7 +1202,9 @@ function get_response($url) {
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
   curl_setopt($ch, CURLOPT_FAILONERROR, false);
   $raw_response = curl_exec($ch);
-  $response_status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+  // @TODO:  when we're up to PHP > 5.5, CURLINFO_HTTP_CODE should be CURLINFO_RESPONSE_CODE
+  $response_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+//$response_status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
   
   //fallback for PHP < 5.5
   // @TODO remove this once our servers are upgraded, so we can keep using modern(ish) PHP practices

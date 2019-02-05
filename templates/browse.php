@@ -13,7 +13,12 @@ $view = 'search';
 	<div class="quest-row site-content">
 		<div class="<?php echo apply_filters( 'quest_content_container_cls', 'container' ); ?>">
 			<div id="drs-loading"></div>
-			<div id="drs-selection" class="row" style="display:none"><div class="col-md-2"><h5>You've selected: </h5></div><div class="col-md-10"></div></div>
+			<div id="drs-selection" class="row" style="display:none">
+			  <div class="col-md-2">
+				  <h5>Results filtered by: </h5>
+			  </div>
+			<div class="col-md-10"></div>
+		  </div>
 			<div id="drs-browse-header-row" class="row">
 				<div id="drs-item-count" class="one_fourth col-xs-6 col-sm-4 col-md-2"></div>
 				<div id="drs-per-page-div" class="one_fourth col-xs-6 col-sm-4 col-md-2"></div>
