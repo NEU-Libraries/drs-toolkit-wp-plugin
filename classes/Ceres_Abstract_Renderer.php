@@ -78,7 +78,7 @@ abstract class Ceres_Abstract_Renderer {
     if ($value == '') {
       unset($this->options[$option]);
     } else {
-      $this->pptions[$option] = $value;
+      $this->options[$option] = $value;
     }
   }
 
