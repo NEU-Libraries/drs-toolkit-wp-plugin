@@ -1,0 +1,21 @@
+<?php 
+
+// This is just a quick way to show a message on WP sites that are in development, i.e., WP_DEBUG is on
+// kept out of git to avoid trivial, but annoying, conflicts
+
+$stringfromfile = file('.git/HEAD', FILE_USE_INCLUDE_PATH);
+$firstLine = $stringfromfile[0]; //get the string from the array
+$explodedstring = explode("/", $firstLine, 3); //seperate out by the "/" in the string
+$branchname = $explodedstring[2]; //get the one that is always the branch name
+
+?>
+
+
+<div class='updated notice'>
+  <p>This is a dev site.</p>
+  <p>On branch: <?php echo $branchname; ?></p>
+</div>
+
+
+
+
