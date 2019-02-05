@@ -76,7 +76,9 @@ abstract class Ceres_Abstract_Fetcher {
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
     curl_setopt($ch, CURLOPT_FAILONERROR, false);
     $rawResponse = curl_exec($ch);
-    $responseStatus = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    // @TODO:  when we're up to PHP > 5.5, CURLINFO_HTTP_CODE should be CURLINFO_RESPONSE_CODE
+    $responseStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    //$responseStatus = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
     //fallback for PHP < 5.5
     // @TODO remove this once our servers are upgraded, so we can keep using modern(ish) PHP practices
     if (! $responseStatus) {
@@ -135,7 +137,7 @@ abstract class Ceres_Abstract_Fetcher {
     return $this->queryParams;
   }
 
-  public function setQueryParam(string $param, string $value = null) {
+  public function setQueryParam(string $param, string $value = null ) {
     if ($value == '') {
       unset($this->queryParams[$param]);
     } else {
