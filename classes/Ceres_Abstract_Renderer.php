@@ -35,7 +35,7 @@ abstract class Ceres_Abstract_Renderer {
    * @var Ceres_Abstract_Fetcher
    */
 
-  private $fetcher;
+  protected $fetcher;
   
   public function __construct($fetcher, $resourceId = null, $options = array()) {
     $this->fetcher = $fetcher;
