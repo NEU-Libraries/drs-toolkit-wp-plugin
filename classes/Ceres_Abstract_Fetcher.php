@@ -137,7 +137,7 @@ abstract class Ceres_Abstract_Fetcher {
     return $this->queryParams;
   }
 
-  public function setQueryParam(string $param, string $value = null ) {
+  public function setQueryParam($param, $value = '' ) {
     if ($value == '') {
       unset($this->queryParams[$param]);
     } else {
@@ -157,7 +157,7 @@ abstract class Ceres_Abstract_Fetcher {
     return $this->queryOptions;
   }
 
-  public function setQueryOption(string $option, string $value = '') {
+  public function setQueryOption($option, $value = '') {
     if ($value == '') {
       unset($this->queryOptions[$option]);
     } else {

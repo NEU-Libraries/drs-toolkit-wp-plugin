@@ -74,7 +74,7 @@ abstract class Ceres_Abstract_Renderer {
    * @param string $value
    */
 
-  public function setOption(string $option, string $value = '') {
+  public function setOption($option, $value = '') {
     if ($value == '') {
       unset($this->options[$option]);
     } else {
@@ -82,7 +82,7 @@ abstract class Ceres_Abstract_Renderer {
     }
   }
 
-  public function getOption(string $option) {
+  public function getOption($option) {
     return $this->options[$option];
   }
 }
