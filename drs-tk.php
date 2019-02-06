@@ -1495,9 +1495,13 @@ function drstk_render_podcast_feed() {
 }
 
 //@TODO: delete this. it's for debugging
+function drstk_turn_off_feed_caching( $feed ) {
+	$feed->enable_cache( false );
+}
+
 function debug_change_feed_cache_transient_lifetime($seconds) {
   return 5;
 }
 add_filter( 'wp_feed_cache_transient_lifetime', 'debug_change_feed_cache_transient_lifetime', 200000);
-
+add_action( 'wp_feed_options', 'drstk_turn_off_feed_caching' );
 /* End Dev on Podcast site */
