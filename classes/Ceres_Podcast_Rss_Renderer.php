@@ -19,7 +19,7 @@ class Ceres_Podcast_Rss_Renderer extends Ceres_Abstract_Renderer
     do_action( 'rss_tag_pre', 'rss2' );
     $rss .= "
     	<title>" . get_bloginfo('name') . "</title>
-    	<atom:link href='" . get_bloginfo('url') . "?feed=podcast' rel=self' type='application/rss+xml' />
+    	<atom:link href='" . get_bloginfo('url') . "?feed=podcast' rel='self' type='application/rss+xml' />
     	<link>" . get_bloginfo('url') . "</link>
     	<itunes:explicit>no</itunes:explicit>
     	<itunes:image href='" . $this->getOption('rssImageUrl') . "' />
