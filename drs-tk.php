@@ -1466,7 +1466,7 @@ function drstk_podcast_page_template( $template ) {
 add_action('init', 'drstk_add_podcast_feed');
 function drstk_add_podcast_feed() {
   
-  add_feed('podcast', 'drstk_render_podcast_feed');
+  add_feed('podcasts', 'drstk_render_podcast_feed');
 }
 
 function drstk_render_podcast_feed() {
