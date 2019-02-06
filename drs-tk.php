@@ -1047,6 +1047,7 @@ function get_response($url) {
   $raw_response = curl_exec($ch);
   // @TODO:  when we're up to PHP > 5.5, CURLINFO_HTTP_CODE should be CURLINFO_RESPONSE_CODE
   $response_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+//$response_status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
   
   //fallback for PHP < 5.5
   // @TODO remove this once our servers are upgraded, so we can keep using modern(ish) PHP practices
@@ -1277,18 +1278,8 @@ function drstk_facets_get_option($facet_type, $default = false)
 
 
 function drstk_dev_site_status_admin_notice() {
-  $stringfromfile = file('.git/HEAD', FILE_USE_INCLUDE_PATH);
-  $firstLine = $stringfromfile[0]; //get the string from the array
-  $explodedstring = explode("/", $firstLine, 3); //seperate out by the "/" in the string
-  $branchname = $explodedstring[2]; //get the one that is always the branch name
-  
-  $html = "
-          <div class='updated notice'>
-            <p>This is a dev site.</p>
-            <p>On branch: $branchname</p>
-          </div>
-  ";
-  echo $html;
+
+  include('devMessage.php');
 }
 
 if(WP_DEBUG) {

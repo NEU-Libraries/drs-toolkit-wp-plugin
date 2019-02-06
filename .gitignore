@@ -2,6 +2,7 @@
 */.DS_Store
 deploy.sh
 config.php
+devMessage.php
 .idea/
 node_modules/
 specs/results/
