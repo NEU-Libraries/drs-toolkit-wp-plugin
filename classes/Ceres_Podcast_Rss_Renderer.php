@@ -17,13 +17,13 @@ class Ceres_Podcast_Rss_Renderer extends Ceres_Abstract_Renderer
       	>
     ";
     do_action( 'rss_tag_pre', 'rss2' );
-    $rss .= "
+    $rss .= "<channel>
     	<title>" . get_bloginfo('name') . "</title>
     	<atom:link href='" . get_bloginfo('url') . "?feed=podcast' rel='self' type='application/rss+xml' />
     	<link>" . get_bloginfo('url') . "</link>
     	<itunes:explicit>no</itunes:explicit>
     	<itunes:image href='" . $this->getOption('rssImageUrl') . "' />
-    	<itunes:category text=''>
+    	<itunes:category text=''></itunes:category>
     	<itunes:author></itunes:author>
     	<itunes:owner>
     	<itunes:name>=</itunes:name>
@@ -49,6 +49,8 @@ class Ceres_Podcast_Rss_Renderer extends Ceres_Abstract_Renderer
         $this->fetcher->fetchNextPage();
       }
     } while ($hasNextPage);
+    
+    $rss .= "</channel></rss>";
     return $rss;
     
   }
