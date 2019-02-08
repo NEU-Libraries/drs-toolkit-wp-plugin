@@ -22,6 +22,8 @@ First, it has a version in git. This will allow for better tracking and debuggin
 
 1. Ask Karl for clean install of WP on correct server (will need to provide a directory name and domain info)
 
+1. On the server, any files ending in `.dist` need to be copied to their non-dist equivalents, and settings in those files added. Contact @patrickmj for the private data there for now (new in v1.2)
+
 2. Log in to new Wordpress site as admin user
 
 3. Install Quest theme (go to /wp-admin/theme-install.php and search for quest then click install)
