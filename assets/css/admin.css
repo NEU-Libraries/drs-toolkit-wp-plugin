@@ -320,3 +320,8 @@ table.drstk_item_metadata {
 	vertical-align: middle;
 }
 
+/* admin settings */
+
+.drstk_podcast_link_setting {
+	width: 70%;
+}

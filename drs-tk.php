@@ -20,6 +20,15 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/timeline_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/metabox.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'config.php' );
 
+/* Moving toward a Ceres namespace for podcasting */
+require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Abstract_Fetcher.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Abstract_Renderer.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Drs_Fetcher.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Podcast_Renderer.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Podcast_Rss_Renderer.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Jwplayer_Renderer.php' );
+
+
 
 
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
@@ -191,6 +200,76 @@ function register_drs_settings() {
   
   //Advanced Options
   add_settings_section('drstk_advanced', "Advanced", null, 'drstk_options');
+  add_settings_field('drstk_is_podcast',
+                     'Is this a podcast site?',
+                     'drstk_is_podcast_callback',
+                     'drstk_options',
+                     'drstk_advanced');
+  register_setting('drstk_options', 'drstk_is_podcast');
+
+  
+  add_settings_field('drstk_podcast_page',
+                     'Select page to contain your podcast list',
+                     'drstk_podcast_page_callback',
+                     'drstk_options',
+                     'drstk_advanced',
+                     array('class' => 'drstk_podcast_options'));
+  register_setting('drstk_options', 'drstk_podcast_page');
+  
+  
+  add_settings_field('drstk_podcast_image_url',
+                     'Image for podcast feed',
+                     'drstk_podcast_image_url_callback',
+                     'drstk_options',
+                     'drstk_advanced',
+                      array('class' => 'drstk_podcast_options'));
+  register_setting('drstk_options', 'drstk_podcast_image_url');
+  
+  add_settings_field('drstk_itunes_link',
+                     'Link to iTunes',
+                     'drstk_itunes_link_callback',
+                     'drstk_options',
+                     'drstk_advanced',
+                      array('class' => 'drstk_podcast_options')
+      );
+  register_setting('drstk_options', 'drstk_itunes_link');
+
+  add_settings_field('drstk_googleplay_link',
+                     'Link to Google Play',
+                     'drstk_googleplay_link_callback',
+                     'drstk_options',
+                     'drstk_advanced',
+                      array('class' => 'drstk_podcast_options'));
+  register_setting('drstk_options', 'drstk_googleplay_link');
+  
+  add_settings_field('drstk_spotify_link',
+                     'Link to Spotify',
+                     'drstk_spotify_link_callback',
+                     'drstk_options',
+                     'drstk_advanced',
+                      array('class' => 'drstk_podcast_options'));
+  register_setting('drstk_options', 'drstk_spotify_link');
+  
+  add_settings_field('drstk_stitcher_link',
+                     'Link to Stitcher',
+                     'drstk_stitcher_link_callback',
+                     'drstk_options',
+                     'drstk_advanced',
+                      array('class' => 'drstk_podcast_options'));
+  register_setting('drstk_options', 'drstk_stitcher_link');
+  
+  add_settings_field('drstk_overcast_link',
+                     'Link to Overcast',
+                     'drstk_overcast_link_callback',
+                     'drstk_options',
+                     'drstk_advanced',
+                      array('class' => 'drstk_podcast_options'));
+  register_setting('drstk_options', 'drstk_overcast_link');
+  
+  
+
+  
+  
   add_settings_field('drstk_niec',
                      'Does your project include NIEC metadata?',
                      'drstk_niec_callback',
@@ -205,6 +284,7 @@ function register_drs_settings() {
                      'drstk_advanced',
                       array('class'=>'niec'));
   register_setting( 'drstk_options', 'drstk_niec_metadata' );
+  
   $niec_facet_options = drstk_facets_get_option('niec', true);
   foreach($niec_facet_options as $option){
     add_settings_field('drstk_niec_'.$option.'_title',
@@ -223,6 +303,7 @@ function register_drs_settings() {
                      'drstk_options',
                      'drstk_advanced');
   register_setting( 'drstk_options', 'leaflet_api_key' );
+  
   add_settings_field('leaflet_project_key',
                      'Leaflet Project Key',
                      'leaflet_project_key_callback',
@@ -235,6 +316,7 @@ function register_drs_settings() {
                      'drstk_mirador_callback', 'drstk_options',
                      'drstk_advanced');
   register_setting( 'drstk_options', 'drstk_mirador' );
+  
   add_settings_field('drstk_mirador_page_title',
                      'Mirador Page Title',
                      'drstk_mirador_page_title_callback',
@@ -242,6 +324,7 @@ function register_drs_settings() {
                      'drstk_advanced',
                      array('class'=>'mirador'));
   register_setting( 'drstk_options', 'drstk_mirador_page_title' );
+  
   add_settings_field('drstk_mirador_url',
                      'Mirador URL',
                      'drstk_mirador_url_callback',
@@ -516,6 +599,27 @@ function drstk_home_url_validation($input){
   return $url_base;
 }
 
+function drstk_is_podcast_callback() {
+  $is_podcast = get_option('drstk_is_podcast');
+  if (get_option('drstk_is_podcast')) {
+    $checked_attribute = "checked='checked'";
+  } else {
+    $checked_attribute = '';
+  }
+  echo "<input name='drstk_is_podcast' type='checkbox' $checked_attribute></input>";
+}
+
+function drstk_podcast_page_callback() {
+  $selected = get_option('drstk_podcast_page');
+  wp_dropdown_pages( array(
+                            'selected' => $selected,
+                            'name' => 'drstk_podcast_page',
+                            'id' => 'drstk_podcast_page',
+                            'class' => 'drstk_podcast_options'
+                          )         
+  );
+}
+
 function leaflet_api_key_callback(){
   $leaflet_api_key = (get_option('leaflet_api_key') != '') ? get_option('leaflet_api_key') : '';
   echo '<input name="leaflet_api_key" type="text" value="'.$leaflet_api_key.'" style="width:100%;"></input><br/>
@@ -780,6 +884,64 @@ function drstk_item_extensions_callback(){
   echo '/>Enable</label>';
 }
 
+function drstk_itunes_link_callback() {
+  $link = get_option('drstk_itunes_link');
+  echo "<input name='drstk_itunes_link' type='text'
+               class = 'drstk_podcast_options'
+               value='$link' class='drstk_podcast_link_setting'>
+        </input><br/>
+        <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
+        <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
+}
+
+function drstk_spotify_link_callback() {
+  $link = get_option('drstk_spotify_link');
+  echo "<input name='drstk_spotify_link' type='text'
+               class = 'drstk_podcast_options'
+               value='$link' class='drstk_podcast_link_setting'>
+        </input><br/>
+        <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
+        <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
+}
+
+function drstk_googleplay_link_callback() {
+  $link = get_option('drstk_googleplay_link');
+  echo "<input name='drstk_googleplay_link' type='text'
+               class = 'drstk_podcast_options'
+               value='$link' class='drstk_podcast_link_setting'>
+        </input><br/>
+        <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
+        <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
+}
+
+function drstk_overcast_link_callback() {
+  $link = get_option('drstk_overcast_link');
+  echo "<input name='drstk_overcast_link' type='text'
+               class = 'drstk_podcast_options'
+               value='$link' class='drstk_podcast_link_setting'>
+        </input><br/>
+        <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
+        <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
+}
+
+function drstk_stitcher_link_callback() {
+  $link = get_option('drstk_stitcher_link');
+  echo "<input name='drstk_stitcher_link' type='text'
+               class = 'drstk_podcast_options'
+               value='$link' class='drstk_podcast_link_setting'>
+        </input><br/>
+        <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
+        <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
+}
+
+function drstk_podcast_image_url_callback() {
+  $url = get_option('drstk_podcast_image_url');
+  echo "<input name='drstk_podcast_image_url' type='text'
+               class = 'drstk_podcast_options'
+               value='$url' class='drstk_podcast_link_setting'>
+        </input><br/>
+        <small>URL to an image to use in your podcast feed (usually something you upload to Media).</small>";
+}
 
 //this creates the form for the drstk settings page
 function drstk_display_settings(){
@@ -1286,3 +1448,65 @@ if(WP_DEBUG) {
   add_action( 'admin_notices', 'drstk_dev_site_status_admin_notice' );
 }
 
+
+/* Dev on Podcast site options */ 
+add_filter( 'template_include', 'drstk_podcast_page_template', 100 );
+
+function drstk_podcast_page_template( $template ) {
+  //is_page takes the id, so this is set in the CERES settings for a podcast site.
+  $podcast_page = get_option('drstk_podcast_page');
+  if ( is_page( $podcast_page ) ) {
+    $file_name = 'podcast-template.php';
+    if ( locate_template( $file_name ) ) {
+      $template = locate_template( $file_name );
+    } else {
+      // Template not found in theme's folder, use plugin's template as a fallback
+      $template = dirname( __FILE__ ) . '/templates/' . $file_name;
+    }
+  }
+  
+  return $template;
+}
+
+add_action('init', 'drstk_add_podcast_feed');
+function drstk_add_podcast_feed() {
+  
+  add_feed('podcasts', 'drstk_render_podcast_feed');
+}
+
+function drstk_render_podcast_feed() {
+  
+  header('Content-Type: application/rss+xml; charset=UTF-8', true);
+  
+  //goes to ?feed=podcasts instead of feed/podcasts for some reason');
+  //weirdly, reloading the page puts in the URL rewrite to /feed/podcasts at least in FF
+  //hopefully that won't matter to the feed readers
+  $queryOptions = array(
+      'action' => 'search',
+      'sub_action' => 'av',
+  );
+  
+  $queryParams = array(
+      'sort' => 'date_ssi+desc',
+      'per_page' => '40',
+  );
+  
+  //the default collection/set for the podcasts, from CERES Settings page
+  $resourceId = drstk_get_pid();
+  $rssImageUrl = get_option('drstk_podcast_image_url');
+  $fetcher = new Ceres_Drs_Fetcher($queryOptions, $queryParams);
+  $renderer = new Ceres_Podcast_Rss_Renderer($fetcher, $resourceId, array('rssImageUrl' => $rssImageUrl));
+  echo $renderer->render();
+}
+
+//@TODO: delete this. it's for debugging
+function drstk_turn_off_feed_caching( $feed ) {
+	$feed->enable_cache( false );
+}
+
+function debug_change_feed_cache_transient_lifetime($seconds) {
+  return 5;
+}
+add_filter( 'wp_feed_cache_transient_lifetime', 'debug_change_feed_cache_transient_lifetime', 200000);
+add_action( 'wp_feed_options', 'drstk_turn_off_feed_caching' );
+/* End Dev on Podcast site */
