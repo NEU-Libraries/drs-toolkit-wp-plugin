@@ -890,6 +890,7 @@ function drstk_itunes_link_callback() {
                class = 'drstk_podcast_options'
                value='$link' class='drstk_podcast_link_setting'>
         </input><br/>
+        <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
         <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
 }
 
@@ -899,6 +900,7 @@ function drstk_spotify_link_callback() {
                class = 'drstk_podcast_options'
                value='$link' class='drstk_podcast_link_setting'>
         </input><br/>
+        <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
         <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
 }
 
@@ -908,6 +910,7 @@ function drstk_googleplay_link_callback() {
                class = 'drstk_podcast_options'
                value='$link' class='drstk_podcast_link_setting'>
         </input><br/>
+        <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
         <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
 }
 
@@ -917,6 +920,7 @@ function drstk_overcast_link_callback() {
                class = 'drstk_podcast_options'
                value='$link' class='drstk_podcast_link_setting'>
         </input><br/>
+        <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
         <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
 }
 
@@ -926,6 +930,7 @@ function drstk_stitcher_link_callback() {
                class = 'drstk_podcast_options'
                value='$link' class='drstk_podcast_link_setting'>
         </input><br/>
+        <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
         <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
 }
 
