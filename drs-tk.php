@@ -145,7 +145,7 @@ function register_drs_settings() {
   register_setting( 'drstk_options', 'drstk_default_search_per_page' );
   add_settings_field('drstk_search_show_facets', 'Show Facets', 'drstk_search_show_facets_callback', 'drstk_options', 'drstk_search_settings');
   register_setting( 'drstk_options', 'drstk_search_show_facets' );
-
+  
   // Browse Settings
   add_settings_section('drstk_browse_settings', 'Browse', null, 'drstk_options');
   add_settings_field('drstk_browse_page_title', 'Browse Page Title', 'drstk_browse_page_title_callback', 'drstk_options', 'drstk_browse_settings');
@@ -891,7 +891,7 @@ function drstk_itunes_link_callback() {
                value='$link' class='drstk_podcast_link_setting'>
         </input><br/>
         <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
-        <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
+        <small>When you register your podcast with this service, it will tell you the link to use.</small>";
 }
 
 function drstk_spotify_link_callback() {
@@ -901,7 +901,7 @@ function drstk_spotify_link_callback() {
                value='$link' class='drstk_podcast_link_setting'>
         </input><br/>
         <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
-        <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
+        <small>When you register your podcast with this service, it will tell you the link to use.</small>";
 }
 
 function drstk_googleplay_link_callback() {
@@ -911,7 +911,7 @@ function drstk_googleplay_link_callback() {
                value='$link' class='drstk_podcast_link_setting'>
         </input><br/>
         <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
-        <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
+        <small>When you register your podcast with this service, it will tell you the link to use.</small>";
 }
 
 function drstk_overcast_link_callback() {
@@ -921,7 +921,7 @@ function drstk_overcast_link_callback() {
                value='$link' class='drstk_podcast_link_setting'>
         </input><br/>
         <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
-        <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
+        <small>When you register your podcast with this service, it will tell you the link to use.</small>";
 }
 
 function drstk_stitcher_link_callback() {
@@ -931,7 +931,7 @@ function drstk_stitcher_link_callback() {
                value='$link' class='drstk_podcast_link_setting'>
         </input><br/>
         <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
-        <small>When you register your podcast with this service, it will tell you the URL to use.</small>";
+        <small>When you register your podcast with this service, it will tell you the link to use.</small>";
 }
 
 function drstk_podcast_image_url_callback() {
