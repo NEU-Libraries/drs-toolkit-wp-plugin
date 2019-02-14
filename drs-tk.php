@@ -62,6 +62,7 @@ $TEMPLATE_THEME = array(
   * Rewrite rules for the plugin.
   */
  add_action('init', 'drstk_rewrite_rule');
+ 
  function drstk_rewrite_rule() {
     global $post;
     $home_url = get_option('drstk_home_url');
@@ -87,7 +88,7 @@ $TEMPLATE_THEME = array(
           $item_url = get_post_meta($post_id, 'item-url', true);
           $item_id = get_post_meta($post_id, 'item-id', true);
           if (isset($item_url) && isset($item_id)){
-            add_rewrite_rule($item_url.'/?$', 'index.php?post_type=drs&drstk_template_type=item&pid='.$item_id, 'top');
+            add_rewrite_rule("^$home_url$item_url/?$", 'index.php?post_type=drs&drstk_template_type=item&pid='.$item_id, 'top');
           }
         }
       }
