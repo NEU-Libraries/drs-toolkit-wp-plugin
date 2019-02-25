@@ -1454,6 +1454,10 @@ if(WP_DEBUG) {
 add_filter( 'template_include', 'drstk_podcast_page_template', 100 );
 
 function drstk_podcast_page_template( $template ) {
+  
+  if (get_option('drstk_is_podcast') != 'on') {
+    return $template;
+  }
   //is_page takes the id, so this is set in the CERES settings for a podcast site.
   $podcast_page = get_option('drstk_podcast_page');
   if ( is_page( $podcast_page ) ) {
