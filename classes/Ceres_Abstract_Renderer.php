@@ -83,6 +83,9 @@ abstract class Ceres_Abstract_Renderer {
   }
 
   public function getOption($option) {
-    return $this->options[$option];
+    if (isset($this->options[$option])) {
+      return $this->options[$option];
+    }
+    return null;
   }
 }
