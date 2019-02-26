@@ -26,6 +26,11 @@ $resourceId = drstk_get_pid();
 
 $fetcher = new Ceres_Drs_Fetcher($queryOptions, $queryParams);
 $renderer = new Ceres_Podcast_Renderer($fetcher, $resourceId);
+$jwPlayerOptions = array();
+if (get_option('drstk_podcast_poster') == 'on') {
+  $jwPlayerOptions['audioPoster'] = true;
+}
+$renderer->setJwPlayerOptions($jwPlayerOptions);
 ?>
 
 

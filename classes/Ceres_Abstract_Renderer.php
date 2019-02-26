@@ -12,6 +12,7 @@ abstract class Ceres_Abstract_Renderer {
 
   /**
    * The running HTML to be returned by render()
+   * @TODO: often unused, so a candidate for removal.
    * 
    * @var string
    */
@@ -82,10 +83,10 @@ abstract class Ceres_Abstract_Renderer {
     }
   }
 
-  public function getOption($option) {
+  public function getOption($option, $default = false) {
     if (isset($this->options[$option])) {
       return $this->options[$option];
     }
-    return null;
+    return $default;
   }
 }

@@ -26,15 +26,14 @@ class Ceres_Podcast_Rss_Renderer extends Ceres_Abstract_Renderer
     	<itunes:category text=''></itunes:category>
     	<itunes:author></itunes:author>
     	<itunes:owner>
-    	<itunes:name>=</itunes:name>
-    	<itunes:email>" . get_bloginfo('admin_email') . "</itunes:email>
+    	  <itunes:name></itunes:name>
+    	  <itunes:email>" . get_bloginfo('admin_email') . "</itunes:email>
     	</itunes:owner>
     	<description>" . get_bloginfo("description") . "</description>
     	<lastBuildDate></lastBuildDate>
     	<language>en-US</language>
     	<sy:updatePeriod>hourly</sy:updatePeriod>
     	<sy:updateFrequency>1</sy:updateFrequency>
-    	<generator>https://wordpress.org/?v=4.9.9</generator>
       ";
 
     do {

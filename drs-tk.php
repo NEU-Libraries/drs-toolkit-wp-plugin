@@ -208,6 +208,14 @@ function register_drs_settings() {
                      'drstk_advanced');
   register_setting('drstk_options', 'drstk_is_podcast');
 
+  add_settings_field('drstk_podcast_poster',
+      'Show an image for each podcast episode?',
+      'drstk_podcast_poster_callback',
+      'drstk_options',
+      'drstk_advanced');
+  register_setting('drstk_options', 'drstk_podcast_poster');
+  
+  
   
   add_settings_field('drstk_podcast_page',
                      'Select page to contain your podcast list',
@@ -609,6 +617,17 @@ function drstk_is_podcast_callback() {
   }
   echo "<input name='drstk_is_podcast' type='checkbox' $checked_attribute></input>";
 }
+
+function drstk_podcast_poster_callback() {
+  $is_podcast = get_option('drstk_podcast_poster');
+  if (get_option('drstk_podcast_poster')) {
+    $checked_attribute = "checked='checked'";
+  } else {
+    $checked_attribute = '';
+  }
+  echo "<input name='drstk_podcast_poster' type='checkbox' $checked_attribute></input>";
+}
+
 
 function drstk_podcast_page_callback() {
   $selected = get_option('drstk_podcast_page');

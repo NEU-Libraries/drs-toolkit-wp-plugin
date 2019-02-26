@@ -14,7 +14,11 @@ class Ceres_Jwplayer_Renderer extends Ceres_Abstract_Renderer {
         //height below 40 puts jwplayer into audio mode -- no image is shown
         //but the aspect ratio has to be empty, otherwise it overrides and back to video mode
         $playerHeight = '30';
-        $aspectRatio = '';
+        if ($this->getOption('audioPoster')) {
+          $aspectRatio = '16:9';
+        } else {
+          $aspectRatio = '';
+        }
         break;
         
       case 'mp4':
@@ -24,11 +28,7 @@ class Ceres_Jwplayer_Renderer extends Ceres_Abstract_Renderer {
         break;
     }
     
-    if(isset($this->options['playerWidth'])) {
-      $playerWidth = $this->options['playerWidth'];
-    } else {
-      $playerWidth = '50%';
-    }
+    $playerWidth = $this->getOption('playerWidth', '50%');
 
     $numericPid = str_replace(":", "-", $this->resourceId);
     $imgId = 'ceres-item-img-' . $numericPid;
@@ -37,7 +37,6 @@ class Ceres_Jwplayer_Renderer extends Ceres_Abstract_Renderer {
     $html = "<img id='$imgId' src='$imageUrl' class='replace_thumbs'/>";
     $html .= "<div id='$mediaId'></div>";
     
-    // @TODO check if is_safari is still needed (possibly fixed in current version of jwplayer
     $scriptHtml = "
       <script type='text/javascript'>
         
@@ -68,13 +67,11 @@ class Ceres_Jwplayer_Renderer extends Ceres_Abstract_Renderer {
           );
           
           jwplayer('$mediaId').on('ready', function () {
-              if (is_safari) {
                   // Set poster image for video element to avoid black background for audio-only programs.
                   $('$mediaId video').attr('poster', '$imageUrl');
-              }
           });
           function errorMessage() {
-              $('#$imgId').before('<div>error<br /><strong>Error Message:</strong></div>');
+              $('#$imgId').before('<div>There was a problem playing the media. Refresh the page and try again.</div>');
               $('#$imgId').show();
               $('#$mediaId').hide();
           }

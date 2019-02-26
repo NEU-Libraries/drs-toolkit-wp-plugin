@@ -63,6 +63,23 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
     return $url;
   }
 
+  public function fetchFileData($resourceId) {
+    $queryString = $this->endpoint . "/files/$resourceId";
+    $fileData = $this->fetchData($queryString, true);
+    return $fileData['output'];
+  }
+
+  public function fetchAssociatedFileData($resourceId) {
+    $fileData = $this->fetchFileData($resourceId);
+    if (isset($fileData['associated'])) {
+      $associatedFileData = $fileData['associated'];
+      //PHP 7 has array_first_key() to avoid this reset/key stuff, but I can't assume PHP7
+      reset($associatedFileData);
+      $associatedPid = key($associatedFileData);
+      return $this->fetchFileData($associatedPid);
+    }
+    return false;
+  }
   /**
    * The DRS part of the nee DRS Toolkit sets basically a default collection or set to draw from in the plugin's
    * settings, so this maintains using that setting if a $resourceId is omitted
