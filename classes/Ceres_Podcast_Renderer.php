@@ -46,10 +46,14 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
   									<p>" . $itemData['date_ssi'] . "</p>
   									<p>" . $itemData['abstract_tesim'][0] . "</p>
                     <div>" . $this->renderJwplayer($itemData['id'], $this->getJwPlayerOptions()) . "</div>
-										<a href='https://repository.library.northeastern.edu/files/" . $itemData['id'] . "/audio.mp3'>
-											<strong>Download Episode</strong>
-										</a>
-                    $transcriptionDownload
+                    <ul class='drs-podcast-downloads'>
+  										<li>
+                        <a href='https://repository.library.northeastern.edu/files/" . $itemData['id'] . "/audio.mp3'>
+  											 <strong>Download Episode</strong>
+  										  </a>
+                      </li>
+                      <li>$transcriptionDownload</li>
+                    </ul>
 					</article>
     </div>";
 

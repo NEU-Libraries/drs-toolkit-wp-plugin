@@ -10,3 +10,15 @@
 	clear: both;
 }
 
+ul.drs-podcast-downloads {
+	width: 50%;
+	padding: 0;
+}
+
+ul.drs-podcast-downloads li {
+	display: inline;
+}
+
+ul.drs-podcast-downloads li:nth-child(2) {
+  float: right;
+}
