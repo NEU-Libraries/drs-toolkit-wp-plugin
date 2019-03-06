@@ -1,4 +1,3 @@
-// ETDs set https://repository.library.northeastern.edu/collections/neu:cj82n6399
 
 jQuery(document).ready(function($) {
   $(".breadcrumbs").children("li").remove();
@@ -11,18 +10,11 @@ jQuery(document).ready(function($) {
   var params = {q:q, per_page:10, page:page, f:f, sort:sort, show_facets:false};
   
   
-  
   var template = browse_obj.template;
   var search_options = browse_obj.search_options;
   var browse_options = browse_obj.browse_options;
   var related_content_title = browse_obj.related_content_title;
   var facets_to_display = browse_obj.facets_to_display;
-  
-  /*
-  facets_to_display.drs_college_ssim = "College";
-  facets_to_display.etd_year_awarded_ssim = "Year Awarded";
-  facets_to_display.etd_advisor_ssim = "Advisor";
-*/
   
   // this is some sketchy data-passing of JSON from one page to another
   // the selected facets need to be remembered to navigate back to the 
@@ -57,7 +49,7 @@ jQuery(document).ready(function($) {
   if (template == 'collection'){
     params.collection = browse_obj.sub_collection_pid;
   }
-  if (template == 'search'){
+  if (template == 'search' || template == 'browse'){
     params.sort = 'title_ssi%20asc';
     params.per_page = browse_obj.default_search_per_page;
     //  @todo the next line actually does nothing, since it already has class 'col-md-9'
@@ -65,14 +57,6 @@ jQuery(document).ready(function($) {
     $("#primary").removeClass('col-md-9'); //for etd's removal of the relevance stuff
     $("#secondary").hide(); //etd wants to remove the relevance stuff
     if (browse_obj.search_show_facets == "on"){
-      params.show_facets = true;
-    }
-  } else if (template == 'browse') {
-    params.sort = browse_obj.default_sort;
-    params.per_page = browse_obj.default_browse_per_page;
-    $("#primary").addClass('col-md-12').removeClass('col-md-9');
-    $("#secondary").hide();
-    if (browse_obj.browse_show_facets == "on"){
       params.show_facets = true;
     }
   } else {
@@ -294,75 +278,46 @@ jQuery(document).ready(function($) {
         }
       }
       var this_doc = '';
-      if (template == 'search'){
-        //search = grid
-        this_doc += "<div class='drs-item search panel panel-default'><div class='panel-body'>";
-        this_doc += "<div class='three_fourth last'>";
-        if (search_options.indexOf('Title') > -1){
-          this_doc += "<h4 class='drs-item-title'><a href='"+this_doc_url+"'>" + title + "</a></h4>";
-        }
-        
-        if (doc_vals.etd_author_ssim) {
-            this_doc += "<h5 class='drs-item-creator etd-author'>" + doc_vals.etd_author_ssim.join('; ') + "</h5>";
-        }
-        
-        //PMJ is ashamed of the inline styling, but I haven't found where the real style get inserted yet @TODO
-        if (doc_vals.etd_advisor_ssim) {
-            this_doc += "<div><h6 class='drs-item-creator etd-advisor' style='display: inline;'>Advisor(s): </h6>" 
-                + doc_vals.etd_advisor_ssim.join('; ')
-                + "</div>";
-        }
-        
-        if (doc_vals.etd_committee_member_ssim) {
-            this_doc += "<div><h6 class='drs-item-creator etd-committee-member' style='display: inline;'>Committee Member(s): </h6>"
-                + doc_vals.etd_committee_member_ssim.join('; ')
-                + "</div>";
-        }        
-        
-        this_doc += "<p class='year-awarded><span class='year-awarded-label'>Awarded: </span>";
-        if (doc_vals.etd_year_awarded_ssim) {
-            this_doc += doc_vals.etd_year_awarded_ssim;
-        } else {
-            this_doc += "Unknown";
-        }
-        this_doc += "</p>";
-
-        if (abstract  && search_options.indexOf('Abstract') > -1){
-          //truncation via https://stackoverflow.com/questions/4637942/how-can-i-truncate-a-string-in-jquery
-          var trimmedAbstract = jQuery.trim(abstract).substring(0, 300)
-          .split(" ").slice(0, -1).join(" ") + "...";
-          this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
-        }
-        this_doc += "<div class=''><a href='"+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";
-      } else {
-        //browse = tile
-        this_doc += "<div class='drs-item browse one_third ";
-        if (template == 'collections'){
-          this_doc += "col-lg-3 col-md-4 col-sm-5";
-        } else {
-          this_doc += "col-sm-11";
-        }
-        this_doc += "'><div class='thumbnail'><figure><a href='"+this_doc_url+"'>";
-        if (thumbnail[1]) {
-          this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
-        } else {
-          this_doc += "<div class='fa fa-folder-open-o'></div>";
-        }
-        this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure><div class='caption text-center'>";
-        if (browse_options.indexOf('Title') > -1){
-          this_doc += "<h5 class='drs-item-title'><a href='"+this_doc_url+"'>"+title+"</a></h5>";
-        }
-        if (creator && browse_options.indexOf('Creator') > -1){
-          this_doc += "<h6 class='drs-item-creator'>" + creator.join('; ') + "</h6>";
-        }
-        if (abstract  && browse_options.indexOf('Abstract') > -1){
-          this_doc += "<p class='drs-item-abstract'>"+abstract+"</p>";
-        }
-        if (date  && browse_options.indexOf('Date') > -1){
-          this_doc += "<p class='drs-item-date'>"+date+"</p>";
-        }
-        this_doc += "</div></div></div>";
+      //search = grid
+      this_doc += "<div class='drs-item search panel panel-default'><div class='panel-body'>";
+      this_doc += "<div class='three_fourth last'>";
+      if (search_options.indexOf('Title') > -1){
+        this_doc += "<h4 class='drs-item-title'><a href='"+this_doc_url+"'>" + title + "</a></h4>";
       }
+        
+      if (doc_vals.etd_author_ssim) {
+        this_doc += "<h5 class='drs-item-creator etd-author'>" + doc_vals.etd_author_ssim.join('; ') + "</h5>";
+      }
+        
+      //PMJ is ashamed of the inline styling, but I haven't found where the real style get inserted yet @TODO
+      if (doc_vals.etd_advisor_ssim) {
+        this_doc += "<div><h6 class='drs-item-creator etd-advisor' style='display: inline;'>Advisor(s): </h6>" 
+            + doc_vals.etd_advisor_ssim.join('; ')
+            + "</div>";
+      }
+        
+      if (doc_vals.etd_committee_member_ssim) {
+          this_doc += "<div><h6 class='drs-item-creator etd-committee-member' style='display: inline;'>Committee Member(s): </h6>"
+              + doc_vals.etd_committee_member_ssim.join('; ')
+              + "</div>";
+      }        
+        
+      this_doc += "<p class='year-awarded><span class='year-awarded-label'>Awarded: </span>";
+      if (doc_vals.etd_year_awarded_ssim) {
+          this_doc += doc_vals.etd_year_awarded_ssim;
+      } else {
+          this_doc += "Unknown";
+      }
+      this_doc += "</p>";
+    
+      if (abstract  && search_options.indexOf('Abstract') > -1){
+        //truncation via https://stackoverflow.com/questions/4637942/how-can-i-truncate-a-string-in-jquery
+        var trimmedAbstract = jQuery.trim(abstract).substring(0, 300)
+        .split(" ").slice(0, -1).join(" ") + "...";
+        this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
+      }
+      this_doc += "<div class=''><a href='"+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";
+      
       docs_html += this_doc;
     });
     $("#drs-docs").html(docs_html);
