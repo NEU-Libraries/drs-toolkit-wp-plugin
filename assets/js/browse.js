@@ -18,9 +18,11 @@ jQuery(document).ready(function($) {
   var related_content_title = browse_obj.related_content_title;
   var facets_to_display = browse_obj.facets_to_display;
   
+  /*
+  facets_to_display.drs_college_ssim = "College";
   facets_to_display.etd_year_awarded_ssim = "Year Awarded";
   facets_to_display.etd_advisor_ssim = "Advisor";
-
+*/
   
   // this is some sketchy data-passing of JSON from one page to another
   // the selected facets need to be remembered to navigate back to the 

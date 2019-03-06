@@ -422,6 +422,7 @@ function drstk_get_facets_to_display(){
       $facet_options = array();
     }
   }
+
   return $facet_options;
 }
 
@@ -1231,7 +1232,11 @@ function drstk_facets_get_option($facet_type, $default = false)
                                      "drs_department_ssim",
                                      "drs_degree_ssim",
                                      "drs_course_number_ssim",
-                                     "drs_course_title_ssim");
+                                     "drs_course_title_ssim",
+                                     "drs_college_ssim",
+                                     "etd_year_awarded_ssim",
+                                     "etd_advisor_ssim",
+      );
       
       
       if ($default) {
