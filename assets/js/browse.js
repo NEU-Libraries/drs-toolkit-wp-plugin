@@ -22,9 +22,6 @@ jQuery(document).ready(function($) {
   // page that's an index to specific facet combination that need to get passed along -- PMJ
   
   var selectedFacets = urlSearchParams.get('selectedFacets');
-  console.log(facets_to_display);
-  console.log(selectedFacets);
-  console.log(encodeURIComponent(JSON.stringify(selectedFacets)));
   var selectedFacetsObject = JSON.parse(decodeURIComponent(selectedFacets));
   if (selectedFacetsObject !== null) {
       params.f = selectedFacetsObject;
@@ -359,6 +356,12 @@ jQuery(document).ready(function($) {
       params.page = 1;
       $("#drs-selection").show();
       $("#drs-selection .col-md-10").append("<a class='themebutton btn btn-more' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+" <span class='fa fa-close'></span></a>");
+      
+      $([document.documentElement, document.body]).animate(
+          { scrollTop: $("#title-container").offset().top },
+          1500
+      );
+      
       get_data(params);
     });
 
