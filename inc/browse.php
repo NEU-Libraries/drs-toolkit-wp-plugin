@@ -24,7 +24,6 @@ function browse_ajax_handler() {
       $url = drstk_api_url("drs", $collection, "search");
     }
     if (isset($_POST['params']['q'])){
-      //$url .= "q=". urlencode(sanitize_text_field($_POST['params']['q']));
       $q = trim($_POST['params']['q']);
       $q = str_replace(' ', '+', $q);
       $url .= "q=". stripslashes($q);
