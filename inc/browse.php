@@ -24,7 +24,10 @@ function browse_ajax_handler() {
       $url = drstk_api_url("drs", $collection, "search");
     }
     if (isset($_POST['params']['q'])){
-      $url .= "q=". urlencode(sanitize_text_field($_POST['params']['q']));
+      //$url .= "q=". urlencode(sanitize_text_field($_POST['params']['q']));
+      $q = trim($_POST['params']['q']);
+      $q = str_replace(' ', '+', $q);
+      $url .= "q=". stripslashes($q);
     }
     if (isset($_GET['q'])){
       $url .= "q=". urlencode(sanitize_text_field($_GET['q']));
@@ -44,7 +47,6 @@ function browse_ajax_handler() {
     if (isset($_POST['params']['sort'])) {
       $url .= "&sort=" . $_POST['params']['sort'];
     }
-    error_log($url);
     $response = get_response($url);
     wp_send_json($response['output']);
     wp_die();
