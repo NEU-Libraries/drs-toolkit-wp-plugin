@@ -9,7 +9,6 @@ add_action('media_buttons', 'add_drs_button', 1000);
 
 /*enques extra js*/
 function drstk_enqueue_page_scripts( $hook ) {
-    $errors = drstk_get_errors();
     wp_enqueue_style( 'drstk_admin_js', DRS_PLUGIN_URL . '/assets/css/admin.css' );
     if ($hook == 'post.php' || $hook == 'post-new.php') {
 
@@ -37,8 +36,8 @@ function drstk_enqueue_page_scripts( $hook ) {
       'ajax_url' => admin_url( 'admin-ajax.php' ),
       'item_admin_nonce'    => $item_admin_nonce,
       'pid' => '',
-      'errors' => json_encode($errors),
-   ) );
+          )
+       );
 
    $drs_ajax_nonce = wp_create_nonce( 'drs_ajax_nonce');
    wp_localize_script( 'drstk_admin_js', 'drs_ajax_obj', array(

@@ -220,7 +220,6 @@ function addLegendToMap(colorDescriptions, mymap, home_url,colorHex) {
             jQuery.each(colorHex,function(colkey,hexval){
                 if(colLegendKey.toLowerCase()==colkey.toLowerCase()){
                     iconUrl = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|"+hexval;
-                    //legendHtml += '<tr><td><img src="'+home_url+'wp-content/plugins/drs-tk/assets/js/leaflet/images/marker-'+ key + '-icon.png" style="height:20px"> </td><td>' + value + '</td></tr>';
                     legendHtml += '<tr><td><img src='+ iconUrl+' style="height:20px"> </td><td>' + value + '</td></tr>';
                 }
             });

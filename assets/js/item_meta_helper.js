@@ -9,16 +9,12 @@ jQuery(document).ready(function(){
   }
 
   assoc_checked("input[name='drstk_assoc']", ".assoc");
-  assoc_checked("input[name='drstk_niec']", ".niec");
   assoc_checked("input[name='drstk_appears']", ".appears");
   assoc_checked("input[name='drstk_mirador']", ".mirador");
   assoc_checked("input[name='drstk_is_podcast']", ".drstk_podcast_options");
 
   jQuery("input[name='drstk_assoc']").on('change', function(){
     assoc_checked("input[name='drstk_assoc']", ".assoc");
-  });
-  jQuery("input[name='drstk_niec']").on('change', function(){
-    assoc_checked("input[name='drstk_niec']", ".niec");
   });
   jQuery("input[name='drstk_appears']").on('change', function(){
     assoc_checked("input[name='drstk_appears']", ".appears");
@@ -33,7 +29,7 @@ jQuery(document).ready(function(){
 
   
   
-  jQuery("input[name='drstk_facets[]'], input[name='drstk_niec_metadata[]']").on('change', function(){
+  jQuery("input[name='drstk_facets[]']").on('change', function(){
     if (jQuery(this).is(":checked")){
       jQuery(this).parents("td").next(".title").css("display","table-cell");
     } else {
@@ -42,7 +38,6 @@ jQuery(document).ready(function(){
   });
 
   jQuery("#facets_sortable").sortable();
-  jQuery("#niec_facets_sortable").sortable();
   jQuery("#item_metadata_sortable").sortable();
   jQuery(".add-item-meta").on("click", function(e){
     e.preventDefault();

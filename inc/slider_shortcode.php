@@ -3,7 +3,6 @@
 add_shortcode( 'drstk_gallery', 'drstk_gallery' );
 add_shortcode('drstk_slider', 'drstk_gallery');
 function drstk_gallery( $atts ){
-  $errors = drstk_get_errors();
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
 
   if($cache != NULL

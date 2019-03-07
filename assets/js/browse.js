@@ -11,7 +11,6 @@ jQuery(document).ready(function($) {
   var browse_options = browse_obj.browse_options;
   var related_content_title = browse_obj.related_content_title;
   var facets_to_display = browse_obj.facets_to_display;
-  var niec_facets = 'niec_facets_to_display' in browse_obj ? browse_obj.niec_facets_to_display : null;
   if ((q) && (q != '')){
     $("#drs-selection").show();
     $("#drs-selection a[data-type='q']").remove();
@@ -154,9 +153,6 @@ jQuery(document).ready(function($) {
   function facetize(data){
     var facet_html = '';
     facet_html = parse_facets(data, facets_to_display, facet_html);
-    if (niec_facets != null){
-      facet_html = parse_facets(data, niec_facets, facet_html);
-    }
     $("#drs-facets").html(facet_html);
     $(".drs-facet-toggle").remove();
     $("#drs-facets").before("<button class='themebutton button btn visible-phone hidden-tablet hidden-desktop drs-facet-toggle hidden-md hidden-lg visible-sm visible-xs'>Show Facets</button>");
@@ -380,9 +376,7 @@ jQuery(document).ready(function($) {
   function titleize(str){
     if (facets_to_display[str]){
       return facets_to_display[str];
-    } else if (niec_facets[str]){
-      return niec_facets[str];
-    } else{
+    } else {
       str = str.replace("_tesim","").replace("_sim","").replace("_ssim","");
       str = str.replace("_", " ");
       str = str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});

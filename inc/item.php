@@ -1,7 +1,6 @@
 <?php
 global $item_pid, $data, $collection, $repo, $all_meta_options, $full_pid, $title;
 $collection = drstk_get_pid();
-$errors = drstk_get_errors();
 $meta_options = get_option('drstk_item_page_metadata');
 if (!is_array($meta_options)){
   $meta_options = NULL;
@@ -10,7 +9,6 @@ $assoc_meta_options = drstk_get_assoc_meta_options();
 
 function get_item_details($data, $assoc=false){
   global $repo, $meta_options, $assoc_meta_options;
-  $errors = drstk_get_errors();
   if (check_for_bad_data($data)){
     return false;
   }
@@ -32,16 +30,6 @@ function get_item_details($data, $assoc=false){
   }
   if ($repo == "dpla"){
     $html = parse_metadata($data, "", false, true);
-  }
-  $niec_facets = get_option('drstk_niec_metadata');
-  $niec_facets_to_display = array();
-  if (is_array($niec_facets)){
-    foreach($niec_facets as $facet){
-      $niec_facets_to_display[$facet] = drstk_get_facet_name($facet, true);
-    }
-  }
-  if (get_option('drstk_niec') == 'on' && count($niec_facets_to_display) > 0 && isset($data->niec)){
-    $html = parse_metadata($data->niec, $html, false, false, $niec_facets_to_display);
   }
   return $html;
 }
@@ -281,7 +269,6 @@ function get_item_breadcrumbs(){
 
 function get_item_image(){
   global $item_pid, $data, $repo;
-  $errors = drstk_get_errors();
   if (check_for_bad_data($data)){
     echo check_for_bad_data($data);
     return false;
@@ -393,7 +380,6 @@ function get_item_image(){
 
 function get_associated_files(){
   global $data, $assoc_meta_options;
-  $errors = drstk_get_errors();
   if (isset($data->associated) && ($data->associated != NULL) && (get_option('drstk_assoc') == 'on')){
     $associated_html = '';
     $title = (get_option('drstk_assoc_title') != '') ? get_option('drstk_assoc_title') : 'Associated Files';
@@ -465,7 +451,6 @@ add_action( 'wp_ajax_get_related_content_paginated', 'related_content_paginated_
 add_action( 'wp_ajax_nopriv_get_related_content_paginated', 'related_content_paginated_handler' ); //for nonauth users
 function related_content_paginated_handler(){
   global $post;
-  $errors = drstk_get_errors();
   if (isset($_GET['pid']) && isset($_GET['page']) && $_GET['page'] != null && $_GET['pid'] != NULL){
     $pid = $_GET['pid'];
     $page = intval($_GET['page']);
@@ -474,17 +459,7 @@ function related_content_paginated_handler(){
   die();
 }
 
-function check_for_bad_data($data){
-  $errors = drstk_get_errors();;
-  if ($data == null) {
-    return $errors['item']['fail'];
-  } else if (isset($data->error)) {
-    return $errors['item']['no_results'];
-  }
-}
-
 function insert_jwplayer($av_pid, $canonical_object_type, $data, $drs_item_img) {
-  $errors = drstk_get_errors();
   $av_type = "";
   if ($canonical_object_type == 'Video File'){
     $av_provider = 'video';
@@ -647,7 +622,6 @@ add_action( 'wp_ajax_nopriv_get_associated_item', 'associated_ajax_handler' ); /
 function associated_ajax_handler() {
   // Handle the ajax request
   global $assoc_meta_options;
-  $errors = drstk_get_errors();
   check_ajax_referer( 'item_drs' );
   if (isset($_POST['pid']) && ($_POST['pid'] != NULL) && (get_option('drstk_assoc') == 'on')){
     $associated_html = '';

@@ -44,7 +44,6 @@ function reloadRemainingTimeline_ajax_handler()
 
 add_shortcode( 'drstk_timeline', 'drstk_timeline' );
 function drstk_timeline( $atts, $params ){
-  $errors = drstk_get_errors();
 
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
   if($cache != NULL

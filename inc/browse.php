@@ -3,7 +3,6 @@ add_action( 'wp_ajax_get_browse', 'browse_ajax_handler' ); //for auth users
 add_action( 'wp_ajax_nopriv_get_browse', 'browse_ajax_handler' ); //for nonauth users
 function browse_ajax_handler() {
   // Handle the ajax request
-  $errors = drstk_get_errors();
   check_ajax_referer( 'browse_drs' );
   $collection = drstk_get_pid();
 

@@ -3,7 +3,6 @@
 add_shortcode( 'drstk_collection_playlist', 'drstk_collection_playlist' );
 add_shortcode( 'drstk_media', 'drstk_collection_playlist' );
 function drstk_collection_playlist($atts){
-  $errors = drstk_get_errors();
   $cache = get_transient(md5('DRSTK'.serialize($atts)));
   if($cache != NULL
       && ! WP_DEBUG

@@ -41,7 +41,6 @@ function reloadRemainingMap_ajax_handler()
 /* adds shortcode */
 add_shortcode( 'drstk_map', 'drstk_map' );
 function drstk_map( $atts , $params) {
-  $errors = drstk_get_errors();
   $cache = get_transient(md5('PREFIX'.serialize($atts)));
   if($cache != NULL
       && ! WP_DEBUG
