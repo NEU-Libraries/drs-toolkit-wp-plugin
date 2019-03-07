@@ -25,8 +25,7 @@ function browse_ajax_handler() {
     }
     if (isset($_POST['params']['q'])){
       $q = trim($_POST['params']['q']);
-      $q = str_replace(' ', '+', $q);
-      $url .= "q=". stripslashes($q);
+      $url .= "q=". urlencode( stripslashes($q) );
     }
     if (isset($_GET['q'])){
       $url .= "q=". urlencode(sanitize_text_field($_GET['q']));
