@@ -39,7 +39,7 @@ $renderer->setJwPlayerOptions($jwPlayerOptions);
 		<div class="<?php echo apply_filters( 'quest_content_container_cls', 'container' ); ?>">
 			<div id="drs-loading"></div>
 			<div class="row">
-				<div id="primary" class="content-area col-md-9">
+				<div id="primary" class="content-area">
 				
 					<main id="main" class="site-main" role="main">
 					

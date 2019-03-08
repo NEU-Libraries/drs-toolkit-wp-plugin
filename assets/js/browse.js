@@ -14,7 +14,7 @@ jQuery(document).ready(function($) {
   if ((q) && (q != '')){
     $("#drs-selection").show();
     $("#drs-selection a[data-type='q']").remove();
-    $("#drs-selection .col-md-10").append("<a class='themebutton btn btn-more' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+" <span class='fa fa-close'></span></a>");
+    $("#drs-selection").append("<a class='themebutton btn btn-more' href='#' data-type='q' data-val='"+params.q+"'>"+params.q+" <span class='fa fa-close'></span></a>");
   }
   if (template == 'collections'){
     params.f['type_sim'] = 'Collection';
@@ -26,7 +26,6 @@ jQuery(document).ready(function($) {
   }
   if (template == 'search'){
     params.per_page = browse_obj.default_search_per_page;
-    $("#primary").removeClass('col-md-12').addClass('col-md-9');
     $("#secondary").show();
     if (browse_obj.search_show_facets == "on"){
       params.show_facets = true;
@@ -34,7 +33,6 @@ jQuery(document).ready(function($) {
   } else if (template == 'browse') {
     params.sort = browse_obj.default_sort;
     params.per_page = browse_obj.default_browse_per_page;
-    $("#primary").addClass('col-md-12').removeClass('col-md-9');
     $("#secondary").hide();
     if (browse_obj.browse_show_facets == "on"){
       params.show_facets = true;
@@ -42,7 +40,6 @@ jQuery(document).ready(function($) {
   } else {
     params.per_page = browse_obj.default_browse_per_page;
     params.sort = "title_ssi%20asc";
-    $("#primary").addClass('col-md-12').removeClass('col-md-9');
     $("#secondary").hide();
   }
   per_page = params.per_page;
@@ -80,7 +77,6 @@ jQuery(document).ready(function($) {
             facetize(data.response.facet_counts);//send to facetize function
           } else {
             $("#drs-facets").hide();
-            $("#drs-docs").addClass("col-md-12").removeClass("col-md-9");
           }
           resultize(data.response.response);//send to resultize function
           clickable(data);
@@ -184,7 +180,7 @@ jQuery(document).ready(function($) {
             var this_facet_count = val_q.k;
             this_facet_name = val_q.v;
           if (this_facet_count != undefined) {
-            this_facet = "<a href='#' class='drs-facet-val row'><div class='three_fourth col-xs-8'>"+this_facet_name+"</div><div class='one_fourth col-xs-4 last'>"+this_facet_count+"</div></a>";
+            this_facet = "<a href='#' class='drs-facet-val row'><div>"+this_facet_name+"</div><div>"+this_facet_count+"</div></a>";
             if (i <= 5){
               facet_values += this_facet;
             }
@@ -247,13 +243,13 @@ jQuery(document).ready(function($) {
       var this_doc = '';
       if (template == 'search'){
         //search = grid
-        this_doc += "<div class='drs-item search panel panel-default'><div class='panel-body'><div class='one_fourth col-sm-3'><figure><a href='"+this_doc_url+"'>";
+        this_doc += "<div class='drs-item search panel panel-default'><div class='panel-body'><div><figure><a href='"+this_doc_url+"'>";
         if (thumbnail[1]) {
           this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
         } else {
           this_doc += "<div class='fa fa-folder-open-o'></div>";
         }
-        this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure></div><div class='three_fourth col-sm-9 last'>";
+        this_doc += "<figcaption><span class='label small'>"+klass+"</span></figcaption></a></figure></div><div>";
         if (search_options.indexOf('Title') > -1){
           this_doc += "<h4 class='drs-item-title'><a href='"+this_doc_url+"'>" + title + "</a></h4>";
         }
@@ -270,11 +266,6 @@ jQuery(document).ready(function($) {
       } else {
         //browse = tile
         this_doc += "<div class='drs-item browse one_third ";
-        if (template == 'collections'){
-          this_doc += "col-lg-3 col-md-4 col-sm-5";
-        } else {
-          this_doc += "col-sm-4";
-        }
         this_doc += "'><div class='thumbnail'><figure><a href='"+this_doc_url+"'>";
         if (thumbnail[1]) {
           this_doc += "<img src='https://repository.library.northeastern.edu"+thumbnail[1]+"' />";
@@ -336,7 +327,7 @@ jQuery(document).ready(function($) {
 
       params.page = 1;
       $("#drs-selection").show();
-      $("#drs-selection .col-md-10").append("<a class='themebutton btn btn-more' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+" <span class='fa fa-close'></span></a>");
+      $("#drs-selection").append("<a class='themebutton btn btn-more' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+" <span class='fa fa-close'></span></a>");
       get_data(params);
     });
 
@@ -424,7 +415,6 @@ jQuery(document).ready(function($) {
   			error: function()
   			{
   				$("#secondary").hide();
-          $("#primary").removeClass('col-md-9').addClass('col-md-12');
   			}
   		});
     } else {

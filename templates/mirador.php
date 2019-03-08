@@ -15,7 +15,7 @@ $view = quest_get_view();
 		<div class="<?php echo apply_filters( 'quest_content_container_cls', 'container' ); ?>">
 			<div class="row">
 
-				<div id="primary" class="content-area col-md-12">
+				<div id="primary" class="content-area">
 					<main id="main" class="site-main" role="main">
 						<?php
 							if (get_option('drstk_mirador') != "") {

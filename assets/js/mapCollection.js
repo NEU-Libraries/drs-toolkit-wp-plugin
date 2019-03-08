@@ -8,9 +8,9 @@ jQuery(document).ready(function($) {
     $("#drs-selection").remove();
     $("#drs-facets").remove();
 
-    $(".site-content .row").prepend('<div id="search-and-facet" class="col-md-2"><form id="check1" class="search"><input id="test1" type="text" placeholder="Search map items..."><button id="searchMapItems" class="fa fa-search" style="padding-right: 45px;"></button></form><br><br></div>');
+    $(".site-content .row").prepend('<div id="search-and-facet"><form id="check1" class="search"><input id="test1" type="text" placeholder="Search map items..."><button id="searchMapItems" class="fa fa-search" style="padding-right: 45px;"></button></form><br><br></div>');
     $("#search-and-facet").append("<div id='drs-facets' class='one_fourth hidden-phone hidden-xs hidden-sm'></div>");
-    $("#content").prepend("<div id='drs-selection' class='col-md-10' style='padding-left: 7.5%;'></div>");
+    $("#content").prepend("<div id='drs-selection'></div>");
 
     var facets_recieved = facets_info_data_obj.data.response.facet_counts
     var atts = facets_info_data_obj.atts;
@@ -22,12 +22,6 @@ jQuery(document).ready(function($) {
     drawFacetOnPageLoad(facets_recieved);
 
     function drawFacetOnPageLoad(data){
-
-        jQuery("#primary").removeClass("col-md-9");
-        jQuery("#primary").addClass("col-md-8");
-
-        jQuery("#secondary").removeClass("col-md-3");
-        jQuery("#secondary").addClass("col-md-2");
 
         var facet_html = '';
         var facet_title = {creator_sim: "Creator",creation_year_sim: "Creation year",  subject_sim: "Subject", drs_department_ssim: "Department", drs_degree_ssim: "Course Degree", drs_course_title_ssim: "Course Title"};
@@ -61,7 +55,7 @@ jQuery(document).ready(function($) {
                         var this_facet_count = val_q.k;
                         this_facet_name = val_q.v;
                         if (this_facet_count != undefined) {
-                            this_facet = "<a href='#' class='drs-facet-val row'><div class='three_fourth col-xs-8'>"+this_facet_name+"</div><div class='one_fourth col-xs-4 last'>"+this_facet_count+"</div></a>";
+                            this_facet = "<a href='#' class='drs-facet-val row'><div>"+this_facet_name+"</div><div>"+this_facet_count+"</div></a>";
                             if (i <= 5){
                                 facet_values += this_facet;
                             }

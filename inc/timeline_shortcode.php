@@ -400,11 +400,11 @@ function drstk_timeline( $atts, $params ){
         }
     }
 
-    $shortcode = "<div id='timeline-embed' style=\"width: 100%; height: 500px\"></div>";
-    $shortcode .= "<div id='timeline-table'><table id='timeline-table-id' style=\" float: right; width: 200px;\">". $color_desc_html_data ."</table></div>";
+    $shortcode = "<div id='timeline-embed' style='width: 100%; height: 500px'></div>";
+    $shortcode .= "<div id='timeline-table'><table id='timeline-table-id'>". $color_desc_html_data ."</table></div>";
     $shortcode .= "<div id='timeline'>".$timeline_html."</div>";
     $shortcode .= "<div id='timeline-increments' data-increments='".$timeline_increments."'></div>";
-    $shortcode .= "<div id=\"drs-facets\" class=\"one_fourth col-md-3 hidden-phone hidden-xs hidden-sm\"></div>";
+    $shortcode .= "<div id='drs-facets'></div>";
 
 
     if (isset($timeline_custom_html)){
