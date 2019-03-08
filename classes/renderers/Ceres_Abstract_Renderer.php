@@ -21,7 +21,7 @@ abstract class Ceres_Abstract_Renderer {
   
   /**
    * The ID of the remote resource (DRS pid, DPLA hash id, etc)
-   * @var unknown
+   * @var string
    */
 
   protected $resourceId;
@@ -31,7 +31,8 @@ abstract class Ceres_Abstract_Renderer {
    * holds the data to work with in most simple cases
    * 
    * Child classes' render() method will tell the Fetcher to, yaknow, fetch data
-   * as needed for it to put together the page (or page component).
+   * as needed for it to put together the page (or page component). Often that data
+   * will already have been fetched, and available.
    * 
    * @var Ceres_Abstract_Fetcher
    */
