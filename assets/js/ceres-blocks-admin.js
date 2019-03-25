@@ -1,5 +1,4 @@
 jQuery(document).ready( function() {
-   console.log('ready');
    jQuery('body').on('click', '.ceres.drs-search', function(e) {
        const testHtml = 
            '<ul>' +
