@@ -26,8 +26,8 @@ class Ceres_Podcast_Rss_Renderer extends Ceres_Abstract_Renderer
     	<itunes:category text='Education'></itunes:category>
     	<itunes:author></itunes:author>
     	<itunes:owner>
-        <itunes:name></itunes:name>
-        <itunes:email>" . get_bloginfo('admin_email') . "</itunes:email>
+        <itunes:name>Northeastern University</itunes:name>
+        <itunes:email>ceres-help@northeastern.edu</itunes:email>
     	</itunes:owner>
     	<description>" . get_bloginfo("description") . "</description>
     	<lastBuildDate></lastBuildDate>
