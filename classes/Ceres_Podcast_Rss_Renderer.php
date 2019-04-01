@@ -23,11 +23,11 @@ class Ceres_Podcast_Rss_Renderer extends Ceres_Abstract_Renderer
     	<link>" . get_bloginfo('url') . "</link>
     	<itunes:explicit>no</itunes:explicit>
     	<itunes:image href='" . $this->getOption('rssImageUrl') . "' />
-    	<itunes:category text=''></itunes:category>
+    	<itunes:category text='Education'></itunes:category>
     	<itunes:author></itunes:author>
     	<itunes:owner>
-    	<itunes:name>=</itunes:name>
-    	<itunes:email>" . get_bloginfo('admin_email') . "</itunes:email>
+        <itunes:name></itunes:name>
+        <itunes:email>" . get_bloginfo('admin_email') . "</itunes:email>
     	</itunes:owner>
     	<description>" . get_bloginfo("description") . "</description>
     	<lastBuildDate></lastBuildDate>
@@ -65,7 +65,7 @@ class Ceres_Podcast_Rss_Renderer extends Ceres_Abstract_Renderer
   		<link>https://repository.library.northeastern.edu/files/" . $itemData['id'] . "</link>
   		<pubDate>" . $itemData['date_ssi'] . "</pubDate>
   		<dc:creator><![CDATA[]]></dc:creator>
-  		<category><![CDATA[Podcast]]></category>
+  		<category><![CDATA[Education]]></category>
   
   		<guid isPermaLink='false'>" . $itemData['identifier_tesim'][0] . "</guid>
   		<description><![CDATA[" . $itemData['abstract_tesim'][0] . "]]></description>
