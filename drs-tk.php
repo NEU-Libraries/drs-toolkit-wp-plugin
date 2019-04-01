@@ -223,6 +223,16 @@ function register_drs_settings() {
   register_setting('drstk_options', 'drstk_podcast_page');
   
   
+  add_settings_field('drstk_podcast_author',
+                    'Name to use as the podcast author (usually the instructor of record)',
+                    'drstk_podcast_author_callback',
+                    'drstk_options',
+                    'drstk_advanced',
+                    array('class' => 'drstk_podcast_options'));
+  register_setting('drstk_options', 'drstk_podcast_author');
+  
+  
+  
   add_settings_field('drstk_podcast_image_url',
                      'Image for podcast feed',
                      'drstk_podcast_image_url_callback',
@@ -888,6 +898,14 @@ function drstk_item_extensions_callback(){
   echo '<input type="checkbox" name="drstk_item_extensions" ';
   if (get_option('drstk_item_extensions') == 'on'){ echo 'checked="checked"';}
   echo '/>Enable</label>';
+}
+
+function drstk_podcast_author_callback() {
+  $author = get_option('drstk_podcast_author');
+  echo "<input name='drstk_podcast_author' type='text'
+               class = 'drstk_podcast_options'
+               value='$author' class='drstk_podcast_author_setting'>
+        </input><br/>";
 }
 
 function drstk_itunes_link_callback() {

@@ -24,7 +24,7 @@ class Ceres_Podcast_Rss_Renderer extends Ceres_Abstract_Renderer
     	<itunes:explicit>no</itunes:explicit>
     	<itunes:image href='" . $this->getOption('rssImageUrl') . "' />
     	<itunes:category text='Education'></itunes:category>
-    	<itunes:author></itunes:author>
+    	<itunes:author>" . get_option('drstk_podcast_author') . "</itunes:author>
     	<itunes:owner>
         <itunes:name>Northeastern University</itunes:name>
         <itunes:email>ceres-help@northeastern.edu</itunes:email>
