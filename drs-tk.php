@@ -940,7 +940,10 @@ function drstk_podcast_image_url_callback() {
                class = 'drstk_podcast_options'
                value='$url' class='drstk_podcast_link_setting'>
         </input><br/>
-        <small>URL to an image to use in your podcast feed (usually something you upload to Media).</small>";
+        <small>URL to an image to use in your podcast feed (usually something you upload to Media).</small>
+        <br/>
+        <img src='$url' />
+        ";
 }
 
 //this creates the form for the drstk settings page
