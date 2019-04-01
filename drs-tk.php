@@ -937,8 +937,8 @@ function drstk_stitcher_link_callback() {
 function drstk_podcast_image_url_callback() {
   $url = get_option('drstk_podcast_image_url') ? get_option('drstk_podcast_image_url') : 'https://brand.northeastern.edu/wp-content/uploads/logotype-250x85.png';
   echo "<input name='drstk_podcast_image_url' type='text'
-               class = 'drstk_podcast_options'
-               value='$url' class='drstk_podcast_link_setting'>
+               class = 'drstk_podcast_options drstk_podcast_link_setting'
+               value='$url'>
         </input><br/>
         <small>URL to an image to use in your podcast feed (usually something you upload to Media).</small>
         <br/>
