@@ -37,6 +37,12 @@ define('DRS_PLUGIN_URL', plugin_dir_url(__FILE__));
 
 define('DPLA_FALLBACK_IMAGE_URL', DRS_PLUGIN_URL . 'assets/images/DPLA-square-logo-color.jpeg');
 
+define('DRSTK_PODCAST_REGISTER_HTML', 
+"
+<small>When you register your podcast with this service, it will tell you the URL to use here.</small>
+<br /><small>Use this feed URL to tell the service where to look for your podcasts: <br />" . get_site_url() . "?feed=podcasts</small><br/>
+");
+
 // Set template names here so we don't have to go into the code.
 $TEMPLATE = array(
     'browse_template' => dirname(__FILE__) . '/templates/browse.php',
@@ -224,6 +230,16 @@ function register_drs_settings() {
                      'drstk_advanced',
                      array('class' => 'drstk_podcast_options'));
   register_setting('drstk_options', 'drstk_podcast_page');
+  
+  
+  add_settings_field('drstk_podcast_author',
+                    'Name to use as the podcast author (usually the instructor of record)',
+                    'drstk_podcast_author_callback',
+                    'drstk_options',
+                    'drstk_advanced',
+                    array('class' => 'drstk_podcast_options'));
+  register_setting('drstk_options', 'drstk_podcast_author');
+  
   
   
   add_settings_field('drstk_podcast_image_url',
@@ -904,14 +920,21 @@ function drstk_item_extensions_callback(){
   echo '/>Enable</label>';
 }
 
+function drstk_podcast_author_callback() {
+  $author = get_option('drstk_podcast_author');
+  echo "<input name='drstk_podcast_author' type='text'
+               class = 'drstk_podcast_options'
+               value='$author' class='drstk_podcast_author_setting'>
+        </input><br/>";
+}
+
 function drstk_itunes_link_callback() {
   $link = get_option('drstk_itunes_link');
   echo "<input name='drstk_itunes_link' type='text'
                class = 'drstk_podcast_options'
                value='$link' class='drstk_podcast_link_setting'>
-        </input><br/>
-        <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
-        <small>When you register your podcast with this service, it will tell you the link to use.</small>";
+        </input><br/>";
+  echo DRSTK_PODCAST_REGISTER_HTML;
 }
 
 function drstk_spotify_link_callback() {
@@ -919,9 +942,8 @@ function drstk_spotify_link_callback() {
   echo "<input name='drstk_spotify_link' type='text'
                class = 'drstk_podcast_options'
                value='$link' class='drstk_podcast_link_setting'>
-        </input><br/>
-        <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
-        <small>When you register your podcast with this service, it will tell you the link to use.</small>";
+        </input><br/>";
+  echo DRSTK_PODCAST_REGISTER_HTML;
 }
 
 function drstk_googleplay_link_callback() {
@@ -929,9 +951,8 @@ function drstk_googleplay_link_callback() {
   echo "<input name='drstk_googleplay_link' type='text'
                class = 'drstk_podcast_options'
                value='$link' class='drstk_podcast_link_setting'>
-        </input><br/>
-        <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
-        <small>When you register your podcast with this service, it will tell you the link to use.</small>";
+        </input><br/>";
+  echo DRSTK_PODCAST_REGISTER_HTML;
 }
 
 function drstk_overcast_link_callback() {
@@ -939,9 +960,8 @@ function drstk_overcast_link_callback() {
   echo "<input name='drstk_overcast_link' type='text'
                class = 'drstk_podcast_options'
                value='$link' class='drstk_podcast_link_setting'>
-        </input><br/>
-        <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
-        <small>When you register your podcast with this service, it will tell you the link to use.</small>";
+        </input><br/>";
+  echo DRSTK_PODCAST_REGISTER_HTML;
 }
 
 function drstk_stitcher_link_callback() {
@@ -949,18 +969,20 @@ function drstk_stitcher_link_callback() {
   echo "<input name='drstk_stitcher_link' type='text'
                class = 'drstk_podcast_options'
                value='$link' class='drstk_podcast_link_setting'>
-        </input><br/>
-        <small>Register this feed URL: " . get_site_url() . "?feed=podcasts</small><br/>
-        <small>When you register your podcast with this service, it will tell you the link to use.</small>";
+        </input><br/>";
+  echo DRSTK_PODCAST_REGISTER_HTML;
 }
 
 function drstk_podcast_image_url_callback() {
-  $url = get_option('drstk_podcast_image_url');
+  $url = get_option('drstk_podcast_image_url') ? get_option('drstk_podcast_image_url') : 'https://brand.northeastern.edu/wp-content/uploads/logotype-250x85.png';
   echo "<input name='drstk_podcast_image_url' type='text'
-               class = 'drstk_podcast_options'
-               value='$url' class='drstk_podcast_link_setting'>
+               class = 'drstk_podcast_options drstk_podcast_link_setting'
+               value='$url'>
         </input><br/>
-        <small>URL to an image to use in your podcast feed (usually something you upload to Media).</small>";
+        <small>URL to an image to use in your podcast feed (usually something you upload to Media).</small>
+        <br/>
+        <img src='$url' />
+        ";
 }
 
 //this creates the form for the drstk settings page

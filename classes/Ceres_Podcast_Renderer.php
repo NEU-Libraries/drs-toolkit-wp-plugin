@@ -23,6 +23,22 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
   }
 
   public function renderPodcastArticle($itemData) {
+    $itemFilesData = $this->fetcher->fetchFilesData($itemData['id']);
+
+    //a bit roundabout way to dig up the transcript, assumed to be in 'associated'
+    if (isset($itemFilesData['output']['associated'])) {
+      $associatedItemArray = $itemFilesData['output']['associated'];
+      reset($associatedItemArray);
+      $associatedItemId = key($associatedItemArray);
+      $transcriptId = $this->fetcher->parseContentObjectId($associatedItemId);
+      $transcriptDownloadHtml = "
+        <a class='drstk-podcast-download' href='https://repository.library.northeastern.edu/downloads/$transcriptId'>
+          <strong>Download Transcript</strong>
+        </a>
+      ";
+    } else {
+      $transcriptDownloadHtml = "";
+    }
     // @TODO: This ties the Renderer to the DRS_Fetcher explicitly to the DRS. I want to avoid that.
     // that's a more general problem of not having a normalized metadata structure
     // the class='row' business also ties it to the theme or SiteBuilder plugin crap
@@ -52,7 +68,7 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
   											 <strong>Download Episode</strong>
   										  </a>
                       </li>
-                      <li>$transcriptionDownload</li>
+                      <li>$transcriptDownloadHtml</li>
                     </ul>
 					</article>
     </div>";

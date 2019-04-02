@@ -325,3 +325,7 @@ table.drstk_item_metadata {
 .drstk_podcast_link_setting {
 	width: 70%;
 }
+
+input.drstk_podcast_options {
+  width: 50%;
+}

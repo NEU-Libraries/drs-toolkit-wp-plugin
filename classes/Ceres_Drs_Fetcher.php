@@ -24,7 +24,7 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
       //PMJ assuming this only gets invoked when the action is 'files'
       switch ($this->queryOptions['sub_action']) {
         case 'content_objects':
-          $url .= "{$this->resourceId}/$sub_action";
+          $url .= "{$this->resourceId}/{$this->queryOptions['sub_action']}";
           break;
           
         case null:
@@ -204,4 +204,13 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
     $canonicalObjectId = $explodedPath[2];
     return $canonicalObjectId;
   }
+  
+  public function fetchFilesData($resourceId) {
+    $queryString = $this->endpoint . "/files/$resourceId";
+    $filesData = $this->fetchData($queryString, true);
+    return $filesData;
+  }
+  
+  
+  
 }
