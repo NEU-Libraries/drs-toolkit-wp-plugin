@@ -16,9 +16,15 @@ ul.drs-podcast-downloads {
 }
 
 ul.drs-podcast-downloads li {
-	display: inline;
+	display: inline-block;
 }
 
-ul.drs-podcast-downloads li:nth-child(2) {
-  float: right;
+/* Tablet Styles */
+@media only screen and (min-width: 600px) {
+	
+	ul.drs-podcast-downloads li:nth-child(2) {
+    float: right;
+  }
 }
+
+
