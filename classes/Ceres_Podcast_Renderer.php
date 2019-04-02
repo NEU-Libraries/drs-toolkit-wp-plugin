@@ -42,17 +42,6 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
     // @TODO: This ties the Renderer to the DRS_Fetcher explicitly to the DRS. I want to avoid that.
     // that's a more general problem of not having a normalized metadata structure
     // the class='row' business also ties it to the theme or SiteBuilder plugin crap
-    
-    $associatedFileData = $this->fetcher->fetchAssociatedFileData($itemData['id']);
-    
-    if ($associatedFileData) {
-      //PHP 7 has array_first_key() to avoid this reset/key stuff, but I can't assume PHP7
-      reset($associatedFileData['canonical_object']);
-      $transcriptionLink = key($associatedFileData['canonical_object']);
-      $transcriptionDownload = "<a href='$transcriptionLink'><strong>Download Transcription</strong></a>";
-    } else {
-      $transcriptionDownload = '';
-    }
 
     $podcastArticleHtml = 
     "<div class='row'>
