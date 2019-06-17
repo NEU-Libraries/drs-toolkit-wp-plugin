@@ -37,6 +37,10 @@ get_header();
 								<?php get_item_image(); ?>
 								<?php get_related_content(); ?>
 								<?php get_associated_files(); ?>
+                                                        <div class="col-sm-12 drs-item-custom" style="width: 80%; padding-left: 0px;"  >
+                                                                <?php get_item_extension(); ?>
+                                                        </div>
+
             	</div>
               <div id="drs-item-right" class="col-sm-6 last">
             		<div id="drs-item-details"><?php echo get_item_details($data); ?></div>
