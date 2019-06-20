@@ -47,7 +47,7 @@ get_header();
 								<?php get_download_links(); ?>
             	</div>
 							<div class="col-sm-12 drs-item-custom">
-								<?php get_item_extension(); ?>
+								<?php //  get_item_extension(); ?>
 							</div>
             </div><!-- #drs-content -->
 
