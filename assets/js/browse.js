@@ -285,7 +285,7 @@ jQuery(document).ready(function($) {
       if (doc_vals.etd_author_ssim) {
         this_doc += "<h5 class='drs-item-creator etd-author'>" + doc_vals.etd_author_ssim.join('; ') + "</h5>";
       }
-        
+
       //PMJ is ashamed of the inline styling, but I haven't found where the real style get inserted yet @TODO
       if (doc_vals.etd_advisor_ssim) {
         this_doc += "<div><h6 class='drs-item-creator etd-advisor' style='display: inline;'>Advisor(s): </h6>" 
