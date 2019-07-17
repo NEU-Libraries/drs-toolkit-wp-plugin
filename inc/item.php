@@ -321,6 +321,21 @@ function get_item_image(){
   if (isset($data->thumbnails)){
     $img = $data->thumbnails[count($data->thumbnails)-2];
   }
+  
+  //ETD-specific check to see if we need to do special handling
+  //for an embargoes thesis or diss. It's already not downloadable,
+  //since content_objects are not passed along from the API
+  //but it'd be nice to display some info on the image, stealing
+  //CSS from the DRS site.
+  if (isset($data->embargoed)) {
+    // it'd be nice to work with the end date of the
+    // embargo like DRS does, but this is what we have for now
+    // this is just used to add a class
+    $embargoed = 'embargoed';
+  } else {
+    $embargoed = '';
+  }
+  
   if (isset($data->page_objects)){
    $pages = $data->page_objects;
    if (count($pages) > 0){
@@ -383,11 +398,11 @@ function get_item_image(){
       }
     } else {
       //nothing special so lets just show the thumbnail
-      echo  '<img id="drs-item-img" src="'.$img.'" />';
+      echo  '<img id="drs-item-img" class="'. $embargoed . '" src="'.$img.'" />';
     }
   } else {
     //case where there is no canonical_objects set
-    echo  '<img id="drs-item-img" src="'.$img.'" />';
+    echo  '<img id="drs-item-img" class="'. $embargoed . '" src="'.$img.'" />';
   }
 }
 
