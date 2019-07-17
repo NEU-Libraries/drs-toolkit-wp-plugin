@@ -330,8 +330,9 @@ function get_item_image(){
   if (isset($data->embargoed)) {
     // it'd be nice to work with the end date of the
     // embargo like DRS does, but this is what we have for now
-    // this is just used to add a class
+    // this is just used to add a class and text above the thumbnail
     $embargoed = 'embargoed';
+    echo "<p class='embargoed'>This item is embargoed, and therefore cannot be downloaded.</p>";
   } else {
     $embargoed = '';
   }
@@ -403,9 +404,6 @@ function get_item_image(){
   } else {
     //case where there is no canonical_objects set
     echo  '<img id="drs-item-img" class="'. $embargoed . '" src="'.$img.'" />';
-  }
-  if ($embargoed == 'embargoed') {
-    echo "<p class='embargoed'>This item is embargoed, and so cannot be downloaded.</p>";
   }
 }
 
