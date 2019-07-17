@@ -404,6 +404,9 @@ function get_item_image(){
     //case where there is no canonical_objects set
     echo  '<img id="drs-item-img" class="'. $embargoed . '" src="'.$img.'" />';
   }
+  if ($embargoed == 'embargoed') {
+    echo "<p class='embargoed'>This item is embargoed, and so cannot be downloaded.</p>";
+  }
 }
 
 function get_associated_files(){
