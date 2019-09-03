@@ -32,10 +32,12 @@ function adding_item_extension_meta_box($post){
 function render_item_extension_meta_box(){
   global $post;
   wp_nonce_field(basename(__FILE__), "meta-box-nonce");
+  $item_id = get_post_meta($post->ID, "item-id", true);
   ?>
   <div>
-    <small>ie. neu:123 or dpla:890342</small><br/>
-    <input name="item-id" type="text" value="<?php echo get_post_meta($post->ID, "item-id", true); ?>">
+    <p>ie. neu:123 or dpla:890342</p>
+    <input name="item-id" type="text" value="<?php echo $item_id; ?>">
+    <p><a href="<?php echo get_site_url() . '/item/' . $item_id ?>"><?php echo $item_id; ?> </a></p>
   </div>
   <?php
 }
@@ -45,7 +47,7 @@ function render_item_url_meta_box(){
   wp_nonce_field(basename(__FILE__), "meta-box-nonce");
   ?>
   <div>
-    <small>Enter a custom URL alias for this item instead of its default, like item/neu:123. Do not include a leading slash. Examples could be "books/darwin" or "darwin"</small><br/>
+    <p>Enter a custom URL alias for this item instead of its default, like item/neu:123. Do not include a leading slash. Examples could be "books/darwin" or "darwin"</p>
     <input name="item-url" type="text" value="<?php echo get_post_meta($post->ID, "item-url", true); ?>">
   </div>
   <?php
@@ -57,7 +59,7 @@ function render_drstk_placement_meta_box() {
   
   wp_nonce_field(basename(__FILE__), "meta-box-nonce");
   $html =  "<div>";
-  $html .= "<small>Select the placement for this custom content</small>";
+  $html .= "<p>Select the placement for this custom content</p>";
   $html .= "<select name='drstk-custom-content-placement'>";
   if ($currentlySelected == 'top') {
     $html .= "  <option value='top' selected >Top</option>";
