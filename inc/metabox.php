@@ -54,7 +54,7 @@ function render_item_url_meta_box(){
 function render_drstk_placement_meta_box() {
   global $post;
   $currentlySelected = get_post_meta($post->ID, "drstk-custom-content-placement", true);
-  //$currentlySelected = 'bottom';
+  
   wp_nonce_field(basename(__FILE__), "meta-box-nonce");
   $html =  "<div>";
   $html .= "<small>Select the placement for this custom content</small>";
@@ -71,7 +71,7 @@ function render_drstk_placement_meta_box() {
     $html .= "  <option value='middle'  >Middle</option>";
   }
   
-  if ($currentlySelected == 'bottom') {
+  if ($currentlySelected == 'bottom' || empty($currentlySelected)) {
     $html .= "  <option value='bottom' selected >Bottom</option>";
   } else {
     $html .= "  <option value='bottom' >Bottom</option>";
