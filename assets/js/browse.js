@@ -254,15 +254,18 @@ jQuery(document).ready(function($) {
   function resultize(data){
     //do grid or list depending on if template is search or browse
     var docs_html = '';
+    var currentDate = new Date();
     $.each(data.docs, function(doc, doc_vals){
-      var title, abstract, creator, date, klass = '';
+      console.log(doc_vals.embargo_release_date_dtsi);
+      var title, abstract, creator, date, klass = '', embargoReleaseDate;
       var thumbnail = [];
       var home_url = browse_obj.home_url;
       var this_doc_url;
-      doc_vals.full_title_ssi? title = doc_vals.full_title_ssi : "";
-      doc_vals.abstract_tesim? abstract = doc_vals.abstract_tesim : "";
-      doc_vals.creator_tesim? creator = doc_vals.creator_tesim : "";
-      doc_vals.thumbnail_list_tesim? thumbnail = doc_vals.thumbnail_list_tesim : "";
+      doc_vals.full_title_ssi ? title = doc_vals.full_title_ssi : "";
+      doc_vals.abstract_tesim ? abstract = doc_vals.abstract_tesim : "";
+      doc_vals.creator_tesim ? creator = doc_vals.creator_tesim : "";
+      doc_vals.thumbnail_list_tesim ? thumbnail = doc_vals.thumbnail_list_tesim : "";
+      embargoReleaseDate = new Date(doc_vals.embargo_release_date_dtsi);
       doc_vals.origin_info_date_created_tesim? date = doc_vals.origin_info_date_created_tesim : "";
       doc_vals.active_fedora_model_ssi? klass = doc_vals.active_fedora_model_ssi : "";
       if (klass == 'CoreFile'){klass = get_short_name(doc_vals.canonical_class_tesim);}
@@ -313,7 +316,14 @@ jQuery(document).ready(function($) {
         .split(" ").slice(0, -1).join(" ") + "...";
         this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
       }
-      this_doc += "<div class=''><a href='"+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";
+      
+      if (embargoReleaseDate !== undefined  && embargoReleaseDate > currentDate) {
+        this_doc += "<div class=''><p class='embargoed'>This item is embargoed until " + embargoReleaseDate.toDateString() + "</p></div></div></div></div>";
+      } else {
+        this_doc += "<div class=''><a href='"+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";  
+      }
+      
+      
       
       docs_html += this_doc;
     });
