@@ -684,7 +684,18 @@ function associated_ajax_handler() {
   wp_die();
 }
 
-function get_item_extension(){
+
+/**
+ * Get a value of data from the associated content for an item, as
+ * declared on the Item Pages Custom Text post
+ *
+ * Essentially a rework of the older get_item_extension function, which only returned
+ * the post's content, not the post itself.
+ *
+ * @param string $data The data to return, one of 'content', 'placement'
+ */
+
+function drstk_get_custom_content_data($data) {
   global $post, $item_pid, $repo, $full_pid;
   if ($repo != "drs"){
     $pid = $full_pid;
@@ -692,35 +703,56 @@ function get_item_extension(){
     $pid = $item_pid;
   }
   $args = array(
-    'post_type' => 'drstk_item_extension',
-    'posts_per_page' => 1,
-    'post_status' => 'publish',
-    'meta_query' => array(
-      array(
-    		'key'     => 'item-id',
-    		'value'   => $pid,
-    		'compare' => '='
-    	)
-    )
+      'post_type' => 'drstk_item_extension',
+      'posts_per_page' => 1,
+      'post_status' => 'publish',
+      'meta_query' => array(
+          array(
+              'key'     => 'item-id',
+              'value'   => $pid,
+              'compare' => '='
+          )
+      )
   );
   $meta_query = new WP_Query( $args );
-  if ($meta_query->have_posts()){
-    while ($meta_query->have_posts()){
+  // WP always assumes "THE LOOP", so this works around on the assumption that there is
+  // only one custom text page for each item. No real reason for that assumption
+  // @TODO: decide whether to remove that assumption
+  // @TODO: can I get rid of the first `if`?
+  if ( $meta_query->have_posts() ) {
+    while ( $meta_query->have_posts() ) {
       $meta_query->the_post();
       $post_id = $post->ID;
-      $content = get_the_content();
-      drstk_item_shortcode_scripts();
-      drstk_map_shortcode_scripts();
-      drstk_gallery_shortcode_scripts();
-      drstk_tile_shortcode_scripts();
-      drstk_timeline_shortcode_scripts();
-      $panels_data = get_post_meta( $post->ID, 'panels_data', true );
-	     if ( !empty( $panels_data ) ) {
-         $content = siteorigin_panels_render($post_id);
-       }
-      $content = do_shortcode($content);
-      echo $content;
+      
+      switch ($data) {
+        case 'content':
+          $content = get_the_content();
+          drstk_item_shortcode_scripts();
+          drstk_map_shortcode_scripts();
+          drstk_gallery_shortcode_scripts();
+          drstk_tile_shortcode_scripts();
+          drstk_timeline_shortcode_scripts();
+          $panels_data = get_post_meta( $post->ID, 'panels_data', true );
+          if ( !empty( $panels_data ) ) {
+            $content = siteorigin_panels_render($post_id);
+          }
+          $content = do_shortcode($content);
+          wp_reset_postdata();
+          return $content;
+          break;
+          
+        case 'placement':
+          $placement = get_post_meta( $post->ID, 'drstk-custom-content-placement', true);
+          wp_reset_postdata();
+          return $placement;
+          break;
+          
+        default:
+          wp_reset_postdata();
+          return false;
+      }
     }
-    wp_reset_postdata();
+  } else {
+    throw new Exception('No $data parameter passed to drstk_get_custom_content_data');
   }
 }
