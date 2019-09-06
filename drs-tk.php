@@ -655,6 +655,7 @@ function drstk_podcast_page_callback() {
                             'class' => 'drstk_podcast_options'
                           )         
   );
+  echo "<p><a href='" . get_page_link($selected, false) . "'>" . get_the_title($selected) .   "</a></p>";
 }
 
 function leaflet_api_key_callback(){
