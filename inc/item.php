@@ -749,11 +749,11 @@ function drstk_get_custom_content_data($data) {
           
         default:
           wp_reset_postdata();
-          return false;
+          return '';
       }
     }
   } else {
       wp_reset_postdata();
-      return false;
+      return '';
   }
 }
