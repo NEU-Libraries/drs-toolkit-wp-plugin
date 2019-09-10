@@ -748,10 +748,11 @@ function drstk_get_custom_content_data($data) {
         
         default:
           wp_reset_postdata();
-          return 'no';
+          return '';
       }
     }
   } else {
-    throw new Exception('No $data parameter passed to drstk_get_custom_content_data');
+      wp_reset_postdata();
+      return '';
   }
 }
