@@ -48,9 +48,9 @@ get_header();
     								<?php echo drstk_get_custom_content_data('content');?>
     							</div>                
                 <?php endif; ?>
+							  <!-- PMJ is ashamed of resurrecting the clear-div, but expediency ruled out -->
+							  <div style='clear: both'></div>
 								<div>
-								  <!-- PMJ is ashamed of resurrecting the clear-div, but expediency ruled out -->
-								  <div style='clear: both'></div>
   								<?php get_related_content(); ?>
   								<?php get_associated_files(); ?>
 								</div>
