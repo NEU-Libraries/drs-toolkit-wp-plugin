@@ -44,13 +44,16 @@ get_header();
 								<?php get_item_image(); ?>
 
 	              <?php if ($custom_content_placement == 'middle'): ?>
-    							<div class="col-sm-12 drs-item-custom" style="width: 80%; padding-left: 0px;">
+    							<div class="col-sm-12 drs-item-custom" style="width: 80%; padding-left: 0px; padding-bottom: 30px;">
     								<?php echo drstk_get_custom_content_data('content');?>
     							</div>                
                 <?php endif; ?>
-
-								<?php get_related_content(); ?>
-								<?php get_associated_files(); ?>
+								<div>
+								  <!-- PMJ is ashamed of resurrecting the clear-div, but expediency ruled out -->
+								  <div style='clear: both'></div>
+  								<?php get_related_content(); ?>
+  								<?php get_associated_files(); ?>
+								</div>
             	</div>
               <div id="drs-item-right" class="col-sm-6 last">
             		<div id="drs-item-details"><?php echo get_item_details($data); ?></div>
