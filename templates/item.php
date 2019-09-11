@@ -44,7 +44,7 @@ get_header();
 								<?php get_item_image(); ?>
 
 	              <?php if ($custom_content_placement == 'middle'): ?>
-    							<div class="col-sm-12 drs-item-custom" style="width: 80%; padding-left: 0px; padding-bottom: 30px;">
+    							<div class="col-sm-12 drs-item-custom" style="width: 80%; padding-left: 0px;">
     								<?php echo drstk_get_custom_content_data('content');?>
     							</div>                
                 <?php endif; ?>
