@@ -202,10 +202,12 @@ function drstk_get_download_links(){
     $html .= "<br/><h4>Downloads</h4>";
     
     foreach($data->content_objects as $key=>$val){
-      // there used to be a check on $val == 'Thumbnail Image'. looks outdated, but noting in case it
+      // there used to be a check on $val == 'Thumbnail Image'. looked outdated, but noting in case it
       // still appears somewhere I (PMJ) haven't predicted
       // @see  https://github.com/NEU-Libraries/cerberus/blob/support/1.x/lib/cerberus/core_file/extract_values.rb#L29
       
+      // the user logged in check appears connected to a specific project. 
+      // see the config option for api keys to DRS API authenticated users
       if (is_user_logged_in() && drstk_api_auth_enabled()){
         $content_pid = explode("/", $key);
         $content_pid = end($content_pid);
