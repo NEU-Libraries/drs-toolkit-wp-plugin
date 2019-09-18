@@ -256,7 +256,6 @@ jQuery(document).ready(function($) {
     var docs_html = '';
     var currentDate = new Date();
     $.each(data.docs, function(doc, doc_vals){
-      console.log(doc_vals.embargo_release_date_dtsi);
       var title, abstract, creator, date, klass = '', embargoReleaseDate;
       var thumbnail = [];
       var home_url = browse_obj.home_url;
@@ -317,13 +316,13 @@ jQuery(document).ready(function($) {
         this_doc += "<p class='drs-item-abstract'>" + abstract + "</p>";
       }
       
+      this_doc += "<div class=''>";
       if (embargoReleaseDate !== undefined  && embargoReleaseDate > currentDate) {
-        this_doc += "<div class=''><p class='embargoed'>This item is embargoed until " + embargoReleaseDate.toDateString() + "</p></div></div></div></div>";
-      } else {
-        this_doc += "<div class=''><a href='"+this_doc_url+"' class='themebutton button btn'>View More</a></div></div></div></div>";  
+        this_doc += "<p class='drstk-embargoed'>This item is embargoed until " + embargoReleaseDate.toDateString() + "</p>";
       }
       
-      
+      this_doc += "<a href='"+this_doc_url+"' class='themebutton button btn'>View More</a>";
+      this_doc += "</div></div></div></div>";
       
       docs_html += this_doc;
     });

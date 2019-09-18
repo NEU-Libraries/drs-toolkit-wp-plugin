@@ -180,28 +180,44 @@ function parse_metadata($data, $html, $solr=false, $dpla=false, $special_options
   return $html;
 }
 
-function get_download_links(){
+function drstk_get_download_links(){
   global $data;
+  
+  // @TODO check_for_bad_data is a mess, but is used too much to just rip out here. needs it's own issue (or v2.0 ripout) -- PMJ
   if (check_for_bad_data($data)){
     return false;
   }
-  if (isset($data->content_objects)){
-    echo "<br/><h4>Downloads</h4>";
-  } else {
-    $data->content_objects = new StdClass;
+  
+  $html = '';
+  // embargo_release_date and content_objects should be mutually exclusive in DRS API results -- PMJ
+  // but, there might be circumstances where neither are true, so keep the conditional for Download heading
+  if (isset($data->embargo_release_date)) {
+    $embargoReleaseDateTime = new DateTime($data->embargo_release_date);
+    $formattedEmbargoReleaseDate = $embargoReleaseDateTime->format("D M d Y");
+    $html .= "<br/><h4>Downloads</h4>";
+    $html .= "<p class='drstk-embargoed'>Item is embargoed until " . $formattedEmbargoReleaseDate . "</p>";
   }
-  foreach($data->content_objects as $key=>$val){
-    if ($val != "Thumbnail Image"){
+  
+  if (isset($data->content_objects)){
+    $html .= "<br/><h4>Downloads</h4>";
+    
+    foreach($data->content_objects as $key=>$val){
+      // there used to be a check on $val == 'Thumbnail Image'. looks outdated, but noting in case it
+      // still appears somewhere I (PMJ) haven't predicted
+      // @see  https://github.com/NEU-Libraries/cerberus/blob/support/1.x/lib/cerberus/core_file/extract_values.rb#L29
+      
       if (is_user_logged_in() && drstk_api_auth_enabled()){
         $content_pid = explode("/", $key);
         $content_pid = end($content_pid);
         $content_pid = str_replace("?datastream_id=content","",$content_pid);
-        echo " <a href='".drstk_home_url()."download/".$content_pid."' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
+        $html .= " <a href='".drstk_home_url()."download/".$content_pid."' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
       } else {
-        echo " <a href='".$key."' target='_blank' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
+        $html .= " <a href='".$key."' target='_blank' class='themebutton button btn' data-label='download' data-pid='".$data->pid."'>".$val."</a> ";
       }
     }
   }
+  
+  return $html;
 }
 
 function get_item_title(){
