@@ -738,20 +738,21 @@ function drstk_get_custom_content_data($data) {
           $content = do_shortcode($content);
           wp_reset_postdata();
           return $content;
-        break;
+          break;
           
         case 'placement':
           $placement = get_post_meta( $post->ID, 'drstk-custom-content-placement', true);
           wp_reset_postdata();
           return $placement;
-        break;
-        
+          break;
+          
         default:
           wp_reset_postdata();
-          return 'no';
+          return '';
       }
     }
   } else {
-    throw new Exception('No $data parameter passed to drstk_get_custom_content_data');
+    wp_reset_postdata();
+    return '';
   }
 }
