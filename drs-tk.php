@@ -591,6 +591,7 @@ function drstk_collection_callback() {
       <li>ETD: https://repository.library.northeastern.edu/sets/neu:cj82r3884</li>
       <li>What's New: https://repository.library.northeastern.edu/collections/neu:cj82q862v</li>
       <li>Class podcasts: https://repository.library.northeastern.edu/collections/neu:f1881z41n</li>
+      <li>LGBTAQ+ : https://repository.library.northeastern.edu/sets/neu:f1882114b</li>
     </ul>
     ";
     echo $commonPidsHtml;
