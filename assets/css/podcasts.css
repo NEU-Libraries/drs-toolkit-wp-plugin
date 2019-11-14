@@ -27,4 +27,7 @@ ul.drs-podcast-downloads li {
   }
 }
 
-
+/* Special iTunes height adjustment */
+li#itunes-link img {
+	height: min-content;
+}

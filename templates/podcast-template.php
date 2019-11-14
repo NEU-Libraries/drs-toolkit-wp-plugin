@@ -48,7 +48,7 @@ $renderer->setJwPlayerOptions($jwPlayerOptions);
 							  <?php if($itunesLink = get_option('drstk_itunes_link') ): ?>
 						  	<li class='republisher-link' id='itunes-link'>
 						  		<a href='<?php echo $itunesLink; ?>'>
-						  			<img src='<?php echo DRS_PLUGIN_URL . "assets/images/subscribe-iTunes-300x91.png"; ?>' 
+						  			<img src='<?php echo DRS_PLUGIN_URL . "assets/images/US_UK_Apple_Podcasts_Listen_Badge_RGB.svg"; ?>' 
 						  			   alt='Subscribe in iTunes' />
 						  		</a>
 						  	</li>
