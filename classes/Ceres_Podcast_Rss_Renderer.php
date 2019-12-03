@@ -27,7 +27,7 @@ class Ceres_Podcast_Rss_Renderer extends Ceres_Abstract_Renderer
     	<itunes:author>" . get_option('drstk_podcast_author') . "</itunes:author>
     	<itunes:owner>
         <itunes:name>Northeastern University</itunes:name>
-        <itunes:email>ceres-help@northeastern.edu</itunes:email>
+        <itunes:email>library-podcastteam@northeastern.edu</itunes:email>
     	</itunes:owner>
     	<description>" . get_bloginfo("description") . "</description>
     	<lastBuildDate></lastBuildDate>
