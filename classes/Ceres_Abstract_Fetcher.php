@@ -42,11 +42,49 @@ abstract class Ceres_Abstract_Fetcher {
 
   protected $itemsData = array();
 
+  /**
+   * The number of pages from a large API request. Will depend on the requested items per page,
+   * so that's better not changing between requests.
+   * 
+   * @var integer
+   */
+  
+  protected $pageCount;
+  
+  /** 
+   * If the API provides the option, the set number of items to return per page. Best not to change this 
+   * between requests. Should be set from setQueryParams() or setQueryParam().
+   * 
+   * @var integer
+   */
+  
+  protected $perPage;
+  
+  /**
+   * For rolling through multiple requests to the API to gather data, the current page number.
+   * Should be set by the fetchNextPage() function.
+   * 
+   * @var integer
+   */
+  
+  protected $currentPage;
+  
+  private $pageParamName;
+  
   abstract public function buildQueryString();
 
   abstract public function parseItemsData();
-
-  abstract public function fetchNextPage();
+  
+  abstract public function fetchPage(int $pageNumber);
+  
+  /**
+   * Takes API-specific response to set currentPage, pageCount, and perPage
+   * Usually this appears in the response data somewhere, but sometimes
+   * needs to use get_headers() when the data is there
+   * 
+   * @param Array $responseData
+   */
+  abstract public function setPaginationData();
 
   abstract public function getItemDataById($itemId);
 
@@ -72,7 +110,8 @@ abstract class Ceres_Abstract_Fetcher {
     
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HEADER, true);
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
     curl_setopt($ch, CURLOPT_FAILONERROR, false);
     $rawResponse = curl_exec($ch);
@@ -123,6 +162,31 @@ abstract class Ceres_Abstract_Fetcher {
     
     $this->responseData = $responseData;
     curl_close($ch);
+    $this->setPaginationData();
+  }
+  
+  public function hasNextPage() {
+    $nextPage = $this->currentPage + 1;
+    if ($nextPage > $this->pageCount) {
+      return false;
+    }
+    return true;
+  }
+  
+  public function fetchNextPage() {
+    if ($this->hasNextPage()) {
+      $nextPage = $this->currentPage + 1;
+      $this->fetchPage($nextPage);
+    }
+  }
+  
+  public function fetchFirstPage() {
+    $this->fetchPage(1);
+  }
+  
+  public function fetchLastPage() {
+    $lastPage = $this->pageCount - 1;
+    $this->fetchPage($lastPage);
   }
 
   public function getResponseData() {

@@ -3,6 +3,7 @@
 class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
 
   protected $endpoint = "https://repository.library.northeastern.edu/api/v1";
+  private $pageParamName = 'page';
 
   public function __construct(array $queryOptions = array(), array $queryParams = array(), $resourceId = null) {
     parent::__construct($queryOptions, $queryParams, $resourceId);
@@ -63,6 +64,18 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
     return $url;
   }
 
+  public function fetchPage(int $pageNumber) {
+    $this->setQueryParam($this->pageParamName, $pageNumber);
+    $this->fetchData();
+  }
+  
+  public function setPaginationData() {
+      $paginationData = $this->responseData['output']['pagination']['table'];
+      $this->currentPage = $paginationData['current_page'];
+      $this->pageCount = $paginationData['total_count'];
+      $this->perPage = $paginationData['per_page'];
+  }
+  
   public function fetchFileData($resourceId) {
     $queryString = $this->endpoint . "/files/$resourceId";
     $fileData = $this->fetchData($queryString, true);
@@ -95,26 +108,6 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
 
   public function parseItemsData() {
     $this->itemsData = $this->responseData['output']['response']['response']['docs'];
-  }
-
-  public function hasNextPage() {
-    $paginationData = $this->responseData['output']['pagination']['table'];
-    $currentPage = $paginationData['current_page'];
-    $lastPage = $paginationData['num_pages'];
-    if ($currentPage < $lastPage) {
-      return true;
-    }
-    return false;
-  }
-
-  public function fetchNextPage() {
-    if ($this->hasNextPage()) {
-      $paginationData = $this->responseData['output']['pagination']['table'];
-      $currentPage = $paginationData['current_page'];
-      $nextStartPage = $currentPage + 1;
-      $this->setQueryParam('page', $nextStartPage);
-      $this->fetchData();
-    }
   }
 
   /*DRS API Authenticate helper method*/
