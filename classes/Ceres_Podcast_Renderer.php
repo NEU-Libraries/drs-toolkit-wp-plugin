@@ -15,7 +15,8 @@ class Ceres_Podcast_Renderer extends Ceres_Abstract_Renderer {
       }
       // I (PMJ) not entirely happy with this pagination technique,
       // but we'll see if something better reveals itself
-      if ($hasNextPage = $this->fetcher->hasNextPage()) {
+      $hasNextPage = $this->fetcher->hasNextPage();
+      if ($hasNextPage) {
         $this->fetcher->fetchNextPage();
       }
     } while ($hasNextPage);

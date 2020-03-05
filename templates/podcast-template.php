@@ -18,7 +18,7 @@ $queryOptions = array(
 
 $queryParams = array(
   'sort' => 'date_ssi+desc',
-  'per_page' => '40',
+  'per_page' => get_option('drstk_default_browse_per_page'),
 );
 
 //the default collection/set for the podcasts, from CERES Settings page

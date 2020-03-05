@@ -152,7 +152,7 @@ abstract class Ceres_Abstract_Fetcher {
         $statusMessage = 'The resource has moved or is no longer available';
         break;
       default:
-        $output = 'An unknown error occured.' . $response_status;
+        $output = 'An unknown error occured.' . $responseStatus;
         $statusMessage = 'An unkown error occured. Please try again';
         break;
     }

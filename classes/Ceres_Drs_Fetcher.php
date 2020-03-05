@@ -72,8 +72,11 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
   public function setPaginationData() {
       $paginationData = $this->responseData['output']['pagination']['table'];
       $this->currentPage = $paginationData['current_page'];
-      $this->pageCount = $paginationData['total_count'];
+      $this->pageCount = $paginationData['num_pages'];
       $this->perPage = $paginationData['per_page'];
+      error_log($this->currentPage);
+      error_log($this->pageCount);
+      error_log($this->perPage);
   }
   
   public function fetchFileData($resourceId) {
@@ -107,7 +110,6 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
   }
 
   public function parseItemsData() {
-    error_log('parseItemsData ' . print_r( $this->responseData, true ) );
     $this->itemsData = $this->responseData['output']['response']['response']['docs'];
   }
 

@@ -1537,7 +1537,8 @@ function drstk_render_podcast_feed() {
   
   $queryParams = array(
       'sort' => 'date_ssi+desc',
-      'per_page' => '40',
+      //@TODO: someday this should look up the total number of podcasts to give a real number 
+      'per_page' => '1001',
   );
   
   //the default collection/set for the podcasts, from CERES Settings page
