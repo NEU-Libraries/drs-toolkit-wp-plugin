@@ -62,7 +62,7 @@ abstract class Ceres_Abstract_Fetcher {
   
   /**
    * For rolling through multiple requests to the API to gather data, the current page number.
-   * Should be set by the fetchNextPage() function.
+   * Should be set by the fetch*Page() functions.
    * 
    * @var integer
    */

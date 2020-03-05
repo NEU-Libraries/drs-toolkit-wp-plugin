@@ -203,7 +203,4 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
     $filesData = $this->fetchData($queryString, true);
     return $filesData;
   }
-  
-  
-  
 }
