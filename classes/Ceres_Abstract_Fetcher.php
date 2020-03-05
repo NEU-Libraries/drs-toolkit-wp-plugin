@@ -116,8 +116,8 @@ abstract class Ceres_Abstract_Fetcher {
     curl_setopt($ch, CURLOPT_FAILONERROR, false);
     $rawResponse = curl_exec($ch);
     // @TODO:  when we're up to PHP > 5.5, CURLINFO_HTTP_CODE should be CURLINFO_RESPONSE_CODE
-    $responseStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    //$responseStatus = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    //$responseStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $responseStatus = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
     //fallback for PHP < 5.5
     // @TODO remove this once our servers are upgraded, so we can keep using modern(ish) PHP practices
     if (! $responseStatus) {
@@ -125,9 +125,16 @@ abstract class Ceres_Abstract_Fetcher {
       $responseStatus = $responseStatusArray['http_code'];
     }
     
+    
+    // shenanigans from https://stackoverflow.com/questions/10384778/curl-request-with-headers-separate-body-a-from-a-header
+    // for splitting out just the body from the response
+    $header_len = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+    $responseBody = substr($rawResponse, $header_len);
+    // end shenanigans 
+    
     switch ($responseStatus) {
       case 200:
-        $output = $rawResponse;
+        $output = $responseBody;
         $statusMessage = 'OK';
         break;
       case 404:
@@ -136,11 +143,11 @@ abstract class Ceres_Abstract_Fetcher {
         break;
       case 302:
         // check if there's json in it anyway
-        $json = json_decode($raw_response);
-        if (is_object($json)) {
-          $output = $rawResponse;
+        $json = json_decode($responseBody, true);
+        if (is_array($json)) {
+          $output = $responseBody;
         } else {
-          $output = 'An unknown error occured -- ' . $response_status;
+          $output = 'An unknown error occured -- ' . $responseStatus;
         }
         $statusMessage = 'The resource has moved or is no longer available';
         break;
@@ -149,7 +156,6 @@ abstract class Ceres_Abstract_Fetcher {
         $statusMessage = 'An unkown error occured. Please try again';
         break;
     }
-    
     $responseData = array(
         'status' => $responseStatus,
         'statusMessage' => $statusMessage,

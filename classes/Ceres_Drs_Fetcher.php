@@ -107,6 +107,7 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
   }
 
   public function parseItemsData() {
+    error_log('parseItemsData ' . print_r( $this->responseData, true ) );
     $this->itemsData = $this->responseData['output']['response']['response']['docs'];
   }
 
