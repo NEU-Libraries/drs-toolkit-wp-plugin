@@ -15,17 +15,25 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
     }
   }
 
-  public function buildQueryString() {
+  public function buildQueryString($queryOptions = false, $queryParams = false) {
+    if (! $queryOptions) {
+      $queryOptions = $this->queryOptions;
+    }
+    
+    if (! $queryParams) {
+      $queryParams = $this->queryParams;
+    }
+    
     $url = $this->endpoint;
-    $url .= '/' . $this->queryOptions['action'];
+    $url .= '/' . $queryOptions['action'];
 
-    if (isset($this->queryOptions['sub_action'])) {
+    if (isset($queryOptions['sub_action'])) {
 
       //DRS subaction of content_objects has special needs for building the URL
       //PMJ assuming this only gets invoked when the action is 'files'
       switch ($this->queryOptions['sub_action']) {
         case 'content_objects':
-          $url .= "{$this->resourceId}/{$this->queryOptions['sub_action']}";
+          $url .= "{$this->resourceId}/{$queryOptions['sub_action']}";
           break;
           
         case null:
@@ -35,16 +43,16 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
           
         default:
           //most common url construction
-          $url .= "/{$this->queryOptions['sub_action']}/{$this->resourceId}";
+          $url .= "/{$queryOptions['sub_action']}/{$this->resourceId}";
           break;
       }
     } else {
       $url .= '/' . $this->resourceId;
     }
     
-    if (! empty($this->queryParams)) {
+    if (! empty($queryParams)) {
       $url .= '?';
-      foreach ($this->queryParams as $param=>$value) {
+      foreach ($queryParams as $param=>$value) {
         if ($param == 'q') {
           $value = sanitize_text_field($value);
         }
@@ -67,6 +75,22 @@ class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
   public function fetchPage(int $pageNumber) {
     $this->setQueryParam($this->pageParamName, $pageNumber);
     $this->fetchData();
+  }
+  
+  public function getPageUrl(int $pageNumber) {
+    // $this->setQueryParam($this->pageParamName, $pageNumber);
+    $queryOptions = [
+        'action' => 'search',
+        'sub_action' => 'av',
+    ];
+    
+    $paramsOptions = [
+        'page' => $pageNumber,
+        
+    ];
+    
+    $url = $this->buildQueryString($queryOptions, $paramsOptions);
+    return $url;
   }
   
   public function setPaginationData() {

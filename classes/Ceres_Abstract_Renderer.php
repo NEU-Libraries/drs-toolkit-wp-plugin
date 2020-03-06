@@ -45,6 +45,37 @@ abstract class Ceres_Abstract_Renderer {
   }
 
   abstract function render();
+  
+  public function buildPagination() {
+    $pageCount = $this->fetcher->getPageCount();
+    
+    // this likely has to parse it out from url, maybe something in the response header
+    // which means it'll be API-dependent
+    // unless it's hanging out in the fetcher, depending on how well I'm paying attention to state
+    //$currentPageNumber = $this->getCurrentPageNumber();
+    $currentPageNumber = 1;
+    
+    $firstPageUrl = $this->fetcher->getPageUrl(1);
+    $lastPageUrl = $this->fetcher->getPageUrl($pageCount);
+    $firstButton = "<a class='pagination-button' data-url='$firstPageUrl'>FIRST</a>";
+    $lastButton = "<a class='pagination-button' data-url='$lastPageUrl'>LAST</a>";
+    $html = "<div class='ceres-pagination'>$firstButton";
+    for($pageNumber = 1; $pageNumber < $pageCount + 1; $pageNumber++) {
+      $url = $this->fetcher->getPageUrl($pageNumber);
+      $classes = 'pagination-button ';
+      
+      if ($pageNumber == $currentPageNumber) {
+        $classes .= 'current';
+      }
+      $pageButton = "<a class='$classes' data-url='$url'>$pageNumber</a>";
+      
+      $html .= $pageButton;
+    }
+    
+    $html .= $lastButton .= "</div>";
+    return $html;
+    
+  }
 
   public function setResourceId($resourceId) {
     $this->resourceId = $resourceId;

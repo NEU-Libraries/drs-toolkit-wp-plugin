@@ -71,11 +71,13 @@ abstract class Ceres_Abstract_Fetcher {
   
   private $pageParamName;
   
-  abstract public function buildQueryString();
+  abstract public function buildQueryString($queryOptions = false, $queryParams = false);
 
   abstract public function parseItemsData();
   
   abstract public function fetchPage(int $pageNumber);
+  
+  abstract public function getPageUrl(int $pageNumber);
   
   /**
    * Takes API-specific response to set currentPage, pageCount, and perPage
@@ -249,5 +251,9 @@ abstract class Ceres_Abstract_Fetcher {
 
   public function getItemsData() {
     return $this->itemsData;
+  }
+  
+  public function getPageCount() {
+    return $this->pageCount;
   }
 }
