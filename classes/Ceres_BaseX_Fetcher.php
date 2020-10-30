@@ -1,5 +1,8 @@
 <?php 
 
+// TODO: are the requires already added elsewhere?
+require_once Ceres_Abstract_Fetcher.php;
+
 class Ceres_baseX_Fetcher extends Ceres_Abstract_Fetcher {
 
   protected $endpoint;
