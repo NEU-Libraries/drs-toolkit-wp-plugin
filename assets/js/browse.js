@@ -273,7 +273,13 @@ jQuery(document).ready(function($) {
       } else if (doc_vals.active_fedora_model_ssi == 'CoreFile') {
         this_doc_url = home_url + 'item/' + doc_vals.id;
         if (Object.keys(params.f).length !== 0) {
-            this_doc_url += '?selectedFacets=' + encodeURIComponent(JSON.stringify(params.f));
+            //PMJ commenting this out for ETD, since the view page doesn't
+            //show the facets that got you there. other sites _might_?
+          
+            // this also rudely ignores the underlying problem of what
+            // combination of facets cause the view page to white-screen,
+            // while some combinations don't
+            //this_doc_url += '?selectedFacets=' + encodeURIComponent(JSON.stringify(params.f));
         }
       }
       var this_doc = '';
