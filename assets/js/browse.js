@@ -294,9 +294,8 @@ jQuery(document).ready(function($) {
         this_doc += "<h5 class='drs-item-creator etd-author'>" + doc_vals.etd_author_ssim.join('; ') + "</h5>";
       }
 
-      //PMJ is ashamed of the inline styling, but I haven't found where the real style get inserted yet @TODO
       if (doc_vals.etd_advisor_ssim) {
-        this_doc += "<div><h6 class='drs-item-creator etd-advisor' style='display: inline;'>Advisor(s): </h6>" 
+        this_doc += "<div><h6 class='drs-item-creator etd-advisor'>Advisor(s): </h6>" 
             + doc_vals.etd_advisor_ssim.join('; ')
             + "</div>";
       }
@@ -371,7 +370,6 @@ jQuery(document).ready(function($) {
       params.page = 1;
       $("#drs-selection").show();
       $("#drs-selection .col-md-10").append("<a class='themebutton btn btn-more' href='#' data-type='f' data-facet='"+facet+"' data-val='"+facet_val+"'>"+titleize(facet)+" > "+facet_val+" <span class='fa fa-close'></span></a>");
-      
       $([document.documentElement, document.body]).animate(
           { scrollTop: $("#title-container").offset().top },
           1500
@@ -385,6 +383,7 @@ jQuery(document).ready(function($) {
       var type = $(this).data("type");
       if (type == 'f') {
         var facet = $(this).data("facet");
+        console.log(facet);
         delete params.f[facet];
       } else if (type == 'q') {
         params[type] = '';
