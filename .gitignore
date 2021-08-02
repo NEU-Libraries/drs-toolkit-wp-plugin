@@ -2,6 +2,7 @@
 */.DS_Store
 deploy.sh
 config.php
+config.php.keyedback
 devMessage.php
 .idea/
 node_modules/
