@@ -17,7 +17,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/tiles_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/slider_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/map_shortcode.php');
 require_once( plugin_dir_path( __FILE__ ) . 'inc/timeline_shortcode.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'inc/metabox.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'inc/metabox.php' );  
 require_once( plugin_dir_path( __FILE__ ) . 'config.php' );
 
 

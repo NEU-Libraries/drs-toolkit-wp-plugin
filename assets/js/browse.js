@@ -326,7 +326,9 @@ jQuery(document).ready(function($) {
         this_doc += "<p class='drstk-embargoed'>This item is embargoed until " + embargoReleaseDate.toDateString() + "</p>";
       }
       
-      this_doc += "<a href='"+this_doc_url+"' class='themebutton button btn'>View More</a>";
+      //PMJ is ashamed, again, of the inline styling, but the way the theme customization sets
+      //things up makes it unavoidable until we jettison this theme
+      this_doc += "<a href='"+this_doc_url+"' class='themebutton button btn' style='color: white;'>View More</a>";
       this_doc += "</div></div></div></div>";
       
       docs_html += this_doc;
