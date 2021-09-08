@@ -1,7 +1,7 @@
 <?php
 
 // TODO: are the requires already added elsewhere?
-require_once Ceres_Abstract_Fetcher.php;
+require_once ('Ceres_Abstract_Fetcher.php');
 
 class Ceres_Drs_Fetcher extends Ceres_Abstract_Fetcher {
 
