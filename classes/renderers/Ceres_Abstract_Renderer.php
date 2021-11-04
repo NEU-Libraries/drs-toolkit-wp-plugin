@@ -48,10 +48,13 @@ abstract class Ceres_Abstract_Renderer {
 
   abstract function render();
   
-  // @TODO this might get moved into a separate Pagination Renderer
+  // @TODO this might get moved into a separate Pagination Renderer, likely different for each Fetcher
+  //   First thought is that this'd just instantiate a new Renderer and tell it to do its thing
+  //   though that'd also mean injecting the relevant Fetcher into _that_ which might be 
+  //   getting crazy
   public function buildPagination() {
     // @TODO needs update to reflect possibility of multiple fetchers being injected
-    $pageCount = $this->fetcher->getPageCount();
+    $pageCount = $this->fetchers['drs_paginator']->getPageCount();
     
     // this likely has to parse it out from url, maybe something in the response header
     // which means it'll be API-dependent
@@ -59,8 +62,8 @@ abstract class Ceres_Abstract_Renderer {
     //$currentPageNumber = $this->getCurrentPageNumber();
     $currentPageNumber = 1;
     
-    $firstPageUrl = $this->fetcher->getPageUrl(1);
-    $lastPageUrl = $this->fetcher->getPageUrl($pageCount);
+    $firstPageUrl = $this->fetchers['drs_paginator']->getPageUrl(1);
+    $lastPageUrl = $this->fetchers['drs_paginator']->getPageUrl($pageCount);
     $firstButton = "<a class='pagination-button' data-url='$firstPageUrl'>FIRST</a>";
     $lastButton = "<a class='pagination-button' data-url='$lastPageUrl'>LAST</a>";
     $html = "<div class='ceres-pagination'>$firstButton";
