@@ -27,26 +27,30 @@ abstract class Ceres_Abstract_Renderer {
   protected $resourceId;
 
   /**
-   * The Ceres_Abstract_Fetcher that is handling the data retrieval. Its itemData property
+   * The Ceres_Abstract_Fetcher that are handling the data retrieval. Its itemData property
    * holds the data to work with in most simple cases
    * 
-   * Child classes' render() method will tell the Fetcher to, yaknow, fetch data
+   * Child classes' render() method will tell the Fetchers to, yaknow, fetch data
    * as needed for it to put together the page (or page component).
    * 
    * @var Ceres_Abstract_Fetcher
    */
 
-  protected $fetcher;
+  protected $fetchers;
   
-  public function __construct($fetcher, $resourceId = null, $options = array()) {
-    $this->fetcher = $fetcher;
+  public function __construct(array $fetchers, $resourceId = null, $options = array()) {
+    foreach ($fetchers as $name => $class) {
+      $this->injectFetcher($name, $class);
+    }
     $this->setResourceId($resourceId);
     $this->setOptions($options);
   }
 
   abstract function render();
   
+  // @TODO this might get moved into a separate Pagination Renderer
   public function buildPagination() {
+    // @TODO needs update to reflect possibility of multiple fetchers being injected
     $pageCount = $this->fetcher->getPageCount();
     
     // this likely has to parse it out from url, maybe something in the response header
@@ -120,4 +124,11 @@ abstract class Ceres_Abstract_Renderer {
     }
     return $default;
   }
+  
+  
+  private function injectFetcher($name, $class) {
+    $this->fetchers[$name] = $class;
+  }
+  
+  
 }
