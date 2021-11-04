@@ -33,7 +33,7 @@ abstract class Ceres_Abstract_Renderer {
    * Child classes' render() method will tell the Fetchers to, yaknow, fetch data
    * as needed for it to put together the page (or page component).
    * 
-   * @var Ceres_Abstract_Fetcher
+   * @var array Ceres_Abstract_Fetcher
    */
 
   protected $fetchers;
