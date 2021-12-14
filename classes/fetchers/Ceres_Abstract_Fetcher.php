@@ -69,8 +69,6 @@ abstract class Ceres_Abstract_Fetcher {
   
   protected $currentPage;
   
-  private $pageParamName;
-  
   abstract public function buildQueryString($queryOptions = false, $queryParams = false);
 
   abstract public function parseItemsData();
@@ -86,6 +84,7 @@ abstract class Ceres_Abstract_Fetcher {
    * 
    * @param Array $responseData
    */
+  
   abstract public function setPaginationData();
 
   abstract public function getItemDataById($itemId);
@@ -144,13 +143,7 @@ abstract class Ceres_Abstract_Fetcher {
         $statusMessage = 'Not Found';
         break;
       case 302:
-        // check if there's json in it anyway
-        $json = json_decode($responseBody, true);
-        if (is_array($json)) {
-          $output = $responseBody;
-        } else {
-          $output = 'An unknown error occured -- ' . $responseStatus;
-        }
+        $output = $responseBody;
         $statusMessage = 'The resource has moved or is no longer available';
         break;
       default:
@@ -161,7 +154,10 @@ abstract class Ceres_Abstract_Fetcher {
     $responseData = array(
         'status' => $responseStatus,
         'statusMessage' => $statusMessage,
-        'output' => json_decode($output, true),
+        // leave it to the instantiated classes to parse the output
+        // usually it'll just be json_decode($output, true), but might be XML
+        // or something even more funky
+        'output' => $output,
     );
     
     if($returnWithoutSetting) {
@@ -201,6 +197,8 @@ abstract class Ceres_Abstract_Fetcher {
     return $this->responseData;
   }
 
+  // @TODO: setters should probably do some minimal sanity checking so they all have key - value of the right types
+  
   public function setQueryParams(array $queryParams) {
     $this->queryParams = $queryParams;
   }

@@ -36,7 +36,7 @@ abstract class Ceres_Abstract_Renderer {
    * @var array Ceres_Abstract_Fetcher
    */
 
-  protected $fetchers;
+  protected $fetchers = array();
   
   public function __construct(array $fetchers, $resourceId = null, $options = array()) {
     foreach ($fetchers as $name => $class) {
