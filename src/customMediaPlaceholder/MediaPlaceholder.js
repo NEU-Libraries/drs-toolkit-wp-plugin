@@ -20,6 +20,8 @@ import {
 	store as blockEditorStore,
 } from "@wordpress/block-editor";
 
+import Modal from "./DRSModal";
+
 const InsertFromURLPopover = ({ src, onChange, onSubmit, onClose }) => (
 	<URLPopover onClose={onClose}>
 		<form
@@ -307,6 +309,24 @@ export function cMediaPlaceholder({
 		);
 	};
 
+	const renderDRSSelectionUI = () => {
+		return (
+			<div className="block-editor-media-placeholder__url-input-container">
+				<Button
+					className="block-editor-media-placeholder__button"
+					onClick={openDRSModal}
+					isPressed={isDRSInputVisible}
+					variant="tertiary"
+				>
+					{__("Insert from DRS")}
+				</Button>
+				{isDRSInputVisible && (
+					<Modal onClose={closeDRSModal} onSubmit={onSelectURL} />
+				)}
+			</div>
+		);
+	};
+
 	const renderMediaUploadChecked = () => {
 		const defaultButton = ({ open }) => {
 			return (
@@ -384,7 +404,7 @@ export function cMediaPlaceholder({
 					</FormFileUpload>
 					{uploadMediaLibraryButton}
 					{renderUrlSelectionUI()}
-
+					{renderDRSSelectionUI()}
 					{renderCancelLink()}
 				</>
 			);
