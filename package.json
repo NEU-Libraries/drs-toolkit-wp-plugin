@@ -1,0 +1,19 @@
+{
+	"name": "drs-tk",
+	"version": "1.3.0",
+	"description": "This plugin provides the core functionality of the CERES: Exhibit Toolkit and brings the content of a project from the DRS into Wordpress using the DRS API.",
+	"author": "Digital Scholarship Group, Northeastern University. Eli Zoller, Patrick Murray-John, et al.",
+	"main": "build/index.js",
+	"scripts": {
+		"build": "wp-scripts build",
+		"format": "wp-scripts format",
+		"lint:css": "wp-scripts lint-style",
+		"lint:js": "wp-scripts lint-js",
+		"packages-update": "wp-scripts packages-update",
+		"plugin-zip": "wp-scripts plugin-zip",
+		"start": "wp-scripts start"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^23.2.0"
+	}
+}
