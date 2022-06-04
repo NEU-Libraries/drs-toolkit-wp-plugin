@@ -19,6 +19,7 @@
 	"dependencies": {
 		"@wordpress/block-editor": "^9.1.0",
 		"@wordpress/components": "^19.10.0",
+		"axios": "^0.27.2",
 		"classnames": "^2.3.1",
 		"loadash": "^1.0.0"
 	}
