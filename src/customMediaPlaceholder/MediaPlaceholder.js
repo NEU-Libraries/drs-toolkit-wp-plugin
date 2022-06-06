@@ -12,6 +12,7 @@ import { __ } from "@wordpress/i18n";
 import { useState, useEffect } from "@wordpress/element";
 import { useSelect } from "@wordpress/data";
 import { keyboardReturn } from "@wordpress/icons";
+import axios from "axios";
 
 import {
 	MediaUpload,
@@ -45,6 +46,49 @@ const InsertFromURLPopover = ({ src, onChange, onSubmit, onClose }) => (
 		</form>
 	</URLPopover>
 );
+
+const InsertFromDRSNumber = ({ onSubmit, onClose }) => {
+	const [imageUrl, setImageUrl] = useState("");
+	const [drsNum, setDrsNum] = useState(0);
+	const url = "https://repository.library.northeastern.edu/api/v1/files/neu:";
+	useEffect(async () => {
+		axios.defaults.headers.get["Content-Type"] =
+			"application/json;charset=utf-8";
+		axios.defaults.headers.get["Access-Control-Allow-Origin"] = "*";
+		try {
+			const response = await axios.get(url + drsNum.toString());
+			console.log(response);
+		} catch (error) {
+			console.log(error);
+		}
+	}, [axios, drsNum, setImageUrl]);
+
+	return (
+		<URLPopover onClose={onClose}>
+			<form
+				className="block-editor-media-placeholder__url-input-form"
+				onSubmit={onSubmit}
+			>
+				<input
+					className="block-editor-media-placeholder__url-input-field"
+					type="text"
+					aria-label={__("URL")}
+					placeholder={__("Paste or type DRS Number")}
+					onChange={(e) => {
+						setDrsNum(e.target.value);
+					}}
+					value={drsNum}
+				/>
+				<Button
+					className="block-editor-media-placeholder__url-input-submit-button"
+					icon={keyboardReturn}
+					label={__("Apply")}
+					type="submit"
+				/>
+			</form>
+		</URLPopover>
+	);
+};
 
 export function cMediaPlaceholder({
 	value = {},
@@ -80,7 +124,7 @@ export function cMediaPlaceholder({
 	const [src, setSrc] = useState("");
 	const [isURLInputVisible, setIsURLInputVisible] = useState(false);
 	const [isDRSInputVisible, setIsDRSInputVisible] = useState(false);
-	const [isOpen, setIsOpen] = useState(false);
+	const [isDRSNumberVisible, setIsDRSNumberVisble] = useState(false);
 
 	useEffect(() => {
 		setSrc(value?.src ?? "");
@@ -114,6 +158,14 @@ export function cMediaPlaceholder({
 
 	const closeDRSModal = () => {
 		setIsDRSInputVisible(false);
+	};
+
+	const openDRSNumberInput = () => {
+		setIsDRSNumberVisble(true);
+	};
+
+	const closeDRSNumberInput = () => {
+		setIsDRSNumberVisble(false);
 	};
 
 	const onSubmitSrc = (event) => {
@@ -327,6 +379,27 @@ export function cMediaPlaceholder({
 		);
 	};
 
+	const renderDRSInputUI = () => {
+		return (
+			<div className="block-editor-media-placeholder__url-input-container">
+				<Button
+					className="block-editor-media-placeholder__button"
+					onClick={openDRSNumberInput}
+					isPressed={isDRSNumberVisible}
+					variant="tertiary"
+				>
+					{__("Insert from DRS Number")}
+				</Button>
+				{isDRSNumberVisible && (
+					<InsertFromDRSNumber
+						onClose={closeDRSNumberInput}
+						onSubmit={onSelectURL}
+					/>
+				)}
+			</div>
+		);
+	};
+
 	const renderMediaUploadChecked = () => {
 		const defaultButton = ({ open }) => {
 			return (
@@ -376,6 +449,7 @@ export function cMediaPlaceholder({
 									</Button>
 									{uploadMediaLibraryButton}
 									{renderUrlSelectionUI()}
+									{renderDRSInputUI()}
 									{renderCancelLink()}
 								</>
 							);
@@ -405,6 +479,7 @@ export function cMediaPlaceholder({
 					{uploadMediaLibraryButton}
 					{renderUrlSelectionUI()}
 					{renderDRSSelectionUI()}
+					{renderDRSInputUI()}
 					{renderCancelLink()}
 				</>
 			);
