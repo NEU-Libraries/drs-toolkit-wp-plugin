@@ -47,27 +47,61 @@ const InsertFromURLPopover = ({ src, onChange, onSubmit, onClose }) => (
 	</URLPopover>
 );
 
-const InsertFromDRSNumber = ({ onSubmit, onClose }) => {
+const InsertFromDRSNumber = ({ allowedTypes, onSubmit, onClose }) => {
 	const [imageUrl, setImageUrl] = useState("");
-	const [drsNum, setDrsNum] = useState(0);
+	const [drsNum, setDrsNum] = useState(344525);
+	const [submitForm, setSubmitForm] = useState(false);
 	const url = "https://repository.library.northeastern.edu/api/v1/files/neu:";
-	useEffect(async () => {
-		axios.defaults.headers.get["Content-Type"] =
-			"application/json;charset=utf-8";
-		axios.defaults.headers.get["Access-Control-Allow-Origin"] = "*";
-		try {
-			const response = await axios.get(url + drsNum.toString());
-			console.log(response);
-		} catch (error) {
-			console.log(error);
-		}
-	}, [axios, drsNum, setImageUrl]);
+
+	const typesAllowed = allowedTypes ?? [];
+	let format = "";
+
+	const [firstAllowedType] = typesAllowed;
+	const isOneType = 1 === typesAllowed.length;
+	const isAudio = isOneType && "audio" === firstAllowedType;
+	const isImage = isOneType && "image" === firstAllowedType;
+	const isVideo = isOneType && "video" === firstAllowedType;
+
+	if (isAudio) format = "Audio";
+	else if (isImage) format = "Image";
+	else if (isVideo) format = "Video";
+
+	useEffect(() => {
+		const fetchObject = async () => {
+			try {
+				const response = await axios.get(url + drsNum.toString());
+				const { data } = response;
+				const dataFormat = data.mods.Format[0];
+
+				if (dataFormat === format) {
+					Object.entries(data.content_objects).forEach(([key, value]) => {
+						if (value.includes("Large")) {
+							setImageUrl(key);
+						}
+					});
+				}
+			} catch (error) {
+				console.log(error);
+			}
+		};
+
+		if (submitForm) fetchObject();
+	}, [axios, drsNum, setImageUrl, submitForm]);
+
+	const submitDRSForm = (e) => {
+		e.preventDefault();
+		setSubmitForm(true);
+	};
+
+	useEffect(() => {
+		onSubmit(imageUrl);
+	}, [imageUrl]);
 
 	return (
 		<URLPopover onClose={onClose}>
 			<form
 				className="block-editor-media-placeholder__url-input-form"
-				onSubmit={onSubmit}
+				onSubmit={(e) => submitDRSForm(e)}
 			>
 				<input
 					className="block-editor-media-placeholder__url-input-field"
@@ -392,6 +426,7 @@ export function cMediaPlaceholder({
 				</Button>
 				{isDRSNumberVisible && (
 					<InsertFromDRSNumber
+						allowedTypes={allowedTypes}
 						onClose={closeDRSNumberInput}
 						onSubmit={onSelectURL}
 					/>
