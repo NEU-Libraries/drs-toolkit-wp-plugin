@@ -21,7 +21,7 @@ import {
 	store as blockEditorStore,
 } from "@wordpress/block-editor";
 
-import Modal from "./DRSModal";
+import DRSModal from "./DRSModal";
 
 const InsertFromURLPopover = ({ src, onChange, onSubmit, onClose }) => (
 	<URLPopover onClose={onClose}>
@@ -407,7 +407,7 @@ export function cMediaPlaceholder({
 					{__("Insert from DRS")}
 				</Button>
 				{isDRSInputVisible && (
-					<Modal onClose={closeDRSModal} onSubmit={onSelectURL} />
+					<DRSModal onClose={closeDRSModal} onSubmit={onSelectURL} />
 				)}
 			</div>
 		);
