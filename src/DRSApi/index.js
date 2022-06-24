@@ -52,6 +52,7 @@ export async function fetchFromFile({ format, fileId, fileFormat = null }) {
  * Parameter passed to fetch from search
  * @typedef  {Object} FetchSearchParams
  * @property {string} collectionId                  - Collection/Set Id
+ * @property {Object} searchParams					- Parameters to modify search
  */
 
 /**
@@ -64,11 +65,19 @@ export async function fetchFromFile({ format, fileId, fileFormat = null }) {
  * @param   {FetchSearchParam} params               - Data to be passed
  * @returns {Promise<FetchSearchResponse>}          - Promise object
  */
-export async function fetchFromSearch({ collectionId }) {
+export async function fetchFromSearch({ collectionId, searchParams }) {
 	try {
-		const baseUrl =
-			"https://repository.library.northeastern.edu/api/v1/search/";
-		const response = await axios.get(baseUrl + collectionId);
+		let baseUrl =
+			"https://repository.library.northeastern.edu/api/v1/search/" +
+			collectionId +
+			"?";
+
+		searchParams &&
+			Object.entries(searchParams).map(([key, value]) => {
+				baseUrl += key + "=" + value + "?";
+			});
+
+		const response = await axios.get(baseUrl);
 		const { data } = response;
 		return data;
 	} catch (error) {
