@@ -7,6 +7,7 @@ import { fetchFromFile, fetchFromSearch } from "../DRSApi";
 const DRSModal = ({ onClose, onSubmit }) => {
 	const [imageUrl, setImageUrl] = useState("");
 	const [collectionId, setCollectionId] = useState("neu:rx913q686");
+	const [file, setFile] = useState({});
 	const [urls, setUrls] = useState([]);
 
 	const submitURL = (e) => {
@@ -14,6 +15,13 @@ const DRSModal = ({ onClose, onSubmit }) => {
 		if (imageUrl !== "") onSubmit(imageUrl);
 		onClose();
 	};
+
+	function onSelectFile(file) {
+		setImageUrl(file.fileUrl);
+		setFile(file);
+	}
+
+	console.log(file);
 
 	useEffect(async () => {
 		try {
@@ -35,7 +43,7 @@ const DRSModal = ({ onClose, onSubmit }) => {
 			const result = [];
 			responses.forEach((item) => {
 				if (item.status === "rejected") return;
-				result.push(item.value.fileUrl);
+				result.push(item.value);
 			});
 			setUrls(result);
 		} catch (error) {
@@ -63,17 +71,30 @@ const DRSModal = ({ onClose, onSubmit }) => {
 						</div>
 
 						<ul className="attachments ui-sortable ui-sortable-disabled ">
-							{urls.map((tempUrl, index) => (
-								<ImageSelect
-									url={tempUrl}
+							{urls.map((_file, index) => (
+								<FileSelect
+									file={_file}
 									key={index}
-									selected={tempUrl == imageUrl}
-									onSelect={setImageUrl}
+									selected={_file.fileUrl == imageUrl}
+									onSelect={onSelectFile}
+									type="Image"
 								/>
 							))}
 						</ul>
 					</div>
-					<div className="media-sidebar"></div>
+					<div className="media-sidebar">
+						<h2>File Details</h2>
+						{file.mods == undefined || file.mods == null ? (
+							<p>Select a image</p>
+						) : (
+							Object.entries(file.mods).map(([key, value]) => (
+								<div>
+									<span className="modal-file-desc-head">{key}</span>
+									<p className="modal-file-desc-val">{value}</p>
+								</div>
+							))
+						)}
+					</div>
 				</div>
 
 				<div className="media-frame-toolbar left-0">
@@ -90,12 +111,11 @@ const DRSModal = ({ onClose, onSubmit }) => {
 					</div>
 				</div>
 			</Modal>
-			{/* <div className="darkBG" onClick={onClose} /> */}
 		</>
 	);
 };
 
-function ImageSelect({ url, selected, onSelect }) {
+function FileSelect({ file, selected, onSelect, type }) {
 	const classes = selected
 		? "attachment save-ready selected details"
 		: "attachment save-ready ";
@@ -104,13 +124,13 @@ function ImageSelect({ url, selected, onSelect }) {
 			<li
 				className={classes}
 				onClick={() => {
-					onSelect(url);
+					onSelect(file);
 				}}
 			>
 				<div className="attachment-preview js--select-attachment type-image subtype-png landscape">
 					<div className="thumbnail">
 						<div className="centered">
-							<img src={url} alt="" />
+							<img src={file.fileUrl} alt="" />
 						</div>
 					</div>
 					<button type="button" className="check" tabindex="-1">
@@ -119,6 +139,25 @@ function ImageSelect({ url, selected, onSelect }) {
 				</div>
 			</li>
 		</>
+	);
+}
+
+function Sidebar(file) {
+	const [details, setDetails] = useState({});
+
+	useEffect(() => {
+		setDetails(file.mods);
+	}, [file]);
+	console.log(file);
+
+	useEffect(() => {
+		console.log("component updated");
+	});
+
+	return details == undefined || details === null ? (
+		<div className="media-sidebar">Select A Image</div>
+	) : (
+		<div className="media-sidebar">Test</div>
 	);
 }
 
