@@ -178,25 +178,6 @@ function FileSelect({ file, selected, onSelect, type }) {
 	);
 }
 
-function Sidebar(file) {
-	const [details, setDetails] = useState({});
-
-	useEffect(() => {
-		setDetails(file.mods);
-	}, [file]);
-	console.log(file);
-
-	useEffect(() => {
-		console.log("component updated");
-	});
-
-	return details == undefined || details === null ? (
-		<div className="media-sidebar">Select A Image</div>
-	) : (
-		<div className="media-sidebar">Test</div>
-	);
-}
-
 function NavButton({ symbol, onClick, disabledCondition }) {
 	return disabledCondition ? (
 		<button
