@@ -1,12 +1,13 @@
 import { useState, useEffect } from "@wordpress/element";
 import { Modal, TextControl } from "@wordpress/components";
 import "./modal.scss";
-import { Button } from "@wordpress/components";
 import { fetchFromFile, fetchFromSearch } from "../DRSApi";
 
 const DRSModal = ({ onClose, onSubmit }) => {
 	const [imageUrl, setImageUrl] = useState("");
 	const [collectionId, setCollectionId] = useState("neu:rx913q686");
+	const [pagination, setPagination] = useState({});
+	const [searchParams, setSearchParams] = useState({});
 	const [file, setFile] = useState({});
 	const [urls, setUrls] = useState([]);
 
@@ -21,11 +22,13 @@ const DRSModal = ({ onClose, onSubmit }) => {
 		setFile(file);
 	}
 
-	console.log(file);
-
 	useEffect(async () => {
 		try {
-			const data = await fetchFromSearch({ collectionId });
+			const data = await fetchFromSearch({ collectionId, searchParams });
+
+			setPagination(data.pagination.table);
+			console.log(data);
+
 			const urlst = Object.keys(data.response.highlighting);
 
 			const requests = [];
@@ -49,7 +52,7 @@ const DRSModal = ({ onClose, onSubmit }) => {
 		} catch (error) {
 			console.log(error);
 		}
-	}, [fetchFromSearch, collectionId]);
+	}, [fetchFromSearch, collectionId, searchParams]);
 	return (
 		<>
 			<Modal
@@ -100,6 +103,30 @@ const DRSModal = ({ onClose, onSubmit }) => {
 				<div className="media-frame-toolbar left-0">
 					<div className="media-toolbar">
 						<div className="media-toolbar-primary search-form">
+							<NavButton
+								symbol={"<"}
+								onClick={(e) => {
+									setSearchParams({
+										...searchParams,
+										page: pagination["current_page"] - 1,
+									});
+								}}
+								disabledCondition={!pagination["first_page?"]}
+							/>
+
+							<p className="padding-top-5 media-button media-button-select button-large">
+								{pagination["current_page"]} of {pagination["num_pages"]}
+							</p>
+							<NavButton
+								symbol={">"}
+								onClick={(e) => {
+									setSearchParams({
+										...searchParams,
+										page: pagination["current_page"] + 1,
+									});
+								}}
+								disabledCondition={!pagination["last_page?"]}
+							/>
 							<button
 								type="button"
 								className="button media-button button-primary button-large media-button-select"
@@ -158,6 +185,26 @@ function Sidebar(file) {
 		<div className="media-sidebar">Select A Image</div>
 	) : (
 		<div className="media-sidebar">Test</div>
+	);
+}
+
+function NavButton({ symbol, onClick, disabledCondition }) {
+	return disabledCondition ? (
+		<button
+			type="button"
+			className="button media-button button-secondary button-large media-button-select"
+			disabled
+		>
+			{symbol}
+		</button>
+	) : (
+		<button
+			type="button"
+			className="button media-button button-secondary button-large media-button-select"
+			onClick={onClick}
+		>
+			{symbol}
+		</button>
 	);
 }
 
