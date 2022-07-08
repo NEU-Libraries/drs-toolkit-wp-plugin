@@ -3,7 +3,7 @@ import { Modal, TextControl } from "@wordpress/components";
 import "./modal.scss";
 import { fetchFromFile, fetchFromSearch } from "../DRSApi";
 
-const DRSModal = ({ onClose, onSubmit }) => {
+const DRSModal = ({ onClose, onSubmit, allowedTypes }) => {
 	const [collectionId, setCollectionId] = useState("neu:rx913q686"); // id of the collection
 	const [pagination, setPagination] = useState({}); // pagination details fetched from the search api
 	const [searchParams, setSearchParams] = useState({ per_page: 20 }); // params to be passed to search api
@@ -15,8 +15,7 @@ const DRSModal = ({ onClose, onSubmit }) => {
 			e.preventDefault(); // restricts reloading
 			const { fileUrl } = await fetchFromFile({
 				fileId: selectedFile.id,
-				format: "Image",
-				fileFormat: "Image",
+				allowedTypes: allowedTypes,
 			});
 			onSubmit(fileUrl);
 			onClose();
@@ -32,7 +31,7 @@ const DRSModal = ({ onClose, onSubmit }) => {
 	useEffect(async () => {
 		try {
 			console.log(searchParams);
-			const data = await fetchFromSearch({ collectionId, searchParams });
+			const data = await fetchFromSearch({ collectionId, searchParams }); // check DRS API
 			setPagination(data.pagination.table);
 
 			const objList = data.response.response.docs; // docs from the returned data
