@@ -12,7 +12,7 @@ import { __ } from "@wordpress/i18n";
 import { useState, useEffect } from "@wordpress/element";
 import { useSelect } from "@wordpress/data";
 import { keyboardReturn } from "@wordpress/icons";
-import axios from "axios";
+import InsertFromDRSNumber from "./InsertFromDRSNumber";
 
 import {
 	MediaUpload,
