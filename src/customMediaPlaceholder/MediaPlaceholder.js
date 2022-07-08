@@ -330,7 +330,11 @@ export function cMediaPlaceholder({
 					{__("Insert from DRS")}
 				</Button>
 				{isDRSInputVisible && (
-					<DRSModal onClose={closeDRSModal} onSubmit={onSelectURL} />
+					<DRSModal
+						onClose={closeDRSModal}
+						onSubmit={onSelectURL}
+						allowedTypes={allowedTypes}
+					/>
 				)}
 			</div>
 		);
