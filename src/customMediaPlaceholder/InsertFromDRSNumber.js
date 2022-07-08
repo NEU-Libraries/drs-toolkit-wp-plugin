@@ -6,6 +6,7 @@ import { __ } from "@wordpress/i18n";
 import { useState, useEffect } from "@wordpress/element";
 import { keyboardReturn } from "@wordpress/icons";
 import { URLPopover } from "@wordpress/block-editor";
+import { fetchFromFile } from "../DRSApi";
 
 /**
  * Parameters passed to fetch from File
@@ -28,28 +29,16 @@ function InsertFromDRSNumber({ allowedTypes, onSubmit, onClose }) {
 	const url = "https://repository.library.northeastern.edu/api/v1/files/";
 
 	useEffect(() => {
-		// TODO : add this to call to DRS Api file
 		const fetchFileFromDRS = async () => {
 			try {
-				const response = await axios.get(url + drsNum);
-				const { data } = response;
-				const dataFormat = data.mods.Format[0].toLowerCase(); // format from the file
-
-				if (allowedTypes.includes(dataFormat)) {
-					if (dataFormat === "image") {
-						// master image cannot be used, since the size is way too big!!!
-						Object.entries(data.content_objects).forEach(([key, value]) => {
-							// using large image
-							if (value.includes("Large")) {
-								setFileUrl(key);
-							}
-						});
-					} else {
-						// For everything else use cannonical object or master file
-						setFileUrl(Object.keys(data.canonical_object)[0]);
-					}
-				} else {
+				const response = await fetchFromFile({
+					fileId: drsNum,
+					allowedTypes: allowedTypes,
+				});
+				if (response.err) {
 					// TODO : display a notice here that the file format is invalid for the allowed type
+				} else {
+					setFileUrl(response.fileUrl);
 				}
 			} catch (error) {
 				console.log(error);
