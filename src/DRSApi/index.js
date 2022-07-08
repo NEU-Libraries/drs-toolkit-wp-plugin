@@ -30,7 +30,10 @@ export async function fetchFromFile({ fileId, allowedTypes }) {
 
 		const dataFormat = data.mods.Format[0].toLowerCase();
 
-		if (allowedTypes.includes(dataFormat)) {
+		if (
+			allowedTypes.includes(dataFormat) ||
+			(allowedTypes.includes("audio") && dataFormat === "sound recording")
+		) {
 			if (dataFormat === "image") {
 				// master image cannot be used, since the size is way too big!!!
 				Object.entries(data.content_objects).forEach(([key, value]) => {
@@ -44,6 +47,8 @@ export async function fetchFromFile({ fileId, allowedTypes }) {
 				fileUrl = Object.keys(data.canonical_object)[0];
 			}
 		} else {
+			console.log(dataFormat);
+			console.log(allowedTypes);
 			console.log("Data format not included in the allowedTypes");
 			err = "not in allowedTypes";
 		}
@@ -77,6 +82,18 @@ export async function fetchFromSearch({ collectionId, searchParams }) {
 			"https://repository.library.northeastern.edu/api/v1/search/" +
 			collectionId +
 			"?";
+
+		/**
+		 *
+		 * searchParams {
+		 * 	key1:val1
+		 * key2:val2
+		 *
+		 * Object.entries
+		 * [
+		 * {key1,val1},{key2,val2}]
+		 * }
+		 */
 
 		searchParams &&
 			Object.entries(searchParams).map(([key, value]) => {
