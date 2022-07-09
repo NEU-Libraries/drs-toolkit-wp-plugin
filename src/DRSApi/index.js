@@ -1,4 +1,14 @@
+/**
+ * @module DRSApi
+ *
+ * This file contains methods to do file and search requests to the DRS Server
+ * There are 2 APIs right now
+ * 1. File - Gets a single file
+ * 2. Search - Gets a collection of files or sub-collection with the given collectionId
+ */
+
 import axios from "axios";
+
 /**
  * Parameters passed to fetch from File
  * @typedef  {Object} FetchFileParams
@@ -22,8 +32,9 @@ import axios from "axios";
  */
 export async function fetchFromFile({ fileId, allowedTypes }) {
 	try {
-		let fileUrl;
-		let err;
+		let fileUrl; // stores the url of the file from the search
+		let err; // error
+
 		const baseUrl = "https://repository.library.northeastern.edu/api/v1/files/";
 		const response = await axios.get(baseUrl + fileId);
 		const { data } = response;
@@ -47,8 +58,6 @@ export async function fetchFromFile({ fileId, allowedTypes }) {
 				fileUrl = Object.keys(data.canonical_object)[0];
 			}
 		} else {
-			console.log(dataFormat);
-			console.log(allowedTypes);
 			console.log("Data format not included in the allowedTypes");
 			err = "not in allowedTypes";
 		}
@@ -83,18 +92,9 @@ export async function fetchFromSearch({ collectionId, searchParams }) {
 			collectionId +
 			"?";
 
-		/**
-		 *
-		 * searchParams {
-		 * 	key1:val1
-		 * key2:val2
-		 *
-		 * Object.entries
-		 * [
-		 * {key1,val1},{key2,val2}]
-		 * }
-		 */
-
+		// short circuiting (&&)
+		// object.entries returns array using key,value pairs from the object passed in
+		// check below for related links
 		searchParams &&
 			Object.entries(searchParams).map(([key, value]) => {
 				baseUrl += key + "=" + value + "?";
@@ -107,3 +107,14 @@ export async function fetchFromSearch({ collectionId, searchParams }) {
 		console.log(error);
 	}
 }
+
+/**
+ * For Short circuiting
+ * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Logical_AND
+ *
+ * Object.entries returns key,value pairs from an object in array format, thus we can iterate using the following format
+ * either map or foreach can be used
+ * map returns a new array where as for each does not
+ *
+ * @see https://www.freecodecamp.org/news/4-main-differences-between-foreach-and-map/
+ */
