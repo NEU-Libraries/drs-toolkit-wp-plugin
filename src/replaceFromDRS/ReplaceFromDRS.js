@@ -1,3 +1,9 @@
+/**
+ * @module ReplaceFromDRS
+ *
+ * This file adds another button to the core blocks an option to replace from DRS
+ */
+
 import { __ } from "@wordpress/i18n";
 import { ToolbarButton } from "@wordpress/components";
 
