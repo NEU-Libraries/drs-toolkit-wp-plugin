@@ -19,6 +19,12 @@ wp.hooks.addFilter(
 	withInsertFromDRS
 );
 
+wp.hooks.addFilter(
+	"editor.MediaReplaceFlow",
+	"drs-tk/replace-media-placeholder",
+	withInsertFromDRS
+);
+
 wp.hooks.addFilter("editor.BlockEdit", "drs-tk/replace-from-drs", withDRS);
 
 wp.hooks.addFilter(
