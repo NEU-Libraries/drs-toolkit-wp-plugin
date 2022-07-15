@@ -1,0 +1,17 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "drs-tk/gallery-carousel",
+	"version": "0.1.0",
+	"title": "Gallery Carousel (DRS)",
+	"category": "media",
+	"icon": "smiley",
+	"description": "Fetches data from collection and displays it",
+	"supports": {
+		"html": false
+	},
+	"textdomain": "drs-tk",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}
