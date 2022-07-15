@@ -46,8 +46,9 @@ export async function fetchFromFile({ fileId, allowedTypes }) {
 			(allowedTypes.includes("audio") && dataFormat === "sound recording")
 		) {
 			if (dataFormat === "image") {
-				// master image cannot be used, since the size is way too big!!!
+				// Object.entries() returns an array of enumerable string-keyed property [key, value] pairs
 				Object.entries(data.content_objects).forEach(([key, value]) => {
+					// master image cannot be used, since the size is way too big!!!
 					// using large image
 					if (value.includes("Large")) {
 						fileUrl = key;
@@ -55,6 +56,7 @@ export async function fetchFromFile({ fileId, allowedTypes }) {
 				});
 			} else {
 				// For everything else use cannonical object or master file
+				// Object.keys(obj) – returns an array of keys
 				fileUrl = Object.keys(data.canonical_object)[0];
 			}
 		} else {

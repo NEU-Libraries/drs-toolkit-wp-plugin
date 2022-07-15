@@ -1,7 +1,7 @@
 import { useState, useEffect } from "@wordpress/element";
 import { Modal, TextControl } from "@wordpress/components";
 import "./modal.scss";
-import { fetchFromFile, fetchFromSearch } from "../DRSApi";
+import { fetchFromFile, fetchFromSearch } from "../api/DRSApi";
 
 const DRSModal = ({ onClose, onSubmit, allowedTypes }) => {
 	const [collectionId, setCollectionId] = useState("neu:rx913q686"); // id of the collection
