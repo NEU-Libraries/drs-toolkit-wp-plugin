@@ -1,5 +1,5 @@
 /**
- * @module ReplaceFromDRS
+ * @module WithDRS
  *
  * This file adds another button to the core blocks an option to replace from DRS
  */
@@ -7,11 +7,12 @@
 import { __ } from "@wordpress/i18n";
 import { ToolbarButton } from "@wordpress/components";
 
-import Modal from "../customMediaPlaceholder/DRSModal";
-
+// destructuring
 const { createHigherOrderComponent } = wp.compose;
 const { BlockControls } = wp.blockEditor;
 const { Fragment } = wp.element;
+
+import Modal from "../../components/DRSModal";
 
 // specify what blocks should contain the replace from drs
 const enableReplaceFromDrsOnBlocks = ["core/image", "core/video", "core/audio"];
@@ -22,14 +23,14 @@ const enableReplaceFromDrsOnBlocks = ["core/image", "core/video", "core/audio"];
  * @see https://developer.wordpress.org/block-editor/reference-guides/filters/block-filters/
  * @see https://reactjs.org/docs/higher-order-components.html
  */
-const withReplaceFromDRS = createHigherOrderComponent((BlockEdit) => {
+const withDRS = createHigherOrderComponent((BlockEdit) => {
 	return (props) => {
 		const { attributes, setAttributes, name } = props;
 		const { isDRSClose } = attributes;
 
 		// if not the required block
 		if (!enableReplaceFromDrsOnBlocks.includes(name))
-			return <BlockEdit {...props} />;
+			return <BlockEdit {...props} />; // passing all the props to child
 		console.log("Okay");
 		return (
 			<Fragment>
@@ -50,6 +51,6 @@ const withReplaceFromDRS = createHigherOrderComponent((BlockEdit) => {
 			</Fragment>
 		);
 	};
-}, "withReplaceFromDRS");
+}, "withDRS");
 
-export default withReplaceFromDRS;
+export default withDRS;
