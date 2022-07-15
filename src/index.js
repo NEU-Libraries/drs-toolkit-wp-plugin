@@ -6,7 +6,6 @@ import Edit from "./edit";
 import save from "./save";
 import metadata from "./block.json";
 import withInsertFromDRS from "./filters/withInsertFromDRS";
-import withDRS from "./filters/withDRS";
 
 registerBlockType(metadata.name, {
 	edit: Edit,
@@ -19,7 +18,11 @@ wp.hooks.addFilter(
 	withInsertFromDRS
 );
 
-wp.hooks.addFilter("editor.BlockEdit", "drs-tk/replace-from-drs", withDRS);
+wp.hooks.addFilter(
+	"editor.MediaReplaceFlow",
+	"drs-tk/replace-media-placeholder",
+	withInsertFromDRS
+);
 
 wp.hooks.addFilter(
 	"media.crossOrigin",
