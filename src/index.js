@@ -5,28 +5,23 @@ import "./style.scss";
 import Edit from "./edit";
 import save from "./save";
 import metadata from "./block.json";
-import cMediaPlaceholder from "./customMediaPlaceholder/MediaPlaceholder";
-import withReplaceFromDRS from "./replaceFromDRS/ReplaceFromDRS";
+import withInsertFromDRS from "./filters/withInsertFromDRS";
 
 registerBlockType(metadata.name, {
 	edit: Edit,
 	save,
 });
 
-function replaceMediaPlaceholder() {
-	return cMediaPlaceholder;
-}
-
 wp.hooks.addFilter(
 	"editor.MediaPlaceholder",
 	"drs-tk/replace-media-placeholder",
-	replaceMediaPlaceholder
+	withInsertFromDRS
 );
 
 wp.hooks.addFilter(
-	"editor.BlockEdit",
-	"drs-tk/replace-from-drs",
-	withReplaceFromDRS
+	"editor.MediaReplaceFlow",
+	"drs-tk/replace-media-placeholder",
+	withInsertFromDRS
 );
 
 wp.hooks.addFilter(

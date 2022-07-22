@@ -1,9 +1,33 @@
+/**
+ * Fetches data from DRS and enables to select files to be displayed on the website
+ */
 import { useState, useEffect } from "@wordpress/element";
 import { Modal, TextControl } from "@wordpress/components";
 import "./modal.scss";
-import { fetchFromFile, fetchFromSearch } from "../DRSApi";
 
-const DRSModal = ({ onClose, onSubmit, allowedTypes }) => {
+import NavButton from "./NavButton";
+import FileSelect from "./FileSelect";
+import { fetchFromFile, fetchFromSearch } from "../api/DRSApi";
+
+/**
+ * Return type for fetch from File
+ * @typedef  {Object} ModalParams
+ * @property {Function} onClose   				- Callback on close
+ * @property {Function} onSubmit                - Callback on submit
+ * @property {Array<String>} allowedTypes       - types allowed or to be fetched
+ * @property {boolean} multiple					- select multiple files?
+ */
+
+/**
+ * Fetches content of specified type from DRS API
+ * Displays it and enables option to select image from file
+ * @param {ModalParams} props
+ * @returns JSX.Element
+ */
+const DRSModal = (
+	{ onClose, onSubmit, allowedTypes = ["image"] },
+	multiple = false
+) => {
 	const [collectionId, setCollectionId] = useState("neu:rx913q686"); // id of the collection
 	const [pagination, setPagination] = useState({}); // pagination details fetched from the search api
 	const [searchParams, setSearchParams] = useState({ per_page: 20 }); // params to be passed to search api
@@ -149,52 +173,5 @@ const DRSModal = ({ onClose, onSubmit, allowedTypes }) => {
 		</>
 	);
 };
-
-function FileSelect({ file, selected, onSelect, type }) {
-	const classes = selected
-		? "attachment save-ready selected details"
-		: "attachment save-ready ";
-	return (
-		<>
-			<li
-				className={classes}
-				onClick={() => {
-					onSelect(file);
-				}}
-			>
-				<div className="attachment-preview js--select-attachment type-image subtype-png landscape">
-					<div className="thumbnail">
-						<div className="centered">
-							<img src={file.thumbnail} alt="" />
-						</div>
-					</div>
-					<button type="button" className="check" tabindex="-1">
-						<span className="media-modal-icon"></span>
-					</button>
-				</div>
-			</li>
-		</>
-	);
-}
-
-function NavButton({ symbol, onClick, disabledCondition }) {
-	return disabledCondition ? (
-		<button
-			type="button"
-			className="button media-button button-secondary button-large media-button-select"
-			disabled
-		>
-			{symbol}
-		</button>
-	) : (
-		<button
-			type="button"
-			className="button media-button button-secondary button-large media-button-select"
-			onClick={onClick}
-		>
-			{symbol}
-		</button>
-	);
-}
 
 export default DRSModal;

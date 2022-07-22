@@ -2491,10 +2491,10 @@ module.exports = {
 
 /***/ }),
 
-/***/ "./src/DRSApi/index.js":
-/*!*****************************!*\
-  !*** ./src/DRSApi/index.js ***!
-  \*****************************/
+/***/ "./src/api/DRSApi/index.js":
+/*!*********************************!*\
+  !*** ./src/api/DRSApi/index.js ***!
+  \*********************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2557,10 +2557,11 @@ async function fetchFromFile(_ref) {
 
     if (allowedTypes.includes(dataFormat) || allowedTypes.includes("audio") && dataFormat === "sound recording") {
       if (dataFormat === "image") {
-        // master image cannot be used, since the size is way too big!!!
+        // Object.entries() returns an array of enumerable string-keyed property [key, value] pairs
         Object.entries(data.content_objects).forEach(_ref2 => {
           let [key, value] = _ref2;
 
+          // master image cannot be used, since the size is way too big!!!
           // using large image
           if (value.includes("Large")) {
             fileUrl = key;
@@ -2568,6 +2569,7 @@ async function fetchFromFile(_ref) {
         });
       } else {
         // For everything else use cannonical object or master file
+        // Object.keys(obj) – returns an array of keys
         fileUrl = Object.keys(data.canonical_object)[0];
       }
     } else {
@@ -2641,10 +2643,10 @@ async function fetchFromSearch(_ref3) {
 
 /***/ }),
 
-/***/ "./src/customMediaPlaceholder/DRSModal.js":
-/*!************************************************!*\
-  !*** ./src/customMediaPlaceholder/DRSModal.js ***!
-  \************************************************/
+/***/ "./src/components/DRSModal.js":
+/*!************************************!*\
+  !*** ./src/components/DRSModal.js ***!
+  \************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2653,20 +2655,44 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _modal_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modal.scss */ "./src/customMediaPlaceholder/modal.scss");
-/* harmony import */ var _DRSApi__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../DRSApi */ "./src/DRSApi/index.js");
+/* harmony import */ var _modal_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modal.scss */ "./src/components/modal.scss");
+/* harmony import */ var _NavButton__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./NavButton */ "./src/components/NavButton.js");
+/* harmony import */ var _FileSelect__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./FileSelect */ "./src/components/FileSelect.js");
+/* harmony import */ var _api_DRSApi__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../api/DRSApi */ "./src/api/DRSApi/index.js");
+
+
+/**
+ * Fetches data from DRS and enables to select files to be displayed on the website
+ */
 
 
 
 
 
 
-const DRSModal = _ref => {
+/**
+ * Return type for fetch from File
+ * @typedef  {Object} ModalParams
+ * @property {Function} onClose   				- Callback on close
+ * @property {Function} onSubmit                - Callback on submit
+ * @property {Array<String>} allowedTypes       - types allowed or to be fetched
+ * @property {boolean} multiple					- select multiple files?
+ */
+
+/**
+ * Fetches content of specified type from DRS API
+ * Displays it and enables option to select image from file
+ * @param {ModalParams} props
+ * @returns JSX.Element
+ */
+
+const DRSModal = function (_ref) {
   let {
     onClose,
     onSubmit,
-    allowedTypes
+    allowedTypes = ["image"]
   } = _ref;
+  let multiple = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   const [collectionId, setCollectionId] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)("neu:rx913q686"); // id of the collection
 
   const [pagination, setPagination] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({}); // pagination details fetched from the search api
@@ -2684,7 +2710,7 @@ const DRSModal = _ref => {
 
       const {
         fileUrl
-      } = await (0,_DRSApi__WEBPACK_IMPORTED_MODULE_3__.fetchFromFile)({
+      } = await (0,_api_DRSApi__WEBPACK_IMPORTED_MODULE_5__.fetchFromFile)({
         fileId: selectedFile.id,
         allowedTypes: allowedTypes
       });
@@ -2702,7 +2728,7 @@ const DRSModal = _ref => {
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(async () => {
     try {
       console.log(searchParams);
-      const data = await (0,_DRSApi__WEBPACK_IMPORTED_MODULE_3__.fetchFromSearch)({
+      const data = await (0,_api_DRSApi__WEBPACK_IMPORTED_MODULE_5__.fetchFromSearch)({
         collectionId,
         searchParams
       }); // check DRS API
@@ -2728,7 +2754,7 @@ const DRSModal = _ref => {
     } catch (error) {
       console.log(error);
     }
-  }, [_DRSApi__WEBPACK_IMPORTED_MODULE_3__.fetchFromSearch, collectionId, searchParams, setUrls]);
+  }, [_api_DRSApi__WEBPACK_IMPORTED_MODULE_5__.fetchFromSearch, collectionId, searchParams, setUrls]);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Modal, {
     className: "media-modal wp-core-ui",
     onRequestClose: onClose,
@@ -2748,7 +2774,7 @@ const DRSModal = _ref => {
     className: "search"
   }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("ul", {
     className: "attachments ui-sortable ui-sortable-disabled "
-  }, urls.map((_file, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(FileSelect, {
+  }, urls.map((_file, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_FileSelect__WEBPACK_IMPORTED_MODULE_4__["default"], {
     file: _file,
     key: index,
     selected: selectedFile.id === _file.id,
@@ -2769,7 +2795,7 @@ const DRSModal = _ref => {
     className: "media-toolbar"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "media-toolbar-primary search-form"
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(NavButton, {
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_NavButton__WEBPACK_IMPORTED_MODULE_3__["default"], {
     symbol: "<",
     onClick: e => {
       console.log("Pressed the button");
@@ -2780,7 +2806,7 @@ const DRSModal = _ref => {
     disabledCondition: !pagination["first_page?"]
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
     className: "padding-top-5 media-button media-button-select button-large"
-  }, pagination["current_page"], " of ", pagination["num_pages"]), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(NavButton, {
+  }, pagination["current_page"], " of ", pagination["num_pages"]), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_NavButton__WEBPACK_IMPORTED_MODULE_3__["default"], {
     symbol: ">",
     onClick: e => {
       setSearchParams({ ...searchParams,
@@ -2795,13 +2821,29 @@ const DRSModal = _ref => {
   }, "Select"))))));
 };
 
-function FileSelect(_ref3) {
+/* harmony default export */ __webpack_exports__["default"] = (DRSModal);
+
+/***/ }),
+
+/***/ "./src/components/FileSelect.js":
+/*!**************************************!*\
+  !*** ./src/components/FileSelect.js ***!
+  \**************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function FileSelect(_ref) {
   let {
     file,
     selected,
     onSelect,
     type
-  } = _ref3;
+  } = _ref;
   const classes = selected ? "attachment save-ready selected details" : "attachment save-ready ";
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", {
     className: classes,
@@ -2826,31 +2868,14 @@ function FileSelect(_ref3) {
   })))));
 }
 
-function NavButton(_ref4) {
-  let {
-    symbol,
-    onClick,
-    disabledCondition
-  } = _ref4;
-  return disabledCondition ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
-    type: "button",
-    className: "button media-button button-secondary button-large media-button-select",
-    disabled: true
-  }, symbol) : (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
-    type: "button",
-    className: "button media-button button-secondary button-large media-button-select",
-    onClick: onClick
-  }, symbol);
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (DRSModal);
+/* harmony default export */ __webpack_exports__["default"] = (FileSelect);
 
 /***/ }),
 
-/***/ "./src/customMediaPlaceholder/InsertFromDRSNumber.js":
-/*!***********************************************************!*\
-  !*** ./src/customMediaPlaceholder/InsertFromDRSNumber.js ***!
-  \***********************************************************/
+/***/ "./src/components/InsertFromDRSNumber.js":
+/*!***********************************************!*\
+  !*** ./src/components/InsertFromDRSNumber.js ***!
+  \***********************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2866,7 +2891,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/keyboard-return.js");
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _DRSApi__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../DRSApi */ "./src/DRSApi/index.js");
+/* harmony import */ var _api_DRSApi__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../api/DRSApi */ "./src/api/DRSApi/index.js");
 
  // wordpress imports
 
@@ -2906,7 +2931,7 @@ function InsertFromDRSNumber(_ref) {
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     const fetchFileFromDRS = async () => {
       try {
-        const response = await (0,_DRSApi__WEBPACK_IMPORTED_MODULE_5__.fetchFromFile)({
+        const response = await (0,_api_DRSApi__WEBPACK_IMPORTED_MODULE_5__.fetchFromFile)({
           fileId: drsNum,
           allowedTypes: allowedTypes
         });
@@ -2957,435 +2982,36 @@ function InsertFromDRSNumber(_ref) {
 
 /***/ }),
 
-/***/ "./src/customMediaPlaceholder/MediaPlaceholder.js":
-/*!********************************************************!*\
-  !*** ./src/customMediaPlaceholder/MediaPlaceholder.js ***!
-  \********************************************************/
+/***/ "./src/components/NavButton.js":
+/*!*************************************!*\
+  !*** ./src/components/NavButton.js ***!
+  \*************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "cMediaPlaceholder": function() { return /* binding */ cMediaPlaceholder; }
-/* harmony export */ });
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash */ "lodash");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/keyboard-return.js");
-/* harmony import */ var _InsertFromDRSNumber__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./InsertFromDRSNumber */ "./src/customMediaPlaceholder/InsertFromDRSNumber.js");
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var _DRSModal__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./DRSModal */ "./src/customMediaPlaceholder/DRSModal.js");
 
 
-
-
-
-
-
-
-
-
-
-
-const InsertFromURLPopover = _ref => {
+function NavButton(_ref) {
   let {
-    src,
-    onChange,
-    onSubmit,
-    onClose
+    symbol,
+    onClick,
+    disabledCondition
   } = _ref;
-  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_7__.URLPopover, {
-    onClose: onClose
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("form", {
-    className: "block-editor-media-placeholder__url-input-form",
-    onSubmit: onSubmit
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
-    className: "block-editor-media-placeholder__url-input-field",
-    type: "text",
-    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("URL"),
-    placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Paste or type URL"),
-    onChange: onChange,
-    value: src
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
-    className: "block-editor-media-placeholder__url-input-submit-button",
-    icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_9__["default"],
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Apply"),
-    type: "submit"
-  })));
-};
-
-function cMediaPlaceholder(_ref2) {
-  let {
-    value = {},
-    allowedTypes,
-    className,
-    icon,
-    labels = {},
-    mediaPreview,
-    notices,
-    isAppender,
-    accept,
-    addToGallery,
-    multiple = false,
-    handleUpload = true,
-    disableDropZone,
-    disableMediaButtons,
-    onError,
-    onSelect,
-    onCancel,
-    onSelectURL,
-    onDoubleClick,
-    onFilesPreUpload = lodash__WEBPACK_IMPORTED_MODULE_1__.noop,
-    onHTMLDrop = lodash__WEBPACK_IMPORTED_MODULE_1__.noop,
-    children,
-    mediaLibraryButton,
-    placeholder,
-    style
-  } = _ref2;
-  const mediaUpload = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_5__.useSelect)(select => {
-    const {
-      getSettings
-    } = select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_7__.store);
-    return getSettings().mediaUpload;
-  }, []);
-  const [src, setSrc] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)("");
-  const [isURLInputVisible, setIsURLInputVisible] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-  const [isDRSInputVisible, setIsDRSInputVisible] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-  const [isDRSNumberVisible, setIsDRSNumberVisble] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    var _value$src;
-
-    setSrc((_value$src = value === null || value === void 0 ? void 0 : value.src) !== null && _value$src !== void 0 ? _value$src : "");
-  }, [value === null || value === void 0 ? void 0 : value.src]);
-
-  const onlyAllowsImages = () => {
-    if (!allowedTypes || allowedTypes.length === 0) {
-      return false;
-    }
-
-    return allowedTypes.every(allowedType => allowedType === "image" || allowedType.startsWith("image/"));
-  };
-
-  const onChangeSrc = event => {
-    setSrc(event.target.value);
-  };
-
-  const openURLInput = () => {
-    setIsURLInputVisible(true);
-  };
-
-  const closeURLInput = () => {
-    setIsURLInputVisible(false);
-  };
-
-  const openDRSModal = () => {
-    setIsDRSInputVisible(true);
-  };
-
-  const closeDRSModal = () => {
-    setIsDRSInputVisible(false);
-  };
-
-  const openDRSNumberInput = () => {
-    setIsDRSNumberVisble(true);
-  };
-
-  const closeDRSNumberInput = () => {
-    setIsDRSNumberVisble(false);
-  };
-
-  const onSubmitSrc = event => {
-    event.preventDefault();
-
-    if (src && onSelectURL) {
-      onSelectURL(src);
-      closeURLInput();
-    }
-  };
-
-  const onFilesUpload = files => {
-    if (!handleUpload) {
-      return onSelect(files);
-    }
-
-    onFilesPreUpload(files);
-    let setMedia;
-
-    if (multiple) {
-      if (addToGallery) {
-        // Since the setMedia function runs multiple times per upload group
-        // and is passed newMedia containing every item in its group each time, we must
-        // filter out whatever this upload group had previously returned to the
-        // gallery before adding and returning the image array with replacement newMedia
-        // values.
-        // Define an array to store urls from newMedia between subsequent function calls.
-        let lastMediaPassed = [];
-
-        setMedia = newMedia => {
-          // Remove any images this upload group is responsible for (lastMediaPassed).
-          // Their replacements are contained in newMedia.
-          const filteredMedia = (value !== null && value !== void 0 ? value : []).filter(item => {
-            // If Item has id, only remove it if lastMediaPassed has an item with that id.
-            if (item.id) {
-              return !lastMediaPassed.some( // Be sure to convert to number for comparison.
-              _ref3 => {
-                let {
-                  id
-                } = _ref3;
-                return Number(id) === Number(item.id);
-              });
-            } // Compare transient images via .includes since gallery may append extra info onto the url.
-
-
-            return !lastMediaPassed.some(_ref4 => {
-              let {
-                urlSlug
-              } = _ref4;
-              return item.url.includes(urlSlug);
-            });
-          }); // Return the filtered media array along with newMedia.
-
-          onSelect(filteredMedia.concat(newMedia)); // Reset lastMediaPassed and set it with ids and urls from newMedia.
-
-          lastMediaPassed = newMedia.map(media => {
-            // Add everything up to '.fileType' to compare via .includes.
-            const cutOffIndex = media.url.lastIndexOf(".");
-            const urlSlug = media.url.slice(0, cutOffIndex);
-            return {
-              id: media.id,
-              urlSlug
-            };
-          });
-        };
-      } else {
-        setMedia = onSelect;
-      }
-    } else {
-      setMedia = _ref5 => {
-        let [media] = _ref5;
-        return onSelect(media);
-      };
-    }
-
-    mediaUpload({
-      allowedTypes,
-      filesList: files,
-      onFileChange: setMedia,
-      onError
-    });
-  };
-
-  const onUpload = event => {
-    onFilesUpload(event.target.files);
-  };
-
-  const defaultRenderPlaceholder = content => {
-    let {
-      instructions,
-      title
-    } = labels;
-
-    if (!mediaUpload && !onSelectURL) {
-      instructions = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("To edit this block, you need permission to upload media.");
-    }
-
-    if (instructions === undefined || title === undefined) {
-      const typesAllowed = allowedTypes !== null && allowedTypes !== void 0 ? allowedTypes : [];
-      const [firstAllowedType] = typesAllowed;
-      const isOneType = 1 === typesAllowed.length;
-      const isAudio = isOneType && "audio" === firstAllowedType;
-      const isImage = isOneType && "image" === firstAllowedType;
-      const isVideo = isOneType && "video" === firstAllowedType;
-
-      if (instructions === undefined && mediaUpload) {
-        instructions = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Upload a media file or pick one from your media library.");
-
-        if (isAudio) {
-          instructions = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Upload an audio file, pick one from your media library, or add one with a URL.");
-        } else if (isImage) {
-          instructions = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Upload an image file, pick one from your media library, or add one with a URL.");
-        } else if (isVideo) {
-          instructions = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Upload a video file, pick one from your media library, or add one with a URL.");
-        }
-      }
-
-      if (title === undefined) {
-        title = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Media");
-
-        if (isAudio) {
-          title = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Audio");
-        } else if (isImage) {
-          title = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Image");
-        } else if (isVideo) {
-          title = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Video");
-        }
-      }
-    }
-
-    const placeholderClassName = classnames__WEBPACK_IMPORTED_MODULE_2___default()("block-editor-media-placeholder", className, {
-      "is-appender": isAppender
-    });
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Placeholder, {
-      icon: icon,
-      label: title,
-      instructions: instructions,
-      className: placeholderClassName,
-      notices: notices,
-      onDoubleClick: onDoubleClick,
-      preview: mediaPreview,
-      style: style
-    }, content, children);
-  };
-
-  const renderPlaceholder = placeholder !== null && placeholder !== void 0 ? placeholder : defaultRenderPlaceholder;
-
-  const renderDropZone = () => {
-    if (disableDropZone) {
-      return null;
-    }
-
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.DropZone, {
-      onFilesDrop: onFilesUpload,
-      onHTMLDrop: onHTMLDrop
-    });
-  };
-
-  const renderCancelLink = () => {
-    return onCancel && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
-      className: "block-editor-media-placeholder__cancel-button",
-      title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Cancel"),
-      variant: "link",
-      onClick: onCancel
-    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Cancel"));
-  };
-
-  const renderUrlSelectionUI = () => {
-    return onSelectURL && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      className: "block-editor-media-placeholder__url-input-container"
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
-      className: "block-editor-media-placeholder__button",
-      onClick: openURLInput,
-      isPressed: isURLInputVisible,
-      variant: "tertiary"
-    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Insert from URL")), isURLInputVisible && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InsertFromURLPopover, {
-      src: src,
-      onChange: onChangeSrc,
-      onSubmit: onSubmitSrc,
-      onClose: closeURLInput
-    }));
-  };
-
-  const renderDRSSelectionUI = () => {
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      className: "block-editor-media-placeholder__url-input-container"
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
-      className: "block-editor-media-placeholder__button",
-      onClick: openDRSModal,
-      isPressed: isDRSInputVisible,
-      variant: "tertiary"
-    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Insert from DRS")), isDRSInputVisible && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_DRSModal__WEBPACK_IMPORTED_MODULE_8__["default"], {
-      onClose: closeDRSModal,
-      onSubmit: onSelectURL,
-      allowedTypes: allowedTypes
-    }));
-  };
-
-  const renderDRSInputUI = () => {
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      className: "block-editor-media-placeholder__url-input-container"
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
-      className: "block-editor-media-placeholder__button",
-      onClick: openDRSNumberInput,
-      isPressed: isDRSNumberVisible,
-      variant: "tertiary"
-    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Insert from DRS Number")), isDRSNumberVisible && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_InsertFromDRSNumber__WEBPACK_IMPORTED_MODULE_6__["default"], {
-      allowedTypes: allowedTypes,
-      onClose: closeDRSNumberInput,
-      onSubmit: onSelectURL
-    }));
-  };
-
-  const renderMediaUploadChecked = () => {
-    const defaultButton = _ref6 => {
-      let {
-        open
-      } = _ref6;
-      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
-        variant: "tertiary",
-        onClick: () => {
-          open();
-        }
-      }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Media Library"));
-    };
-
-    const libraryButton = mediaLibraryButton !== null && mediaLibraryButton !== void 0 ? mediaLibraryButton : defaultButton;
-    const uploadMediaLibraryButton = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_7__.MediaUpload, {
-      addToGallery: addToGallery,
-      gallery: multiple && onlyAllowsImages(),
-      multiple: multiple,
-      onSelect: onSelect,
-      allowedTypes: allowedTypes,
-      value: Array.isArray(value) ? value.map(_ref7 => {
-        let {
-          id
-        } = _ref7;
-        return id;
-      }) : value.id,
-      render: libraryButton
-    });
-
-    if (mediaUpload && isAppender) {
-      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, renderDropZone(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.FormFileUpload, {
-        onChange: onUpload,
-        accept: accept,
-        multiple: multiple,
-        render: _ref8 => {
-          let {
-            openFileDialog
-          } = _ref8;
-          const content = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
-            variant: "primary",
-            className: classnames__WEBPACK_IMPORTED_MODULE_2___default()("block-editor-media-placeholder__button", "block-editor-media-placeholder__upload-button"),
-            onClick: openFileDialog
-          }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Upload")), uploadMediaLibraryButton, renderUrlSelectionUI(), renderDRSInputUI(), renderCancelLink());
-          return renderPlaceholder(content);
-        }
-      }));
-    }
-
-    if (mediaUpload) {
-      const content = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, renderDropZone(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.FormFileUpload, {
-        variant: "primary",
-        className: classnames__WEBPACK_IMPORTED_MODULE_2___default()("block-editor-media-placeholder__button", "block-editor-media-placeholder__upload-button"),
-        onChange: onUpload,
-        accept: accept,
-        multiple: multiple
-      }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)("Upload")), uploadMediaLibraryButton, renderUrlSelectionUI(), renderDRSSelectionUI(), renderDRSInputUI(), renderCancelLink());
-      return renderPlaceholder(content);
-    }
-
-    return renderPlaceholder(uploadMediaLibraryButton);
-  };
-
-  if (disableMediaButtons) {
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_7__.MediaUploadCheck, null, renderDropZone());
-  }
-
-  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_7__.MediaUploadCheck, {
-    fallback: renderPlaceholder(renderUrlSelectionUI())
-  }, renderMediaUploadChecked());
+  return disabledCondition ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+    type: "button",
+    className: "button media-button button-secondary button-large media-button-select",
+    disabled: true
+  }, symbol) : (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+    type: "button",
+    className: "button media-button button-secondary button-large media-button-select",
+    onClick: onClick
+  }, symbol);
 }
-/* harmony default export */ __webpack_exports__["default"] = (cMediaPlaceholder);
+
+/* harmony default export */ __webpack_exports__["default"] = (NavButton);
 
 /***/ }),
 
@@ -3446,6 +3072,93 @@ function Edit() {
 
 /***/ }),
 
+/***/ "./src/filters/withInsertFromDRS/index.js":
+/*!************************************************!*\
+  !*** ./src/filters/withInsertFromDRS/index.js ***!
+  \************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _components_InsertFromDRSNumber__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/InsertFromDRSNumber */ "./src/components/InsertFromDRSNumber.js");
+/* harmony import */ var _components_DRSModal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../components/DRSModal */ "./src/components/DRSModal.js");
+
+
+
+
+const {
+  createHigherOrderComponent
+} = wp.compose;
+
+
+const withInsertFromDRS = createHigherOrderComponent(Element => {
+  return function (props) {
+    const {
+      allowedTypes,
+      onSelectURL
+    } = props;
+    const [isDRSInputVisible, setIsDRSInputVisible] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+    const [isDRSNumberVisible, setIsDRSNumberVisble] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+
+    const openDRSModal = () => {
+      setIsDRSInputVisible(true);
+    };
+
+    const closeDRSModal = () => {
+      setIsDRSInputVisible(false);
+    };
+
+    const openDRSNumberInput = () => {
+      setIsDRSNumberVisble(true);
+    };
+
+    const closeDRSNumberInput = () => {
+      setIsDRSNumberVisble(false);
+    };
+
+    function renderDRSInputUI() {
+      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+        className: "block-editor-media-placeholder__url-input-container"
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+        className: "block-editor-media-placeholder__button",
+        onClick: openDRSNumberInput,
+        isPressed: isDRSNumberVisible,
+        variant: "tertiary"
+      }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Insert from DRS Number")), isDRSNumberVisible && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_InsertFromDRSNumber__WEBPACK_IMPORTED_MODULE_3__["default"], {
+        allowedTypes: allowedTypes,
+        onClose: closeDRSNumberInput,
+        onSubmit: onSelectURL
+      }));
+    }
+
+    function renderDRSSelectionUI() {
+      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+        className: "block-editor-media-placeholder__url-input-container"
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+        className: "block-editor-media-placeholder__button",
+        onClick: openDRSModal,
+        isPressed: isDRSInputVisible,
+        variant: "tertiary"
+      }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Insert from DRS")), isDRSInputVisible && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_DRSModal__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        onClose: closeDRSModal,
+        onSubmit: onSelectURL,
+        allowedTypes: allowedTypes
+      }));
+    }
+
+    return !props.multiple ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(Element, props, renderDRSSelectionUI(), renderDRSInputUI()) : (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(Element, props);
+  };
+}, "withInsertFromDRS");
+/* harmony default export */ __webpack_exports__["default"] = (withInsertFromDRS);
+
+/***/ }),
+
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
@@ -3460,9 +3173,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _edit__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./edit */ "./src/edit.js");
 /* harmony import */ var _save__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./save */ "./src/save.js");
 /* harmony import */ var _block_json__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./block.json */ "./src/block.json");
-/* harmony import */ var _customMediaPlaceholder_MediaPlaceholder__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./customMediaPlaceholder/MediaPlaceholder */ "./src/customMediaPlaceholder/MediaPlaceholder.js");
-/* harmony import */ var _replaceFromDRS_ReplaceFromDRS__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./replaceFromDRS/ReplaceFromDRS */ "./src/replaceFromDRS/ReplaceFromDRS.js");
-
+/* harmony import */ var _filters_withInsertFromDRS__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./filters/withInsertFromDRS */ "./src/filters/withInsertFromDRS/index.js");
 
 
 
@@ -3473,13 +3184,8 @@ __webpack_require__.r(__webpack_exports__);
   edit: _edit__WEBPACK_IMPORTED_MODULE_2__["default"],
   save: _save__WEBPACK_IMPORTED_MODULE_3__["default"]
 });
-
-function replaceMediaPlaceholder() {
-  return _customMediaPlaceholder_MediaPlaceholder__WEBPACK_IMPORTED_MODULE_5__["default"];
-}
-
-wp.hooks.addFilter("editor.MediaPlaceholder", "drs-tk/replace-media-placeholder", replaceMediaPlaceholder);
-wp.hooks.addFilter("editor.BlockEdit", "drs-tk/replace-from-drs", _replaceFromDRS_ReplaceFromDRS__WEBPACK_IMPORTED_MODULE_6__["default"]);
+wp.hooks.addFilter("editor.MediaPlaceholder", "drs-tk/replace-media-placeholder", _filters_withInsertFromDRS__WEBPACK_IMPORTED_MODULE_5__["default"]);
+wp.hooks.addFilter("editor.MediaReplaceFlow", "drs-tk/replace-media-placeholder", _filters_withInsertFromDRS__WEBPACK_IMPORTED_MODULE_5__["default"]);
 wp.hooks.addFilter("media.crossOrigin", "drs-tk/with-cors-media", // The callback accepts a second `mediaSrc` argument which references
 // the url to actual foreign media, useful if you want to decide
 // the value of crossOrigin based upon it.
@@ -3490,84 +3196,6 @@ wp.hooks.addFilter("media.crossOrigin", "drs-tk/with-cors-media", // The callbac
 
   return crossOrigin;
 });
-
-/***/ }),
-
-/***/ "./src/replaceFromDRS/ReplaceFromDRS.js":
-/*!**********************************************!*\
-  !*** ./src/replaceFromDRS/ReplaceFromDRS.js ***!
-  \**********************************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _customMediaPlaceholder_DRSModal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../customMediaPlaceholder/DRSModal */ "./src/customMediaPlaceholder/DRSModal.js");
-
-
-/**
- * @module ReplaceFromDRS
- *
- * This file adds another button to the core blocks an option to replace from DRS
- */
-
-
-
-const {
-  createHigherOrderComponent
-} = wp.compose;
-const {
-  BlockControls
-} = wp.blockEditor;
-const {
-  Fragment
-} = wp.element; // specify what blocks should contain the replace from drs
-
-const enableReplaceFromDrsOnBlocks = ["core/image", "core/video", "core/audio"];
-/**
- * Higher order component to add replace from DRS to the specified blocks
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/filters/block-filters/
- * @see https://reactjs.org/docs/higher-order-components.html
- */
-
-const withReplaceFromDRS = createHigherOrderComponent(BlockEdit => {
-  return props => {
-    const {
-      attributes,
-      setAttributes,
-      name
-    } = props;
-    const {
-      isDRSClose
-    } = attributes; // if not the required block
-
-    if (!enableReplaceFromDrsOnBlocks.includes(name)) return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(BlockEdit, props);
-    console.log("Okay");
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(BlockEdit, props), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(BlockControls, {
-      group: "other"
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.ToolbarButton, {
-      onClick: () => setAttributes({
-        isDRSClose: true
-      })
-    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Replace from DRS"))), isDRSClose && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_customMediaPlaceholder_DRSModal__WEBPACK_IMPORTED_MODULE_3__["default"], {
-      onClose: () => {
-        setAttributes({
-          isDRSClose: false
-        });
-      },
-      onSubmit: url => setAttributes({
-        url
-      })
-    }));
-  };
-}, "withReplaceFromDRS");
-/* harmony default export */ __webpack_exports__["default"] = (withReplaceFromDRS);
 
 /***/ }),
 
@@ -3620,77 +3248,10 @@ function save() {
 
 /***/ }),
 
-/***/ "./node_modules/classnames/index.js":
-/*!******************************************!*\
-  !*** ./node_modules/classnames/index.js ***!
-  \******************************************/
-/***/ (function(module, exports) {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-  Copyright (c) 2018 Jed Watson.
-  Licensed under the MIT License (MIT), see
-  http://jedwatson.github.io/classnames
-*/
-/* global define */
-
-(function () {
-	'use strict';
-
-	var hasOwn = {}.hasOwnProperty;
-
-	function classNames() {
-		var classes = [];
-
-		for (var i = 0; i < arguments.length; i++) {
-			var arg = arguments[i];
-			if (!arg) continue;
-
-			var argType = typeof arg;
-
-			if (argType === 'string' || argType === 'number') {
-				classes.push(arg);
-			} else if (Array.isArray(arg)) {
-				if (arg.length) {
-					var inner = classNames.apply(null, arg);
-					if (inner) {
-						classes.push(inner);
-					}
-				}
-			} else if (argType === 'object') {
-				if (arg.toString === Object.prototype.toString) {
-					for (var key in arg) {
-						if (hasOwn.call(arg, key) && arg[key]) {
-							classes.push(key);
-						}
-					}
-				} else {
-					classes.push(arg.toString());
-				}
-			}
-		}
-
-		return classes.join(' ');
-	}
-
-	if ( true && module.exports) {
-		classNames.default = classNames;
-		module.exports = classNames;
-	} else if (true) {
-		// register as 'classnames', consistent with npm package name
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function () {
-			return classNames;
-		}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	} else {}
-}());
-
-
-/***/ }),
-
-/***/ "./src/customMediaPlaceholder/modal.scss":
-/*!***********************************************!*\
-  !*** ./src/customMediaPlaceholder/modal.scss ***!
-  \***********************************************/
+/***/ "./src/components/modal.scss":
+/*!***********************************!*\
+  !*** ./src/components/modal.scss ***!
+  \***********************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -3726,17 +3287,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "lodash":
-/*!*************************!*\
-  !*** external "lodash" ***!
-  \*************************/
-/***/ (function(module) {
-
-"use strict";
-module.exports = window["lodash"];
-
-/***/ }),
-
 /***/ "@wordpress/block-editor":
 /*!*************************************!*\
   !*** external ["wp","blockEditor"] ***!
@@ -3767,17 +3317,6 @@ module.exports = window["wp"]["blocks"];
 
 "use strict";
 module.exports = window["wp"]["components"];
-
-/***/ }),
-
-/***/ "@wordpress/data":
-/*!******************************!*\
-  !*** external ["wp","data"] ***!
-  \******************************/
-/***/ (function(module) {
-
-"use strict";
-module.exports = window["wp"]["data"];
 
 /***/ }),
 

@@ -6,7 +6,7 @@ import { __ } from "@wordpress/i18n";
 import { useState, useEffect } from "@wordpress/element";
 import { keyboardReturn } from "@wordpress/icons";
 import { URLPopover } from "@wordpress/block-editor";
-import { fetchFromFile } from "../DRSApi";
+import { fetchFromFile } from "../api/DRSApi";
 
 /**
  * Parameters passed to fetch from File
