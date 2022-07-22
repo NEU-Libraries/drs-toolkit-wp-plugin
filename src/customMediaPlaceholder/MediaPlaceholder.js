@@ -12,7 +12,7 @@ import { __ } from "@wordpress/i18n";
 import { useState, useEffect } from "@wordpress/element";
 import { useSelect } from "@wordpress/data";
 import { keyboardReturn } from "@wordpress/icons";
-import axios from "axios";
+import InsertFromDRSNumber from "./InsertFromDRSNumber";
 
 import {
 	MediaUpload,
@@ -46,83 +46,6 @@ const InsertFromURLPopover = ({ src, onChange, onSubmit, onClose }) => (
 		</form>
 	</URLPopover>
 );
-
-const InsertFromDRSNumber = ({ allowedTypes, onSubmit, onClose }) => {
-	const [imageUrl, setImageUrl] = useState("");
-	const [drsNum, setDrsNum] = useState(344525);
-	const [submitForm, setSubmitForm] = useState(false);
-	const url = "https://repository.library.northeastern.edu/api/v1/files/neu:";
-
-	const typesAllowed = allowedTypes ?? [];
-	let format = "";
-
-	const [firstAllowedType] = typesAllowed;
-	const isOneType = 1 === typesAllowed.length;
-	const isAudio = isOneType && "audio" === firstAllowedType;
-	const isImage = isOneType && "image" === firstAllowedType;
-	const isVideo = isOneType && "video" === firstAllowedType;
-
-	if (isAudio) format = "Audio";
-	else if (isImage) format = "Image";
-	else if (isVideo) format = "Video";
-
-	useEffect(() => {
-		const fetchObject = async () => {
-			try {
-				const response = await axios.get(url + drsNum.toString());
-				const { data } = response;
-				const dataFormat = data.mods.Format[0];
-
-				if (dataFormat === format) {
-					Object.entries(data.content_objects).forEach(([key, value]) => {
-						if (value.includes("Large")) {
-							setImageUrl(key);
-						}
-					});
-				}
-			} catch (error) {
-				console.log(error);
-			}
-		};
-
-		if (submitForm) fetchObject();
-	}, [axios, drsNum, setImageUrl, submitForm]);
-
-	const submitDRSForm = (e) => {
-		e.preventDefault();
-		setSubmitForm(true);
-	};
-
-	useEffect(() => {
-		onSubmit(imageUrl);
-	}, [imageUrl]);
-
-	return (
-		<URLPopover onClose={onClose}>
-			<form
-				className="block-editor-media-placeholder__url-input-form"
-				onSubmit={(e) => submitDRSForm(e)}
-			>
-				<input
-					className="block-editor-media-placeholder__url-input-field"
-					type="text"
-					aria-label={__("URL")}
-					placeholder={__("Paste or type DRS Number")}
-					onChange={(e) => {
-						setDrsNum(e.target.value);
-					}}
-					value={drsNum}
-				/>
-				<Button
-					className="block-editor-media-placeholder__url-input-submit-button"
-					icon={keyboardReturn}
-					label={__("Apply")}
-					type="submit"
-				/>
-			</form>
-		</URLPopover>
-	);
-};
 
 export function cMediaPlaceholder({
 	value = {},
@@ -407,7 +330,11 @@ export function cMediaPlaceholder({
 					{__("Insert from DRS")}
 				</Button>
 				{isDRSInputVisible && (
-					<DRSModal onClose={closeDRSModal} onSubmit={onSelectURL} />
+					<DRSModal
+						onClose={closeDRSModal}
+						onSubmit={onSelectURL}
+						allowedTypes={allowedTypes}
+					/>
 				)}
 			</div>
 		);

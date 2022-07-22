@@ -28,3 +28,17 @@ wp.hooks.addFilter(
 	"drs-tk/replace-from-drs",
 	withReplaceFromDRS
 );
+
+wp.hooks.addFilter(
+	"media.crossOrigin",
+	"drs-tk/with-cors-media",
+	// The callback accepts a second `mediaSrc` argument which references
+	// the url to actual foreign media, useful if you want to decide
+	// the value of crossOrigin based upon it.
+	(crossOrigin, mediaSrc) => {
+		if (mediaSrc.startsWith("https://repository.library.northeastern.edu")) {
+			return "use-credentials";
+		}
+		return crossOrigin;
+	}
+);

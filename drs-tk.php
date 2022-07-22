@@ -16,3 +16,13 @@ function ceres_drs_tk_block_init()
     register_block_type(__DIR__ . '/build');
 }
 add_action('init', 'ceres_drs_tk_block_init');
+
+add_action(
+    'rest_api_init',
+    function () {
+        add_action('rest_pre_serve_request', function () {
+            header('Access-Control-Allow-Origin: *');
+        });
+    },
+    15
+);
