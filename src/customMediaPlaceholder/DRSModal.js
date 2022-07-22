@@ -1,55 +1,66 @@
 import { useState, useEffect } from "@wordpress/element";
 import { Modal, TextControl } from "@wordpress/components";
 import "./modal.scss";
-import { Button } from "@wordpress/components";
 import { fetchFromFile, fetchFromSearch } from "../DRSApi";
 
 const DRSModal = ({ onClose, onSubmit }) => {
-	const [imageUrl, setImageUrl] = useState("");
-	const [collectionId, setCollectionId] = useState("neu:rx913q686");
-	const [file, setFile] = useState({});
-	const [urls, setUrls] = useState([]);
+	const [collectionId, setCollectionId] = useState("neu:rx913q686"); // id of the collection
+	const [pagination, setPagination] = useState({}); // pagination details fetched from the search api
+	const [searchParams, setSearchParams] = useState({ per_page: 20 }); // params to be passed to search api
+	const [selectedFile, setSelectedFile] = useState({});
+	const [urls, setUrls] = useState([]); // store the files list
 
-	const submitURL = (e) => {
-		e.preventDefault();
-		if (imageUrl !== "") onSubmit(imageUrl);
-		onClose();
-	};
-
-	function onSelectFile(file) {
-		setImageUrl(file.fileUrl);
-		setFile(file);
+	async function submitURL(e) {
+		try {
+			e.preventDefault(); // restricts reloading
+			const { fileUrl } = await fetchFromFile({
+				fileId: selectedFile.id,
+				format: "Image",
+				fileFormat: "Image",
+			});
+			onSubmit(fileUrl);
+			onClose();
+		} catch (error) {
+			console.log(error);
+		}
 	}
 
-	console.log(file);
+	function onSelectFile(file) {
+		setSelectedFile(file);
+	}
 
 	useEffect(async () => {
 		try {
-			const data = await fetchFromSearch({ collectionId });
-			const urlst = Object.keys(data.response.highlighting);
+			console.log(searchParams);
+			const data = await fetchFromSearch({ collectionId, searchParams });
+			setPagination(data.pagination.table);
 
-			const requests = [];
-			for (let i = 0; i < urlst.length; i++) {
-				requests.push(
-					fetchFromFile({
-						format: "Image",
-						fileId: urlst[i],
-						fileFormat: "Image",
-					})
-				);
-			}
+			const objList = data.response.response.docs; // docs from the returned data
 
-			const responses = await Promise.allSettled(requests);
 			const result = [];
-			responses.forEach((item) => {
-				if (item.status === "rejected") return;
-				result.push(item.value);
+			// iterating over the objList and adding to url list
+			objList.forEach((object) => {
+				if (object.active_fedora_model_ssi === "CoreFile") {
+					const fileData = {};
+					fileData.description = object.abstract_tesim;
+					fileData.creator = object.creator_ssi;
+					fileData.date = object.date_ssi;
+					fileData.id = object.id;
+					fileData.thumbnail =
+						"https://repository.library.northeastern.edu/" +
+						object.fields_thumbnail_list_tesim[
+							object.fields_thumbnail_list_tesim.length - 1
+						];
+					result.push(fileData);
+				}
 			});
+			console.log(result);
+
 			setUrls(result);
 		} catch (error) {
 			console.log(error);
 		}
-	}, [fetchFromSearch, collectionId]);
+	}, [fetchFromSearch, collectionId, searchParams, setUrls]);
 	return (
 		<>
 			<Modal
@@ -75,7 +86,7 @@ const DRSModal = ({ onClose, onSubmit }) => {
 								<FileSelect
 									file={_file}
 									key={index}
-									selected={_file.fileUrl == imageUrl}
+									selected={selectedFile.id === _file.id}
 									onSelect={onSelectFile}
 									type="Image"
 								/>
@@ -84,10 +95,10 @@ const DRSModal = ({ onClose, onSubmit }) => {
 					</div>
 					<div className="media-sidebar">
 						<h2>File Details</h2>
-						{file.mods == undefined || file.mods == null ? (
+						{selectedFile == undefined || selectedFile == null ? (
 							<p>Select a image</p>
 						) : (
-							Object.entries(file.mods).map(([key, value]) => (
+							Object.entries(selectedFile).map(([key, value]) => (
 								<div>
 									<span className="modal-file-desc-head">{key}</span>
 									<p className="modal-file-desc-val">{value}</p>
@@ -100,6 +111,31 @@ const DRSModal = ({ onClose, onSubmit }) => {
 				<div className="media-frame-toolbar left-0">
 					<div className="media-toolbar">
 						<div className="media-toolbar-primary search-form">
+							<NavButton
+								symbol={"<"}
+								onClick={(e) => {
+									console.log("Pressed the button");
+									setSearchParams({
+										...searchParams,
+										page: pagination["current_page"] - 1,
+									});
+								}}
+								disabledCondition={!pagination["first_page?"]}
+							/>
+
+							<p className="padding-top-5 media-button media-button-select button-large">
+								{pagination["current_page"]} of {pagination["num_pages"]}
+							</p>
+							<NavButton
+								symbol={">"}
+								onClick={(e) => {
+									setSearchParams({
+										...searchParams,
+										page: pagination["current_page"] + 1,
+									});
+								}}
+								disabledCondition={!pagination["last_page?"]}
+							/>
 							<button
 								type="button"
 								className="button media-button button-primary button-large media-button-select"
@@ -130,7 +166,7 @@ function FileSelect({ file, selected, onSelect, type }) {
 				<div className="attachment-preview js--select-attachment type-image subtype-png landscape">
 					<div className="thumbnail">
 						<div className="centered">
-							<img src={file.fileUrl} alt="" />
+							<img src={file.thumbnail} alt="" />
 						</div>
 					</div>
 					<button type="button" className="check" tabindex="-1">
@@ -142,22 +178,23 @@ function FileSelect({ file, selected, onSelect, type }) {
 	);
 }
 
-function Sidebar(file) {
-	const [details, setDetails] = useState({});
-
-	useEffect(() => {
-		setDetails(file.mods);
-	}, [file]);
-	console.log(file);
-
-	useEffect(() => {
-		console.log("component updated");
-	});
-
-	return details == undefined || details === null ? (
-		<div className="media-sidebar">Select A Image</div>
+function NavButton({ symbol, onClick, disabledCondition }) {
+	return disabledCondition ? (
+		<button
+			type="button"
+			className="button media-button button-secondary button-large media-button-select"
+			disabled
+		>
+			{symbol}
+		</button>
 	) : (
-		<div className="media-sidebar">Test</div>
+		<button
+			type="button"
+			className="button media-button button-secondary button-large media-button-select"
+			onClick={onClick}
+		>
+			{symbol}
+		</button>
 	);
 }
 
