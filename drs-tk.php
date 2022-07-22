@@ -11,11 +11,11 @@
  * @package           NEU CERES
  */
 
-function ceres_drs_tk_block_init()
+function drs_tk_gallery_carousel_init()
 {
-    register_block_type(__DIR__ . '/build');
+    register_block_type(__DIR__ . '/build/gallery-carousel');
 }
-add_action('init', 'ceres_drs_tk_block_init');
+add_action('init', 'drs_tk_gallery_carousel_init');
 
 add_action(
     'rest_api_init',
