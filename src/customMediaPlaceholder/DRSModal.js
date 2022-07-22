@@ -1,76 +1,121 @@
 import { useState, useEffect } from "@wordpress/element";
+import { Modal, TextControl } from "@wordpress/components";
 import "./modal.scss";
+import { Button } from "@wordpress/components";
+import { fetchFromFile, fetchFromSearch } from "../DRSApi";
 
-const Modal = ({ onClose, onSubmit }) => {
+const DRSModal = ({ onClose, onSubmit }) => {
 	const [imageUrl, setImageUrl] = useState("");
-	const urls = [
-		"https://cdn.vox-cdn.com/thumbor/23dWY86RxkdF7ZegvfnY8gFjR7s=/1400x1400/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/19157811/ply0947_fall_reviews_2019_tv_anime.jpg",
-		"https://thecinemaholic.com/wp-content/uploads/2021/01/nezuu-e1638963260523.jpg",
-		"https://static.marriedgames.com.br/82bae879-naruto-classico-e-naruto-shippuden-fillers.jpg",
-		"https://img3.hulu.com/user/v3/artwork/9c91ffa3-dc20-48bf-8bc5-692e37c76d88?base_image_bucket_name=image_manager&base_image=e1731d26-8837-40b9-85e4-1ad0a95014a8&size=550x825&format=jpeg",
-	];
+	const [collectionId, setCollectionId] = useState("neu:rx913q686");
+	const [file, setFile] = useState({});
+	const [urls, setUrls] = useState([]);
 
 	const submitURL = (e) => {
 		e.preventDefault();
 		if (imageUrl !== "") onSubmit(imageUrl);
 		onClose();
 	};
+
+	function onSelectFile(file) {
+		setImageUrl(file.fileUrl);
+		setFile(file);
+	}
+
+	console.log(file);
+
+	useEffect(async () => {
+		try {
+			const data = await fetchFromSearch({ collectionId });
+			const urlst = Object.keys(data.response.highlighting);
+
+			const requests = [];
+			for (let i = 0; i < urlst.length; i++) {
+				requests.push(
+					fetchFromFile({
+						format: "Image",
+						fileId: urlst[i],
+						fileFormat: "Image",
+					})
+				);
+			}
+
+			const responses = await Promise.allSettled(requests);
+			const result = [];
+			responses.forEach((item) => {
+				if (item.status === "rejected") return;
+				result.push(item.value);
+			});
+			setUrls(result);
+		} catch (error) {
+			console.log(error);
+		}
+	}, [fetchFromSearch, collectionId]);
 	return (
 		<>
-			<div className="darkBG" onClick={onClose} />
-			<div className="centered">
-				<div className="media-modal wp-core-ui modal-half">
-					<button className="media-modal-close" onClick={onClose}>
-						<span className="media-modal-icon"></span>
-					</button>
-					<div className="media-modal-content">
-						<div className="media-frame mode-select wp-core-ui hide-menu">
-							<div className="media-frame-title">
-								<h1>DRS Items</h1>
+			<Modal
+				className="media-modal wp-core-ui"
+				onRequestClose={onClose}
+				title="DRS Items"
+			>
+				<div className="media-frame-content left-0 border-top-none">
+					<div className="attachments-browser">
+						<div className=" media-toolbar ">
+							<div className="media-toolbar-secondary ">
+								<TextControl
+									label="Collection Id"
+									value={collectionId}
+									onChange={(value) => setCollectionId(value)}
+									className="search"
+								></TextControl>
 							</div>
 						</div>
-						<div className="media-frame-content left-0">
-							<div className="attachments-browser">
-								<div className="media-toolbar">
-									<div className="media-toolbar-secondary">
-										<h2 className="media-attachments-filter-heading filter-heading">
-											Filter
-										</h2>
-									</div>
+
+						<ul className="attachments ui-sortable ui-sortable-disabled ">
+							{urls.map((_file, index) => (
+								<FileSelect
+									file={_file}
+									key={index}
+									selected={_file.fileUrl == imageUrl}
+									onSelect={onSelectFile}
+									type="Image"
+								/>
+							))}
+						</ul>
+					</div>
+					<div className="media-sidebar">
+						<h2>File Details</h2>
+						{file.mods == undefined || file.mods == null ? (
+							<p>Select a image</p>
+						) : (
+							Object.entries(file.mods).map(([key, value]) => (
+								<div>
+									<span className="modal-file-desc-head">{key}</span>
+									<p className="modal-file-desc-val">{value}</p>
 								</div>
-								<ul className="attachments ui-sortable ui-sortable-disabled">
-									{urls.map((tempUrl, index) => (
-										<ImageSelect
-											url={tempUrl}
-											key={index}
-											selected={tempUrl == imageUrl}
-											onSelect={setImageUrl}
-										/>
-									))}
-								</ul>
-							</div>
-						</div>
-						<div className="media-frame-toolbar left-0">
-							<div className="media-toolbar">
-								<div className="media-toolbar-primary search-form">
-									<button
-										type="button"
-										className="button media-button button-primary button-large media-button-select"
-										onClick={(e) => submitURL(e)}
-									>
-										Select
-									</button>
-								</div>
-							</div>
+							))
+						)}
+					</div>
+				</div>
+
+				<div className="media-frame-toolbar left-0">
+					<div className="media-toolbar">
+						<div className="media-toolbar-primary search-form">
+							<button
+								type="button"
+								className="button media-button button-primary button-large media-button-select"
+								onClick={(e) => submitURL(e)}
+							>
+								Select
+							</button>
 						</div>
 					</div>
 				</div>
-			</div>
+			</Modal>
 		</>
 	);
 };
 
-function ImageSelect({ url, selected, onSelect }) {
+function FileSelect({ file, selected, onSelect, type }) {
 	const classes = selected
 		? "attachment save-ready selected details"
 		: "attachment save-ready ";
@@ -79,13 +124,13 @@ function ImageSelect({ url, selected, onSelect }) {
 			<li
 				className={classes}
 				onClick={() => {
-					onSelect(url);
+					onSelect(file);
 				}}
 			>
 				<div className="attachment-preview js--select-attachment type-image subtype-png landscape">
 					<div className="thumbnail">
 						<div className="centered">
-							<img src={url} alt="" />
+							<img src={file.fileUrl} alt="" />
 						</div>
 					</div>
 					<button type="button" className="check" tabindex="-1">
@@ -97,4 +142,23 @@ function ImageSelect({ url, selected, onSelect }) {
 	);
 }
 
-export default Modal;
+function Sidebar(file) {
+	const [details, setDetails] = useState({});
+
+	useEffect(() => {
+		setDetails(file.mods);
+	}, [file]);
+	console.log(file);
+
+	useEffect(() => {
+		console.log("component updated");
+	});
+
+	return details == undefined || details === null ? (
+		<div className="media-sidebar">Select A Image</div>
+	) : (
+		<div className="media-sidebar">Test</div>
+	);
+}
+
+export default DRSModal;
