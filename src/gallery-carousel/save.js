@@ -12,7 +12,7 @@ import { __ } from "@wordpress/i18n";
  * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
  */
 import { useBlockProps } from "@wordpress/block-editor";
-import ImageGallery from "react-image-gallery";
+import "./style.scss";
 
 /**
  * The save function defines the way in which the different attributes should
@@ -24,17 +24,35 @@ import ImageGallery from "react-image-gallery";
  * @return {WPElement} Element to render.
  */
 export default function save({ attributes }) {
-	const { gallery_images } = attributes;
-	console.log(gallery_images);
+	const { gallery_images, pauseOnHover, direction } = attributes;
+	let blockProps = useBlockProps.save({
+		className: ["scrollable-gallery", pauseOnHover ? "pause-on-hover" : null],
+		style: {
+			"--total-container-transform": ((gallery_images.length + 1) * 32)
+				.toString()
+				.concat("vw"),
+		},
+	});
 
 	return (
-		<div {...useBlockProps.save()}>
-			{gallery_images ? (
-				// <ImageGallery items={gallery_images} />
-				gallery_images.map((imgUrl) => <img src={imgUrl.original} />)
-			) : (
-				<p>nothing here</p>
-			)}
+		<div {...blockProps}>
+			<figure
+				className="scrollable-gallery-inner-container"
+				data-direction={direction}
+			>
+				{gallery_images.map((image, index) => (
+					<img key={index} src={image.url} data-mediaid={image.id} />
+				))}
+
+				{gallery_images.map((image, index) => (
+					<img
+						className="duplicate-image"
+						key={index}
+						src={image.url}
+						data-mediaid={image.id}
+					/>
+				))}
+			</figure>
 		</div>
 	);
 }
