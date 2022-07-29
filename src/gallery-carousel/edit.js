@@ -16,9 +16,17 @@ import { Placeholder, Button } from "@wordpress/components";
 import { image } from "@wordpress/icons";
 import { useState } from "@wordpress/element";
 
-import ImageGallery from "react-image-gallery";
+import { BlockControls, InspectorControls } from "@wordpress/block-editor";
+import {
+	ToggleControl,
+	PanelBody,
+	ToolbarButton,
+	ToolbarGroup,
+	SelectControl,
+} from "@wordpress/components";
 
 import DRSModal from "../components/DRSModal";
+import "./editor.scss";
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -37,15 +45,16 @@ import DRSModal from "../components/DRSModal";
  */
 export default function Edit({ attributes, setAttributes }) {
 	const [showDRSModal, setShowDRSModal] = useState(false);
-	const { gallery_images } = attributes;
+	const { gallery_images, pauseOnHover, direction } = attributes;
 
 	function onSelectImages(images) {
 		const contentImages = images.map((imgUrl) => ({
-			original: imgUrl,
-			thumbnail: imgUrl,
+			url: imgUrl,
 		}));
 		setAttributes({ gallery_images: contentImages });
 	}
+
+	const hasImages = gallery_images.length > 0;
 
 	function renderDRSButton() {
 		return (
@@ -70,8 +79,38 @@ export default function Edit({ attributes, setAttributes }) {
 
 	return (
 		<div {...useBlockProps()}>
-			{gallery_images && gallery_images.length > 0 ? (
-				<ImageGallery items={gallery_images} />
+			{hasImages ? (
+				<>
+					<InspectorControls>
+						<PanelBody title={__("General", "scrollable-gallery")} initialOpen>
+							<ToggleControl
+								checked={pauseOnHover}
+								label={__("Pause on hover", "scrollable-gallery")}
+								onChange={() =>
+									setAttributes({
+										pauseOnHover: !pauseOnHover,
+									})
+								}
+							/>
+							<SelectControl
+								value={direction}
+								options={[
+									{ value: "right", label: "Right" },
+									{ value: "left", label: "Left" },
+								]}
+								label={__("Direction", "scrollable-gallery")}
+								onChange={(newDirection) =>
+									setAttributes({ direction: newDirection })
+								}
+							/>
+						</PanelBody>
+					</InspectorControls>
+					<figure className="scrollable-gallery-inner-container">
+						{gallery_images.map((image, index) => (
+							<img key={index} src={image.url} />
+						))}
+					</figure>
+				</>
 			) : (
 				<Placeholder
 					icon={image}
