@@ -1,0 +1,16 @@
+.wp-block-drs-tk-gallery-carousel {
+	.scrollable-gallery-inner-container {
+		display: flex;
+		flex-direction: row;
+		overflow-x: scroll;
+		margin: 0;
+
+		img {
+			object-fit: contain;
+			width: 40%;
+			&:not(:last-child) {
+				margin-right: 16px;
+			}
+		}
+	}
+}

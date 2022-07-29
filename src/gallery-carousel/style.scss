@@ -1,1 +1,57 @@
-@import "~react-image-gallery/styles/scss/image-gallery.scss";
+.wp-block-drs-tk-gallery-carousel {
+	.scrollable-gallery {
+		overflow: hidden !important;
+		position: relative !important;
+
+		.scrollable-gallery-inner-container {
+			display: flex !important;
+			flex-direction: row;
+			overflow-x: scroll;
+			margin: 0;
+
+			&[data-direction="left"] {
+				animation: marquee-left 5s linear infinite !important;
+			}
+
+			&[data-direction="right"] {
+				animation: marquee-right 5s linear infinite !important;
+			}
+
+			img {
+				object-fit: contain !important;
+				width: 40% !important;
+				&:not(:last-child) {
+					margin-right: 16px !important;
+				}
+			}
+		}
+
+		&.pause-on-hover {
+			.scrollable-gallery-inner-container:hover {
+				animation-play-state: paused !important;
+			}
+		}
+	}
+
+	@keyframes marquee-left {
+		0% {
+			transform: translateX(0%) !important;
+		}
+		100% {
+			transform: translateX(
+				calc((-1 * var(--total-container-transform)))
+			) !important;
+		}
+	}
+
+	@keyframes marquee-right {
+		0% {
+			transform: translateX(
+				calc(-1 * var(--total-container-transform))
+			) !important;
+		}
+		100% {
+			transform: translateX(0%) !important;
+		}
+	}
+}
