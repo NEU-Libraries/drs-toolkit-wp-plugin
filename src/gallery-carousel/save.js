@@ -5,14 +5,7 @@
  */
 import { __ } from "@wordpress/i18n";
 
-/**
- * React hook that is used to mark the block wrapper element.
- * It provides all the necessary props like the class name.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
- */
 import { useBlockProps } from "@wordpress/block-editor";
-import "./style.scss";
 
 /**
  * The save function defines the way in which the different attributes should
@@ -24,35 +17,83 @@ import "./style.scss";
  * @return {WPElement} Element to render.
  */
 export default function save({ attributes }) {
-	const { gallery_images, pauseOnHover, direction } = attributes;
+	const {
+		images,
+		imageCrop,
+		autoplay,
+		pauseOnHover,
+		arrows,
+		dots,
+		speed,
+		effect,
+		linkTo,
+		target,
+		adaptiveHeight,
+	} = attributes;
+
 	let blockProps = useBlockProps.save({
-		className: ["scrollable-gallery", pauseOnHover ? "pause-on-hover" : null],
-		style: {
-			"--total-container-transform": ((gallery_images.length + 1) * 32)
-				.toString()
-				.concat("vw"),
-		},
+		className: imageCrop ? "is-cropped" : "",
+		"data-autoplay": autoplay,
+		"data-speed": speed,
+		"data-effect": effect,
+		"data-arrows": arrows,
+		"data-dots": dots,
 	});
 
-	return (
-		<div {...blockProps}>
-			<figure
-				className="scrollable-gallery-inner-container"
-				data-direction={direction}
-			>
-				{gallery_images.map((image, index) => (
-					<img key={index} src={image.url} data-mediaid={image.id} />
-				))}
+	// v2.0
+	if (adaptiveHeight)
+		blockProps = { ...blockProps, "data-adaptiveHeight": adaptiveHeight };
+	if (pauseOnHover)
+		blockProps = { ...blockProps, "data-pauseOnHover": pauseOnHover };
 
-				{gallery_images.map((image, index) => (
+	return (
+		<ul {...blockProps}>
+			{images.map((image) => {
+				let href;
+
+				switch (linkTo) {
+					case "media":
+						href = image.url;
+						break;
+					case "attachment":
+						href = image.link;
+						break;
+					case "url":
+						href = image.link;
+						break;
+				}
+
+				const img = (
 					<img
-						className="duplicate-image"
-						key={index}
 						src={image.url}
-						data-mediaid={image.id}
+						alt={image.alt}
+						data-id={image.id}
+						data-link={image.link}
+						className={image.id ? `wp-image-${image.id}` : null}
 					/>
-				))}
-			</figure>
-		</div>
+				);
+
+				return (
+					<li key={image.id || image.url} className="blocks-gallery-item">
+						<figure>
+							{href ? (
+								<a
+									href={href}
+									target={target ? "_blank" : "_self"}
+									rel="noopener"
+								>
+									{img}
+								</a>
+							) : (
+								img
+							)}
+							{image.caption && image.caption.length > 0 && (
+								<figcaption>{image.caption}</figcaption>
+							)}
+						</figure>
+					</li>
+				);
+			})}
+		</ul>
 	);
 }
