@@ -1,16 +1,268 @@
-.wp-block-drs-tk-gallery-carousel {
-	.scrollable-gallery-inner-container {
+/**
+ * The following styles get applied inside the editor only.
+ *
+ */
+
+.editor-styles-wrapper {
+	.wp-block-drs-tk-gallery-carousel {
 		display: flex;
-		flex-direction: row;
-		overflow-x: scroll;
+		flex-wrap: wrap;
+		list-style-type: none;
+		padding-left: 0;
+		padding-right: 0;
+		column-gap: 16px;
+		&.block-editor-media-placeholder {
+			padding-left: 20px;
+			padding-right: 20px;
+		}
+
+		// Allow gallery items to go edge to edge.
 		margin: 0;
 
-		img {
-			object-fit: contain;
-			width: 40%;
-			&:not(:last-child) {
-				margin-right: 16px;
+		.blocks-gallery-image,
+		.blocks-gallery-item {
+			margin: 8px 0;
+			display: flex;
+			flex-grow: 1;
+			flex-direction: column;
+			justify-content: center;
+			position: relative;
+
+			figure {
+				margin: 0;
+				height: 100%;
+
+				// IE doesn't support flex so omit that.
+				@supports (position: sticky) {
+					display: flex;
+					align-items: flex-end;
+					justify-content: flex-start;
+				}
+			}
+
+			img {
+				display: block;
+				max-width: 100%;
+				height: auto;
+			}
+
+			// IE doesn't handle cropping, so we need an explicit width here.
+			img {
+				width: 100%;
+
+				// IE11 doesn't read rules inside this query. They are applied only to modern browsers.
+				@supports (position: sticky) {
+					width: auto;
+				}
+			}
+
+			figcaption {
+				position: absolute;
+				bottom: 0;
+				right: 0;
+				left: 0;
+				max-height: 100%;
+				overflow: auto;
+				padding: 40px 10px 5px;
+				color: #fff;
+				text-align: center;
+				font-size: 13px;
+				background: linear-gradient(
+					0deg,
+					rgba($color: #000, $alpha: 0.7) 0,
+					rgba($color: #000, $alpha: 0.3) 60%,
+					transparent
+				);
+
+				img {
+					display: inline;
+				}
+			}
+			div.rich-text {
+				position: absolute;
+				top: 0;
+				right: 0;
+				left: 0;
+				max-height: 100%;
+				overflow: auto;
+				padding: 5px 10px 20px;
+				color: #fff;
+				text-align: center;
+				font-size: 13px;
+				background: linear-gradient(
+					180deg,
+					rgba($color: #000, $alpha: 0.7) 0,
+					rgba($color: #000, $alpha: 0.3) 60%,
+					transparent
+				);
+			}
+		}
+
+		// Cropped
+		&.is-cropped .blocks-gallery-image,
+		&.is-cropped .blocks-gallery-item {
+			a,
+			img {
+				// IE11 doesn't support object-fit, so just make sure images aren't skewed.
+				// The following rules are for all browsers.
+				width: 100%;
+
+				// IE11 doesn't read rules inside this query. They are applied only to modern browsers.
+				@supports (position: sticky) {
+					height: 100%;
+					flex: 1;
+					object-fit: cover;
+				}
+			}
+		}
+
+		// Responsive fallback value, 2 columns
+		& .blocks-gallery-image,
+		& .blocks-gallery-item {
+			width: calc(100% / 2 - 16px);
+		}
+
+		// Make the "Add new Gallery item" button full-width (so it always appears
+		// below other items).
+		.blocks-gallery-item {
+			&.has-add-item-button {
+				width: 100%;
+			}
+		}
+
+		// Apply max-width to floated items that have no intrinsic width
+		[data-align="left"] &,
+		[data-align="right"] &,
+		&.alignleft,
+		&.alignright {
+			max-width: 636px / 2;
+			width: 100%;
+		}
+	}
+}
+
+/* editor */
+
+// Override the default list style type _only in the editor_
+// to avoid :not() selector specificity issues.
+// See https://github.com/WordPress/gutenberg/pull/10358
+ul.wp-block-gallery li {
+	list-style-type: none;
+}
+
+.blocks-gallery-item {
+	// Hide the focus outline that otherwise briefly appears when selecting a block.
+	figure:not(.is-selected):focus {
+		outline: none;
+	}
+
+	.is-selected {
+		outline: 4px solid theme(primary);
+	}
+
+	&.is-transient img {
+		/*@include loading_fade;*/
+	}
+
+	.editor-rich-text {
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+		max-height: 100%;
+		overflow-y: auto;
+	}
+
+	.editor-rich-text figcaption:not([data-is-placeholder-visible="true"]) {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.is-selected .editor-rich-text {
+		// IE calculates this incorrectly, so leave it to modern browsers.
+		@supports (position: sticky) {
+			right: 0;
+			left: 0;
+			margin-top: -4px;
+		}
+
+		// Override negative margins so this toolbar isn't hidden by overflow. Overflow is needed for long captions.
+		.editor-rich-text__inline-toolbar {
+			top: 0;
+		}
+
+		// Make extra space for the inline toolbar.
+		.editor-rich-text__tinymce {
+			padding-top: 48px;
+		}
+	}
+
+	.components-form-file-upload,
+	.components-button.block-library-gallery-add-item-button {
+		width: 100%;
+		height: 100%;
+	}
+
+	.components-button.block-library-gallery-add-item-button {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		box-shadow: none;
+		border: none;
+		border-radius: 0;
+		min-height: 100px;
+
+		& .dashicon {
+			margin-top: 10px;
+		}
+
+		&:hover,
+		&:focus {
+			border: 1px solid #999;
+		}
+	}
+
+	.editor-rich-text .editor-rich-text__tinymce {
+		a {
+			color: #fff;
+		}
+
+		&:focus a[data-mce-selected] {
+			color: rgba(0, 0, 0, 0.2);
+		}
+	}
+}
+
+.wp-block-drs-tk-gallery-carousel {
+	.block-library-gallery-item__inline-menu {
+		padding: 2px;
+		position: absolute;
+		top: -2px;
+		right: -2px;
+		background-color: theme(primary);
+		display: inline-flex;
+		z-index: z-index(".block-library-gallery-item__inline-menu");
+
+		.components-button,
+		.components-button.is-destructive {
+			&:hover,
+			&:focus {
+				color: #000;
 			}
 		}
 	}
+}
+
+.blocks-gallery-item__remove {
+	padding: 0;
+
+	&.components-button:focus {
+		color: inherit;
+	}
+}
+
+.blocks-gallery-item .components-spinner {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
