@@ -13,20 +13,5 @@
 	"textdomain": "drs-tk",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
-	"style": "file:./style-index.css",
-	"attributes": {
-		"gallery_images": {
-			"type": "array",
-			"default": []
-		},
-		"pauseOnHover": {
-			"type": "boolean",
-			"default": false
-		},
-		"direction": {
-			"type": "string",
-			"default": "left",
-			"enum": ["left", "right"]
-		}
-	}
+	"style": "file:./style-index.css"
 }
