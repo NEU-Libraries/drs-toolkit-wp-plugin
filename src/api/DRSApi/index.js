@@ -47,20 +47,15 @@ export async function fetchFromFile({ fileId, allowedTypes }) {
 		) {
 			if (dataFormat === "image") {
 				// Object.entries() returns an array of enumerable string-keyed property [key, value] pairs
-				Object.entries(data.content_objects).forEach(([key, value]) => {
-					// master image cannot be used, since the size is way too big!!!
-					// using large image
-					if (value.includes("Large")) {
-						fileUrl = key;
-					}
-				});
+				const thumbnails = Object.keys(data.thumbnails);
+				fileUrl = thumbnails[thumbnails.length - 1];
 			} else {
 				// For everything else use cannonical object or master file
 				// Object.keys(obj) – returns an array of keys
 				fileUrl = Object.keys(data.canonical_object)[0];
 			}
 		} else {
-			console.log("Data format not included in the allowedTypes");
+			console.log("Data format not included in the allowedTypes", dataFormat);
 			err = "not in allowedTypes";
 		}
 
