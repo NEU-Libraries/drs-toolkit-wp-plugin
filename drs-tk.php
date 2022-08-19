@@ -11,11 +11,37 @@
  * @package           NEU CERES
  */
 
-function ceres_drs_tk_block_init()
+function drs_tk_gallery_carousel_init()
 {
-    register_block_type(__DIR__ . '/build');
+    register_block_type(__DIR__ . '/build/gallery-carousel');
 }
-add_action('init', 'ceres_drs_tk_block_init');
+add_action('init', 'drs_tk_gallery_carousel_init');
+
+wp_register_style(
+    'slick',
+    plugins_url('slick/css/slick.css', __FILE__),
+    [],
+    filemtime(plugin_dir_path(__FILE__) . 'slick/css/slick.css')
+);
+wp_enqueue_style('slick');
+
+wp_register_script(
+    'slick',
+    plugins_url('slick/js/slick.min.js', __FILE__),
+    ['jquery'],
+    filemtime(plugin_dir_path(__FILE__) . 'slick/js/slick.min.js'),
+    true
+);
+wp_enqueue_script('slick');
+
+wp_register_script(
+    'drs-tk-gallery-carousel-blocks-frontend',
+    plugins_url('slick/js/frontend.js', __FILE__),
+    ['jquery'],
+    filemtime(plugin_dir_path(__FILE__) . 'slick/js/frontend.js'),
+    true
+);
+wp_enqueue_script('drs-tk-gallery-carousel-blocks-frontend');
 
 add_action(
     'rest_api_init',

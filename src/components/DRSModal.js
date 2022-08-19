@@ -24,32 +24,59 @@ import { fetchFromFile, fetchFromSearch } from "../api/DRSApi";
  * @param {ModalParams} props
  * @returns JSX.Element
  */
-const DRSModal = (
-	{ onClose, onSubmit, allowedTypes = ["image"] },
-	multiple = false
-) => {
+const DRSModal = ({
+	onClose,
+	onSubmit,
+	allowedTypes = ["image"],
+	multiple = false,
+}) => {
+	console.log(multiple);
 	const [collectionId, setCollectionId] = useState("neu:rx913q686"); // id of the collection
 	const [pagination, setPagination] = useState({}); // pagination details fetched from the search api
 	const [searchParams, setSearchParams] = useState({ per_page: 20 }); // params to be passed to search api
-	const [selectedFile, setSelectedFile] = useState({});
+	const [selectedFile, setSelectedFile] = multiple
+		? useState([])
+		: useState({});
 	const [urls, setUrls] = useState([]); // store the files list
 
 	async function submitURL(e) {
 		try {
 			e.preventDefault(); // restricts reloading
-			const { fileUrl } = await fetchFromFile({
-				fileId: selectedFile.id,
-				allowedTypes: allowedTypes,
-			});
-			onSubmit(fileUrl);
-			onClose();
+			// for a single file
+			if (!multiple) {
+				const { fileUrl } = await fetchFromFile({
+					fileId: selectedFile.id,
+					allowedTypes: allowedTypes,
+				});
+				onSubmit(fileUrl);
+				onClose();
+			} else {
+				// for gallery
+				const fetchFromFileArr = selectedFile.map((tempFile) =>
+					fetchFromFile({ fileId: tempFile.id, allowedTypes })
+				);
+
+				const result = await Promise.all(fetchFromFileArr);
+				const fileUrls = result.map((file) => file.fileUrl);
+				console.log(fileUrls);
+				onSubmit(fileUrls);
+				onClose();
+			}
 		} catch (error) {
 			console.log(error);
 		}
 	}
 
+	// what to do when the file is selected
 	function onSelectFile(file) {
-		setSelectedFile(file);
+		multiple ? setSelectedFile([...selectedFile, file]) : setSelectedFile(file);
+	}
+
+	// check if image is selected
+	function isSelected(file) {
+		return multiple
+			? selectedFile.some((tempFile) => tempFile.id === file.id)
+			: selectedFile.id === file.id;
 	}
 
 	useEffect(async () => {
@@ -84,6 +111,7 @@ const DRSModal = (
 			console.log(error);
 		}
 	}, [fetchFromSearch, collectionId, searchParams, setUrls]);
+
 	return (
 		<>
 			<Modal
@@ -109,26 +137,28 @@ const DRSModal = (
 								<FileSelect
 									file={_file}
 									key={index}
-									selected={selectedFile.id === _file.id}
+									selected={isSelected(_file)}
 									onSelect={onSelectFile}
-									type="Image"
 								/>
 							))}
 						</ul>
 					</div>
-					<div className="media-sidebar">
-						<h2>File Details</h2>
-						{selectedFile == undefined || selectedFile == null ? (
-							<p>Select a image</p>
-						) : (
-							Object.entries(selectedFile).map(([key, value]) => (
-								<div>
-									<span className="modal-file-desc-head">{key}</span>
-									<p className="modal-file-desc-val">{value}</p>
-								</div>
-							))
-						)}
-					</div>
+					{/* show only in single components */}
+					{!multiple && (
+						<div className="media-sidebar">
+							<h2>File Details</h2>
+							{selectedFile == undefined || selectedFile == null ? (
+								<p>Select a image</p>
+							) : (
+								Object.entries(selectedFile).map(([key, value]) => (
+									<div>
+										<span className="modal-file-desc-head">{key}</span>
+										<p className="modal-file-desc-val">{value}</p>
+									</div>
+								))
+							)}
+						</div>
+					)}
 				</div>
 
 				<div className="media-frame-toolbar left-0">
