@@ -7,8 +7,6 @@ import save from "./save";
 import metadata from "./block.json";
 import withInsertFromDRS from "./filters/withInsertFromDRS";
 
-require("./admin");
-
 registerBlockType(metadata.name, {
 	edit: Edit,
 	save,
