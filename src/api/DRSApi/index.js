@@ -38,17 +38,23 @@ export async function fetchFromFile({ fileId, allowedTypes }) {
 		const baseUrl = "https://repository.library.northeastern.edu/api/v1/files/";
 		const response = await axios.get(baseUrl + fileId);
 		const { data } = response;
+		const permittedTypes = ["image", "audio", "video"];
 
-		const dataFormat = data.mods.Format[0].toLowerCase();
+		const dataFormat = permittedTypes.filter(
+			(ele) => data.mods.Format[0].toLowerCase().indexOf(ele) !== -1
+		)[0];
 
-		if (
-			allowedTypes.includes(dataFormat) ||
-			(allowedTypes.includes("audio") && dataFormat === "sound recording")
-		) {
+		if (allowedTypes.includes(dataFormat)) {
 			if (dataFormat === "image") {
 				// Object.entries() returns an array of enumerable string-keyed property [key, value] pairs
-				const thumbnails = Object.keys(data.thumbnails);
-				fileUrl = thumbnails[thumbnails.length - 1];
+				// Object.entries(data.content_objects).forEach(([key, value]) => {
+				// 	// master image cannot be used, since the size is way too big!!!
+				// 	// using large image
+				// 	if (value.includes("Large")) {
+				// 		fileUrl = key;
+				// 	}
+				// });
+				fileUrl = data.thumbnails[data.thumbnails.length - 1];
 			} else {
 				// For everything else use cannonical object or master file
 				// Object.keys(obj) – returns an array of keys

@@ -8,6 +8,7 @@ import "./modal.scss";
 import NavButton from "./NavButton";
 import FileSelect from "./FileSelect";
 import { fetchFromFile, fetchFromSearch } from "../api/DRSApi";
+import api from "@wordpress/api";
 
 /**
  * Return type for fetch from File
@@ -24,20 +25,18 @@ import { fetchFromFile, fetchFromSearch } from "../api/DRSApi";
  * @param {ModalParams} props
  * @returns JSX.Element
  */
-const DRSModal = ({
-	onClose,
-	onSubmit,
-	allowedTypes = ["image"],
-	multiple = false,
-}) => {
-	console.log(multiple);
-	const [collectionId, setCollectionId] = useState("neu:rx913q686"); // id of the collection
+const DRSModal = (
+	{ onClose, onSubmit, allowedTypes = ["image"] },
+	multiple = false
+) => {
+	const [collectionId, setCollectionId] = useState(""); // id of the collection
 	const [pagination, setPagination] = useState({}); // pagination details fetched from the search api
 	const [searchParams, setSearchParams] = useState({ per_page: 20 }); // params to be passed to search api
 	const [selectedFile, setSelectedFile] = multiple
 		? useState([])
 		: useState({});
 	const [urls, setUrls] = useState([]); // store the files list
+	const [isAPILoaded, setIsAPILoaded] = useState(false);
 
 	async function submitURL(e) {
 		try {
@@ -78,6 +77,22 @@ const DRSModal = ({
 			? selectedFile.some((tempFile) => tempFile.id === file.id)
 			: selectedFile.id === file.id;
 	}
+
+	useEffect(async () => {
+		try {
+			api.loadPromise.then(() => {
+				const settings = new api.models.Settings();
+				if (!isAPILoaded) {
+					settings.fetch().then((response) => {
+						setCollectionId(response["ceres_drstk_plugin_collection_id"]);
+						setIsAPILoaded(true);
+					});
+				}
+			});
+		} catch (error) {
+			console.log(error);
+		}
+	}, [isAPILoaded]);
 
 	useEffect(async () => {
 		try {
