@@ -25,10 +25,12 @@ import api from "@wordpress/api";
  * @param {ModalParams} props
  * @returns JSX.Element
  */
-const DRSModal = (
-	{ onClose, onSubmit, allowedTypes = ["image"] },
-	multiple = false
-) => {
+const DRSModal = ({
+	onClose,
+	onSubmit,
+	allowedTypes = ["image"],
+	multiple = false,
+}) => {
 	const [collectionId, setCollectionId] = useState(""); // id of the collection
 	const [pagination, setPagination] = useState({}); // pagination details fetched from the search api
 	const [searchParams, setSearchParams] = useState({ per_page: 20 }); // params to be passed to search api
