@@ -5,6 +5,6 @@ module.exports = {
 	...defaultConfig,
 	entry: {
 		"gallery-carousel": path.resolve(process.cwd(), "src", "gallery-carousel"),
-		admin: path.resolve(process.cwd(), "src", "admin.js"),
+		admin: path.resolve(process.cwd(), "src", "admin"),
 	},
 };

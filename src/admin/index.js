@@ -23,7 +23,7 @@ import { dispatch, useDispatch, useSelect } from "@wordpress/data";
 import { __ } from "@wordpress/i18n";
 import { store as noticesStore } from "@wordpress/notices";
 
-import withInsertFromDRS from "./filters/withInsertFromDRS";
+import withInsertFromDRS from "../filters/withInsertFromDRS";
 
 const Notices = () => {
 	const notices = useSelect(
