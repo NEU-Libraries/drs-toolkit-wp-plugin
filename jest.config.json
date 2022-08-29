@@ -1,0 +1,4 @@
+{
+	"preset": "@wordpress/jest-preset-default",
+	"setupFilesAfterEnv": ["@wordpress/jest-console"]
+}
