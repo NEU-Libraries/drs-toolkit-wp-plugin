@@ -7,11 +7,11 @@ wp_register_script('drstk-leaflet-wicket', DRS_PLUGIN_URL . "assets/leaflet/js/w
 wp_enqueue_script('drstk-leaflet-wicket');
 
 
-wp_register_script('drstk-leaflet-marker-cluster', DRS_PLUGIN_URL . "assets/leaflet/js/leaflet.markercluster.js");
+wp_register_script('drstk-leaflet-marker-cluster', DRS_PLUGIN_URL . "assets/leaflet/js/leaflet-js-markercluster/leaflet.markercluster.js");
 wp_enqueue_script('drstk-leaflet-marker-cluster');
 
 
-wp_register_script('drstk-leaflet-boston-boundaries', DRS_PLUGIN_URL . "assets/leaflet/js/");
+wp_register_script('drstk-leaflet-boston-boundaries', DRS_PLUGIN_URL . "assets/leaflet/js/bostonboundaries.js");
 wp_enqueue_script('drstk-leaflet-boston-boundaries');
 
 
@@ -27,7 +27,7 @@ wp_register_script('drstk-leaflet-plugin-geolet', DRS_PLUGIN_URL . "assets/leafl
 wp_enqueue_script('drstk-leaflet-plugin-geolet');
 
 
-wp_register_script('drstk-leaflet-fuse-plugin', DRS_PLUGIN_URL . "assets/leafletfuse-leaflet-plugin-6-6-2.js");
+wp_register_script('drstk-leaflet-fuse-plugin', DRS_PLUGIN_URL . "assets/leaflet/js/fuse-leaflet-plugin-6-6-2.js");
 wp_enqueue_script('drstk-leaflet-fuse-plugin');
 
 /* 
@@ -51,11 +51,11 @@ wp_register_style('drstk-leaflet-brc-project', DRS_PLUGIN_URL . "assets/leaflet/
 wp_enqueue_style('drstk-leaflet-brc-project');
 
 
-wp_register_style('drstk-leaflet-marker-cluster', DRS_PLUGIN_URL . "assets/leaflet/leaflet-js-markercluster/MarkerCluster.css");
+wp_register_style('drstk-leaflet-marker-cluster', DRS_PLUGIN_URL . "assets/leaflet/css/leaflet-js-markercluster/MarkerCluster.css");
 wp_enqueue_style('drstk-leaflet-marker-cluster');
 
 
-wp_register_style('drstk-leaflet-marker-cluster-default', DRS_PLUGIN_URL . "leaflet-js-markercluster/MarkerCluster.Default.css");
+wp_register_style('drstk-leaflet-marker-cluster-default', DRS_PLUGIN_URL . "assets/leaflet/css/leaflet-js-markercluster/MarkerCluster.Default.css");
 wp_enqueue_style('drstk-leaflet-marker-cluster-default');
 
 
@@ -67,11 +67,10 @@ wp_enqueue_style('drstk-leaflet-marker-cluster-default');
 */
 get_header();
 
-$page_id = get_option('drstk_podcast_page');
+$page_id = 522;
+if ($page_id == 522) {
 $page_object = get_page( $page_id );
-
-
-
+}
 
 
 ?>
@@ -93,7 +92,8 @@ $page_object = get_page( $page_id );
 						  <div class="row">
 						    <?php echo apply_filters('the_content', $page_object->post_content);?>
 						  </div>
-						  <?php echo $renderer->render(); ?>
+						  
+						  <?php echo "map page test"; ?>
 						</div>
 
 					</main>

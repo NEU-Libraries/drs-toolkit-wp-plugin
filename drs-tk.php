@@ -24,9 +24,6 @@ require_once( plugin_dir_path( __FILE__ ) . 'config.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'classes/fetchers/Ceres_Abstract_Fetcher.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'classes/renderers/Ceres_Abstract_Renderer.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'classes/fetchers/Ceres_Drs_Fetcher.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'classes/renderers/Ceres_Podcast_Renderer.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'classes/renderers/Ceres_Podcast_Rss_Renderer.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'classes/renderers/Ceres_Jwplayer_Renderer.php' );
 
 
 
@@ -1048,6 +1045,9 @@ function drstk_content_template( $template ) {
     global $wp_query;
     global $TEMPLATE;
     global $TEMPLATE_THEME;
+    global $post;
+    //echo $post->ID;
+    //die();
 
     if ( isset($wp_query->query_vars['drstk_template_type']) ) {
 
@@ -1494,60 +1494,26 @@ if(WP_DEBUG) {
 }
 
 
-/* Dev on Podcast site options */ 
-add_filter( 'template_include', 'drstk_podcast_page_template', 100 );
 
-function drstk_podcast_page_template( $template ) {
-  
-  if (get_option('drstk_is_podcast') != 'on') {
-    return $template;
-  }
-  //is_page takes the id, so this is set in the CERES settings for a podcast site.
-  $podcast_page = get_option('drstk_podcast_page');
-  if ( is_page( $podcast_page ) ) {
-    $file_name = 'podcast-template.php';
-    if ( locate_template( $file_name ) ) {
-      $template = locate_template( $file_name );
-    } else {
-      // Template not found in theme's folder, use plugin's template as a fallback
-      $template = dirname( __FILE__ ) . '/templates/' . $file_name;
-    }
+add_filter( 'template_include', 'drstk_leaflet_page_template', 5 );
+function drstk_leaflet_page_template( $template ) {
+  global $post;
+  echo 'wtf';
+  //var_dump($post);
+  //echo $post->ID;
+  ///die();
+  if ($post->ID == '522') {
+    echo $post->ID;
+    //die();
+    //hardcoding the path to the template :( PMJ
+    
+    $template = dirname( __FILE__ ) . '/templates/leaflet-template.php';
+    
   }
   
   return $template;
 }
 
-add_action('init', 'drstk_add_podcast_feed');
-function drstk_add_podcast_feed() {
-  
-  add_feed('podcasts', 'drstk_render_podcast_feed');
-}
-
-function drstk_render_podcast_feed() {
-  
-  header('Content-Type: application/rss+xml; charset=UTF-8', true);
-  
-  //goes to ?feed=podcasts instead of feed/podcasts for some reason');
-  //weirdly, reloading the page puts in the URL rewrite to /feed/podcasts at least in FF
-  //hopefully that won't matter to the feed readers
-  $queryOptions = array(
-      'action' => 'search',
-      'sub_action' => 'av',
-  );
-  
-  $queryParams = array(
-      'sort' => 'date_ssi+desc',
-      //@TODO: someday this should look up the total number of podcasts to give a real number 
-      'per_page' => '1001',
-  );
-  
-  //the default collection/set for the podcasts, from CERES Settings page
-  $resourceId = drstk_get_pid();
-  $rssImageUrl = get_option('drstk_podcast_image_url');
-  $fetcher = new Ceres_Drs_Fetcher($queryOptions, $queryParams);
-  $renderer = new Ceres_Podcast_Rss_Renderer($fetcher, $resourceId, array('rssImageUrl' => $rssImageUrl));
-  echo $renderer->render();
-}
 
 //@TODO: delete this. it's for debugging
 function drstk_turn_off_feed_caching( $feed ) {
