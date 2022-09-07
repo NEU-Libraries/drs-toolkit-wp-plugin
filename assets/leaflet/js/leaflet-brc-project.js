@@ -11,20 +11,20 @@ var map = L.map('map', {
 
 
 // Base tile creation and setup (stadia maps is being used here for tile layers).     
-// var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-//     maxZoom: 19,
-//     minZoom: 11,
-//     attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>',
-// }).addTo(map);
-
-var tiles = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
-    maxZoom: 18,
+var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
     minZoom: 11,
-    attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-    id: 'mapbox/streets-v11',
-    tileSize: 512,
-    zoomOffset: -1
+    attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>',
 }).addTo(map);
+
+// var tiles = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
+//     maxZoom: 18,
+//     minZoom: 11,
+//     attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+//     id: 'mapbox/streets-v11',
+//     tileSize: 512,
+//     zoomOffset: -1
+// }).addTo(map);
 
 function style(feature) {
     return {

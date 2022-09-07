@@ -28,10 +28,15 @@ body {
 }
 
 #map {
-    height: 600px;
-    margin-top: 50px;
-    flex-grow: 1;
-    margin-right: 50px;
+    /* height: 600px; */
+    /* margin-top: 50px; */
+    /* flex-grow: 1; */
+    /* margin-right: 50px; */
+    left: 319px;
+    position: absolute;
+    top: 91px;
+    right: 36px;
+    bottom: 0px;
 }
 
 .main-header {
@@ -72,7 +77,7 @@ body {
 
 .filters-section {
     width: 286px;
-    margin: 20px 5px 0px 5px;
+    margin: 20px 5px 20px 5px;
     background: white;
     max-height: 100vh;
     overflow: auto;

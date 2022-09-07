@@ -47,7 +47,7 @@ wp_register_style('drstk-leaflet-css', DRS_PLUGIN_URL . "assets/leaflet/css/leaf
 wp_enqueue_style('drstk-leaflet-css');
 
 
-wp_register_style('drstk-leaflet-brc-project', DRS_PLUGIN_URL . "assets/leaflet/css/");
+wp_register_style('drstk-leaflet-brc-project', DRS_PLUGIN_URL . "assets/leaflet/css/leaflet-brc-project.css");
 wp_enqueue_style('drstk-leaflet-brc-project');
 
 
@@ -92,7 +92,92 @@ $page_object = get_page( $page_id );
 						  <div class="row">
 						    <?php echo apply_filters('the_content', $page_object->post_content);?>
 						  </div>
-						  
+						   <div class="body-container">
+        <!--- The filter container which hold the filters -->
+        <div class="filters-container">
+            <div class="filters-section">
+                <h1 class="filters-header">Filters</h1>
+                <br>
+                <div class="filters-body">
+                    <div class="location-section">
+                        <h3>Search</h3>
+                        <!-- The search box container which has search option -->
+                        <div class="search-container">
+                            <form action="javascript:void(0);">
+                                <input type="text" placeholder="Search.." name="search" id="search-box-input">
+                                <button type="button" id="filters-search"><img src=<?php echo DRS_PLUGIN_URL . "assets/leaflet/images/search-icon.svg" ?> width='14' heigth='14'></button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- The location range selector dropdown -->
+                    <div class="location-section">
+                        <h3>Distance Radius</h3>
+                        <select name="distance" id="distance-select">
+                        <option value="0.25" deafult>0.25 miles</option>
+                        <option value="0.50">0.50 miles</option>
+                        <option value="0.75">0.75 miles</option>
+                        <option value="1.0">1.0 miles</option>
+                     </select>
+                    </div>
+                    <!--- Cards for filter data in the map decade wise, category of art and Neighbour hood-->
+                    <div id="filter-cards">
+                        <ul>
+                            <!-- Installation Date filter section -->
+                            <li>
+                                <input type="checkbox" class="hidden-checkbox" checked>
+                                <i></i>
+                                <h2>Installation date</h2>
+                                <div id="date-facet-section" class="inner-section">
+                                    <div class="list-item">
+                                        <input type="checkbox" id="date-selectall" name="date-selectall" checked="" />
+                                        <label for="date-selectall">(Select All)</label>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- Type of artwork filter section -->
+                            <li>
+                                <input type="checkbox" class="hidden-checkbox" checked>
+                                <i></i>
+                                <h2>Type of artwork</h2>
+                                <div id="art-category-section" class="inner-section">
+                                    <div class="list-item">
+                                        <input type="checkbox" id="category-selectall" name="category-selectall" checked="" />
+                                        <label for="category-selectall">(Select All)</label>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- Neighborhood filter section -->
+                            <li>
+                                <input type="checkbox" class="hidden-checkbox" checked>
+                                <i></i>
+                                <h2>Neighborhood</h2>
+                                <div id="neighbourhood-category-section" class="inner-section">
+                                    <div class="list-item">
+                                        <input type="checkbox" id="neighborhood-selectall" name="neighborhood-selectall" checked="" />
+                                        <label for="neighborhood-selectall">(Select All)</label>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- Material filter section -->
+                            <li>
+                                <input type="checkbox" class="hidden-checkbox" checked>
+                                <i></i>
+                                <h2>Material</h2>
+                                <div id="material-category-section" class="inner-section">
+                                    <div class="list-item">
+                                        <input type="checkbox" id="material-selectall" name="material-selectall" checked="" />
+                                        <label for="material-selectall">(Select All)</label>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Main map div container -->
+        <div id="map"></div>
+   
 						  <?php echo "map page test"; ?>
 						</div>
 
