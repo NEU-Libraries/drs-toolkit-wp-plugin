@@ -1498,7 +1498,7 @@ if(WP_DEBUG) {
 add_filter( 'template_include', 'drstk_leaflet_page_template', 5 );
 function drstk_leaflet_page_template( $template ) {
   global $post;
-  echo 'wtf';
+ 
   //var_dump($post);
   //echo $post->ID;
   ///die();
