@@ -46,14 +46,6 @@ export async function fetchFromFile({ fileId, allowedTypes }) {
 
 		if (allowedTypes.includes(dataFormat)) {
 			if (dataFormat === "image") {
-				// Object.entries() returns an array of enumerable string-keyed property [key, value] pairs
-				// Object.entries(data.content_objects).forEach(([key, value]) => {
-				// 	// master image cannot be used, since the size is way too big!!!
-				// 	// using large image
-				// 	if (value.includes("Large")) {
-				// 		fileUrl = key;
-				// 	}
-				// });
 				fileUrl = data.thumbnails[data.thumbnails.length - 1];
 			} else {
 				// For everything else use cannonical object or master file
