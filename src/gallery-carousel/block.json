@@ -11,7 +11,7 @@
 		"html": false
 	},
 	"textdomain": "drs-tk",
-	"editorScript": "file:../gallery-carousel.js",
-	"editorStyle": "file:../gallery-carousel.css",
-	"style": "file:../gallery-carousel.css"
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
 }
