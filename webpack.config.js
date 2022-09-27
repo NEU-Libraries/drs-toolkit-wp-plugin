@@ -4,7 +4,7 @@ const path = require("path");
 module.exports = {
 	...defaultConfig,
 	entry: {
-		"gallery-carousel": path.resolve(process.cwd(), "src", "gallery-carousel"),
+		...defaultConfig.entry(),
 		admin: path.resolve(process.cwd(), "src", "admin"),
 	},
 };
