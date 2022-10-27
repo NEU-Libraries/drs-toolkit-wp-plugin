@@ -5,4 +5,4 @@ jobs:
     steps:
       - uses: WordPress/gutenberg/packages/project-management-automation@trunk
         with:
-          github_token: ${{ secrets.G_TOKEN }}
+          github_token: ${{ secrets.GUTENBERG_TOKEN }}
