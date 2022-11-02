@@ -1,6 +1,4 @@
-on:
-  pull_request:
-    branches: ["gutenberg"]
+on: pull_request
 jobs:
   pull-request-automation:
     runs-on: ubuntu-latest
