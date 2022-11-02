@@ -1,6 +1,4 @@
-on:
-  push:
-    branches: ["gutenberg"]
+on: push
 jobs:
   pre-release:
     name: "Pre Release"
