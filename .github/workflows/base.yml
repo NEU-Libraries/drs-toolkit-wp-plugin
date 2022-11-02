@@ -1,11 +1,12 @@
-on: pull_request
+on:
+  pull_request:
+    branches: ["gutenberg"]
 jobs:
   pull-request-automation:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [14.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
@@ -14,6 +15,4 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
       - run: npm ci
-      - uses: WordPress/gutenberg/packages/project-management-automation@trunk
-        with:
-          github_token: ${{ secrets.GUTENBERG_TOKEN }}
+      - run: npm run test
