@@ -52,6 +52,8 @@ const DRSModal = ({
 				onSubmit(fileUrl);
 				onClose();
 			} else {
+				let response = [...selectedFile];
+
 				// for gallery
 				const fetchFromFileArr = selectedFile.map((tempFile) =>
 					fetchFromFile({ fileId: tempFile.id, allowedTypes })
@@ -59,8 +61,12 @@ const DRSModal = ({
 
 				const result = await Promise.all(fetchFromFileArr);
 				const fileUrls = result.map((file) => file.fileUrl);
-				console.log(fileUrls);
-				onSubmit(fileUrls);
+				const finalResponse = response.map((obj, index) => ({
+					...obj,
+					fileUrl: fileUrls[index],
+				}));
+
+				onSubmit(finalResponse);
 				onClose();
 			}
 		} catch (error) {
@@ -70,7 +76,20 @@ const DRSModal = ({
 
 	// what to do when the file is selected
 	function onSelectFile(file) {
-		multiple ? setSelectedFile([...selectedFile, file]) : setSelectedFile(file);
+		if (multiple) {
+			console.log("Selected file", selectedFile);
+			if (!selectedFile.some((tempFile) => tempFile.id == file.id)) {
+				setSelectedFile([...selectedFile, file]);
+			} else {
+				const newSelectedFiles = selectedFile.filter(
+					(tempfile) => tempfile.id !== file.id
+				);
+				console.log(newSelectedFiles);
+				setSelectedFile(newSelectedFiles);
+			}
+		} else {
+			setSelectedFile(file);
+		}
 	}
 
 	// check if image is selected

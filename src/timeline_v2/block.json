@@ -1,0 +1,48 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "drs-tk/timelinev2",
+	"version": "0.1.0",
+	"title": "Timeline V2 (DRS)",
+	"category": "media",
+	"icon": "smiley",
+	"description": "Fetches data from collection and displays it",
+	"supports": {
+		"html": false
+	},
+	"textdomain": "drs-tk",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"attributes": {
+		"files": {
+			"type": "array",
+			"default": [],
+			"source": "query",
+			"selector": "ul.wp-block-drs-tk-timeline .blocks-timeline",
+			"query": {
+				"fileUrl": {
+					"type": "string",
+					"source": "attribute",
+					"selector": "img",
+					"attribute": "src"
+				},
+				"description": {
+					"type": "string",
+					"source": "attribute",
+					"selector": "p"
+				},
+				"creator": {
+					"type": "string",
+					"source": "attribute",
+					"selector": "p"
+				},
+				"date": {
+					"type": "string",
+					"source": "attribute",
+					"selector": "p"
+				}
+			}
+		}
+	}
+}

@@ -89,8 +89,8 @@ export default function Edit({
 	let captionSelected = false;
 
 	function onSelectImages(images) {
-		const contentImages = images.map((imgUrl) => ({
-			url: imgUrl,
+		const contentImages = images.map((img) => ({
+			url: img.fileUrl,
 		}));
 		setAttributes({ images: contentImages });
 	}

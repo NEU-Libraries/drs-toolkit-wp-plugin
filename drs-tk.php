@@ -17,6 +17,45 @@ function drs_tk_gallery_carousel_init()
 }
 add_action('init', 'drs_tk_gallery_carousel_init');
 
+function drs_tk_timeline_init()
+{
+    register_block_type(__DIR__ . '/build/timeline');
+}
+add_action('init', 'drs_tk_timeline_init');
+
+wp_register_script(
+    'drstk_timelinejs',
+    'https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js',
+    ['jquery']
+);
+wp_enqueue_script('drstk_timelinejs');
+wp_register_style(
+    'drstk_cdn_timeline_css',
+    'https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css'
+);
+wp_enqueue_style('drstk_cdn_timeline_css');
+
+function drs_tk_timeline_v2_init()
+{
+    register_block_type_from_metadata(
+        __DIR__ . '/build/timeline_v2/block.json',
+        ['render_callback' => 'render_timeline_call']
+    );
+}
+add_action('init', 'drs_tk_timeline_v2_init');
+
+function render_timeline_call($attributes)
+{
+    $wrapper_attributes = get_block_wrapper_attributes();
+    return sprintf(
+        '
+        <div %1$s style="height: 600px; width: 100%;"></div><script>
+    timeline = new TL.Timeline("wp-block-drs-tk-timelinev2",
+            "https://docs.google.com/spreadsheets/d/1cWqQBZCkX9GpzFtxCWHoqFXCHg-ylTVUWlnrdYMzKUI/pubhtml");
+    </script>',
+        $wrapper_attributes
+    );
+}
 wp_register_style(
     'slick',
     plugins_url('slick/css/slick.css', __FILE__),
@@ -53,6 +92,7 @@ add_action(
     15
 );
 
+// ADMIN SETTINGD
 function ceres_drstk_plugin_register_settings()
 {
     register_setting(

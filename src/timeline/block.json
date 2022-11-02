@@ -1,9 +1,9 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 2,
-	"name": "drs-tk/gallery-carousel",
+	"name": "drs-tk/timeline",
 	"version": "0.1.0",
-	"title": "Gallery Carousel (DRS)",
+	"title": "Timeline (DRS)",
 	"category": "media",
 	"icon": "smiley",
 	"description": "Fetches data from collection and displays it",
