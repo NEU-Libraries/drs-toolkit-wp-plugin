@@ -37,6 +37,7 @@ wp_enqueue_style('drstk_cdn_timeline_css');
 
 function drs_tk_timeline_v2_init()
 {
+    // register_block_type(__DIR__ . '/build/timeline_v2/block.json');
     register_block_type_from_metadata(
         __DIR__ . '/build/timeline_v2/block.json',
         ['render_callback' => 'render_timeline_call']
@@ -46,15 +47,50 @@ add_action('init', 'drs_tk_timeline_v2_init');
 
 function render_timeline_call($attributes)
 {
-    $wrapper_attributes = get_block_wrapper_attributes();
-    return sprintf(
-        '
-        <div %1$s style="height: 600px; width: 100%;"></div><script>
-    timeline = new TL.Timeline("wp-block-drs-tk-timelinev2",
-            "https://docs.google.com/spreadsheets/d/1cWqQBZCkX9GpzFtxCWHoqFXCHg-ylTVUWlnrdYMzKUI/pubhtml");
-    </script>',
-        $wrapper_attributes
-    );
+    // $wrapper_attributes = get_block_wrapper_attributes();
+    $test = json_encode($attributes);
+
+    $content =
+        '<link title="timeline-styles" rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
+            <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
+            <div id="timeline-embed" style="width: 100%; height: 600px"></div>
+
+            <script type="text/javascript">
+                const attributes = ' .
+        $test .
+        ';
+        console.log(attributes.files);
+
+
+        function convertToTimelineJSON(files) {
+            const timelineJSON = files.map((file) => {
+                console.log(file);
+                return {
+                    media: {
+                        url: file.fileUrl,
+                        caption: "",
+                        credit: file.creator,
+                    },
+                    start_date: {
+                        year: file.date,
+                    },
+                    text: {
+                        headline: "",
+                        text: file.description.toString(),
+                    },
+                };
+            });
+        
+            return {
+                events: timelineJSON,
+            };
+        }
+
+                
+                const timeline = new TL.Timeline("timeline-embed",convertToTimelineJSON(attributes.files)) ;
+            </script>';
+    return $content;
+    // print_r($attributes);
 }
 wp_register_style(
     'slick',
