@@ -8,6 +8,9 @@
      * @var array
      */
 
+     // includeMediaThumbnail -- match with Extractors
+     // includeItemLink -- match with Extractors
+
     protected $options = array();
 
     /**
@@ -92,6 +95,14 @@
     //   getting crazy
     
     // abstract function buildPagination();
+
+    public function linkify($linkData) {
+      $label = $linkData['label'];
+      $url = $linkData['url'];
+
+      // @todo What to do about other <a> atts? a closure or lambda?
+      return "<a href='$url'>$label</a>";
+    }
 
     public function setResourceId($resourceId) {
       $this->resourceId = $resourceId;
