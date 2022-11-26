@@ -63,6 +63,9 @@
     protected $extractors = array();
 
     public function __construct(array $fetchers, array $extractors, $resourceId = null, $options = array()) {
+      
+      
+
       foreach ($fetchers as $name => $class) {
         $this->injectFetcher($name, $class);
       }
@@ -89,6 +92,15 @@
     
     abstract function render();
     
+      /*
+        foreach ($this->extractors as $name=>$extractor) {
+          fire up extractor(s) to get what's needed
+        }
+
+
+
+      */
+
     // @TODO this might get moved into a separate Pagination Renderer, likely different for each Fetcher
     //   First thought is that this'd just instantiate a new Renderer and tell it to do its thing
     //   though that'd also mean injecting the relevant Fetcher into _that_ which might be 
