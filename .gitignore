@@ -21,4 +21,4 @@ selenium.log
 manifest.json
 mirador_manifest.js
 classes/test/*
-
+templates/specs/*
