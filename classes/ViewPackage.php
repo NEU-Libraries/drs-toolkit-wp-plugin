@@ -4,7 +4,6 @@ namespace Ceres\ViewPackage;
 
 use Ceres\Exception\CeresException;
 use Ceres\Util\StringUtilities as StrUtil;
-use Hamcrest\Type\IsInteger;
 
 class ViewPackage {
 
@@ -158,7 +157,7 @@ class ViewPackage {
      * @return array
      */
     public function toArray() {
-        //mimic recreated the dev template
+        //mimic/ recreate the dev template
 
     }
 }

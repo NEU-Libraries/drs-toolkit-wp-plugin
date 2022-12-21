@@ -3,7 +3,7 @@
 
 //print_r($optionsData);
 // die();
-function optionsDataReport($ceres_options_data) {
+function optionsDataReport($ceresAllOptions) {
     $html = "<html><head>";
     $html .= "<style>table, td, th {border: 2px solid black; border-collapse: collapse; ";
     $html .= "margin: 0px; padding: 3px; } ";
@@ -15,7 +15,6 @@ function optionsDataReport($ceres_options_data) {
     $html .= "<th>Name</th>";
     $html .= "<th>Label</th>";
     $html .= "<th>Description</th>";
-    $html .= "<th>Value</th>";
     $html .= "<th>Access</th>";
     $html .= "<th>Type</th>";
     $html .= "<th style='width: 100px';>CERES-wide Default</th>";
@@ -27,25 +26,26 @@ function optionsDataReport($ceres_options_data) {
     $owners = [];
     $coders = [];
    // print_r($optionsData);
-        foreach($ceres_options_data as $optionName => $optionsArray) {
-            switch ($ceres_options_data[$optionName]['access']) {
-                case 'contentCreator':
-                    $contentCreators[$optionName] = $ceres_options_data[$optionName];
-                break;
-                case 'projectOwner':
-                    $owners[$optionName] = $ceres_options_data[$optionName];
-                break;
-                case 'coder':
-                    $coders[$optionName] = $ceres_options_data[$optionName];
-                break;
-                default:
-      
+        foreach($ceresAllOptions as $optionName => $optionsArray) {
+            
+            if (in_array('contentCreator', $optionsArray['access'] )) {
+                $contentCreators[$optionName] = $ceresAllOptions[$optionName];
+                continue;                
             }
 
+            if (in_array('projectOwner', $optionsArray['access'] )) {
+                $owners[$optionName] = $ceresAllOptions[$optionName];
+                continue;
+            }
+
+            if (in_array('coder', $optionsArray['access'] )) {
+                $coders[$optionName] = $ceresAllOptions[$optionName];
+                continue;
+            }
         }
         //$optionsData = array_merge($contentCreators, $owners, $coders);
 
-    $html .= "<tr><td colspan=7 style='text-align: center; '>Content Creators</td></tr>";
+    $html .= "<tr><td colspan=8 style='text-align: center; '>Content Creators</td></tr>";
     $html .= "<tr>";
     foreach ($contentCreators as $codeName => $optionData) {
         $html .= "<td>$codeName</td>";
@@ -62,7 +62,7 @@ function optionsDataReport($ceres_options_data) {
         }
         $html .= "</tr>";
     }
-    $html .= "<tr><td colspan=7 style='text-align: center; '>Owners -- all of the above plus</td></tr>";
+    $html .= "<tr><td colspan=8 style='text-align: center; '>Owners -- all of the above plus</td></tr>";
     $html .= "<tr>";
 
     foreach ($owners as $codeName => $optionData) {
@@ -79,7 +79,7 @@ function optionsDataReport($ceres_options_data) {
         }
         $html .= "</tr>";
     }
-    $html .= "<tr><td colspan=7 style='text-align: center; '>Coders -- all of the above plus these, and whatever we build</td></tr>";
+    $html .= "<tr><td colspan=8 style='text-align: center; '>Coders -- all of the above plus these, and whatever we build</td></tr>";
     $html .= "<tr>";
     foreach ($coders as $codeName => $optionData) {
         $html .= "<td>$codeName</td>";
