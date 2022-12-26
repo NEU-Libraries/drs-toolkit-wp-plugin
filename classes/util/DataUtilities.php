@@ -3,7 +3,7 @@ namespace Ceres\Util;
 
 use Ceres\Exception;
 
-require_once('/var/www/html/wordpress2/wp-content/plugins/drs-tk/util/ceres_settings.php');
+require_once('/var/www/html/wordpress2/wp-content/plugins/drs-tk/classes/util/ceres_settings.php');
 
 
 class DataUtilities {

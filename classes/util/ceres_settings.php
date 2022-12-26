@@ -374,7 +374,7 @@ function getAllOptions() {
             'access' => ['coder'],
             'type'    => '',
             'ceresWideDefault' => 'Leaflet defaults',
-            'notes' => 'need to break this out', 
+            'notes' => 'need to break this out? probably not if access remains limited to coders', 
             'appliesTo' => 'renderers', 
         ],
     
