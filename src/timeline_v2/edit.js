@@ -23,7 +23,7 @@ import "./editor.scss";
 
 import DRSModal from "../components/DRSModal";
 
-import { Fragment, useState, useEffect } from "@wordpress/element";
+import { Fragment, useState, useEffect, useRef } from "@wordpress/element";
 import { convertToTimelineJSON } from "./utils";
 /**
  * The edit function describes the structure of your block in the context of the
@@ -36,17 +36,14 @@ import { convertToTimelineJSON } from "./utils";
 export default function Edit({ attributes, image, setAttributes }) {
 	const [showDRSModal, setShowDRSModal] = useState(false);
 	const { files } = attributes;
+	const timelineEmbedRef = useRef(null);
 	function onSelectImages(images) {
 		setAttributes({ files: images });
 	}
-	let timeline;
 
 	useEffect(() => {
 		if (files.length !== 0)
-			timeline = new TL.Timeline(
-				"timeline-embed",
-				convertToTimelineJSON(files)
-			);
+			new TL.Timeline(timelineEmbedRef.current, convertToTimelineJSON(files));
 	}, [files]);
 
 	const blockProps = useBlockProps();
@@ -93,7 +90,8 @@ export default function Edit({ attributes, image, setAttributes }) {
 			<div {...blockProps}>
 				<div className="timeline-container">
 					<div
-						id="timeline-embed"
+						ref={timelineEmbedRef}
+						className="timeline-embed"
 						style={{ width: "100%", height: "600px" }}
 					></div>
 				</div>
