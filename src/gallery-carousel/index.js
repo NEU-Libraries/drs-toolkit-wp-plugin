@@ -15,15 +15,3 @@ registerBlockType(metadata.name, {
 	edit: Edit,
 	save,
 });
-
-wp.hooks.addFilter(
-	"editor.MediaPlaceholder",
-	"drs-tk/replace-media-placeholder",
-	withInsertFromDRS
-);
-
-wp.hooks.addFilter(
-	"editor.MediaReplaceFlow",
-	"drs-tk/replace-media-placeholder",
-	withInsertFromDRS
-);
