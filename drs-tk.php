@@ -37,61 +37,21 @@ wp_enqueue_style('drstk_cdn_timeline_css');
 
 function drs_tk_timeline_v2_init()
 {
-    // register_block_type(__DIR__ . '/build/timeline_v2/block.json');
-    register_block_type_from_metadata(
-        __DIR__ . '/build/timeline_v2/block.json',
-        ['render_callback' => 'render_timeline_call']
-    );
+    register_block_type(__DIR__ . '/build/timeline_v2/block.json');
+    // register_block_type_from_metadata(
+    //     __DIR__ . '/build/timeline_v2/block.json',
+    //     ['render_callback' => 'render_timeline_call']
+    // );
 }
 add_action('init', 'drs_tk_timeline_v2_init');
+wp_register_script(
+    'drs-tk-timelinev2-blocks-frontend',
+    plugins_url('lib/timeline/js/frontend.js', __FILE__),
+    ['jquery'],
+    filemtime(plugin_dir_path(__FILE__) . 'lib/timeline/js/frontend.js'),
+    true
+);
 
-function render_timeline_call($attributes)
-{
-    // $wrapper_attributes = get_block_wrapper_attributes();
-    $test = json_encode($attributes);
-
-    $content =
-        '<link title="timeline-styles" rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
-            <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
-            <div id="timeline-embed" style="width: 100%; height: 600px"></div>
-
-            <script type="text/javascript">
-                const attributes = ' .
-        $test .
-        ';
-        console.log(attributes.files);
-
-
-        function convertToTimelineJSON(files) {
-            const timelineJSON = files.map((file) => {
-                console.log(file);
-                return {
-                    media: {
-                        url: file.fileUrl,
-                        caption: "",
-                        credit: file.creator,
-                    },
-                    start_date: {
-                        year: file.date,
-                    },
-                    text: {
-                        headline: "",
-                        text: file.description.toString(),
-                    },
-                };
-            });
-        
-            return {
-                events: timelineJSON,
-            };
-        }
-
-                
-                const timeline = new TL.Timeline("timeline-embed",convertToTimelineJSON(attributes.files)) ;
-            </script>';
-    return $content;
-    // print_r($attributes);
-}
 wp_register_style(
     'slick',
     plugins_url('slick/css/slick.css', __FILE__),
@@ -209,3 +169,144 @@ add_action(
     'ceres_drstk_plugin_settings_link',
     10
 );
+
+// // Enqueue lib assets
+// $lib_script_path = '/lib/leaflet/jsleaflet.js';
+// $lib_style_path = '/lib/leaflet/css/leaflet.css';
+// $lib_version = '1.7.1';
+
+// wp_register_style(
+//     'lib-css-map-block-leaflet',
+//     plugins_url($lib_style_path, __FILE__),
+//     [],
+//     $lib_version
+// );
+// wp_register_script(
+//     'lib-js-map-block-leaflet',
+//     plugins_url($lib_script_path, __FILE__),
+//     [],
+//     $lib_version,
+//     false
+// );
+// wp_register_style(
+//     'lib-css-map-block-leaflet-cluster',
+//     plugins_url('/lib/leaflet/css/MarkerCluster.css', __FILE__),
+//     ['lib-css-map-block-leaflet'],
+//     $lib_version
+// );
+// wp_register_script(
+//     'lib-js-map-block-leaflet-cluster',
+//     plugins_url('/lib/leaflet/js/leaflet.markercluster.js', __FILE__),
+//     ['lib-js-map-block-leaflet'],
+//     $lib_version,
+//     false
+// );
+
+// // Enqueue the bundled block JS file
+// wp_register_script(
+//     'js-editor-map-block-leaflet',
+//     plugins_url('build/index.js', __FILE__),
+//     $asset_file['dependencies'],
+//     $asset_file['version']
+// );
+
+// // register editor styles
+// wp_register_style(
+//     'css-editor-map-block-leaflet',
+//     plugins_url('build/index.css', __FILE__),
+//     [],
+//     $asset_file['version']
+// );
+
+// register_block_type('drs-tk-leaflet/map-block-leaflet-multimarker', [
+//     'editor_script' => 'js-editor-map-block-leaflet',
+//     'editor_style' => 'css-editor-map-block-leaflet',
+//     'render_callback' => 'map_block_leaflet_multi_marker_render',
+//     'script' => 'lib-js-map-block-leaflet-cluster',
+//     'style' => 'lib-css-map-block-leaflet-cluster',
+//     'attributes' => [
+//         'markers' => [
+//             'type' => 'array',
+//             'default' => [],
+//         ],
+//         'themeUrl' => [
+//             'type' => 'string',
+//             'default' =>
+//                 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+//         ],
+//         'themeAttribution' => [
+//             'type' => 'string',
+//             'default' =>
+//                 '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+//         ],
+//         'height' => [
+//             'type' => 'number',
+//             'default' => 220,
+//         ],
+//         'themeId' => [
+//             'type' => 'number',
+//             'default' => 1,
+//         ],
+//     ],
+// ]);
+
+// function map_block_leaflet_multi_marker_render($settings)
+// {
+//     $classes = 'map_block_leaflet';
+//     if (array_key_exists('align', $settings)) {
+//         switch ($settings['align']) {
+//             case 'wide':
+//                 $classes .= ' alignwide';
+//                 break;
+//             case 'full':
+//                 $classes .= ' alignfull';
+//                 break;
+//         }
+//     }
+
+//     $id = uniqid('lmb_');
+
+//     return '
+// 	<div id=\'' .
+//         $id .
+//         '\' class="' .
+//         $classes .
+//         '" style="height: ' .
+//         $settings['height'] .
+//         'px"></div>
+// 	<script>
+// 		document.addEventListener("DOMContentLoaded", function() {
+// 			var markets = ' .
+//         json_encode($settings['markers']) .
+//         ';
+// 			var center = [51.505, -0.09];
+// 			var layer = L.tileLayer(\'' .
+//         $settings['themeUrl'] .
+//         '\', {
+// 				attribution: \'' .
+//         $settings['themeAttribution'] .
+//         '\'
+// 			})
+// 			var map = L.map(' .
+//         $id .
+//         ', { center: center, layers: [layer]});
+// 			map.scrollWheelZoom.disable();
+// 			if(markets.length > 0) {
+// 				var markers = L.markerClusterGroup();
+// 				markets.forEach( function(market) {
+// 					L.marker([market.latlng.lat, market.latlng.lng]).bindPopup(market.content).addTo(markers)
+// 				})
+// 				map.addLayer(markers);
+// 				map.fitBounds(markers.getBounds(), {padding: [50, 50]})
+// 			}
+//       var container = document.getElementById(\'' .
+//         $id .
+//         '\');
+//       var observer = ResizeObserver && new ResizeObserver(function() {
+//         map.invalidateSize(true);
+//       });
+//       observer && observer.observe(container);
+// 		});
+// 	</script>
+// 	';
+// }
