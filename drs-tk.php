@@ -21,12 +21,12 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/metabox.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'config.php' );
 
 /* Moving toward a Ceres namespace for podcasting */
-require_once( plugin_dir_path( __FILE__ ) . 'classes/fetchers/Ceres_Abstract_Fetcher.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'classes/renderers/Ceres_Abstract_Renderer.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'classes/fetchers/Ceres_Drs_Fetcher.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'classes/renderers/Ceres_Podcast_Renderer.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'classes/renderers/Ceres_Podcast_Rss_Renderer.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'classes/renderers/Ceres_Jwplayer_Renderer.php' );
+// require_once( plugin_dir_path( __FILE__ ) . 'classes/fetchers/Ceres_Abstract_Fetcher.php' );
+// require_once( plugin_dir_path( __FILE__ ) . 'classes/renderers/Ceres_Abstract_Renderer.php' );
+// require_once( plugin_dir_path( __FILE__ ) . 'classes/fetchers/Ceres_Drs_Fetcher.php' );
+// require_once( plugin_dir_path( __FILE__ ) . 'classes/renderers/Ceres_Podcast_Renderer.php' );
+// require_once( plugin_dir_path( __FILE__ ) . 'classes/renderers/Ceres_Podcast_Rss_Renderer.php' );
+// require_once( plugin_dir_path( __FILE__ ) . 'classes/renderers/Ceres_Jwplayer_Renderer.php' );
 
 
 
