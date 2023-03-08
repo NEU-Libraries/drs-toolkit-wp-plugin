@@ -10,6 +10,7 @@
  * 
  */
 
+use Ceres\ViewPackage\ViewPackage;
 
 /* LOAD CERES */
 
@@ -22,9 +23,8 @@ require_once( plugin_dir_path( __FILE__ ) . '/libraries/Ceres/config/ceresSetup.
 *  it there based on need. 2023-03-07 17:58:38
 */
 
-$registeredScript = wp_register_script('ceres_test_js',
-	plugin_dir_path( __FILE__ ) . 'libraries/Ceres/assets/js/test.js',
-);
+
+
 
 /* SETUP SHORTCODES USED BY CERES */
 
@@ -54,13 +54,7 @@ function ceres_vp_handler($atts) {
 }
 
 function ceres_test_handler($atts) {
-	wp_enqueue_script('ceres_test_js');
-	wp_add_inline_script('ceres_test_js',
-	"var testObject = {
-		'a' : 'a hello',
-		'b' : 'b bye'
-		};"
-	);
+
     $atts = shortcode_atts(
 		array(
 			'test_val' => 'Just testing!',
