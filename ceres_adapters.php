@@ -23,6 +23,13 @@ require_once( plugin_dir_path( __FILE__ ) . '/libraries/Ceres/config/ceresSetup.
 *  it there based on need. 2023-03-07 17:58:38
 */
 
+wp_register_script('ceres_js_setup' , plugins_url('/drs-tk/libraries/Ceres/config/ceresJsSetup.js'));
+wp_enqueue_script('ceres_js_setup');
+$ceresRootDir = CERES_ROOT_DIR;
+wp_add_inline_script('ceres_js_setup',
+	"var CERES_ROOT_URL = new URL(window.location.href).origin + '/Ceres';");
+
+
 /* Leaflet and Leaflet plugins */
 //@todo make enqueuing conditional
 wp_register_script('ceres_leaflet', plugins_url('/libraries/Ceres/assets/js/leaflet/leaflet1.7.1.js', __FILE__));
@@ -33,8 +40,6 @@ wp_register_script('ceres_leaflet_mask', plugins_url('/libraries/Ceres/assets/js
 wp_register_script('ceres_leaflet_boundary-canvas', plugins_url('/libraries/Ceres/assets/js/leaflet/brc/leaflet-boundary-canvas.js', __FILE__));
 wp_register_script('ceres_leaflet_geolet', plugins_url('/libraries/Ceres/assets/js/leaflet/leaflet-plugin-geolet.js', __FILE__));
 wp_register_script('ceres_leaflet_fuse', plugins_url('/libraries/Ceres/assets/js/leaflet/fuse-leaflet-plugin-6-6-2.js', __FILE__));
-
-
 wp_register_style('ceres_leaflet', plugins_url('/libraries/Ceres/assets/css/leaflet/leaflet.css', __FILE__));
 wp_register_style('ceres_leaflet_brc-project', plugins_url('/libraries/Ceres/assets/css/leaflet/leaflet-brc-project.css', __FILE__));
 wp_register_style('ceres_leaflet_markercluster', plugins_url('/libraries/Ceres/assets/css/leaflet/leaflet-js-markercluster/MarkerCluster.css', __FILE__));
@@ -62,7 +67,7 @@ wp_enqueue_style('ceres_leaflet_markercluster_default');
 
 // /* SETUP SHORTCODES USED BY CERES */
 
-// add_shortcode('ceres_vp', 'ceres_vp_handler');
+add_shortcode('ceres_vp', 'ceres_vp_handler');
 add_shortcode('ceres_renderer', 'ceres_renderer_handler');
 // add_shortcode('ceres_test', 'ceres_test_handler');
 
