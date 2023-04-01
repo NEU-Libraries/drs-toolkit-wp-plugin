@@ -91,38 +91,37 @@ function ceres_vp_handler($atts) {
     $atts = shortcode_atts(
 		array(
 			'vp_name' => '',
-			//'renderer_tableClass' => '',
+            'use_local_response_data' => 'false',
+            'local_response_name' => '',			
 		),
 		$atts,
 		'ceres_vp'
 	);
+
+	// print_r($atts); die();
 
 	//wp_enqueue_script('jquery-ui-sortable');
 	$vp = new ViewPackage($atts['vp_name']);
 	$vp->build();
 
 
-    if ($atts['vp_name'] == 'tabular_wikibase_for_chinatown_people') {
-        $vp->gatherData(null, CERES_ROOT_DIR . '/data/staticQueryResponses/wbPeopleResponse.json');
+    // $atts['vp_name'] = 'tabular_wikibase_for_chinatown';
+    //$atts['use_local_response_data'] = true;
+    //$atts['local_response_name'] = 'wbPeopleResponse';
+    
+
+    $useLocalResponseData = $atts['use_local_response_data'];
+
+    $localResponseDataPath = CERES_ROOT_DIR . '/data/staticQueryResponses/' . $atts['local_response_name'] . '.json';
+ 
+    if($useLocalResponseData) {
+        $vp->gatherData(null, $localResponseDataPath);
+
     } else {
         $vp->gatherData();
+
     }
+
 	return $vp->render();
-
-}
-
-function ceres_test_handler($atts) {
-
-    $atts = shortcode_atts(
-		array(
-			'test_val' => 'Just testing!',
-		),
-		$atts,
-		'ceres_test'
-    );
-
-    return "<h3>" . $atts['test_val'] . "</h3>";
-	
-
 
 }
