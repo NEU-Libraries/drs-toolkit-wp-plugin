@@ -100,7 +100,13 @@ function ceres_vp_handler($atts) {
 	//wp_enqueue_script('jquery-ui-sortable');
 	$vp = new ViewPackage($atts['vp_name']);
 	$vp->build();
-	$vp->gatherData();
+
+
+    if ($atts['vp_name'] == 'tabular_wikibase_for_chinatown_people') {
+        $vp->gatherData(null, CERES_ROOT_DIR . '/data/staticQueryResponses/wbPeopleResponse.json');
+    } else {
+        $vp->gatherData();
+    }
 	return $vp->render();
 
 }
