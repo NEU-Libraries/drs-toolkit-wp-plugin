@@ -91,31 +91,66 @@ function ceres_vp_handler($atts) {
     $atts = shortcode_atts(
 		array(
 			'vp_name' => '',
-            'use_local_response_data' => 'false',
-            'local_response_name' => '',			
+            'use_local_response_data' => false,
+            'local_response_name' => '',	
+			'extractor_reorder_mapping_name' => null,
+			'extractor_remove_vars_name' => null,
+			'extractor_value_label_mapping_name' => null,
 		),
 		$atts,
 		'ceres_vp'
 	);
 
-	// print_r($atts); die();
-
+	//doing this here to avoid any collisions from WP's attr filtering mechanism if I need to use it someday
+	$atts = expandAttsToFilePath($atts);
+// echo "<pre>";
+// print_r($atts);
+// echo "</pre>";
+// die();
 	//wp_enqueue_script('jquery-ui-sortable');
 	$vp = new ViewPackage($atts['vp_name']);
 	$vp->build();
 
 
     // $atts['vp_name'] = 'tabular_wikibase_for_chinatown';
-    //$atts['use_local_response_data'] = true;
+    // $atts['use_local_response_data'] = true;
     //$atts['local_response_name'] = 'wbPeopleResponse';
-    
+
+
+// $extractor->setExtractorOptionValue('extractorReorderMappingFilePath', CERES_ROOT_DIR . '/data/extractorData/chinatownPeopleReorderMapping.json');
+
+// $extractor->setExtractorOptionValue('extractorRemoveVarsFilePath', CERES_ROOT_DIR . '/data/extractorData/chinatownPeopleRemoveVars.json');
+
+// $extractor->setExtractorOptionValue('extractorValueLabelMappingFilePath', CERES_ROOT_DIR . '/data/extractorData/chinatownPeopleValueLabelMapping.json');
+
+//@todo make this sequence more coherent and general. somehow
+//make use of my fancy StrUtils to convert snakecase and camelcase?
+if (!is_null($atts['extractor_reorder_mapping_name'])) {
+	$vp->setExtractorOptionValue(null, 'extractorReorderMappingFilePath', $atts['extractor_reorder_mapping_name']);
+}
+if (!is_null($atts['extractor_remove_vars_name'])) {
+	$vp->setExtractorOptionValue(null, 'extractorRemoveVarsFilePath', $atts['extractor_remove_vars_name']);
+}
+if (!is_null($atts['extractor_value_label_mapping_name'])) {
+	$vp->setExtractorOptionValue(null, 'extractorValueLabelMappingFilePath', $atts['extractor_value_label_mapping_name']);
+}
+
+
 
     $useLocalResponseData = $atts['use_local_response_data'];
 
-    $localResponseDataPath = CERES_ROOT_DIR . '/data/staticQueryResponses/' . $atts['local_response_name'] . '.json';
+	// echo '<pre>';
+	//  print_r($atts); 
+	//  echo '</pre>';
+	 //die();
+
+    //$localResponseDataPath = CERES_ROOT_DIR . '/data/staticQueryResponses/' . $atts['local_response_name'] . '.json';
  
+
+
+
     if($useLocalResponseData) {
-        $vp->gatherData(null, $localResponseDataPath);
+        $vp->gatherData(null, $atts['local_response_name']);
 
     } else {
         $vp->gatherData();
@@ -124,4 +159,32 @@ function ceres_vp_handler($atts) {
 
 	return $vp->render();
 
+}
+
+
+/* HELPERS FOR THE SHORTCODE HANDLING */
+
+//doing this here to avoid any collisions from WP's attr filtering mechanism if I need to use it someday
+function expandAttsToFilePath(array $atts): array {
+
+	foreach ($atts as $name=>$value) {
+		switch ($name) {
+			//attributes that go to `extractorData` directory
+			case 'extra':
+			case 'extractor_reorder_mapping_name':
+			case 'extractor_remove_vars_name':
+			case 'extractor_value_label_mapping_name':
+				if (!is_null($value)) {
+					$atts[$name] = CERES_ROOT_DIR . '/data/extractorData/' . $value . '.json';
+				}
+				
+			break;
+			//attributes to go to `staticQueryResponses` directory
+			case 'local_response_name':
+				$atts[$name] = CERES_ROOT_DIR . '/data/staticQueryResponses/' . $value . '.json';
+			break;
+			default:
+		}
+	}
+	return $atts;
 }
