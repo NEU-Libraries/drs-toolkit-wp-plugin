@@ -62,9 +62,6 @@ wp_enqueue_style('ceres_leaflet_markercluster');
 wp_enqueue_style('ceres_leaflet_markercluster_default');
 
 
-
-
-
 // /* SETUP SHORTCODES USED BY CERES */
 
 add_shortcode('ceres_vp', 'ceres_vp_handler');
@@ -103,51 +100,12 @@ function ceres_vp_handler($atts) {
 
 	//doing this here to avoid any collisions from WP's attr filtering mechanism if I need to use it someday
 	$atts = expandAttsToFilePath($atts);
-// echo "<pre>";
-// print_r($atts);
-// echo "</pre>";
-// die();
-	//wp_enqueue_script('jquery-ui-sortable');
 	$vp = new ViewPackage($atts['vp_name']);
 	$vp->build();
 
 
-    // $atts['vp_name'] = 'tabular_wikibase_for_chinatown';
-    // $atts['use_local_response_data'] = true;
-    //$atts['local_response_name'] = 'wbPeopleResponse';
-
-
-// $extractor->setExtractorOptionValue('extractorReorderMappingFilePath', CERES_ROOT_DIR . '/data/extractorData/chinatownPeopleReorderMapping.json');
-
-// $extractor->setExtractorOptionValue('extractorRemoveVarsFilePath', CERES_ROOT_DIR . '/data/extractorData/chinatownPeopleRemoveVars.json');
-
-// $extractor->setExtractorOptionValue('extractorValueLabelMappingFilePath', CERES_ROOT_DIR . '/data/extractorData/chinatownPeopleValueLabelMapping.json');
-
-//@todo make this sequence more coherent and general. somehow
-//make use of my fancy StrUtils to convert snakecase and camelcase?
-if (!is_null($atts['extractor_reorder_mapping_name'])) {
-	$vp->setExtractorOptionValue(null, 'extractorReorderMappingFilePath', $atts['extractor_reorder_mapping_name']);
-}
-if (!is_null($atts['extractor_remove_vars_name'])) {
-	$vp->setExtractorOptionValue(null, 'extractorRemoveVarsFilePath', $atts['extractor_remove_vars_name']);
-}
-if (!is_null($atts['extractor_value_label_mapping_name'])) {
-	$vp->setExtractorOptionValue(null, 'extractorValueLabelMappingFilePath', $atts['extractor_value_label_mapping_name']);
-}
-
-
 
     $useLocalResponseData = $atts['use_local_response_data'];
-
-	// echo '<pre>';
-	//  print_r($atts); 
-	//  echo '</pre>';
-	 //die();
-
-    //$localResponseDataPath = CERES_ROOT_DIR . '/data/staticQueryResponses/' . $atts['local_response_name'] . '.json';
- 
-
-
 
     if($useLocalResponseData) {
         $vp->gatherData(null, $atts['local_response_name']);
