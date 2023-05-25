@@ -30,7 +30,26 @@ wp_add_inline_script('ceres_js_setup',
 	"var CERES_ROOT_URL = new URL(window.location.href).origin + '/Ceres';");
 
 
+
+/* REGISTER GET PARAMS */
+/* Used to pass data from one page to another, e.g. QIDs into inner queries */
+
+
+
+
+function ceres_query_vars( $qvars ) {
+	$qvars[] = 'ceres_qid';
+	return $qvars;
+}
+add_filter( 'query_vars', 'ceres_query_vars' );
+
+
+
+
+
 /* Leaflet and Leaflet plugins */
+
+
 //@todo make enqueuing conditional
 wp_register_script('ceres_leaflet', plugins_url('/libraries/Ceres/assets/js/leaflet/leaflet1.7.1.js', __FILE__));
 wp_register_script('ceres_leaflet_wicket', plugins_url('/libraries/Ceres/assets/js/leaflet/brc/wicket-1.3.8.js', __FILE__));
@@ -65,7 +84,7 @@ wp_enqueue_style('ceres_leaflet_markercluster_default');
 
 
 
-// /* SETUP SHORTCODES USED BY CERES */
+/* SETUP SHORTCODES USED BY CERES */
 
 add_shortcode('ceres_vp', 'ceres_vp_handler');
 add_shortcode('ceres_renderer', 'ceres_renderer_handler');
