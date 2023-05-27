@@ -33,10 +33,7 @@ wp_add_inline_script('ceres_js_setup',
 
 /* REGISTER GET PARAMS */
 /* Used to pass data from one page to another, e.g. QIDs into inner queries */
-
-
-
-
+// see https://developer.wordpress.org/reference/functions/get_query_var/
 function ceres_query_vars( $qvars ) {
 	$qvars[] = 'ceres_qid';
 	return $qvars;
@@ -88,10 +85,28 @@ wp_enqueue_style('ceres_leaflet_markercluster_default');
 
 add_shortcode('ceres_vp', 'ceres_vp_handler');
 add_shortcode('ceres_renderer', 'ceres_renderer_handler');
+add_shortcode('ceres_chinatown_qid', 'ceres_chinatown_qid_handler');
 // add_shortcode('ceres_test', 'ceres_test_handler');
 
 /* DEFINE THE HANDLERS USED BY THE SHORTCODES */
 
+function ceres_chinatown_qid_handler($atts) {
+	$atts = shortcode_atts(
+		['vp_name'],
+		$atts,
+		'ceres_chinatown_qid_handler'
+	);
+
+	$qid = get_query_var('ceres_qid');
+
+
+	$vp = new ViewPackage('chinatown_maintainers_list');
+	$vp->setFetcherOptionValue(null, 'rqReplacements', ['maintainerQid', $qid]);
+
+
+
+	return $qid;
+}
 
 function ceres_renderer_handler($atts) {
 	$atts = shortcode_atts(
