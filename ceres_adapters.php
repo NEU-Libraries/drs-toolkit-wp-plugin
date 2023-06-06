@@ -143,7 +143,14 @@ function ceres_vp_handler($atts) {
 // die();
 	//wp_enqueue_script('jquery-ui-sortable');
 	$vp = new ViewPackage($atts['vp_name']);
+
 	$vp->build();
+
+	if($atts['vp_name'] = 'leaflet_wikidata_for_public_art_map' ) {
+		$vp->setFetcherQueryFromFile(null, CERES_ROOT_DIR . '/data/rqFiles/publicart/leaflet.rq');
+		$vp->getRenderer()->getFetcher()->setEndpoint('https://query.wikidata.org/sparql');
+	}
+
 
 
     // $atts['vp_name'] = 'tabular_wikibase_for_chinatown';
@@ -185,12 +192,10 @@ if (!is_null($atts['extractor_value_label_mapping_name'])) {
 
     if($useLocalResponseData) {
         $vp->gatherData(null, $atts['local_response_name']);
-
     } else {
         $vp->gatherData();
 
     }
-
 	return $vp->render();
 
 }
