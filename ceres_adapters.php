@@ -146,47 +146,27 @@ function ceres_vp_handler($atts) {
 
 	$vp->build();
 
+// @TODO generalize this
 	if($atts['vp_name'] = 'leaflet_wikidata_for_public_art_map' ) {
 		$vp->setFetcherQueryFromFile(null, CERES_ROOT_DIR . '/data/rqFiles/publicart/leaflet.rq');
 		$vp->getRenderer()->getFetcher()->setEndpoint('https://query.wikidata.org/sparql');
 	}
 
-
-
-    // $atts['vp_name'] = 'tabular_wikibase_for_chinatown';
-    // $atts['use_local_response_data'] = true;
-    //$atts['local_response_name'] = 'wbPeopleResponse';
-
-
-// $extractor->setExtractorOptionValue('extractorReorderMappingFilePath', CERES_ROOT_DIR . '/data/extractorData/chinatownPeopleReorderMapping.json');
-
-// $extractor->setExtractorOptionValue('extractorRemoveVarsFilePath', CERES_ROOT_DIR . '/data/extractorData/chinatownPeopleRemoveVars.json');
-
-// $extractor->setExtractorOptionValue('extractorValueLabelMappingFilePath', CERES_ROOT_DIR . '/data/extractorData/chinatownPeopleValueLabelMapping.json');
-
-//@todo make this sequence more coherent and general. somehow
-//make use of my fancy StrUtils to convert snakecase and camelcase?
-if (!is_null($atts['extractor_reorder_mapping_name'])) {
-	$vp->setExtractorOptionValue(null, 'extractorReorderMappingFilePath', $atts['extractor_reorder_mapping_name']);
-}
-if (!is_null($atts['extractor_remove_vars_name'])) {
-	$vp->setExtractorOptionValue(null, 'extractorRemoveVarsFilePath', $atts['extractor_remove_vars_name']);
-}
-if (!is_null($atts['extractor_value_label_mapping_name'])) {
-	$vp->setExtractorOptionValue(null, 'extractorValueLabelMappingFilePath', $atts['extractor_value_label_mapping_name']);
-}
+	//@todo make this sequence more coherent and general. somehow
+	//make use of my fancy StrUtils to convert snakecase and camelcase?
+	if (!is_null($atts['extractor_reorder_mapping_name'])) {
+		$vp->setExtractorOptionValue(null, 'extractorReorderMappingFilePath', $atts['extractor_reorder_mapping_name']);
+	}
+	if (!is_null($atts['extractor_remove_vars_name'])) {
+		$vp->setExtractorOptionValue(null, 'extractorRemoveVarsFilePath', $atts['extractor_remove_vars_name']);
+	}
+	if (!is_null($atts['extractor_value_label_mapping_name'])) {
+		$vp->setExtractorOptionValue(null, 'extractorValueLabelMappingFilePath', $atts['extractor_value_label_mapping_name']);
+	}
 
 
 
     $useLocalResponseData = $atts['use_local_response_data'];
-
-	// echo '<pre>';
-	//  print_r($atts); 
-	//  echo '</pre>';
-	 //die();
-
-    //$localResponseDataPath = CERES_ROOT_DIR . '/data/staticQueryResponses/' . $atts['local_response_name'] . '.json';
- 
 
 
 
