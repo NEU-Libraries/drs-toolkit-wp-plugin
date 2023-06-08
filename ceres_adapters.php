@@ -137,19 +137,19 @@ function ceres_vp_handler($atts) {
 
 	//doing this here to avoid any collisions from WP's attr filtering mechanism if I need to use it someday
 	$atts = expandAttsToFilePath($atts);
-// echo "<pre>";
-// print_r($atts);
-// echo "</pre>";
-// die();
 	//wp_enqueue_script('jquery-ui-sortable');
 	$vp = new ViewPackage($atts['vp_name']);
 
 	$vp->build();
 
 // @TODO generalize this
-	if($atts['vp_name'] = 'leaflet_wikidata_for_public_art_map' ) {
-		$vp->setFetcherQueryFromFile(null, CERES_ROOT_DIR . '/data/rqFiles/publicart/leaflet.rq');
-		$vp->getRenderer()->getFetcher()->setEndpoint('https://query.wikidata.org/sparql');
+
+	switch ($atts['vp_name']) {
+		case 'leaflet_wikidata_for_public_art_map':
+		case 'leaflet_wikidata_for_public_art_table':
+			$vp->setFetcherQueryFromFile(null, CERES_ROOT_DIR . '/data/rqFiles/publicart/leaflet.rq');
+			$vp->getRenderer()->getFetcher()->setEndpoint('https://query.wikidata.org/sparql');	
+		break;
 	}
 
 	//@todo make this sequence more coherent and general. somehow
