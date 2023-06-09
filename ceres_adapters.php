@@ -137,7 +137,6 @@ function ceres_vp_handler($atts) {
 
 	//doing this here to avoid any collisions from WP's attr filtering mechanism if I need to use it someday
 	$atts = expandAttsToFilePath($atts);
-	//wp_enqueue_script('jquery-ui-sortable');
 	$vp = new ViewPackage($atts['vp_name']);
 
 	$vp->build();
@@ -167,8 +166,6 @@ function ceres_vp_handler($atts) {
 
 
     $useLocalResponseData = $atts['use_local_response_data'];
-
-
 
     if($useLocalResponseData) {
         $vp->gatherData(null, $atts['local_response_name']);
