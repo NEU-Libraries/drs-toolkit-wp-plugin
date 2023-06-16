@@ -19,7 +19,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/map_shortcode.php');
 require_once( plugin_dir_path( __FILE__ ) . 'inc/timeline_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/metabox.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'config.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'ceres_adapters.php' );
+//require_once( plugin_dir_path( __FILE__ ) . 'ceres_adapters.php' );
 
 
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
@@ -1512,32 +1512,6 @@ add_action('init', 'drstk_add_podcast_feed');
 function drstk_add_podcast_feed() {
   
   add_feed('podcasts', 'drstk_render_podcast_feed');
-}
-
-function drstk_render_podcast_feed() {
-  
-  header('Content-Type: application/rss+xml; charset=UTF-8', true);
-  
-  //goes to ?feed=podcasts instead of feed/podcasts for some reason');
-  //weirdly, reloading the page puts in the URL rewrite to /feed/podcasts at least in FF
-  //hopefully that won't matter to the feed readers
-  $queryOptions = array(
-      'action' => 'search',
-      'sub_action' => 'av',
-  );
-  
-  $queryParams = array(
-      'sort' => 'date_ssi+desc',
-      //@TODO: someday this should look up the total number of podcasts to give a real number 
-      'per_page' => '1001',
-  );
-  
-  //the default collection/set for the podcasts, from CERES Settings page
-  $resourceId = drstk_get_pid();
-  $rssImageUrl = get_option('drstk_podcast_image_url');
-  $fetcher = new Ceres_Drs_Fetcher($queryOptions, $queryParams);
-  $renderer = new Ceres_Podcast_Rss_Renderer($fetcher, $resourceId, array('rssImageUrl' => $rssImageUrl));
-  echo $renderer->render();
 }
 
 //@TODO: delete this. it's for debugging
