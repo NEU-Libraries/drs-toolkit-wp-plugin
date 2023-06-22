@@ -48,7 +48,7 @@ add_filter( 'query_vars', 'ceres_query_vars' );
 
 
 //@todo make enqueuing conditional
-wp_register_script('ceres_datatables' plugins_url('//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js'));
+wp_register_script('ceres_datatables', plugins_url('//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js'));
 wp_register_script('ceres_leaflet', plugins_url('/libraries/Ceres/assets/js/leaflet/leaflet1.7.1.js', __FILE__));
 wp_register_script('ceres_leaflet_wicket', plugins_url('/libraries/Ceres/assets/js/leaflet/brc/wicket-1.3.8.js', __FILE__));
 wp_register_script('ceres_leaflet_markercluster', plugins_url('/libraries/Ceres/assets/js/leaflet/leaflet-js-markercluster/leaflet.markercluster.js', __FILE__));
