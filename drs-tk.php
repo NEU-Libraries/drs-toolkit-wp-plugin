@@ -19,7 +19,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/map_shortcode.php');
 require_once( plugin_dir_path( __FILE__ ) . 'inc/timeline_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/metabox.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'config.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'ceres_adapters.php' );
+// require_once( plugin_dir_path( __FILE__ ) . 'ceres_adapters.php' );
 
 /* Moving toward a Ceres namespace for podcasting */
 // require_once( plugin_dir_path( __FILE__ ) . 'classes/fetchers/Ceres_Abstract_Fetcher.php' );
