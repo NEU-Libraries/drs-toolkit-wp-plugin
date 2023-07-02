@@ -1247,6 +1247,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             },
             function (response) {
                 var data = jQuery.parseJSON(response);
+
                 jQuery('#drs #sortable-' + tab_name + '-list')
                     .children('li')
                     .remove();
@@ -1481,138 +1482,132 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     },
 
     selectItem: function (e) {
-        item = jQuery(e.currentTarget);
-        pid = item.val();
-        title = item.siblings('.title').text();
-        thumbnail = item.siblings('img').attr('src');
-        parent = item.parents('.pane').attr('id');
-        if (item.parents('li').find('.key_date').text()) {
-            key_date = item.parents('li').find('.key_date').text();
-        } else {
-            key_date = '';
-        }
-        if (item.parents('li').find('.coords').text()) {
-            coords = item.parents('li').find('.coords').text();
-        } else {
-            coords = '';
-        }
-        if (parent == 'drs') {
-            repo = 'drs';
-        } else if (parent == 'dpla') {
-            repo = 'dpla';
-        } else {
-            repo = 'local';
-        }
-        if (item.is(':checked')) {
-            if (this.shortcode.items === undefined) {
-                this.shortcode.items = new drstk.Items({
-                    title: title,
-                    pid: pid,
-                    thumbnail: thumbnail,
-                    repo: repo,
-                    key_date: key_date,
-                    coords: coords,
-                });
-            } else if (
-                this.shortcode.items.where({
-                    pid: pid,
-                }).length == 0
-            ) {
-                this.shortcode.items.add({
-                    title: title,
-                    pid: pid,
-                    thumbnail: thumbnail,
-                    repo: repo,
-                    key_date: key_date,
-                    coords: coords,
-                });
-            }
-            if (this.shortcode.get('type') == 'single') {
-                var self = this;
-                //single items can only have one items so we'll clear the rest out
-                item.parents('ol')
-                    .find('input:checked')
-                    .not(item)
-                    .each(function () {
-                        jQuery(this).prop('checked', false);
-                        pid = jQuery(this).val();
-                        var remove = self.shortcode.items.where({
-                            pid: pid,
-                        });
-                        self.shortcode.items.remove(remove);
-                    });
-            }
-            if (this.shortcode.get('type') == 'single' && parent == 'drs') {
-                settings = self.shortcode.get('settings');
-                choices_array = ['Title', 'Abstract/Description', 'Creator', 'Date Created'];
-                choices = {};
-                jQuery.each(choices_array, function (i, choice) {
-                    choices[choice] = choice;
-                });
-                oldmeta = settings.where({
-                    name: 'metadata',
-                });
-                settings.remove(oldmeta);
-                settings.add({
-                    name: 'metadata',
-                    label: 'Metadata to Display',
-                    tag: 'checkbox',
-                    value: [],
-                    choices: choices,
-                });
-                self.shortcode.set('settings', settings);
-            } else if (this.shortcode.get('type') == 'single' && parent == 'dpla') {
-                old_search = this.search_params;
-                local_params = this.search_params;
-                var self = this;
-                local_params.pid = pid;
-                jQuery.post(
-                    dpla_ajax_obj.ajax_url,
-                    {
-                        _ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
-                        action: 'get_dpla_code',
-                        params: local_params,
-                    },
-                    function (data) {
-                        var data = jQuery.parseJSON(data);
-                        data = data.docs[0];
-                        choices = {};
-                        settings = self.shortcode.get('settings');
-                        if (data.sourceResource.title) {
-                            choices['Title'] = 'Title';
-                        }
-                        if (data.sourceResource.description) {
-                            choices['Abstract/Description'] = 'Abstract/Description';
-                        }
-                        if (data.sourceResource.contributor) {
-                            choices['Creator'] = 'Creator';
-                        }
-                        if (data.sourceResource.date.displayDate) {
-                            choices['Date Created'] = 'Date Created';
-                        }
-                        oldmeta = settings.where({
-                            name: 'metadata',
-                        });
-                        settings.remove(oldmeta);
-                        if (Object.keys(choices).length > 0) {
-                            settings.add({
-                                name: 'metadata',
-                                label: 'Metadata to Display',
-                                tag: 'checkbox',
-                                value: [],
-                                choices: choices,
-                            });
-                            self.shortcode.set('settings', settings);
-                        }
-                    }
-                );
-                this.search_params = old_search;
-            }
-        } else {
+        const item = jQuery(e.currentTarget);
+        const pid = item.val();
+        const title = item.siblings('.title').text();
+        const thumbnail = item.siblings('img').attr('src');
+        const parent = item.parents('.pane').attr('id');
+        const keyDate = item.parents('li').find('.key_date').text();
+        const coords = item.parents('li').find('.coords').text();
+        const repo = parent == 'drs' ? 'drs' : parent == 'dpla' ? 'dpla' : 'local';
+
+        // if the item is unchecked, remove it from the shortcode items
+        if (!item.is(':checked')) {
             var remove = this.shortcode.items.where({
                 pid: pid,
             });
             this.shortcode.items.remove(remove);
+            return;
+        }
+
+        const newItem = new drstk.Item({
+            title: title,
+            pid: pid,
+            thumbnail: thumbnail,
+            repo: repo,
+            key_date: keyDate,
+            coords: coords,
+        });
+        const existingItem = this.shortcode.items.where({ pid });
+
+        if (!this.shortcode.items) {
+            this.shortcode.items = new drstk.Items(newItem);
+        } else if (existingItem.length === 0) {
+            this.shortcode.items.add(existingItem);
+        }
+
+        // TODO: need to figure out what this is doing
+        // TODO: then we need to figure out how to do it better
+        if (this.shortcode.get('type') == 'single') {
+            var self = this;
+            //single items can only have one items so we'll clear the rest out
+            item.parents('ol')
+                .find('input:checked')
+                .not(item)
+                .each(function () {
+                    jQuery(this).prop('checked', false);
+                    pid = jQuery(this).val();
+                    var remove = self.shortcode.items.where({
+                        pid: pid,
+                    });
+                    self.shortcode.items.remove(remove);
+                });
+        }
+
+        if (this.shortcode.get('type') == 'single' && parent == 'drs') {
+            const settings = self.shortcode.get('settings');
+            const choices_array = ['Title', 'Abstract/Description', 'Creator', 'Date Created'];
+            const choices = choices_array.reduce((obj, choice) => {
+                obj[choice] = choice;
+                return obj;
+            }, {});
+
+            // TODO: this is a mess
+            const oldmeta = settings.where({
+                name: 'metadata',
+            });
+            settings.remove(oldmeta);
+            settings.add({
+                name: 'metadata',
+                label: 'Metadata to Display',
+                tag: 'checkbox',
+                value: [],
+                choices: choices,
+            });
+            self.shortcode.set('settings', settings);
+        }
+
+        if (this.shortcode.get('type') == 'single' && parent == 'dpla') {
+            const oldSearch = this.search_params;
+            const localParams = this.search_params;
+            var self = this;
+            localParams.pid = pid;
+            jQuery.post(
+                dpla_ajax_obj.ajax_url,
+                {
+                    _ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
+                    action: 'get_dpla_code',
+                    params: local_params,
+                },
+                function (data) {
+                    let data = jQuery.parseJSON(data);
+                    data = data.docs[0];
+                    const choices = {};
+                    const settings = self.shortcode.get('settings');
+
+                    const properties = {
+                        title: 'Title',
+                        description: 'Abstract/Description',
+                        contributor: 'Creator',
+                    };
+
+                    Object.keys(properties).forEach((key) => {
+                        if (data.sourceResource[key]) {
+                            choices[properties[key]] = properties[key];
+                        }
+                    });
+
+                    if (data.sourceResource.date?.displayDate) {
+                        choices['Date Created'] = 'Date Created';
+                    }
+
+                    const oldmeta = settings.where({
+                        name: 'metadata',
+                    });
+                    settings.remove(oldmeta);
+                    if (Object.keys(choices).length > 0) {
+                        settings.add({
+                            name: 'metadata',
+                            label: 'Metadata to Display',
+                            tag: 'checkbox',
+                            value: [],
+                            choices: choices,
+                        });
+                        self.shortcode.set('settings', settings);
+                    }
+                }
+            );
+            this.search_params = oldSearch;
         }
     },
 
