@@ -1508,7 +1508,8 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             key_date: keyDate,
             coords: coords,
         });
-        const existingItem = this.shortcode.items.where({ pid });
+
+        const existingItem = this.shortcode.items === undefined ? [] : this.shortcode.items.filter((item) => item.get('pid') === pid);
 
         if (!this.shortcode.items) {
             this.shortcode.items = new drstk.Items(newItem);
@@ -1570,7 +1571,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                     params: local_params,
                 },
                 function (data) {
-                    let data = jQuery.parseJSON(data);
+                    data = jQuery.parseJSON(data);
                     data = data.docs[0];
                     const choices = {};
                     const settings = self.shortcode.get('settings');
