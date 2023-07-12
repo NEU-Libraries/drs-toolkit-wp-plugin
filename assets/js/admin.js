@@ -495,128 +495,16 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         }
     },
 
-    /* inserts shortcode and closes modal */
+    /* insert shortcode and close modal */
     insertShortcode: function (e) {
-        const { items } = this.shortcode;
-
-        if (items == undefined) {
-            alert('Please select items before inserting a shortcode');
-            return;
-        }
-
-        // get the start and end date
-        let start_date = this.shortcode.get('settings').find((element) => element.name === 'start-date');
-        if (start_date !== undefined) {
-            start_date = start_date.attributes.value[0];
-        }
-
-        let end_date = this.shortcode.get('settings').find((element) => element.name === 'end-date');
-        if (end_date !== undefined) {
-            end_date = end_date.attributes.value[0];
-        }
-        // FIX: OPTIMIZE: this conditional
-        if (
-            !(
-                (this.current_tab == 6 && ((start_date != '' && start_date != undefined) || (end_date != '' && end_date != undefined)) && this.validTime() == true) ||
-                (this.current_tab == 6 && start_date == undefined && end_date == undefined && this.validTime() == true) ||
-                (this.current_tab == 5 && this.validMap() == true) ||
-                this.current_tab == 1 ||
-                (this.current_tab != 6 && this.current_tab != 1 && this.current_tab != 5)
-            )
-        ) {
-            if (this.current_tab == 1 && this.shortcode.items.length > 1) {
-                alert('There are more than 1 items selected for a single item shortcode.');
-                return;
-            }
-            if (this.current_tab == 6) {
-                titles = this.validTime();
-                titles = titles.join('\n');
-                alert('The following item(s) are outside the specified date range or do not have date values: \n' + titles);
-                return;
-            }
-            if (this.current_tab == 5) {
-                titles = this.validMap();
-                titles = titles.join('\n');
-                alert('The following item(s) may not have coordinate or location values: \n' + titles);
-                return;
-            }
-        }
-        // current_tab is actually not a tab -- it's the button for the type of shortcode
-
-        let shortcode = `<p>[drstk_${this.tabs[this.current_tab]}`;
-
-        // If check box is checked then add collection_Id attribute to the shortcode
-        if (jQuery('#drs-select-all-item').prop('checked')) {
-            shortcode += ` collection_id="${this.collection_id}"`;
-        } else {
-            let ids = [];
-            items.models.forEach((item) => {
-                let pid;
-                if (item.attributes.repo === 'dpla') {
-                    pid = 'dpla:' + item.attributes.pid;
-                } else if (item.attributes.repo === 'drs') {
-                    pid = item.attributes.pid;
-                } else if (item.attributes.repo === 'local') {
-                    pid = 'wp:' + item.attributes.pid;
-                }
-                ids.push(pid);
-            });
-            ids.join(',');
-            shortcode += ` id="${ids}"`;
-        }
-
-        const addToShortcode = (items, color) => {
-            const arr = [];
-            items.forEach((i) => {
-                let pid;
-                if (i.attributes.repo === 'dpla') {
-                    pid = 'dpla:' + i.attributes.pid;
-                } else if (i.attributes.repo === 'drs') {
-                    pid = i.attributes.pid;
-                } else if (i.attributes.repo === 'local') {
-                    pid = 'wp:' + i.attributes.pid;
-                }
-                arr.push(pid);
-            });
-            if (arr.length > 0) {
-                const color_desc = color.replace(' ', '_');
-                shortcode += ` ${color_desc}_color_desc_id="${arr.join(',')}"`;
-            }
-        };
-
-        if (this.current_tab === 5 || this.current_tab === 6) {
-            this.shortcode.get('colorsettings').models.forEach((color) => {
-                const items = this.shortcode.items.where({
-                    color: color.attributes.colorname,
-                });
-                addToShortcode(items, color.attributes.colorname);
-            });
-        }
-
-        this.shortcode.get('settings').models.forEach((setting) => {
-            let vals = setting.get('value');
-            if (Array.isArray(vals) && vals.length > 0) {
-                vals = vals.join(',');
-                shortcode += ` ${setting.get('name')}="${vals}"`;
-            } else if (vals !== '') {
-                shortcode += ` ${setting.get('name')}="${vals}"`;
-            }
+        insertShortcodeController(e, {
+            shortcode: this.shortcode,
+            validTime: this.validTime,
+            closeModal: this.closeModal,
+            currentTab: this.current_tab,
+            tabs: this.tabs,
+            collectionId: this.collection_id,
         });
-
-        const addToShortcodeColor = (color) => {
-            const color_desc = color.attributes.colorname.replace(' ', '_');
-            const hexval = color.attributes.colorHex.substring(1, color.attributes.colorHex.length);
-            shortcode += `${color_desc}_color_hex="${hexval}" `;
-        };
-
-        if (this.current_tab === 5 || this.current_tab === 6) {
-            this.shortcode.get('colorsettings').models.forEach(addToShortcodeColor);
-        }
-
-        shortcode += ']</p>';
-
-        this.closeModal(e);
-        window.wp.media.editor.insert(shortcode);
     },
 
     setDefaultSettings: function (options_settings) {
@@ -2251,52 +2139,6 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         });
         if (return_arr.length > 0 || no_year.length > 0) {
             return return_arr.concat(no_year);
-        } else {
-            return true;
-        }
-    },
-
-    validMap: function () {
-        no_map = [];
-        key_date_list = [];
-        _.each(
-            _.clone(
-                this.shortcode.items.where({
-                    repo: 'drs',
-                })
-            ),
-            function (item) {
-                if (!item.get('coords') || item.get('coords') == '' || item.get('coords') == undefined) {
-                    no_map.push(item.get('title'));
-                }
-            }
-        );
-        _.each(
-            _.clone(
-                this.shortcode.items.where({
-                    repo: 'local',
-                })
-            ),
-            function (item) {
-                if (!item.get('coords') || item.get('coords') == '' || item.get('coords') == undefined) {
-                    no_map.push(item.get('title'));
-                }
-            }
-        );
-        _.each(
-            _.clone(
-                this.shortcode.items.where({
-                    repo: 'dpla',
-                })
-            ),
-            function (item) {
-                if (!item.get('coords') || item.get('coords') == '' || item.get('coords') == undefined) {
-                    no_map.push(item.get('title'));
-                }
-            }
-        );
-        if (no_map.length > 0) {
-            return no_map;
         } else {
             return true;
         }

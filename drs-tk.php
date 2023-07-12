@@ -6,11 +6,17 @@
  * Author: Digital Scholarship Group, Northeastern University. Eli Zoller, Patrick Murray-John, et al.
  * Description: This plugin provides the core functionality of the CERES: Exhibit Toolkit and brings the content of a project from the DRS into Wordpress using the DRS API.
  */
+
 wp_register_script(
     'drstk_admin_selectitem',
     plugins_url('assets/js/admin/selectItem.js', __FILE__)
 );
 wp_enqueue_script('drstk_admin_selectitem');
+wp_register_script(
+    'drstk_admin_insertShortcode',
+    plugins_url('assets/js/admin/insertShortcode.js', __FILE__)
+);
+wp_enqueue_script('drstk_admin_insertShortcode');
 require_once plugin_dir_path(__FILE__) . 'inc/item.php';
 require_once plugin_dir_path(__FILE__) . 'inc/browse.php';
 require_once plugin_dir_path(__FILE__) . 'inc/breadcrumb.php';
