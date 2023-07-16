@@ -33,6 +33,7 @@ const validTime = (shortcode) => {
     return return_arr.length || no_year.length ? [...return_arr, ...no_year] : true;
 };
 
+// TODO: Found issue multiple items do not work for some reason
 function insertShortcodeController(e, { shortcode, closeModal, collectionId, currentTab, tabs }) {
     const { items } = shortcode;
 

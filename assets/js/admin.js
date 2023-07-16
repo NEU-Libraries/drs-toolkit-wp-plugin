@@ -499,7 +499,6 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     insertShortcode: function (e) {
         insertShortcodeController(e, {
             shortcode: this.shortcode,
-            validTime: this.validTime,
             closeModal: this.closeModal,
             currentTab: this.current_tab,
             tabs: this.tabs,
