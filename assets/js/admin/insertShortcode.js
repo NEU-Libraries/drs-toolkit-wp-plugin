@@ -9,13 +9,13 @@ const validMap = (items) => {
     return noMap.length ? noMap : true;
 };
 
-const validTime = () => {
+const validTime = (shortcode) => {
     const repos = ['drs', 'local', 'dpla'];
     let keyDateList = [];
     let no_year = [];
 
     repos.forEach((repo) => {
-        [...this.shortcode.items.where({ repo })].forEach((item) => {
+        [...shortcode.items.where({ repo })].forEach((item) => {
             let key_date = item.get('key_date');
             key_date !== undefined && key_date !== '' && key_date !== []
                 ? keyDateList.push({ year: key_date.split('/')[0], name: item.get('title') })
@@ -23,13 +23,8 @@ const validTime = () => {
         });
     });
 
-    // TODO: this is a mess
-
-    const {
-        shortcode: { get },
-    } = this;
-    const startDate = get('settings').where({ name: 'start-date' })[0].attributes.value[0];
-    const endDate = get('settings').where({ name: 'end-date' })[0].attributes.value[0];
+    const startDate = shortcode.get('settings').where({ name: 'start-date' })[0].attributes.value[0];
+    const endDate = shortcode.get('settings').where({ name: 'end-date' })[0].attributes.value[0];
 
     const return_arr = keyDateList
         .filter(({ year }) => (Array.isArray(year) ? year[0] < startDate && year[1] > endDate : year < startDate || year > endDate))
@@ -38,7 +33,7 @@ const validTime = () => {
     return return_arr.length || no_year.length ? [...return_arr, ...no_year] : true;
 };
 
-function insertShortcodeController(e, { shortcode, validTime, closeModal, collectionId, currentTab, tabs }) {
+function insertShortcodeController(e, { shortcode, closeModal, collectionId, currentTab, tabs }) {
     const { items } = shortcode;
 
     if (items == undefined) {
@@ -59,8 +54,8 @@ function insertShortcodeController(e, { shortcode, validTime, closeModal, collec
     // FIX: OPTIMIZE: this conditional
     if (
         !(
-            (currentTab == 6 && ((startDate != '' && startDate != undefined) || (endDate != '' && endDate != undefined)) && validTime() == true) ||
-            (currentTab == 6 && startDate == undefined && endDate == undefined && validTime() == true) ||
+            (currentTab == 6 && ((startDate != '' && startDate != undefined) || (endDate != '' && endDate != undefined)) && validTime(shortcode) == true) ||
+            (currentTab == 6 && startDate == undefined && endDate == undefined && validTime(shortcode) == true) ||
             (currentTab == 5 && validMap(items) == true) ||
             currentTab == 1 ||
             (currentTab != 6 && currentTab != 1 && currentTab != 5)
@@ -71,7 +66,7 @@ function insertShortcodeController(e, { shortcode, validTime, closeModal, collec
             return;
         }
         if (currentTab == 6) {
-            titles = validTime();
+            titles = validTime(shortcode);
             titles = titles.join('\n');
             alert('The following item(s) are outside the specified date range or do not have date values: \n' + titles);
             return;
