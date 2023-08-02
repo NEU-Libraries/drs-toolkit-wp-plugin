@@ -135,38 +135,38 @@ function getDRSItemsController({ currentTab, searchParams, tabs, geoCount, timeC
                     creation_year_sim: 'date',
                 };
                 Object.entries(data.response.facet_counts.facet_fields).forEach(([facetName, facetVals]) => {
-                    let thisFacet = FACETS[facetName];
+                    let currentFacet = FACETS[facetName];
 
-                    if (thisFacet && facetVals) {
+                    if (currentFacet && facetVals) {
                         const sorted = Object.entries(facetVals)
                             .map(([facet_val, facet_count]) => ({ [facet_val]: facet_count }))
                             .sort((a, b) => b[Object.keys(b)[0]] - a[Object.keys(a)[0]]);
 
-                        let facet_html = `<table class='facets-filter'><tbody>`;
-                        sorted.slice(0, 5).forEach((sorted_item) => {
-                            const key = Object.keys(sorted_item)[0];
-                            facet_html += `<tr>
-                                    <td><a href="" data-facet-val="${key}" data-facet-name="${thisFacet}" class="drs-facet-add">${key.replace(/--/g, ' -- ')}</a></td>
-                                    <td><span class="facet-value">${sorted_item[key]}</span></td>
+                        let facetHtml = `<table class='facets-filter'><tbody>`;
+                        sorted.slice(0, 5).forEach((sortedItem) => {
+                            const key = Object.keys(sortedItem)[0];
+                            facetHtml += `<tr>
+                                    <td><a href="" data-facet-val="${key}" data-facet-name="${currentFacet}" class="drs-facet-add">${key.replace(/--/g, ' -- ')}</a></td>
+                                    <td><span class="facet-value">${sortedItem[key]}</span></td>
                                 </tr>`;
                         });
-                        facet_html += '</tbody></table>';
+                        facetHtml += '</tbody></table>';
                         if (sorted.length > 5) {
-                            facet_html += `<a href="" class="drs-expand-facet" data-facet-name="${this_facet}">View More</a>
-                               <div class="drs-expanded-facet-${this_facet} hidden">
+                            facetHtml += `<a href="" class="drs-expand-facet" data-facet-name="${currentFacet}">View More</a>
+                               <div class="drs-expanded-facet-${currentFacet} hidden">
                                   <table class='facets-filter'>`;
-                            sorted.slice(5).forEach((sorted_item) => {
-                                const key = Object.keys(sorted_item)[0];
-                                facet_html += `<tr>
-                                    <td><a href="" data-facet-val="${key}" data-facet-name="${this_facet}" class="drs-facet-add">${key.replace(/--/g, ' -- ')}</a></td>
-                                    <td><span class="facet-value">${sorted_item[key]}</span></td>
+                            sorted.slice(5).forEach((sortedItem) => {
+                                const key = Object.keys(sortedItem)[0];
+                                facetHtml += `<tr>
+                                    <td><a href="" data-facet-val="${key}" data-facet-name="${currentFacet}" class="drs-facet-add">${key.replace(/--/g, ' -- ')}</a></td>
+                                    <td><span class="facet-value">${sortedItem[key]}</span></td>
                                 </tr>`;
                             });
-                            facet_html += '</table>';
+                            facetHtml += '</table>';
                         }
-                        const container = jQuery(`.drs-${this_facet}`);
-                        container.html(`<b>${this_facet.charAt(0).toUpperCase()}${this_facet.slice(1)}</b>`);
-                        container.append(facet_html, '</div>');
+                        const container = jQuery(`.drs-${currentFacet}`);
+                        container.html(`<b>${currentFacet.charAt(0).toUpperCase()}${currentFacet.slice(1)}</b>`);
+                        container.append(facetHtml, '</div>');
                     }
                 });
                 facetButtons = '';
