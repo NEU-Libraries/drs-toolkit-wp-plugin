@@ -34,6 +34,7 @@ const validTime = (shortcode) => {
 };
 
 // TODO: Found issue multiple items do not work for some reason
+// TODO: Replace current tab with tabname for clarity
 function insertShortcodeController(e, { shortcode, closeModal, collectionId, currentTab, tabs }) {
     const { items } = shortcode;
 

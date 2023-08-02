@@ -8,6 +8,11 @@
  */
 
 wp_register_script(
+    'drstk_admin_getdrsitems',
+    plugins_url('assets/js/admin/getDRSItems.js', __FILE__)
+);
+wp_enqueue_script('drstk_admin_getdrsitems');
+wp_register_script(
     'drstk_admin_selectitem',
     plugins_url('assets/js/admin/selectItem.js', __FILE__)
 );
