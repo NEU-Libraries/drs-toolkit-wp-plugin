@@ -105,6 +105,12 @@ drstk.Shortcode = Backbone.Model.extend({
     },
 });
 
+/**
+ * Backbone views
+ * Backbone.View.extend is used to create view classes in Backbone.
+ *
+ * @see https://backbonejs.org/#View-extend
+ */
 drstk.ItemView = Backbone.View.extend({
     tagName: 'li',
     item_template: _.template(
@@ -113,14 +119,20 @@ drstk.ItemView = Backbone.View.extend({
     item_noimg_template: _.template(
         "<label for='tile-<%=pid%>'><span class='dashicons dashicons-format-image'></span><br/><input id='tile-<%=pid%>' type='checkbox' class='tile <%=repo%>' value='<%=pid%>'/><span class='title'><%=title%></span></label>"
     ),
+    // initialize the view and render it
     initialize: function () {
         this.render();
     },
+    // render the view
     render: function () {
+        // Check if the model has a thumbnail attribute
+        // Not using ternary operator because it's not as readable
         if (this.model.attributes.thumbnail === undefined) {
-            this.$el.html(this.item_noimg_template(this.model.toJSON()));
+            // Use the template without an image if there's no thumbnail
+            this.$el.html(this.itemNoImgTemplate(this.model.toJSON()));
         } else {
-            this.$el.html(this.item_template(this.model.toJSON()));
+            // Use the template with an image if there's a thumbnail
+            this.$el.html(this.itemTemplate(this.model.toJSON()));
         }
     },
 });
@@ -318,6 +330,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                     var code = '#' + settings[desc + '_color_hex'];
                     if (desc && code) {
                         var colorsettings = self.shortcode.get('colorsettings');
+                        // TODO: Change this to use `` instead of string concatenation
                         var name = 'label-text-' + click_counter + '_desc';
                         var value = 'label-' + click_counter;
                         var label = 'label-' + click_counter;
