@@ -16,6 +16,7 @@ var drstk = {
  */
 
 // TODO: See if this can be moved to a seperate file
+// TODO: key_date convert to camel case keyDate
 drstk.Item = Backbone.Model.extend({
     title: '',
     pid: '',
@@ -47,6 +48,11 @@ drstk.ColorSetting = Backbone.Model.extend({
     colorHex: '',
 });
 
+/**
+ * Backbone collections
+ * Backbone.Collection.extend is used to create collection classes in Backbone.
+ * @see https://backbonejs.org/#Collection-extend
+ */
 drstk.Items = Backbone.Collection.extend({
     model: drstk.Item,
 });
@@ -59,6 +65,7 @@ drstk.ColorSettings = Backbone.Collection.extend({
     model: drstk.ColorSetting,
 });
 
+// This is main model where all the magic is stored
 drstk.Shortcode = Backbone.Model.extend({
     defaults: {
         type: '',
@@ -66,27 +73,34 @@ drstk.Shortcode = Backbone.Model.extend({
         settings: new drstk.Settings(),
         colorsettings: new drstk.ColorSettings(),
     },
+    // initialize the model
     initialize: function () {
         this.set('items', new drstk.Items());
         this.set('settings', new drstk.Settings());
         this.set('colorsettings', new drstk.ColorSettings());
     },
+    // parse the response to get items and settings
     parse: function (response) {
         response.items = new drstk.Items(response.items);
         response.settings = new drstk.Settings(response.settings);
         response.colorsettings = new drstk.ColorSettings(response.colorsettings);
         return response;
     },
+    // set the model
     set: function (attributes, options) {
-        if (attributes.items !== undefined && !(attributes.items instanceof drstk.Items)) {
-            attributes.items = new drstk.Items(attributes.items);
-        }
-        if (attributes.settings !== undefined && !(attributes.settings instanceof drstk.Settings)) {
-            attributes.settings = new drstk.Settings(attributes.settings);
-        }
-        if (attributes.colorsettings !== undefined && !(attributes.colorsettings instanceof drstk.ColorSettings)) {
-            attributes.colorsettings = new drstk.ColorSettings(attributes.colorsettings);
-        }
+        const mappings = {
+            items: drstk.Items,
+            settings: drstk.Settings,
+            colorsettings: drstk.ColorSettings,
+        };
+
+        // If any of the attributes are not already a model, convert them to one
+        Object.entries(mappings).forEach(([key, Class]) => {
+            if (attributes[key] && !(attributes[key] instanceof Class)) {
+                attributes[key] = new Class(attributes[key]);
+            }
+        });
+
         return Backbone.Model.prototype.set.call(this, attributes, options);
     },
 });
