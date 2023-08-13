@@ -8,6 +8,14 @@ var drstk = {
     },
 };
 
+/**
+ * Backbone models
+ * Backbone.Model.extend is used to create model classes in Backbone.
+ *
+ * @see https://backbonejs.org/#Model-extend
+ */
+
+// TODO: See if this can be moved to a seperate file
 drstk.Item = Backbone.Model.extend({
     title: '',
     pid: '',
@@ -2167,6 +2175,8 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             link.text('View More');
         }
     },
+
+    // This is not required to be changed from this file
 
     drsSort: function (e) {
         e.preventDefault();
