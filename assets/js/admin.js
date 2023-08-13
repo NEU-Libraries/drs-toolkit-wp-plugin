@@ -140,23 +140,28 @@ let clickCounter = 1;
 let colorArray = [];
 
 drstk.SettingView = Backbone.View.extend({
-    checkbox_template: wp.template('drstk-setting-checkbox'),
-    select_template: wp.template('drstk-setting-select'),
-    text_template: wp.template('drstk-setting-text'),
-    number_template: wp.template('drstk-setting-number'),
+    // Define templates using a mapping for easier access
+    templates: {
+        checkbox: wp.template('drstk-setting-checkbox'),
+        select: wp.template('drstk-setting-select'),
+        text: wp.template('drstk-setting-text'),
+        number: wp.template('drstk-setting-number'),
+    },
     tagName: 'tr',
+
+    // Initialize the view and render it
     initialize: function () {
         this.render();
     },
+
+    // Render the view
     render: function () {
-        if (this.model.attributes.tag == 'select') {
-            this.$el.html(this.select_template(this.model.toJSON()));
-        } else if (this.model.attributes.tag == 'checkbox') {
-            this.$el.html(this.checkbox_template(this.model.toJSON()));
-        } else if (this.model.attributes.tag == 'text') {
-            this.$el.html(this.text_template(this.model.toJSON()));
-        } else if (this.model.attributes.tag == 'number') {
-            this.$el.html(this.number_template(this.model.toJSON()));
+        // Get the appropriate template based on the model's tag attribute
+        const template = this.templates[this.model.attributes.tag];
+
+        // If a matching template is found, render it
+        if (template) {
+            this.$el.html(template(this.model.toJSON()));
         }
     },
 });
