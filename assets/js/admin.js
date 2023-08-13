@@ -234,22 +234,21 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     templates: {},
 
     shortcode: null,
-    geo_count: 0,
-    time_count: 0,
-    select_all: false,
-    old_shortcode: null,
-    collection_id: drstk_backbone_modal_l10n.collection_id,
+    geoCount: 0,
+    timeCount: 0,
+    selectAll: false,
+    oldShortcode: null,
+    collectionId: drstk_backbone_modal_l10n.collection_id,
     options: {},
-    search_q: '',
-    result_count: 0,
-    search_page: 1,
-    search_params: {
-        q: this.search_q,
-        page: this.search_page,
+    resultCount: 0,
+    searchParams: {
+        q: '',
+        page: 1,
         facets: {},
         sort: '',
     },
-    current_tab: 0, // store our current tab as a variable for easy lookup
+    // TODO: this currenttab is not a great way to track the current tab, use string or constant instead
+    currentTab: 0, // store our current tab as a variable for easy lookup
     tabs: {
         // dictionary of key/value pairs for our tabs
         1: 'single',
@@ -289,11 +288,11 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         this.initialize_templates();
         this.render();
         this.shortcode = new drstk.Shortcode({});
-        if (this.options && this.options.current_tab != '') {
+        if (this.options && this.options.currentTab != '') {
             var e = {
                 currentTarget: '',
             };
-            var num = _.invert(this.tabs)[this.options.current_tab];
+            var num = _.invert(this.tabs)[this.options.currentTab];
             var words = {
                 1: 'one',
                 2: 'two',
@@ -304,13 +303,13 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             };
             var word = words[num];
             e.currentTarget = "<a href='#" + word + "'></a>";
-            this.search_params.q = '';
-            this.search_params.page = 1;
+            this.searchParams.q = '';
+            this.searchParams.page = 1;
             this.navigate(e);
-            this.current_tab = num;
-            this.shortcode.type = this.tabs[this.current_tab];
+            this.currentTab = num;
+            this.shortcode.type = this.tabs[this.currentTab];
         } else {
-            this.current_tab = 1;
+            this.currentTab = 1;
         }
         var self = this;
         clickCounter = 1;
@@ -323,11 +322,11 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                 }
             });
         } else if (this.options) {
-            //starting with collection_id
-            self.select_all = true;
+            //starting with collectionId
+            self.selectAll = true;
             jQuery('.backbone_modal-main #drs-select-all-item').prop('checked', true);
         }
-        if (this.options && ((this.options.items && this.options.items.length > 0) || (this.options.collection_id && this.options.collection_id.length > 0))) {
+        if (this.options && ((this.options.items && this.options.items.length > 0) || (this.options.collectionId && this.options.collectionId.length > 0))) {
             var settings = this.options.settings;
             _.each(this.options.settings, function (setting, setting_name) {
                 if (setting_name.match(/([a-zA-Z_0-9-]*)_color_desc_id/)) {
@@ -370,8 +369,8 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             e.currentTarget = jQuery(".nav-tab[href='#selected']");
             this.navigateShortcode(e);
         }
-        if (this.options && this.options.old_shortcode) {
-            this.old_shortcode = this.options.old_shortcode;
+        if (this.options && this.options.oldShortcode) {
+            this.oldShortcode = this.options.oldShortcode;
         }
     },
 
@@ -487,8 +486,8 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             overflow: 'auto',
         });
         this.remove();
-        if (this.old_shortcode && jQuery(e.currentTarget).attr('id') != 'btn-ok') {
-            window.wp.media.editor.insert(this.old_shortcode);
+        if (this.oldShortcode && jQuery(e.currentTarget).attr('id') != 'btn-ok') {
+            window.wp.media.editor.insert(this.oldShortcode);
         }
         drstk.backbone_modal.__instance = undefined;
     },
@@ -499,22 +498,22 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         'use strict';
         e.preventDefault;
         if (jQuery('#drs-select-all-item').prop('checked')) {
-            jQuery('#sortable-' + this.tabs[this.current_tab] + '-list')
+            jQuery('#sortable-' + this.tabs[this.currentTab] + '-list')
                 .find('li input')
                 .prop('checked', true);
-            jQuery('#sortable-' + this.tabs[this.current_tab] + '-list')
+            jQuery('#sortable-' + this.tabs[this.currentTab] + '-list')
                 .find('li input')
                 .prop('disabled', true);
             jQuery('.tile').trigger('change'); //This will call the selectItem function for all the selected items.
             if (jQuery('.drs-pagination .tablenav-pages').children().length > 1) {
                 this.loopThroughPages();
             }
-            this.select_all = true;
+            this.selectAll = true;
         } else {
-            jQuery('#sortable-' + this.tabs[this.current_tab] + '-list')
+            jQuery('#sortable-' + this.tabs[this.currentTab] + '-list')
                 .find('li input')
                 .prop('checked', false);
-            jQuery('#sortable-' + this.tabs[this.current_tab] + '-list')
+            jQuery('#sortable-' + this.tabs[this.currentTab] + '-list')
                 .find('li input')
                 .prop('disabled', false);
             this.shortcode.items.models.length = 0; //When the "Select All" checkbox is enabled, all the shortcodes should become null.
@@ -540,9 +539,9 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         insertShortcodeController(e, {
             shortcode: this.shortcode,
             closeModal: this.closeModal,
-            currentTab: this.current_tab,
+            currentTab: this.currentTab,
             tabs: this.tabs,
-            collectionId: this.collection_id,
+            collectionId: this.collectionId,
         });
     },
 
@@ -1000,13 +999,13 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     /* navigation between shortcode types */
     navigate: function (e) {
         'use strict';
-        this.search_params.page = 1;
-        this.geo_count = 0;
-        this.time_count = 0;
+        this.searchParams.page = 1;
+        this.geoCount = 0;
+        this.timeCount = 0;
         this.shortcode.set('settings', new drstk.Settings());
         this.shortcode.set('colorsettings', new drstk.ColorSettings());
         if (this.shortcode.items) {
-            this.select_all = false;
+            this.selectAll = false;
             this.shortcode.items = new drstk.Items();
         }
         jQuery('.navigation-bar a').removeClass('active');
@@ -1018,18 +1017,18 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         var path = jQuery(e.currentTarget).attr('href');
         jQuery('.nav-tab').removeClass('nav-tab-active');
         jQuery(e.currentTarget).addClass('nav-tab-active');
-        this.search_params.page = 1;
-        this.search_params.q = '';
+        this.searchParams.page = 1;
+        this.searchParams.q = '';
         jQuery('.pane').hide();
         // @TODO this looks like switch is more appropriate
         if (path == '#drs') {
             jQuery('#drs').show();
-            jQuery("#drs input[name='search']").val(this.search_params.q);
+            jQuery("#drs input[name='search']").val(this.searchParams.q);
             this.getDRSitems();
         } else if (path == '#dpla') {
-            jQuery("#dpla input[name='search']").val(this.search_params.q);
+            jQuery("#dpla input[name='search']").val(this.searchParams.q);
             jQuery('#dpla').show();
-            if (this.current_tab == 4) {
+            if (this.currentTab == 4) {
                 jQuery('#dpla').html(
                     "<div class='notice notice-warning'><p>DPLA items cannot be used in embedded media. If you would like to use a media item from the DPLA, consider downloading it and upload it using the 'Local Items' tab.</p></div>"
                 );
@@ -1045,7 +1044,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         } else if (path == '#selected') {
             jQuery('#selected').show();
             this.getSelecteditems();
-            tab_name = this.tabs[this.current_tab];
+            tab_name = this.tabs[this.currentTab];
             var self = this;
 
             //Display items as disabled after switching tab between DRSItems and Selected items if the select-all
@@ -1094,7 +1093,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         var title = '';
         switch (id) {
             case '#one':
-                this.current_tab = 1;
+                this.currentTab = 1;
                 title = 'Single Item';
                 //clear items if there are more than one at this point
                 if (this.shortcode.items != undefined && this.shortcode.items.length > 1) {
@@ -1105,67 +1104,67 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                 }
                 break;
             case '#two':
-                this.current_tab = 2;
+                this.currentTab = 2;
                 title = 'Tile Gallery';
                 break;
             case '#three':
-                this.current_tab = 3;
+                this.currentTab = 3;
                 title = 'Gallery Slider';
                 break;
             case '#four':
-                this.current_tab = 4;
+                this.currentTab = 4;
                 title = 'Media Playlist';
                 break;
             case '#five':
-                this.current_tab = 5;
+                this.currentTab = 5;
                 title = 'Map';
                 break;
             case '#six':
-                this.current_tab = 6;
+                this.currentTab = 6;
                 title = 'Timeline';
                 break;
         }
         jQuery('.backbone_modal-main article').append(
             this.templates.tabContent({
                 title: title,
-                type: this.tabs[this.current_tab],
+                type: this.tabs[this.currentTab],
             })
         );
         jQuery('.navigation-bar a[href=' + id + ']').addClass('active');
         jQuery('#drs').show();
-        if (!this.select_all) {
+        if (!this.selectAll) {
             this.getDRSitems();
         }
         this.shortcode.set({
-            type: this.tabs[this.current_tab],
+            type: this.tabs[this.currentTab],
         });
         this.setDefaultSettings();
     },
 
     getDRSitems: function () {
         const data = getDRSItemsController({
-            currentTab: this.current_tab,
-            searchParams: this.search_params,
+            currentTab: this.currentTab,
+            searchParams: this.searchParams,
             tabs: this.tabs,
-            geoCount: this.geo_count,
-            timeCount: this.time_count,
+            geoCount: this.geoCount,
+            timeCount: this.timeCount,
             shortcodeItems: this.shortcode.items,
-            selectAll: this.select_all,
+            selectAll: this.selectAll,
             drstk: drstk,
         });
-        this.geo_count = data.geoCount;
-        this.time_count = data.timeCount;
+        this.geoCount = data.geoCount;
+        this.timeCount = data.timeCount;
     },
 
     selectItem: function (e) {
-        const data = selectItemController(e, { shortcode: this.shortcode, searchParams: this.search_params });
+        const data = selectItemController(e, { shortcode: this.shortcode, searchParams: this.searchParams });
         this.shortcode = data.shortcode;
-        this.search_params = data.searchParams;
+        this.searchParams = data.searchParams;
     },
 
     updateDRSPagination: function (data) {
         if (data.pagination.table.num_pages > 1) {
-            this.result_count = data.pagination.table.total_count;
+            this.resultCount = data.pagination.table.total_count;
             var pagination = '';
             if (data.pagination.table.current_page > 1) {
                 pagination += "<a href='#' class='prev-page'>&lt;&lt;</a>";
@@ -1211,7 +1210,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             }
         }
         if (jQuery.isNumeric(val) && val != 0) {
-            this.search_params.page = val;
+            this.searchParams.page = val;
             if (type == 'drs') {
                 this.getDRSitems();
             } else if (type == 'dpla') {
@@ -1221,29 +1220,29 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     },
 
     getDPLAitems: function () {
-        if (this.current_tab == 4) {
-            this.search_params.avfilter = true;
+        if (this.currentTab == 4) {
+            this.searchParams.avfilter = true;
         } else {
-            delete this.search_params.avfilter;
+            delete this.searchParams.avfilter;
         }
-        if (this.current_tab == 5) {
-            this.search_params.spatialfilter = true;
+        if (this.currentTab == 5) {
+            this.searchParams.spatialfilter = true;
         } else {
-            delete this.search_params.spatialfilter;
+            delete this.searchParams.spatialfilter;
         }
-        if (this.current_tab == 6) {
-            this.search_params.timefilter = true;
+        if (this.currentTab == 6) {
+            this.searchParams.timefilter = true;
         } else {
-            delete this.search_params.timefilter;
+            delete this.searchParams.timefilter;
         }
         var self = this;
-        tab_name = this.tabs[this.current_tab];
+        tab_name = this.tabs[this.currentTab];
         jQuery.post(
             dpla_ajax_obj.ajax_url,
             {
                 _ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
                 action: 'get_dpla_code',
-                params: this.search_params,
+                params: this.searchParams,
             },
             function (data) {
                 var data = jQuery.parseJSON(data);
@@ -1253,12 +1252,12 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                 if (data.count > 0) {
                     jQuery('.dpla-items').html('');
                     jQuery.each(data.docs, function (id, item) {
-                        if (self.current_tab == 6) {
+                        if (self.currentTab == 6) {
                             date = self.getDateFromSourceResource(item.sourceResource);
                         } else {
                             date = '';
                         }
-                        if (self.current_tab == 5) {
+                        if (self.currentTab == 5) {
                             coords = item.sourceResource.spatial[0].name;
                             if (item.sourceResource.spatial[0].coordinates != '' && item.sourceResource.spatial[0].coordinates != undefined) {
                                 coords = item.sourceResource.spatial[0].coordinates;
@@ -1266,29 +1265,29 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                         } else {
                             coords = '';
                         }
-                        if ((self.current_tab == 6 && date != '') || (self.current_tab == 5 && coords != '') || (self.current_tab != 5 && self.current_tab != 6)) {
+                        if ((self.currentTab == 6 && date != '') || (self.currentTab == 5 && coords != '') || (self.currentTab != 5 && self.currentTab != 6)) {
                             this_item = new drstk.Item();
                             var title = item.sourceResource.title;
                             if (Array.isArray(title)) {
                                 title = title[0];
                             }
                             this_item.set('pid', item.id).set('thumbnail', item.object).set('repo', 'dpla').set('title', title);
-                            if (self.current_tab == 6) {
+                            if (self.currentTab == 6) {
                                 this_item.set('key_date', date);
                             }
-                            if (self.current_tab == 5) {
+                            if (self.currentTab == 5) {
                                 this_item.set('coords', coords);
                             }
                             view = new drstk.ItemView({
                                 model: this_item,
                             });
                             jQuery('#dpla #sortable-' + tab_name + '-list').append(view.el);
-                            if (self.current_tab == 6) {
+                            if (self.currentTab == 6) {
                                 jQuery('#dpla #sortable-' + tab_name + '-list')
                                     .find('li:last-of-type')
                                     .append("<p>Date: <span class='key_date hidden'>" + date.join('-') + '</span>' + item.sourceResource.date.displayDate + '</p>');
                             }
-                            if (self.current_tab == 5) {
+                            if (self.currentTab == 5) {
                                 jQuery('#dpla #sortable-' + tab_name + '-list')
                                     .find('li:last-of-type')
                                     .append("<p>Map Info: <span class='coords hidden'>" + this_item.get('coords') + '</span>' + this_item.get('coords') + '</p>');
@@ -1316,21 +1315,21 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                                         short_item.get('key_date') == '' ||
                                         short_item.get('key_date') == undefined ||
                                         short_item.get('key_date') == []) &&
-                                    self.current_tab == 6
+                                    self.currentTab == 6
                                 ) {
                                     short_item.set('key_date', date);
                                 }
-                                if ((!short_item.get('coords') || short_item.get('coords') == '' || short_item.get('coords') == undefined) && self.current_tab == 5) {
+                                if ((!short_item.get('coords') || short_item.get('coords') == '' || short_item.get('coords') == undefined) && self.currentTab == 5) {
                                     short_item.set('coords', coords);
                                 }
                             }
                         }
                     });
-                    if (self.search_params.q != '') {
+                    if (self.searchParams.q != '') {
                         //too much pagination if there isn't a query
                         self.updateDPLAPagination(data);
                     }
-                    if (self.search_params.facets != {}) {
+                    if (self.searchParams.facets != {}) {
                         jQuery('.dpla-type, .dpla-subject').html('');
                         _.each(data.facets, function (facet, facet_name) {
                             if (facet_name == 'sourceResource.contributor' || facet_name == 'sourceResource.subject.name' || facet_name == 'sourceResource.type') {
@@ -1398,8 +1397,8 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                         dates = [1000, new Date().getFullYear()];
                         var min = 1000;
                         var max = new Date().getFullYear();
-                        if (self.search_params.facets.date != undefined) {
-                            dates = self.search_params.facets.date;
+                        if (self.searchParams.facets.date != undefined) {
+                            dates = self.searchParams.facets.date;
                         }
                         jQuery('.dpla-date-slider').slider({
                             range: true,
@@ -1407,14 +1406,14 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                             max: parseInt(max),
                             values: dates,
                             slide: function (event, ui) {
-                                self.search_params.facets.date = [ui.values[0], ui.values[1]];
+                                self.searchParams.facets.date = [ui.values[0], ui.values[1]];
                                 jQuery('.dpla-date .start').text(ui.values[0]);
                                 jQuery('.dpla-date .end').text(ui.values[1]);
                             },
                             create: function (event) {
-                                if (self.search_params.facets.date != undefined) {
-                                    jQuery('.dpla-date .start').text(self.search_params.facets.date[0]);
-                                    jQuery('.dpla-date .end').text(self.search_params.facets.date[1]);
+                                if (self.searchParams.facets.date != undefined) {
+                                    jQuery('.dpla-date .start').text(self.searchParams.facets.date[0]);
+                                    jQuery('.dpla-date .end').text(self.searchParams.facets.date[1]);
                                 } else {
                                     jQuery('.dpla-date .start').text(parseInt(min));
                                     jQuery('.dpla-date .end').text(parseInt(max));
@@ -1422,7 +1421,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                             },
                         });
                         facet_buttons = '';
-                        _.each(self.search_params.facets, function (facet_val, facet_name) {
+                        _.each(self.searchParams.facets, function (facet_val, facet_name) {
                             if (facet_name != 'date') {
                                 if (typeof facet_val == 'string') {
                                     facet_buttons +=
@@ -1507,7 +1506,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
 
     updateDPLAPagination: function (data) {
         num_pages = Math.round(data.count / data.limit);
-        current_page = parseInt(this.search_params.page);
+        current_page = parseInt(this.searchParams.page);
         if (num_pages > 1) {
             var pagination = '';
             if (current_page > 1) {
@@ -1536,7 +1535,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     },
 
     search: function (e) {
-        this.search_params.q = jQuery(e.currentTarget).siblings('input.drstk-search-input').val();
+        this.searchParams.q = jQuery(e.currentTarget).siblings('input.drstk-search-input').val();
         parent = jQuery(e.currentTarget).parents('.pane').attr('id');
         if (parent == 'drs') {
             this.getDRSitems();
@@ -1546,7 +1545,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     },
 
     getSelecteditems: function () {
-        tab_name = this.tabs[this.current_tab];
+        tab_name = this.tabs[this.currentTab];
         if (this.shortcode.items != undefined) {
             count = this.shortcode.items.length;
             if (count > 0) {
@@ -1610,11 +1609,11 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                                     if (data.docs[0].object) {
                                         item.set('thumbnail', data.docs[0].object);
                                     }
-                                    if ((!item.get('key_date') || item.get('key_date') == '' || item.get('key_date') == undefined) && self.current_tab == 6) {
+                                    if ((!item.get('key_date') || item.get('key_date') == '' || item.get('key_date') == undefined) && self.currentTab == 6) {
                                         date = self.getDateFromSourceResource(data.docs[0].sourceResource);
                                         item.set('key_date', date);
                                     }
-                                    if ((!item.get('coords') || item.get('coords') == '' || item.get('coords') == undefined) && self.current_tab == 5) {
+                                    if ((!item.get('coords') || item.get('coords') == '' || item.get('coords') == undefined) && self.currentTab == 5) {
                                         coords = data.docs[0].sourceResource.spatial[0].name;
                                         if (data.docs[0].sourceResource.spatial[0].coordinates != '' && data.docs[0].sourceResource.spatial[0].coordinates != undefined) {
                                             coords = data.docs[0].sourceResource.spatial[0].coordinates;
@@ -1638,7 +1637,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                                     if (!data.post_mime_type.includes('audio') && !data.post_mime_type.includes('video')) {
                                         item.set('thumbnail', data.guid);
                                     }
-                                    if ((!item.get('key_date') || item.get('key_date') == '' || item.get('key_date') == undefined) && self.current_tab == 6) {
+                                    if ((!item.get('key_date') || item.get('key_date') == '' || item.get('key_date') == undefined) && self.currentTab == 6) {
                                         jQuery.ajax({
                                             url: item_admin_obj.ajax_url,
                                             type: 'POST',
@@ -1653,7 +1652,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                                             },
                                         });
                                     }
-                                    if ((!item.get('coords') || item.get('coords') == '' || item.get('coords') == undefined) && self.current_tab == 5) {
+                                    if ((!item.get('coords') || item.get('coords') == '' || item.get('coords') == undefined) && self.currentTab == 5) {
                                         jQuery.ajax({
                                             url: item_admin_obj.ajax_url,
                                             type: 'POST',
@@ -1694,7 +1693,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                         }, 1000);
                     }
                 });
-            } else if (this.select_all == true) {
+            } else if (this.selectAll == true) {
                 jQuery('.selected-items').html("<div class='notice notice-warning'><p>Selected items are loading...</p></div>");
             } else {
                 jQuery('.selected-items').html("<div class='notice notice-warning'><p>You haven't selected any items yet.</p></div>");
@@ -1702,7 +1701,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                     .children('li')
                     .remove();
             }
-        } else if (this.select_all == true) {
+        } else if (this.selectAll == true) {
             //if there are no items in the list yet, lets wait 2 seconds for the drs connections to try to finish before we refresh this tab
             jQuery('.selected-items').html("<div class='notice notice-warning'><p>Selected items are loading...</p></div>");
             if (jQuery('#selected #sortable-' + tab_name + '-list').children().length < 1) {
@@ -1711,7 +1710,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                 interval = setInterval(function () {
                     if (
                         jQuery('#selected #sortable-' + tab_name + '-list').children().length < 1 ||
-                        jQuery('#selected #sortable-' + tab_name + '-list').children().length < self.result_count
+                        jQuery('#selected #sortable-' + tab_name + '-list').children().length < self.resultCount
                     ) {
                         jQuery('#drs #drs-select-all-item').trigger('change'); //triggers SelectAllItem
                         jQuery(".nav-tab[href='#selected']").trigger('click'); //triggers navigateShortcode
@@ -1729,12 +1728,12 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     },
 
     appendSingleItem: function (item) {
-        tab_name = this.tabs[this.current_tab];
+        tab_name = this.tabs[this.currentTab];
         var itemView = new drstk.ItemView({
             model: item,
         });
         jQuery('#selected #sortable-' + tab_name + '-list').append(itemView.el);
-        if (this.current_tab == 5 || this.current_tab == 6) {
+        if (this.currentTab == 5 || this.currentTab == 6) {
             colors = '';
             var self = this;
             _.each(self.shortcode.get('colorsettings').models, function (color) {
@@ -1971,7 +1970,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                         .set('title', title)
                         .set('coords', item.get('coords'))
                         .set('key_date', item.get('key_date'));
-                    if ((self.current_tab == 6 && this_item.get('key_date') == undefined) || (self.current_tab == 5 && this_item.get('coords') == undefined)) {
+                    if ((self.currentTab == 6 && this_item.get('key_date') == undefined) || (self.currentTab == 5 && this_item.get('coords') == undefined)) {
                         jQuery.ajax({
                             url: item_admin_obj.ajax_url,
                             type: 'POST',
@@ -1982,11 +1981,11 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                                 pid: item.get('pid'),
                             },
                             success: function (data) {
-                                if (self.current_tab == 5) {
+                                if (self.currentTab == 5) {
                                     this_item.set('coords', data._map_coords[0]);
                                     item.set('coords', data._map_coords[0]);
                                 }
-                                if (self.current_tab == 6) {
+                                if (self.currentTab == 6) {
                                     this_item.set('key_date', data._timeline_date[0]);
                                     item.set('key_date', data._timeline_date[0]);
                                 }
@@ -1997,12 +1996,12 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                         model: this_item,
                     });
                     jQuery('#local').append(view.el);
-                    if (self.current_tab == 6) {
+                    if (self.currentTab == 6) {
                         jQuery('#local')
                             .find('li:last-of-type')
                             .append("<p>Date: <span class='key_date'>" + this_item.get('key_date') + '</span></p>');
                     }
-                    if (self.current_tab == 5) {
+                    if (self.currentTab == 5) {
                         jQuery('#local')
                             .find('li:last-of-type')
                             .append("<p>Map Info: <span class='coords'>" + this_item.get('coords') + '</span></p>');
@@ -2022,7 +2021,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
 
     addMediaItems: function (e) {
         if (typeof frame !== 'undefined') frame.close();
-        if (this.current_tab == 1) {
+        if (this.currentTab == 1) {
             multiple = false;
         } else {
             multiple = true;
@@ -2051,7 +2050,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                     ) {
                         this_item = new drstk.Item();
                         this_item.set('pid', pid).set('thumbnail', thumbnail).set('repo', repo).set('title', title);
-                        if (self.current_tab == 5 || self.current_tab == 6) {
+                        if (self.currentTab == 5 || self.currentTab == 6) {
                             jQuery.ajax({
                                 url: item_admin_obj.ajax_url,
                                 type: 'POST',
@@ -2062,10 +2061,10 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                                     pid: this_item.get('pid'),
                                 },
                                 success: function (data) {
-                                    if (self.current_tab == 6) {
+                                    if (self.currentTab == 6) {
                                         this_item.set('key_date', data._timeline_date[0]);
                                     }
-                                    if (self.current_tab == 5) {
+                                    if (self.currentTab == 5) {
                                         this_item.set('coords', data._map_coords[0]);
                                     }
                                 },
@@ -2085,18 +2084,18 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                         });
                         jQuery('#local').append(view.el);
                         jQuery('#local').find('li:last-of-type input').prop('checked', true);
-                        if (self.current_tab == 6) {
+                        if (self.currentTab == 6) {
                             jQuery('#local')
                                 .find('li:last-of-type')
                                 .append("<p>Date: <span class='key_date'>" + this_item.get('key_date') + '</span></p>');
                         }
-                        if (self.current_tab == 5) {
+                        if (self.currentTab == 5) {
                             jQuery('#local')
                                 .find('li:last-of-type')
                                 .append("<p>Map Info: <span class='coords'>" + this_item.get('coords') + '</span></p>');
                         }
                     }
-                    if (self.current_tab == 1) {
+                    if (self.currentTab == 1) {
                         jQuery.ajax({
                             url: item_admin_obj.ajax_url,
                             type: 'POST',
@@ -2138,21 +2137,21 @@ drstk.backbone_modal.Application = Backbone.View.extend({
 
     dplaSort: function (e) {
         e.preventDefault();
-        this.search_params.sort = jQuery("select[name='dpla-sort']").val();
+        this.searchParams.sort = jQuery("select[name='dpla-sort']").val();
         this.getDPLAitems();
     },
 
     dplaFacet: function (e) {
         e.preventDefault();
         link = jQuery(e.currentTarget);
-        if (this.search_params.facets[link.data('facet-name')] == undefined) {
-            this.search_params.facets[link.data('facet-name')] = link.data('facet-val');
-        } else if (this.search_params.facets[link.data('facet-name')].length > 0) {
-            orig_value = this.search_params.facets[link.data('facet-name')];
+        if (this.searchParams.facets[link.data('facet-name')] == undefined) {
+            this.searchParams.facets[link.data('facet-name')] = link.data('facet-val');
+        } else if (this.searchParams.facets[link.data('facet-name')].length > 0) {
+            orig_value = this.searchParams.facets[link.data('facet-name')];
             if (typeof orig_value == 'string') {
-                this.search_params.facets[link.data('facet-name')] = [orig_value, link.data('facet-val')];
+                this.searchParams.facets[link.data('facet-name')] = [orig_value, link.data('facet-val')];
             } else {
-                this.search_params.facets[link.data('facet-name')].push(link.data('facet-val'));
+                this.searchParams.facets[link.data('facet-name')].push(link.data('facet-val'));
             }
         }
         this.getDPLAitems();
@@ -2177,7 +2176,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     dplaFacetRemove: function (e) {
         e.preventDefault();
         link = jQuery(e.currentTarget);
-        values = this.search_params.facets[link.data('facet-name')];
+        values = this.searchParams.facets[link.data('facet-name')];
         if (link.data('facet-name') != 'date') {
             new_values = [];
             if (typeof values != 'string') {
@@ -2188,9 +2187,9 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                 });
             }
             if (new_values.length == 0) {
-                delete this.search_params.facets[link.data('facet-name')];
+                delete this.searchParams.facets[link.data('facet-name')];
             } else {
-                this.search_params.facets[link.data('facet-name')] = new_values;
+                this.searchParams.facets[link.data('facet-name')] = new_values;
             }
             this.getDPLAitems();
         }
@@ -2212,21 +2211,21 @@ drstk.backbone_modal.Application = Backbone.View.extend({
 
     drsSort: function (e) {
         e.preventDefault();
-        this.search_params.sort = jQuery("select[name='drs-sort']").val();
+        this.searchParams.sort = jQuery("select[name='drs-sort']").val();
         this.getDRSitems();
     },
 
     drsFacet: function (e) {
         e.preventDefault();
         link = jQuery(e.currentTarget);
-        if (this.search_params.facets[link.data('facet-name')] == undefined) {
-            this.search_params.facets[link.data('facet-name')] = link.data('facet-val');
-        } else if (this.search_params.facets[link.data('facet-name')].length > 0) {
-            orig_value = this.search_params.facets[link.data('facet-name')];
+        if (this.searchParams.facets[link.data('facet-name')] == undefined) {
+            this.searchParams.facets[link.data('facet-name')] = link.data('facet-val');
+        } else if (this.searchParams.facets[link.data('facet-name')].length > 0) {
+            orig_value = this.searchParams.facets[link.data('facet-name')];
             if (typeof orig_value == 'string') {
-                this.search_params.facets[link.data('facet-name')] = [orig_value, link.data('facet-val')];
+                this.searchParams.facets[link.data('facet-name')] = [orig_value, link.data('facet-val')];
             } else {
-                this.search_params.facets[link.data('facet-name')].push(link.data('facet-val'));
+                this.searchParams.facets[link.data('facet-name')].push(link.data('facet-val'));
             }
         }
         this.getDRSitems();
@@ -2246,7 +2245,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     drsFacetRemove: function (e) {
         e.preventDefault();
         link = jQuery(e.currentTarget);
-        values = this.search_params.facets[link.data('facet-name')];
+        values = this.searchParams.facets[link.data('facet-name')];
         new_values = [];
         if (typeof values != 'string') {
             _.each(values, function (val) {
@@ -2256,9 +2255,9 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             });
         }
         if (new_values.length == 0) {
-            delete this.search_params.facets[link.data('facet-name')];
+            delete this.searchParams.facets[link.data('facet-name')];
         } else {
-            this.search_params.facets[link.data('facet-name')] = new_values;
+            this.searchParams.facets[link.data('facet-name')] = new_values;
         }
         this.getDRSitems();
     },
