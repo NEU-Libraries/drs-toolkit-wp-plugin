@@ -136,8 +136,8 @@ drstk.ItemView = Backbone.View.extend({
         }
     },
 });
-var click_counter = 1;
-var colorArray = [];
+let clickCounter = 1;
+let colorArray = [];
 
 drstk.SettingView = Backbone.View.extend({
     checkbox_template: wp.template('drstk-setting-checkbox'),
@@ -308,7 +308,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             this.current_tab = 1;
         }
         var self = this;
-        click_counter = 1;
+        clickCounter = 1;
         if (this.options && this.options.items && this.options.items.length > 0) {
             _.each(this.options.items, function (item, i) {
                 if (i == 0) {
@@ -331,9 +331,9 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                     if (desc && code) {
                         var colorsettings = self.shortcode.get('colorsettings');
                         // TODO: Change this to use `` instead of string concatenation
-                        var name = 'label-text-' + click_counter + '_desc';
-                        var value = 'label-' + click_counter;
-                        var label = 'label-' + click_counter;
+                        var name = 'label-text-' + clickCounter + '_desc';
+                        var value = 'label-' + clickCounter;
+                        var label = 'label-' + clickCounter;
                         desc = desc.replace('_', ' ');
                         colorsettings.add({
                             name: name,
@@ -358,7 +358,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                             });
                             item[0].attributes['color'] = desc;
                         });
-                        click_counter++;
+                        clickCounter++;
                     }
                 }
             });
@@ -474,7 +474,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     /* close the modal */
     closeModal: function (e) {
         'use strict';
-        click_counter = 1;
+        clickCounter = 1;
         e.preventDefault;
         this.undelegateEvents();
         jQuery(document).off('focusin');
@@ -955,10 +955,10 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     settingsAddColor: function (e) {
         type = this.shortcode.get('type');
         colorsettings = this.shortcode.get('colorsettings');
-        name = 'label-text-' + click_counter + '_desc';
-        value = 'label-' + click_counter;
-        label = 'label-' + click_counter;
-        colorname = 'label-color-' + click_counter;
+        name = 'label-text-' + clickCounter + '_desc';
+        value = 'label-' + clickCounter;
+        label = 'label-' + clickCounter;
+        colorname = 'label-color-' + clickCounter;
         colorsettings.add({
             name: name,
             value: value,
@@ -969,7 +969,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         });
         this.shortcode.set('colorsettings', colorsettings);
         this.getSettings();
-        click_counter = click_counter + 1;
+        clickCounter = clickCounter + 1;
     },
 
     deleteColorRow: function (e) {
