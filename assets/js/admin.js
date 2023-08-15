@@ -522,15 +522,16 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     loopThroughPages: function () {
         var cur = parseInt(jQuery('.drs-pagination .tablenav-pages .current-page').text());
         var next = jQuery('.drs-pagination .tablenav-pages .current-page').next('a');
-        if (parseInt(next.text()) == cur + 1) {
-            jQuery(next.trigger('click')); //trigger paginate
-            jQuery('.drs-pagination .tablenav-pages .current-page').removeClass('current-page');
-            next.addClass('current-page');
-            this.loopThroughPages();
-        } else {
+        if (parseInt(next.text()) != cur + 1) {
             //if it doesn't need to paginate anymore we just send it back to the first page
             jQuery('.drs-pagination .tablenav-pages .prev-page').next('a').trigger('click');
+            return;
         }
+
+        jQuery(next.trigger('click')); //trigger paginate
+        jQuery('.drs-pagination .tablenav-pages .current-page').removeClass('current-page');
+        next.addClass('current-page');
+        this.loopThroughPages();
     },
 
     /* insert shortcode and close modal */
