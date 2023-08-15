@@ -285,11 +285,11 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             'settingsAddColor',
             'deleteColorRow'
         );
-        this.initialize_templates();
+        this.initializeTemplates();
         this.render();
         this.shortcode = new drstk.Shortcode({});
         if (this.options && this.options.currentTab != '') {
-            var e = {
+            let e = {
                 currentTarget: '',
             };
             var num = _.invert(this.tabs)[this.options.currentTab];
@@ -379,7 +379,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
      * the wp.template class supplied by WordPress in 'wp-util'. Each template name maps to the ID of a
      * script tag ( without the 'tmpl-' namespace ) created in template-data.php.
      */
-    initialize_templates: function () {
+    initializeTemplates: function () {
         this.templates.window = wp.template('drstk-modal-window');
         this.templates.backdrop = wp.template('drstk-modal-backdrop');
         this.templates.menuItem = wp.template('drstk-modal-menu-item');
@@ -493,7 +493,6 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     },
 
     /* select all items when 'Select All' checkbox is enabled */
-
     selectAllItem: function (e) {
         'use strict';
         e.preventDefault;
@@ -509,15 +508,15 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                 this.loopThroughPages();
             }
             this.selectAll = true;
-        } else {
-            jQuery('#sortable-' + this.tabs[this.currentTab] + '-list')
-                .find('li input')
-                .prop('checked', false);
-            jQuery('#sortable-' + this.tabs[this.currentTab] + '-list')
-                .find('li input')
-                .prop('disabled', false);
-            this.shortcode.items.models.length = 0; //When the "Select All" checkbox is enabled, all the shortcodes should become null.
+            return;
         }
+        jQuery('#sortable-' + this.tabs[this.currentTab] + '-list')
+            .find('li input')
+            .prop('checked', false);
+        jQuery('#sortable-' + this.tabs[this.currentTab] + '-list')
+            .find('li input')
+            .prop('disabled', false);
+        this.shortcode.items.models.length = 0; //When the "Select All" checkbox is enabled, all the shortcodes should become null.
     },
 
     loopThroughPages: function () {
