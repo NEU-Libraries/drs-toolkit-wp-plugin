@@ -99,7 +99,7 @@ function getDRSItemsController({ currentTab, searchParams, tabs, geoCount, timeC
                     if (tabName === 'map') {
                         jQuery('#drs #sortable-' + tabName + '-list')
                             .find('li:last-of-type')
-                            .append("<p>Map Info: <span class='coords'>" + this_item.get('coords') + '</span></p>');
+                            .append("<p>Map Info: <span class='coords'>" + newItem.get('coords') + '</span></p>');
                     }
                     if (shortcodeItems != undefined && shortcodeItems.where({ pid: item.id }).length > 0) {
                         jQuery('#drs #sortable-' + tabName + '-list')
