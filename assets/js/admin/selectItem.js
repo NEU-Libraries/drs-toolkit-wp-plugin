@@ -1,6 +1,6 @@
 function selectItemController(e, { shortcode, searchParams }) {
     const item = jQuery(e.currentTarget);
-    const pid = item.val();
+    let pid = item.val();
     const title = item.siblings('.title').text();
     const thumbnail = item.siblings('img').attr('src');
     const parent = item.parents('.pane').attr('id');
@@ -23,16 +23,21 @@ function selectItemController(e, { shortcode, searchParams }) {
         pid: pid,
         thumbnail: thumbnail,
         repo: repo,
-        key_date: keyDate,
+        keyDate: keyDate,
         coords: coords,
     });
+    console.log('Calling select item');
 
-    const existingItem = shortcode.items === undefined ? [] : shortcode.items.filter((item) => item.get('pid') === pid);
+    // const existingItem = shortcode.items === undefined ? [] : shortcode.items.filter((item) => item.get('pid') === pid);
 
-    if (!shortcode.items) {
+    if (shortcode.items == undefined) {
         shortcode.items = new drstk.Items(newItem);
-    } else if (existingItem.length === 0) {
-        shortcode.items.add(existingItem);
+    } else if (
+        shortcode.items.where({
+            pid: pid,
+        }).length == 0
+    ) {
+        shortcode.items.add(newItem);
     }
 
     if (shortcode.get('type') == 'single') {
@@ -52,8 +57,8 @@ function selectItemController(e, { shortcode, searchParams }) {
 
     if (shortcode.get('type') == 'single' && parent == 'drs') {
         const settings = shortcode.get('settings');
-        const choices_array = ['Title', 'Abstract/Description', 'Creator', 'Date Created'];
-        const choices = choices_array.reduce((obj, choice) => {
+        const choicesArr = ['Title', 'Abstract/Description', 'Creator', 'Date Created'];
+        const choices = choicesArr.reduce((obj, choice) => {
             obj[choice] = choice;
             return obj;
         }, {});
@@ -125,5 +130,6 @@ function selectItemController(e, { shortcode, searchParams }) {
         );
         searchParams = oldSearch;
     }
+
     return { shortcode, searchParams };
 }
