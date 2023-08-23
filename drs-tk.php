@@ -8,6 +8,11 @@
  */
 
 wp_register_script(
+    'drstk_admin_setdefaultsettings',
+    plugins_url('assets/js/admin/setDefaultSettings.js', __FILE__)
+);
+wp_enqueue_script('drstk_admin_setdefaultsettings');
+wp_register_script(
     'drstk_admin_getdrsitems',
     plugins_url('assets/js/admin/getDRSItems.js', __FILE__)
 );
