@@ -44,12 +44,16 @@ function insertShortcodeController(e, { shortcode, closeModal, collectionId, cur
     }
 
     // get the start and end date
-    let startDate = shortcode.get('settings').find((element) => element.name === 'start-date');
+    let startDate = shortcode.get('settings').where({
+        name: 'start-date',
+    })[0];
     if (startDate !== undefined) {
         startDate = startDate.attributes.value[0];
     }
 
-    let endDate = shortcode.get('settings').find((element) => element.name === 'end-date');
+    let endDate = shortcode.get('settings').where({
+        name: 'end-date',
+    })[0];
     if (endDate !== undefined) {
         endDate = endDate.attributes.value[0];
     }
@@ -81,7 +85,6 @@ function insertShortcodeController(e, { shortcode, closeModal, collectionId, cur
         }
     }
     // currentTab is actually not a tab -- it's the button for the type of shortcode
-
     let shortcodeStr = `<p>[drstk_${tabs[currentTab]}`;
 
     // If check box is checked then add collection_Id attribute to the shortcodeStr
@@ -100,9 +103,21 @@ function insertShortcodeController(e, { shortcode, closeModal, collectionId, cur
             }
             ids.push(pid);
         });
-        ids.join(',');
-        shortcodeStr += ` id="${ids}"`;
+        // If there are multiple items then add id attribute to the shortcodeStr
+        // default separator is comma so not showing it
+        let idsString = ids.join();
+        shortcodeStr += ` id="${idsString}"`;
     }
+
+    shortcode.get('settings').models.forEach((setting) => {
+        let vals = setting.get('value');
+        if (Array.isArray(vals) && vals.length > 0) {
+            vals = vals.join(',');
+            shortcodeStr += ` ${setting.get('name')}="${vals}" `;
+        } else if (vals !== '') {
+            shortcodeStr += ` ${setting.get('name')}="${vals}" `;
+        }
+    });
 
     const addToShortcode = (items, color) => {
         const arr = [];
@@ -123,6 +138,13 @@ function insertShortcodeController(e, { shortcode, closeModal, collectionId, cur
         }
     };
 
+    const addToShortcodeColor = (color) => {
+        shortcodeStr += ' ';
+        const colorDesc = color.attributes.colorname.replace(' ', '_');
+        const hexval = color.attributes.colorHex.substring(1, color.attributes.colorHex.length);
+        shortcodeStr += ` ${colorDesc}_color_hex="${hexval}" `;
+    };
+
     if (currentTab === 5 || currentTab === 6) {
         shortcode.get('colorsettings').models.forEach((color) => {
             const items = shortcode.items.where({
@@ -130,25 +152,7 @@ function insertShortcodeController(e, { shortcode, closeModal, collectionId, cur
             });
             addToShortcode(items, color.attributes.colorname);
         });
-    }
 
-    shortcode.get('settings').models.forEach((setting) => {
-        let vals = setting.get('value');
-        if (Array.isArray(vals) && vals.length > 0) {
-            vals = vals.join(',');
-            shortcodeStr += ` ${setting.get('name')}="${vals}"`;
-        } else if (vals !== '') {
-            shortcodeStr += ` ${setting.get('name')}="${vals}"`;
-        }
-    });
-
-    const addToShortcodeColor = (color) => {
-        const colorDesc = color.attributes.colorname.replace(' ', '_');
-        const hexval = color.attributes.colorHex.substring(1, color.attributes.colorHex.length);
-        shortcodeStr += `${colorDesc}_color_hex="${hexval}" `;
-    };
-
-    if (currentTab === 5 || currentTab === 6) {
         shortcode.get('colorsettings').models.forEach(addToShortcodeColor);
     }
 
