@@ -545,7 +545,6 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         });
     },
 
-    // TODO: Move to another file
     setDefaultSettings: function () {
         this.shortcode = setDefaultSettingsController({ shortcode: this.shortcode, options: this.options });
     },
@@ -570,6 +569,8 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         clickCounter = clickCounter + 1;
     },
 
+    // DONE
+    // To small to be a controller
     deleteColorRow: function (e) {
         e.preventDefault();
         var id = '';
@@ -591,6 +592,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     },
 
     /* navigation between shortcode types */
+    // DONE; to small to be a controller;
     navigate: function (e) {
         'use strict';
         this.searchParams.page = 1;
@@ -607,6 +609,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     },
 
     /* navigate tabs within a chosen shortcode type */
+    // TODO: this can be a controller
     navigateShortcode: function (e) {
         var path = jQuery(e.currentTarget).attr('href');
         jQuery('.nav-tab').removeClass('nav-tab-active');
@@ -754,34 +757,6 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         const data = selectItemController(e, { shortcode: this.shortcode, searchParams: this.searchParams });
         this.shortcode = data.shortcode;
         this.searchParams = data.searchParams;
-    },
-
-    updateDRSPagination: function (data) {
-        if (data.pagination.table.num_pages > 1) {
-            this.resultCount = data.pagination.table.total_count;
-            var pagination = '';
-            if (data.pagination.table.current_page > 1) {
-                pagination += "<a href='#' class='prev-page'>&lt;&lt;</a>";
-            } else {
-                pagination += "<a href='#' class='prev-page disabled'>&lt;&lt;</a>";
-            }
-            for (var i = 1; i <= data.pagination.table.num_pages; i++) {
-                if (data.pagination.table.current_page == i) {
-                    var pagination_class = 'current-page active';
-                } else {
-                    var pagination_class = '';
-                }
-                pagination += "<a href='#' class='" + pagination_class + "'>" + i + '</a>';
-            }
-            if (data.pagination.table.current_page == data.pagination.table.num_pages) {
-                pagination += "<a href='#' class='next-page' data-val='" + data.pagination.table.num_pages + "'>&gt;&gt;</a>";
-            } else {
-                pagination += "<a href='#' class='next-page disabled' data-val='" + data.pagination.table.num_pages + "'>&gt;&gt;</a>";
-            }
-            jQuery('.drs-pagination').html("<span class='tablenav'><span class='tablenav-pages'>" + pagination + '</span></span>');
-        } else {
-            jQuery('.drs-pagination').html('');
-        }
     },
 
     paginate: function (e) {
