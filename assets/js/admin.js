@@ -113,10 +113,10 @@ drstk.Shortcode = Backbone.Model.extend({
  */
 drstk.ItemView = Backbone.View.extend({
     tagName: 'li',
-    item_template: _.template(
+    itemTemplate: _.template(
         "<label for='tile-<%=pid%>'><img src='<%=thumbnail%>' /><br/><input id='tile-<%=pid%>' type='checkbox' class='tile <%=repo%>' value='<%=pid%>'/><span class='title'><%=title%></span></label>"
     ),
-    item_noimg_template: _.template(
+    itemNoImgTemplate: _.template(
         "<label for='tile-<%=pid%>'><span class='dashicons dashicons-format-image'></span><br/><input id='tile-<%=pid%>' type='checkbox' class='tile <%=repo%>' value='<%=pid%>'/><span class='title'><%=title%></span></label>"
     ),
     // initialize the view and render it
@@ -545,6 +545,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         });
     },
 
+    // TODO: Move to another file
     setDefaultSettings: function (options_settings) {
         type = this.shortcode.get('type');
         settings = this.shortcode.get('settings');
@@ -956,19 +957,19 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         }
     },
 
+    // DONE
     settingsAddColor: function (e) {
-        type = this.shortcode.get('type');
-        colorsettings = this.shortcode.get('colorsettings');
-        name = 'label-text-' + clickCounter + '_desc';
-        value = 'label-' + clickCounter;
-        label = 'label-' + clickCounter;
-        colorname = 'label-color-' + clickCounter;
+        let colorsettings = this.shortcode.get('colorsettings');
+        const name = `label-text-${clickCounter}_desc`;
+        const value = `label-${clickCounter}`;
+        const label = `label-${clickCounter}`;
+        const colorname = `label-color-${clickCounter}`;
         colorsettings.add({
-            name: name,
-            value: value,
-            label: label,
+            name,
+            value,
+            label,
+            colorname,
             tag: 'inputcolor',
-            colorname: colorname,
             colorHex: '#0080ff',
         });
         this.shortcode.set('colorsettings', colorsettings);
