@@ -23,11 +23,11 @@ require_once( plugin_dir_path( __FILE__ ) . '/libraries/Ceres/config/ceresSetup.
 *  it there based on need. 2023-03-07 17:58:38
 */
 
-wp_register_script('ceres_js_setup' , plugins_url('/drs-tk/libraries/Ceres/config/ceresJsSetup.js'));
-wp_enqueue_script('ceres_js_setup');
+//wp_register_script('ceres_js_setup' , plugins_url('/drs-tk/libraries/Ceres/config/ceresJsSetup.js'));
+//wp_enqueue_script('ceres_js_setup');
 $ceresRootDir = CERES_ROOT_DIR;
-wp_add_inline_script('ceres_js_setup',
-	"var CERES_ROOT_URL = new URL(window.location.href).origin + '/Ceres';");
+// wp_add_inline_script('ceres_js_setup',
+// 	"var CERES_ROOT_URL = new URL(window.location.href).origin + '/Ceres';");
 
 
 
@@ -47,42 +47,43 @@ add_filter( 'query_vars', 'ceres_query_vars' );
 /* Leaflet and Leaflet plugins */
 
 
-//@todo make enqueuing conditional
-wp_register_script('ceres_datatables', plugins_url('//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js'));
-wp_register_script('ceres_leaflet', plugins_url('/libraries/Ceres/assets/js/leaflet/leaflet1.7.1.js', __FILE__));
-wp_register_script('ceres_leaflet_wicket', plugins_url('/libraries/Ceres/assets/js/leaflet/brc/wicket-1.3.8.js', __FILE__));
-wp_register_script('ceres_leaflet_markercluster', plugins_url('/libraries/Ceres/assets/js/leaflet/leaflet-js-markercluster/leaflet.markercluster.js', __FILE__));
-wp_register_script('ceres_leaflet_bostonboundaries', plugins_url('/libraries/Ceres/assets/js/leaflet/brc/bostonboundaries.js', __FILE__));
-wp_register_script('ceres_leaflet_mask', plugins_url('/libraries/Ceres/assets/js/leaflet/leafet-plugin-mask.js', __FILE__));
-wp_register_script('ceres_leaflet_boundary-canvas', plugins_url('/libraries/Ceres/assets/js/leaflet/brc/leaflet-boundary-canvas.js', __FILE__));
-wp_register_script('ceres_leaflet_geolet', plugins_url('/libraries/Ceres/assets/js/leaflet/leaflet-plugin-geolet.js', __FILE__));
-wp_register_script('ceres_leaflet_fuse', plugins_url('/libraries/Ceres/assets/js/leaflet/fuse-leaflet-plugin-6-6-2.js', __FILE__));
-wp_register_style('ceres_leaflet', plugins_url('/libraries/Ceres/assets/css/leaflet/leaflet.css', __FILE__));
-wp_register_style('ceres_leaflet_brc-project', plugins_url('/libraries/Ceres/assets/css/leaflet/leaflet-brc-project.css', __FILE__));
-wp_register_style('ceres_leaflet_markercluster', plugins_url('/libraries/Ceres/assets/css/leaflet/leaflet-js-markercluster/MarkerCluster.css', __FILE__));
-wp_register_style('ceres_leaflet_markercluster_default', plugins_url('/libraries/Ceres/assets/css/leaflet/leaflet-js-markercluster/MarkerCluster.Default.css', __FILE__));
-wp_register_style('ceres_datatables', '//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css');
+function ceres_asset_adapters() {
+	//@todo make enqueuing conditional
+	wp_register_script('ceres_datatables', plugins_url('//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js'));
+	wp_register_script('ceres_leaflet', plugins_url('/libraries/Ceres/assets/js/leaflet/leaflet1.7.1.js', __FILE__));
+	wp_register_script('ceres_leaflet_wicket', plugins_url('/libraries/Ceres/assets/js/leaflet/brc/wicket-1.3.8.js', __FILE__));
+	wp_register_script('ceres_leaflet_markercluster', plugins_url('/libraries/Ceres/assets/js/leaflet/leaflet-js-markercluster/leaflet.markercluster.js', __FILE__));
+	wp_register_script('ceres_leaflet_bostonboundaries', plugins_url('/libraries/Ceres/assets/js/leaflet/brc/bostonboundaries.js', __FILE__));
+	wp_register_script('ceres_leaflet_mask', plugins_url('/libraries/Ceres/assets/js/leaflet/leafet-plugin-mask.js', __FILE__));
+	wp_register_script('ceres_leaflet_boundary-canvas', plugins_url('/libraries/Ceres/assets/js/leaflet/brc/leaflet-boundary-canvas.js', __FILE__));
+	wp_register_script('ceres_leaflet_geolet', plugins_url('/libraries/Ceres/assets/js/leaflet/leaflet-plugin-geolet.js', __FILE__));
+	wp_register_script('ceres_leaflet_fuse', plugins_url('/libraries/Ceres/assets/js/leaflet/fuse-leaflet-plugin-6-6-2.js', __FILE__));
+	wp_register_style('ceres_leaflet', plugins_url('/libraries/Ceres/assets/css/leaflet/leaflet.css', __FILE__));
+	wp_register_style('ceres_leaflet_brc-project', plugins_url('/libraries/Ceres/assets/css/leaflet/leaflet-brc-project.css', __FILE__));
+	wp_register_style('ceres_leaflet_markercluster', plugins_url('/libraries/Ceres/assets/css/leaflet/leaflet-js-markercluster/MarkerCluster.css', __FILE__));
+	wp_register_style('ceres_leaflet_markercluster_default', plugins_url('/libraries/Ceres/assets/css/leaflet/leaflet-js-markercluster/MarkerCluster.Default.css', __FILE__));
+	wp_register_style('ceres_datatables', '//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css');
 
-//@todo  make enqueueing conditional upon the need
-wp_enqueue_script('ceres_datatables');
-wp_enqueue_script('ceres_leaflet');
-wp_enqueue_script('ceres_leaflet_wicket');
-wp_enqueue_script('ceres_leaflet_markercluster');
-wp_enqueue_script('ceres_leaflet_bostonboundaries');
-wp_enqueue_script('ceres_leaflet_mask');
-wp_enqueue_script('ceres_leaflet_boundary-canvas');
-wp_enqueue_script('ceres_leaflet_geolet');
-wp_enqueue_script('ceres_leaflet_fuse');
+	//@todo  make enqueueing conditional upon the need
+	wp_enqueue_script('ceres_datatables');
+	wp_enqueue_script('ceres_leaflet');
+	wp_enqueue_script('ceres_leaflet_wicket');
+	wp_enqueue_script('ceres_leaflet_markercluster');
+	wp_enqueue_script('ceres_leaflet_bostonboundaries');
+	wp_enqueue_script('ceres_leaflet_mask');
+	wp_enqueue_script('ceres_leaflet_boundary-canvas');
+	wp_enqueue_script('ceres_leaflet_geolet');
+	wp_enqueue_script('ceres_leaflet_fuse');
 
-wp_enqueue_style('ceres_leaflet');
-wp_enqueue_style('ceres_leaflet_brc-project');
-wp_enqueue_style('ceres_leaflet_markercluster');
-wp_enqueue_style('ceres_leaflet_markercluster_default');
-wp_enqueue_script('ceres_datatables');
+	wp_enqueue_style('ceres_leaflet');
+	wp_enqueue_style('ceres_leaflet_brc-project');
+	wp_enqueue_style('ceres_leaflet_markercluster');
+	wp_enqueue_style('ceres_leaflet_markercluster_default');
+	wp_enqueue_script('ceres_datatables');
 
+}
 
-
-
+add_action('wp_enqueue_scripts', 'ceres_asset_adapters');
 
 /* SETUP SHORTCODES USED BY CERES */
 
