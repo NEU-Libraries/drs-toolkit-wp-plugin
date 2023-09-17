@@ -19,7 +19,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/map_shortcode.php');
 require_once( plugin_dir_path( __FILE__ ) . 'inc/timeline_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/metabox.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'config.php' );
-//require_once( plugin_dir_path( __FILE__ ) . 'ceres_adapters.php' );
+
 
 /* Moving toward a Ceres namespace for podcasting */
 // require_once( plugin_dir_path( __FILE__ ) . 'classes/fetchers/Ceres_Abstract_Fetcher.php' );
@@ -1537,3 +1537,6 @@ function debug_change_feed_cache_transient_lifetime($seconds) {
 add_filter( 'wp_feed_cache_transient_lifetime', 'debug_change_feed_cache_transient_lifetime', 200000);
 add_action( 'wp_feed_options', 'drstk_turn_off_feed_caching' );
 /* End Dev on Podcast site */
+
+
+require_once( plugin_dir_path( __FILE__ ) . 'ceres_adapters.php' );
