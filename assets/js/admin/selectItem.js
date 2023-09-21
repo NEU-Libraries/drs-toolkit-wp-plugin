@@ -4,7 +4,7 @@ function selectItemController(e, { shortcode, searchParams }) {
     const title = item.siblings('.title').text();
     const thumbnail = item.siblings('img').attr('src');
     const parent = item.parents('.pane').attr('id');
-    const keyDate = item.parents('li').find('.key_date').text();
+    const key_date = item.parents('li').find('.key_date').text();
     const coords = item.parents('li').find('.coords').text();
     const repo = parent == 'drs' ? 'drs' : parent == 'dpla' ? 'dpla' : 'local';
 
@@ -23,7 +23,7 @@ function selectItemController(e, { shortcode, searchParams }) {
         pid: pid,
         thumbnail: thumbnail,
         repo: repo,
-        keyDate: keyDate,
+        key_date: key_date,
         coords: coords,
     });
     console.log('Calling select item');

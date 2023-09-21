@@ -1,4 +1,4 @@
-function setDefaultSettingsController({ shortcode, options }) {
+function setDefaultSettingsController({ shortcode, options, drstk }) {
     let type = shortcode.get('type');
     let settings = shortcode.get('settings');
     let optionSettings = {};

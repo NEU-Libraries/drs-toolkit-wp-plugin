@@ -16,7 +16,7 @@ var drstk = {
  */
 
 // TODO: See if this can be moved to a seperate file
-// TODO: key_date convert to camel case keyDate
+// TODO: key_date convert to camel case key_date
 drstk.Item = Backbone.Model.extend({
     title: '',
     pid: '',
@@ -262,6 +262,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     /**
      * Instantiates the Template object and triggers load.
      */
+    // TODO: refactor code
     initialize: function (options) {
         'use strict';
         this.options = options;
@@ -280,7 +281,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             'navigateShortcode',
             'search',
             'setDefaultSettings',
-            'appendSingleItem',
+
             'selectAllItem',
             'settingsAddColor',
             'deleteColorRow'
@@ -549,19 +550,19 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         this.shortcode = setDefaultSettingsController({ shortcode: this.shortcode, options: this.options });
     },
 
-    // DONE
     settingsAddColor: function (e) {
-        let colorsettings = this.shortcode.get('colorsettings');
-        const name = `label-text-${clickCounter}_desc`;
-        const value = `label-${clickCounter}`;
-        const label = `label-${clickCounter}`;
-        const colorname = `label-color-${clickCounter}`;
+        type = this.shortcode.get('type');
+        colorsettings = this.shortcode.get('colorsettings');
+        name = 'label-text-' + clickCounter + '_desc';
+        value = 'label-' + clickCounter;
+        label = 'label-' + clickCounter;
+        colorname = 'label-color-' + clickCounter;
         colorsettings.add({
-            name,
-            value,
-            label,
-            colorname,
+            name: name,
+            value: value,
+            label: label,
             tag: 'inputcolor',
+            colorname: colorname,
             colorHex: '#0080ff',
         });
         this.shortcode.set('colorsettings', colorsettings);
@@ -609,7 +610,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     },
 
     /* navigate tabs within a chosen shortcode type */
-    // TODO: this can be a controller
+    // there are too many dependencies to make this a controller -> Not doing it
     navigateShortcode: function (e) {
         var path = jQuery(e.currentTarget).attr('href');
         jQuery('.nav-tab').removeClass('nav-tab-active');
@@ -622,23 +623,28 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             jQuery('#drs').show();
             jQuery("#drs input[name='search']").val(this.searchParams.q);
             this.getDRSitems();
-        } else if (path == '#dpla') {
+            return;
+        }
+        if (path == '#dpla') {
             jQuery("#dpla input[name='search']").val(this.searchParams.q);
             jQuery('#dpla').show();
             if (this.currentTab == 4) {
                 jQuery('#dpla').html(
                     "<div class='notice notice-warning'><p>DPLA items cannot be used in embedded media. If you would like to use a media item from the DPLA, consider downloading it and upload it using the 'Local Items' tab.</p></div>"
                 );
-            } else {
-                jQuery('#dpla ol').children('li').remove();
-                // PMJ putting in an empty thing until the messages can be refactored
-                // because of the new direct insert of URL code as of e814f1d8bf930512a8e4d079a7fdc15456932d59
-                jQuery('.dpla-items').html("<div class='notice notice-info'></div>");
+                return;
             }
-        } else if (path == '#local') {
+            jQuery('#dpla ol').children('li').remove();
+            // PMJ putting in an empty thing until the messages can be refactored
+            // because of the new direct insert of URL code as of e814f1d8bf930512a8e4d079a7fdc15456932d59
+            jQuery('.dpla-items').html("<div class='notice notice-info'></div>");
+        }
+        if (path == '#local') {
             jQuery('#local').show();
             this.getMediaitems();
-        } else if (path == '#selected') {
+            return;
+        }
+        if (path == '#selected') {
             jQuery('#selected').show();
             this.getSelecteditems();
             tab_name = this.tabs[this.currentTab];
@@ -653,38 +659,41 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             }
             jQuery('#selected #sortable-' + tab_name + '-list').sortable({
                 update: function (event, ui) {
-                    _.each(_.clone(self.shortcode.items.models), function (model) {
-                        model.destroy();
-                    });
-                    jQuery.each(event.target.children, function (i, item) {
-                        pid = jQuery(item).find('input').val();
-                        title = jQuery(item).find('.title').text();
-                        thumbnail = jQuery(item).find('img').attr('src');
-                        repo = jQuery(item).find('input').attr('class').split(' ')[1];
-                        if (self.shortcode.items.length == 0) {
-                            self.shortcode.items = new drstk.Items({
-                                title: title,
-                                pid: pid,
-                                thumbnail: thumbnail,
-                                repo: repo,
+                    _.clone(shortcode.items.models).forEach((model) => model.destroy());
+
+                    Array.from(event.target.children).forEach((item) => {
+                        const pid = jQuery(item).find('input').val();
+                        const title = jQuery(item).find('.title').text();
+                        const thumbnail = jQuery(item).find('img').attr('src');
+                        const repo = jQuery(item).find('input').attr('class').split(' ')[1];
+
+                        if (shortcode.items.length === 0) {
+                            shortcode.items = new drstk.Items({
+                                title,
+                                pid,
+                                thumbnail,
+                                repo,
                             });
                         } else {
-                            self.shortcode.items.add({
-                                title: title,
-                                pid: pid,
-                                thumbnail: thumbnail,
-                                repo: repo,
+                            shortcode.items.add({
+                                title,
+                                pid,
+                                thumbnail,
+                                repo,
                             });
                         }
                     });
                 },
             });
-        } else if (path == '#settings') {
+            return;
+        }
+        if (path == '#settings') {
             jQuery('#settings').show();
             this.getSettings();
         }
     },
 
+    // Not doing it, too small
     showTab: function (id) {
         jQuery('.backbone_modal-main article').html('');
         var title = '';
@@ -759,24 +768,18 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         this.searchParams = data.searchParams;
     },
 
+    // lets reduce the code
+    // done, not much in there though
     paginate: function (e) {
-        val = jQuery(e.currentTarget).html();
-        val = jQuery.trim(val);
-        type = jQuery(e.currentTarget).parents('.pane').attr('id');
-        current_page = jQuery('#' + type + ' .tablenav-pages .current-page').html();
-        if (val == '&lt;&lt;') {
-            val = parseInt(current_page) - 1;
-        }
-        if (val == '&gt;&gt;') {
-            val = parseInt(current_page) + 1;
-            if (
-                jQuery('#' + type + ' .tablenav-pages .current-page')
-                    .next('a')
-                    .html() == '&gt;&gt;'
-            ) {
-                //last page
-                val = 0;
-            }
+        let val = jQuery.trim(jQuery(e.currentTarget).html());
+        const type = jQuery(e.currentTarget).parents('.pane').attr('id');
+        const currentPage = jQuery(`#${type} .tablenav-pages .current-page`).html();
+
+        if (val === '&lt;&lt;') val = parseInt(current_page) - 1;
+        if (val === '&gt;&gt;') {
+            val = parseInt(currentPage) + 1;
+            const isLastPage = jQuery(`#${type} .tablenav-pages .current-page`).next('a').html() === '&gt;&gt;';
+            if (isLastPage) val = 0;
         }
         if (jQuery.isNumeric(val) && val != 0) {
             this.searchParams.page = val;
@@ -788,6 +791,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         }
     },
 
+    // TODO: Move it to a controller get confirmation from Patrick though
     getDPLAitems: function () {
         if (this.currentTab == 4) {
             this.searchParams.avfilter = true;
@@ -822,7 +826,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
                     jQuery('.dpla-items').html('');
                     jQuery.each(data.docs, function (id, item) {
                         if (self.currentTab == 6) {
-                            date = self.getDateFromSourceResource(item.sourceResource);
+                            date = getDateFromSourceResource(item.sourceResource);
                         } else {
                             date = '';
                         }
@@ -1034,45 +1038,6 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         }
     },
 
-    getDateFromSourceResource: function (source) {
-        date = '';
-        if (Array.isArray(source.date)) {
-            source.date = source.date[0];
-        }
-        date = source.date.displayDate;
-        if (date != undefined && date != '') {
-            date = date.split('-');
-            if (date[0] && date[0].length != 4 && source.date.begin != undefined) {
-                begin_date = source.date.begin;
-            } else if (date[0] == undefined && source.date.begin != undefined) {
-                begin_date = source.date.begin;
-            } else if (date[0] == undefined && source.date.begin == undefined) {
-                begin_date = '';
-            } else {
-                begin_date = date[0];
-            }
-            begin_date = begin_date.split('-')[0];
-            if (date[1] && date[1].length != 4 && source.date.end != undefined) {
-                end_date = source.date.end;
-            } else if (date[1] == undefined && source.date.end != undefined) {
-                end_date = source.date.end;
-            } else if (date[1] == undefined && source.date.end == undefined) {
-                end_date = '';
-            } else {
-                end_date = date[1];
-            }
-            end_date = end_date.split('-')[0];
-            if (!jQuery.isNumeric(begin_date)) {
-                begin_date = '';
-            }
-            if (!jQuery.isNumeric(end_date)) {
-                end_date = '';
-            }
-            date = [begin_date, end_date];
-        }
-        return date;
-    },
-
     updateDPLAPagination: function (data) {
         num_pages = Math.round(data.count / data.limit);
         current_page = parseInt(this.searchParams.page);
@@ -1114,234 +1079,18 @@ drstk.backbone_modal.Application = Backbone.View.extend({
     },
 
     getSelecteditems: function () {
-        tab_name = this.tabs[this.currentTab];
-        if (this.shortcode.items != undefined) {
-            count = this.shortcode.items.length;
-            if (count > 0) {
-                jQuery('.selected-items').html('');
-                if (tab_name == 'tile' || tab_name == 'slider' || tab_name == 'media') {
-                    jQuery('.selected-items').append("<div class='notice notice-info'><p>Drag and drop items to reorder.</p></div>");
-                }
-                jQuery('#selected #sortable-' + tab_name + '-list')
-                    .children('li')
-                    .remove();
-                var self = this;
-                new_items = [];
-                jQuery.each(this.shortcode.items.models, function (i, item) {
-                    if (!item.get('title')) {
-                        jQuery('.selected-items').html('Loading...');
-                        count = parseInt(count) + 1;
-                        repo = item.get('repo');
-                        if (repo == 'drs') {
-                            jQuery.ajax({
-                                url: item_admin_obj.ajax_url,
-                                type: 'POST',
-                                data: {
-                                    action: 'get_item_solr_admin',
-                                    _ajax_nonce: item_admin_obj.item_admin_nonce,
-                                    pid: item.get('pid'),
-                                },
-                                complete: function (data) {
-                                    var data = jQuery.parseJSON(data.responseJSON);
-                                    data = data['_source'];
-                                    item.set('title', data.full_title_ssi);
-                                    if (!item.get('thumbnail')) {
-                                        item.set('thumbnail', 'https://repository.library.northeastern.edu' + data.fields_thumbnail_list_tesim[0]);
-                                    }
-                                    if (!item.get('key_date') || item.get('key_date') == '' || item.get('key_date') == undefined) {
-                                        item.set('key_date', data.key_date_ssi);
-                                    }
-                                    if (!item.get('coords') || item.get('coords') == '' || item.get('coords') == undefined) {
-                                        if (data.subject_geographic_tesim) {
-                                            item.set('coords', data.subject_geographic_tesim[0]);
-                                        }
-                                        if (data.subject_cartographics_coordinates_tesim) {
-                                            item.set('coords', data.subject_cartographics_coordinates_tesim);
-                                        }
-                                    }
-                                    new_items.push(item.get('pid'));
-                                },
-                            });
-                        } else if (repo == 'dpla') {
-                            jQuery.post(
-                                dpla_ajax_obj.ajax_url,
-                                {
-                                    _ajax_nonce: dpla_ajax_obj.dpla_ajax_nonce,
-                                    action: 'get_dpla_code',
-                                    params: {
-                                        q: item.get('pid'),
-                                    },
-                                },
-                                function (data) {
-                                    var data = jQuery.parseJSON(data);
-                                    item.set('title', data.docs[0].sourceResource.title);
-                                    if (data.docs[0].object) {
-                                        item.set('thumbnail', data.docs[0].object);
-                                    }
-                                    if ((!item.get('key_date') || item.get('key_date') == '' || item.get('key_date') == undefined) && self.currentTab == 6) {
-                                        date = self.getDateFromSourceResource(data.docs[0].sourceResource);
-                                        item.set('key_date', date);
-                                    }
-                                    if ((!item.get('coords') || item.get('coords') == '' || item.get('coords') == undefined) && self.currentTab == 5) {
-                                        coords = data.docs[0].sourceResource.spatial[0].name;
-                                        if (data.docs[0].sourceResource.spatial[0].coordinates != '' && data.docs[0].sourceResource.spatial[0].coordinates != undefined) {
-                                            coords = data.docs[0].sourceResource.spatial[0].coordinates;
-                                        }
-                                        item.set('coords', coords);
-                                    }
-                                    new_items.push(item.get('pid'));
-                                }
-                            );
-                        } else if (repo == 'local') {
-                            jQuery.ajax({
-                                url: item_admin_obj.ajax_url,
-                                type: 'POST',
-                                data: {
-                                    action: 'get_post_meta',
-                                    _ajax_nonce: item_admin_obj.item_admin_nonce,
-                                    pid: item.get('pid'),
-                                },
-                                success: function (data) {
-                                    item.set('title', data.post_title);
-                                    if (!data.post_mime_type.includes('audio') && !data.post_mime_type.includes('video')) {
-                                        item.set('thumbnail', data.guid);
-                                    }
-                                    if ((!item.get('key_date') || item.get('key_date') == '' || item.get('key_date') == undefined) && self.currentTab == 6) {
-                                        jQuery.ajax({
-                                            url: item_admin_obj.ajax_url,
-                                            type: 'POST',
-                                            async: false,
-                                            data: {
-                                                action: 'get_custom_meta',
-                                                _ajax_nonce: item_admin_obj.item_admin_nonce,
-                                                pid: item.get('pid'),
-                                            },
-                                            success: function (data) {
-                                                item.set('key_date', data._timeline_date[0]);
-                                            },
-                                        });
-                                    }
-                                    if ((!item.get('coords') || item.get('coords') == '' || item.get('coords') == undefined) && self.currentTab == 5) {
-                                        jQuery.ajax({
-                                            url: item_admin_obj.ajax_url,
-                                            type: 'POST',
-                                            async: false,
-                                            data: {
-                                                action: 'get_custom_meta',
-                                                _ajax_nonce: item_admin_obj.item_admin_nonce,
-                                                pid: item.get('pid'),
-                                            },
-                                            success: function (data) {
-                                                item.set('coords', data._map_coords[0]);
-                                            },
-                                        });
-                                    }
-                                    new_items.push(item.get('pid'));
-                                },
-                            });
-                        }
-                    } else {
-                        self.appendSingleItem(item);
-                    }
-                    //if its the last item then put it on a 1 second loop to see if all of the ajax calls have completed, then if they have, append the items so the order is preserved
-                    var interval;
-                    if (i === self.shortcode.items.models.length - 1) {
-                        interval = setInterval(function () {
-                            if (new_items.length === self.shortcode.items.models.length) {
-                                clearInterval(interval);
-                                jQuery('.selected-items').html('');
-                                jQuery('#selected #sortable-' + tab_name + '-list')
-                                    .children('li')
-                                    .remove();
-                                _.each(self.shortcode.items.models, function (item) {
-                                    self.appendSingleItem(item);
-                                });
-                            } else {
-                                //do nothing
-                            }
-                        }, 1000);
-                    }
-                });
-            } else if (this.selectAll == true) {
-                jQuery('.selected-items').html("<div class='notice notice-warning'><p>Selected items are loading...</p></div>");
-            } else {
-                jQuery('.selected-items').html("<div class='notice notice-warning'><p>You haven't selected any items yet.</p></div>");
-                jQuery('#selected #sortable-' + tab_name + '-list')
-                    .children('li')
-                    .remove();
-            }
-        } else if (this.selectAll == true) {
-            //if there are no items in the list yet, lets wait 2 seconds for the drs connections to try to finish before we refresh this tab
-            jQuery('.selected-items').html("<div class='notice notice-warning'><p>Selected items are loading...</p></div>");
-            if (jQuery('#selected #sortable-' + tab_name + '-list').children().length < 1) {
-                var self = this;
-                var interval;
-                interval = setInterval(function () {
-                    if (
-                        jQuery('#selected #sortable-' + tab_name + '-list').children().length < 1 ||
-                        jQuery('#selected #sortable-' + tab_name + '-list').children().length < self.resultCount
-                    ) {
-                        jQuery('#drs #drs-select-all-item').trigger('change'); //triggers SelectAllItem
-                        jQuery(".nav-tab[href='#selected']").trigger('click'); //triggers navigateShortcode
-                    } else {
-                        clearInterval(interval);
-                    }
-                }, 2000);
-            }
-        } else {
-            jQuery('.selected-items').html("<div class='notice notice-warning'><p>You haven't selected any items yet.</p></div>");
-            jQuery('#selected #sortable-' + tab_name + '-list')
-                .children('li')
-                .remove();
-        }
-    },
-
-    appendSingleItem: function (item) {
-        tab_name = this.tabs[this.currentTab];
-        var itemView = new drstk.ItemView({
-            model: item,
+        getSelecteditemsController({
+            tabs: this.tabs,
+            currentTab: this.currentTab,
+            shortcode: this.shortcode,
+            selectAll: this.selectAll,
+            drstk: drstk,
+            options: this.options,
         });
-        jQuery('#selected #sortable-' + tab_name + '-list').append(itemView.el);
-        if (this.currentTab == 5 || this.currentTab == 6) {
-            colors = '';
-            var self = this;
-            _.each(self.shortcode.get('colorsettings').models, function (color) {
-                color = color.attributes.colorname;
-                colors += "<option value='" + color + "'";
-                if (self.options != undefined && self.options.settings != undefined) {
-                    var preset_colors = self.options.settings[color + '_color_desc_id'];
-                } else if (self.options != undefined) {
-                    var preset_colors = self.options[color + '_id'] ? self.options[color + '_id'] : self.options[color];
-                }
-                if (preset_colors != undefined) {
-                    preset_colors = preset_colors.split(',');
-                    for (var i = 0; i < preset_colors.length; i++) {
-                        preset_colors[i] = preset_colors[i].trim();
-                    }
-                }
-                if (preset_colors != undefined && preset_colors.indexOf(item.attributes.pid) > -1) {
-                    item.set('color', color);
-                }
-                if (item.attributes.color == color) {
-                    colors += " selected='selected'";
-                }
-                colors += '>' + color.charAt(0).toUpperCase() + color.slice(1) + '</option>';
-            });
-            jQuery('#selected #sortable-' + tab_name + '-list')
-                .find('li:last-of-type label')
-                .append('<br/>Color label (see Settings tab):<br/> <select name="color"><option value="">Color Label</option>' + colors + '</select>');
-        }
-        if (
-            this.shortcode.items.where({
-                pid: item.attributes.pid,
-            }).length > 0
-        ) {
-            jQuery('#selected #sortable-' + tab_name + '-list')
-                .find('li:last-of-type input')
-                .prop('checked', true);
-        }
     },
 
+    // common for 2 functions, likely to group all the three into one file
+    // was not able to move it to a seperate file as it was not working as expected
     getSettings: function () {
         jQuery('#settings').html('<table />');
         _.each(this.shortcode.get('settings').models, function (setting, i) {
@@ -1372,54 +1121,12 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         }
     },
 
+    // settings, feel like there can be a common settings file that handles all the settings related functions
     settingsChange: function (e) {
-        e.preventDefault();
-        field_name = jQuery(e.currentTarget).attr('name');
-        if (jQuery(e.currentTarget).attr('type') == 'checkbox') {
-            name = jQuery(e.currentTarget).parents('tr').attr('class');
-            setting = this.shortcode.get('settings').where({
-                name: name,
-            })[0];
-            var vals = [];
-            jQuery(e.currentTarget)
-                .parents('td')
-                .find("input[type='checkbox']")
-                .each(function () {
-                    if (jQuery(this).is(':checked')) {
-                        vals.push(jQuery(this).attr('name'));
-                    }
-                });
-            setting.set('value', vals);
-        } else if (jQuery(e.currentTarget).attr('type') == 'color') {
-            var color = jQuery(e.currentTarget).val();
-            name = jQuery(e.currentTarget).parents('td').prev('td').find('input').attr('name');
-            colorsetting = this.shortcode.get('colorsettings').where({
-                name: name,
-            })[0];
-            colorsetting.set('colorHex', color);
-        } else if (field_name.indexOf('label-text-') != -1) {
-            name = jQuery(e.currentTarget).attr('name');
-            colorsetting = this.shortcode.get('colorsettings').where({
-                name: name,
-            })[0];
-            val = jQuery(e.currentTarget).val();
-            colorsetting.set('value', val);
-            colorsetting.set('colorname', val);
-        } else {
-            name = jQuery(e.currentTarget).attr('name');
-            setting = this.shortcode.get('settings').where({
-                name: name,
-            })[0];
-            val = jQuery(e.currentTarget).val();
-            if (field_name == 'end-date' || field_name == 'start-date') {
-                if (val == '') {
-                    val = null;
-                }
-            }
-            setting.set('value', [val]);
-        }
+        this.shortcode = settingsChangeController(e, { shortcode: this.shortcode });
     },
 
+    // this is too small to be a controller leaving it here for now
     changeColor: function (e) {
         color = jQuery(e.currentTarget).val();
         if (color != '') {
@@ -1433,6 +1140,8 @@ drstk.backbone_modal.Application = Backbone.View.extend({
         }
     },
 
+    // TODO: this can be a controller
+    // NOTES: ajax call is there, need to move it into ajax files
     getMediaitems: function () {
         jQuery('#local').html("<a class='button' id='wp_media'>Add or Browse Local Items</a><br/>");
         if (
@@ -1624,6 +1333,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             .open();
     },
 
+    //TODO: facet files can have a common controller file, lot of similarity between dpla, and drs
     dplaSort: function (e) {
         e.preventDefault();
         this.searchParams.sort = jQuery("select[name='dpla-sort']").val();

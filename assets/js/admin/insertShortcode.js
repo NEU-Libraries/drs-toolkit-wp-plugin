@@ -11,14 +11,14 @@ const validMap = (items) => {
 
 const validTime = (shortcode) => {
     const repos = ['drs', 'local', 'dpla'];
-    let keyDateList = [];
+    let key_dateList = [];
     let no_year = [];
 
     repos.forEach((repo) => {
         [...shortcode.items.where({ repo })].forEach((item) => {
             let key_date = item.get('key_date');
             key_date !== undefined && key_date !== '' && key_date !== []
-                ? keyDateList.push({ year: key_date.split('/')[0], name: item.get('title') })
+                ? key_dateList.push({ year: key_date.split('/')[0], name: item.get('title') })
                 : repo !== 'drs' && no_year.push(item.get('title'));
         });
     });
@@ -26,15 +26,25 @@ const validTime = (shortcode) => {
     const startDate = shortcode.get('settings').where({ name: 'start-date' })[0].attributes.value[0];
     const endDate = shortcode.get('settings').where({ name: 'end-date' })[0].attributes.value[0];
 
-    const return_arr = keyDateList
+    const return_arr = key_dateList
         .filter(({ year }) => (Array.isArray(year) ? year[0] < startDate && year[1] > endDate : year < startDate || year > endDate))
         .map(({ name }) => name);
 
     return return_arr.length || no_year.length ? [...return_arr, ...no_year] : true;
 };
 
-// TODO: Found issue multiple items do not work for some reason
-// TODO: Replace current tab with tabname for clarity
+/**
+ * The insertShortcodeController function takes care of inserting a shortcode
+ * based on user interactions.
+ *
+ * @param {Event} e - The event object from the interaction.
+ * @param {Object} options - Object containing various settings and configurations.
+ * @param {Object} options.shortcode - The shortcode data.
+ * @param {Function} options.closeModal - Function to close modal dialog.
+ * @param {string} options.collectionId - Collection Identifier.
+ * @param {number} options.currentTab - Current active tab.
+ * @param {Array} options.tabs - List of all tabs.
+ */
 function insertShortcodeController(e, { shortcode, closeModal, collectionId, currentTab, tabs }) {
     const { items } = shortcode;
 

@@ -6,17 +6,32 @@
  * Author: Digital Scholarship Group, Northeastern University. Eli Zoller, Patrick Murray-John, et al.
  * Description: This plugin provides the core functionality of the CERES: Exhibit Toolkit and brings the content of a project from the DRS into Wordpress using the DRS API.
  */
+wp_register_script(
+    'drstk_admin_settings_getdatefromsourceresource',
+    plugins_url('assets/js/admin/getDateFromSourceResource.js', __FILE__)
+);
+wp_enqueue_script('drstk_admin_settings_getdatefromsourceresource');
+wp_register_script(
+    'drstk_admin_settings_setdefaultsettings',
+    plugins_url('assets/js/admin/settings/setDefaultSettings.js', __FILE__)
+);
+wp_enqueue_script('drstk_admin_settings_setdefaultsettings');
+wp_register_script(
+    'drstk_admin_settings_settingsChange',
+    plugins_url('assets/js/admin/settings/settingsChange.js', __FILE__)
+);
+wp_enqueue_script('drstk_admin_settings_settingsChange');
 
 wp_register_script(
-    'drstk_admin_setdefaultsettings',
-    plugins_url('assets/js/admin/setDefaultSettings.js', __FILE__)
-);
-wp_enqueue_script('drstk_admin_setdefaultsettings');
-wp_register_script(
     'drstk_admin_getdrsitems',
-    plugins_url('assets/js/admin/getDRSItems.js', __FILE__)
+    plugins_url('assets/js/admin/api/getDRSItems.js', __FILE__)
 );
 wp_enqueue_script('drstk_admin_getdrsitems');
+wp_register_script(
+    'drstk_admin_getselecteditems',
+    plugins_url('assets/js/admin/api/getSelectedItems.js', __FILE__)
+);
+wp_enqueue_script('drstk_admin_getselecteditems');
 wp_register_script(
     'drstk_admin_selectitem',
     plugins_url('assets/js/admin/selectItem.js', __FILE__)
