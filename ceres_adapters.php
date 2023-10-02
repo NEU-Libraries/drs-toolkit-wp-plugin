@@ -62,7 +62,7 @@ function ceres_asset_adapters() {
 	wp_register_style('ceres_leaflet_brc-project', plugins_url('/libraries/Ceres/assets/css/leaflet/leaflet-brc-project.css', __FILE__));
 	wp_register_style('ceres_leaflet_markercluster', plugins_url('/libraries/Ceres/assets/css/leaflet/leaflet-js-markercluster/MarkerCluster.css', __FILE__));
 	wp_register_style('ceres_leaflet_markercluster_default', plugins_url('/libraries/Ceres/assets/css/leaflet/leaflet-js-markercluster/MarkerCluster.Default.css', __FILE__));
-	wp_register_style('ceres_datatables', '//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css');
+	wp_register_style('ceres_datatables', 'https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css');
 
 	//@todo  make enqueueing conditional upon the need
 	wp_enqueue_script('ceres_datatables');
