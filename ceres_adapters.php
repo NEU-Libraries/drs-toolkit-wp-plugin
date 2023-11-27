@@ -153,6 +153,11 @@ function ceres_vp_handler($atts) {
 			$vp->setFetcherQueryFromFile(null, CERES_ROOT_DIR . '/data/rqFiles/publicart/leaflet.rq');
 			$vp->getRenderer()->getFetcher()->setEndpoint('https://query.wikidata.org/sparql');	
 		break;
+		case 'tabular_wikibase_for_chinatown_people';
+		case 'tabular_wikibase_for_chinatown_maintainers';
+		case 'tabular_wikibase_for_chinatown_organizations';
+			//$vp->getRenderer()->getFetcher()->setEndpoint('');
+		break;
 	}
 
 	//@todo make this sequence more coherent and general. somehow

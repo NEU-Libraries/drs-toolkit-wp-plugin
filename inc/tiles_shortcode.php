@@ -22,6 +22,11 @@ function drstk_tiles( $atts ){
   } else {
     $num = 4;
   }
+
+// @todo FIX PMJ
+// this loops through all the _images_ to build the individual items, then wraps
+// the whole thing in a div for the "freewall" shortcode right at the end.
+
   foreach($imgs as $img){
     $repo = drstk_get_repo_from_pid($img);
     if ($repo != "drs"){$pid = explode(":",$img); $pid = $pid[1];} else {$pid = $img;}
