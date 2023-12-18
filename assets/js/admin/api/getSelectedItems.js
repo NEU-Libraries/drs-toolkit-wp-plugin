@@ -1,46 +1,64 @@
-function appendSingleItem(item, { currentTab, tabs, shortcode, drstk, options }) {
-    const tabName = tabs[this.currentTab];
-
-    // Create a new item view and append it to the list
-    const itemView = new drstk.ItemView({ model: item });
+function updateDOMWithItem({ tabName, itemView, colorLabels }) {
     jQuery(`#selected #sortable-${tabName}-list`).append(itemView.el);
 
-    // Additional logic for tabs 5 and 6
+    if (colorLabels.length > 0) {
+        let colorsOptionsHTML = colorLabels
+            .map(
+                (colorLabel) => `
+            <option value="${colorLabel.value}" ${colorLabel.isSelected ? 'selected' : ''}>
+                ${colorLabel.name}
+            </option>
+        `
+            )
+            .join('');
+
+        jQuery(`#selected #sortable-${tabName}-list li:last-of-type label`).append(`
+            <br/>Color label (see Settings tab):<br/> 
+            <select name="color">
+                <option value="">Color Label</option>
+                ${colorsOptionsHTML}
+            </select>
+        `);
+    }
+}
+
+function appendSingleItemController(item, { currentTab, tabs, shortcode, options }) {
+    const tabName = tabs[currentTab];
+    let colors = '';
+    let colorLabels = [];
+
     if ([5, 6].includes(currentTab)) {
-        let colors = '';
-
-        // Iterate through color settings and build color options
         shortcode.get('colorsettings').models.forEach((colorModel) => {
-            let color = colorModel.attributes.colorname;
-            let presetColors;
+            const { colorname: color } = colorModel.attributes;
+            let presetColors = options?.settings ? options.settings[`${color}_color_desc_id`] : options[`${color}_id`] || options[color];
 
-            if (options?.settings) {
-                presetColors = options.settings[`${color}_color_desc_id`];
-            } else {
-                presetColors = options[`${color}_id`] || this.options[color];
-            }
-
-            // Convert presetColors to array
             presetColors = presetColors?.split(',').map((str) => str.trim());
 
             if (presetColors?.includes(item.attributes.pid)) {
                 item.set('color', color);
             }
 
-            colors += `<option value="${color}"${item.attributes.color === color ? ' selected' : ''}>${color.charAt(0).toUpperCase() + color.slice(1)}</option>`;
+            const colorLabel = {
+                value: color,
+                isSelected: item.attributes.color === color,
+                name: color.charAt(0).toUpperCase() + color.slice(1),
+            };
+
+            colorLabels.push(colorLabel);
         });
-
-        // Append color options to the last item in the list
-        jQuery(`#selected #sortable-${tabName}-list li:last-of-type label`).append(`
-            <br/>Color label (see Settings tab):<br/> 
-            <select name="color"><option value="">Color Label</option>${colors}</select>
-        `);
     }
 
-    // Check the item if it exists in the shortcode items
-    if (shortcode.items.where({ pid: item.attributes.pid }).length > 0) {
-        jQuery(`#selected #sortable-${tabName}-list li:last-of-type input`).prop('checked', true);
-    }
+    return {
+        tabName,
+        itemView: new drstk.ItemView({ model: item }),
+        colorLabels,
+    };
+}
+
+function appendSingleItem(item, { currentTab, tabs, shortcode, drstk, options }) {
+    const { tabName, itemView, colorLabels } = appendSingleItemController(item, { currentTab, tabs, shortcode, options });
+
+    updateDOMWithItem({ tabName, itemView, colorLabels });
 }
 
 /**
@@ -247,3 +265,10 @@ function getSelecteditemsController({ tabs, currentTab, shortcode, selectAll, dr
         }
     });
 }
+
+// module.exports = { appendSingleItem, getSelecteditemsController };
+
+// seperate out error handling into seperate functions
+// seperate out the logic for the different repos into seperate functions
+// seperate out the logic for the different tabs into seperate functions
+// utilize the controller pattern to handle the logic for the different tabs
