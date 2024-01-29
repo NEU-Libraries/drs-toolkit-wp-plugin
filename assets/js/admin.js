@@ -313,7 +313,7 @@ drstk.backbone_modal.Application = Backbone.View.extend({
             this.currentTab = 1;
         }
         var self = this;
-        clickCounter = 1;
+        let clickCounter = 1;
         if (this.options && this.options.items && this.options.items.length > 0) {
             _.each(this.options.items, function (item, i) {
                 if (i == 0) {
