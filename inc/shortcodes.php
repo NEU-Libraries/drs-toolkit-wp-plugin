@@ -14,7 +14,7 @@ function drstk_enqueue_page_scripts( $hook ) {
     if ($hook == 'post.php' || $hook == 'post-new.php') {
 
       include DRS_PLUGIN_PATH.'templates/modal.php';
-      wp_enqueue_script( 'drstk_admin_js', DRS_PLUGIN_URL . '/assets/js/admin.js', array(
+      wp_enqueue_script( 'drstk_admin_js', DRS_PLUGIN_URL . 'dist/admin.js', array(
         'jquery',
         'jquery-ui-core',
         'backbone',
