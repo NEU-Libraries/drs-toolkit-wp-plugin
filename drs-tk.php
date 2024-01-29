@@ -2246,6 +2246,7 @@ function drstk_render_podcast_feed()
     echo $renderer->render();
 }
 
+
 //@TODO: delete this. it's for debugging
 function drstk_turn_off_feed_caching($feed)
 {
@@ -2263,3 +2264,6 @@ add_filter(
 );
 add_action('wp_feed_options', 'drstk_turn_off_feed_caching');
 /* End Dev on Podcast site */
+
+
+require_once( plugin_dir_path( __FILE__ ) . 'ceres_adapters.php' );
