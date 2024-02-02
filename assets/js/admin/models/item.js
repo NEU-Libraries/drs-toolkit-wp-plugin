@@ -1,13 +1,13 @@
-import { Model } from 'backbone';
-
-const Item = Model.extend({
-    title: '',
-    pid: '',
-    thumbnail: '',
-    repo: '',
-    color: '',
-    key_date: '',
-    coords: '',
+const Item = Backbone.Model.extend({
+    defaults: {
+        title: '',
+        pid: '',
+        thumbnail: '',
+        repo: '',
+        color: '',
+        key_date: '',
+        coords: '',
+    },
 });
 
 export default Item;

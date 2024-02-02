@@ -1,15 +1,15 @@
-import { Model } from 'backbone';
-
-const Setting = Model.extend({
-    name: '',
-    value: [],
-    choices: {},
-    label: '',
-    helper: '',
-    tag: '',
-    selectedId: '',
-    colorHex: '',
-    colorId: '',
+const Setting = Backbone.Model.extend({
+    defaults: {
+        name: '',
+        value: [],
+        choices: {},
+        label: '',
+        helper: '',
+        tag: '',
+        selectedId: '',
+        colorHex: '',
+        colorId: '',
+    },
 });
 
 export default Setting;

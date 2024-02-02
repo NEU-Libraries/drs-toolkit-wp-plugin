@@ -1,3 +1,17 @@
+import Item from './admin/models/item';
+import Setting from './admin/models/setting';
+import ColorSetting from './admin/models/colorSetting';
+import Items from './admin/collections/items';
+import Settings from './admin/collections/settings';
+import ColorSettings from './admin/collections/colorSettings';
+import Shortcode from './admin/models/shortcode';
+import ColorSettingView from './admin/views/colorSettingView';
+import SettingView from './admin/views/settingView';
+import ItemView from './admin/views/itemView';
+console.log('admin test');
+$ = jQuery;
+console.log($.fn.sortable); // Should not be undefined if sortable is available
+
 /**
  * Backbone Application File
  * @package drstk.backbone_modal
@@ -6,104 +20,17 @@ var drstk = {
     backbone_modal: {
         __instance: undefined,
     },
+    Item,
+    Setting,
+    ColorSetting,
+    Items,
+    Settings,
+    ColorSettings,
+    Shortcode,
+    ColorSettingView,
+    SettingView,
+    ItemView,
 };
-
-/**
- * Backbone models
- * Backbone.Model.extend is used to create model classes in Backbone.
- *
- * @see https://backbonejs.org/#Model-extend
- */
-
-// TODO: See if this can be moved to a seperate file
-// TODO: key_date convert to camel case key_date
-drstk.Item = Backbone.Model.extend({
-    title: '',
-    pid: '',
-    thumbnail: '',
-    repo: '',
-    color: '',
-    key_date: '',
-    coords: '',
-});
-
-drstk.Setting = Backbone.Model.extend({
-    name: '',
-    value: [],
-    choices: {},
-    label: '',
-    helper: '',
-    tag: '',
-    selectedId: '',
-    colorHex: '',
-    colorId: '',
-});
-
-drstk.ColorSetting = Backbone.Model.extend({
-    name: '',
-    value: [],
-    label: '',
-    tag: '',
-    colorname: '',
-    colorHex: '',
-});
-
-/**
- * Backbone collections
- * Backbone.Collection.extend is used to create collection classes in Backbone.
- * @see https://backbonejs.org/#Collection-extend
- */
-drstk.Items = Backbone.Collection.extend({
-    model: drstk.Item,
-});
-
-drstk.Settings = Backbone.Collection.extend({
-    model: drstk.Setting,
-});
-
-drstk.ColorSettings = Backbone.Collection.extend({
-    model: drstk.ColorSetting,
-});
-
-// This is main model where all the magic is stored
-drstk.Shortcode = Backbone.Model.extend({
-    defaults: {
-        type: '',
-        items: new drstk.Items(),
-        settings: new drstk.Settings(),
-        colorsettings: new drstk.ColorSettings(),
-    },
-    // initialize the model
-    initialize: function () {
-        this.set('items', new drstk.Items());
-        this.set('settings', new drstk.Settings());
-        this.set('colorsettings', new drstk.ColorSettings());
-    },
-    // parse the response to get items and settings
-    parse: function (response) {
-        response.items = new drstk.Items(response.items);
-        response.settings = new drstk.Settings(response.settings);
-        response.colorsettings = new drstk.ColorSettings(response.colorsettings);
-        return response;
-    },
-    // set the model
-    set: function (attributes, options) {
-        const mappings = {
-            items: drstk.Items,
-            settings: drstk.Settings,
-            colorsettings: drstk.ColorSettings,
-        };
-
-        // If any of the attributes are not already a model, convert them to one
-        Object.entries(mappings).forEach(([key, Class]) => {
-            if (attributes[key] && !(attributes[key] instanceof Class)) {
-                attributes[key] = new Class(attributes[key]);
-            }
-        });
-
-        return Backbone.Model.prototype.set.call(this, attributes, options);
-    },
-});
 
 /**
  * Backbone views
@@ -111,76 +38,9 @@ drstk.Shortcode = Backbone.Model.extend({
  *
  * @see https://backbonejs.org/#View-extend
  */
-drstk.ItemView = Backbone.View.extend({
-    tagName: 'li',
-    itemTemplate: _.template(
-        "<label for='tile-<%=pid%>'><img src='<%=thumbnail%>' /><br/><input id='tile-<%=pid%>' type='checkbox' class='tile <%=repo%>' value='<%=pid%>'/><span class='title'><%=title%></span></label>"
-    ),
-    itemNoImgTemplate: _.template(
-        "<label for='tile-<%=pid%>'><span class='dashicons dashicons-format-image'></span><br/><input id='tile-<%=pid%>' type='checkbox' class='tile <%=repo%>' value='<%=pid%>'/><span class='title'><%=title%></span></label>"
-    ),
-    // initialize the view and render it
-    initialize: function () {
-        this.render();
-    },
-    // render the view
-    render: function () {
-        // Check if the model has a thumbnail attribute
-        // Not using ternary operator because it's not as readable
-        if (this.model.attributes.thumbnail === undefined) {
-            // Use the template without an image if there's no thumbnail
-            this.$el.html(this.itemNoImgTemplate(this.model.toJSON()));
-        } else {
-            // Use the template with an image if there's a thumbnail
-            this.$el.html(this.itemTemplate(this.model.toJSON()));
-        }
-    },
-});
+
 let clickCounter = 1;
 let colorArray = [];
-
-drstk.SettingView = Backbone.View.extend({
-    // Define templates using a mapping for easier access
-    templates: {
-        checkbox: wp.template('drstk-setting-checkbox'),
-        select: wp.template('drstk-setting-select'),
-        text: wp.template('drstk-setting-text'),
-        number: wp.template('drstk-setting-number'),
-    },
-    tagName: 'tr',
-
-    // Initialize the view and render it
-    initialize: function () {
-        this.render();
-    },
-
-    // Render the view
-    render: function () {
-        // Get the appropriate template based on the model's tag attribute
-        const template = this.templates[this.model.attributes.tag];
-
-        // If a matching template is found, render it
-        if (template) {
-            this.$el.html(template(this.model.toJSON()));
-        }
-    },
-});
-
-drstk.ColorSettingView = Backbone.View.extend({
-    color_row_template: wp.template('drstk-setting-colorinput'),
-    tagName: 'tr',
-    initialize: function () {
-        this.render();
-    },
-    render: function () {
-        if (this.model.attributes.tag == 'inputcolor') {
-            this.$el.html(this.color_row_template(this.model.toJSON()));
-        }
-    },
-    remove: function () {
-        this.collection.remove(this.model);
-    },
-});
 
 /**
  * Primary Modal Application Class
@@ -1486,3 +1346,5 @@ jQuery(function ($) {
         }
     });
 });
+
+window.drstk = drstk;

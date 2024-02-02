@@ -1,9 +1,8 @@
-import { Model } from 'backbone';
 import Items from '../collections/items';
 import Settings from '../collections/settings';
 import ColorSettings from '../collections/colorSettings';
 
-const Shortcode = Model.extend({
+const Shortcode = Backbone.Model.extend({
     defaults: {
         type: '',
         items: new Items(),
@@ -38,7 +37,7 @@ const Shortcode = Model.extend({
             }
         });
 
-        return Model.prototype.set.call(this, attributes, options);
+        return Backbone.Model.prototype.set.call(this, attributes, options);
     },
 });
 

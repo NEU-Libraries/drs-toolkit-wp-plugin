@@ -1,12 +1,12 @@
-import { Model } from 'backbone';
-
-const ColorSetting = Model.extend({
-    name: '',
-    value: [],
-    label: '',
-    tag: '',
-    colorname: '',
-    colorHex: '',
+const ColorSetting = Backbone.Model.extend({
+    defaults: {
+        name: '',
+        value: [],
+        label: '',
+        tag: '',
+        colorname: '',
+        colorHex: '',
+    },
 });
 
 export default ColorSetting;

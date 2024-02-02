@@ -1,7 +1,6 @@
-import { Collection } from 'backbone';
 import Setting from '../models/setting';
 
-const Settings = Collection.extend({
+const Settings = Backbone.Collection.extend({
     model: Setting,
 });
 
