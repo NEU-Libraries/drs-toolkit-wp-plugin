@@ -1224,7 +1224,7 @@ function drstk_mirador_script() {
 /*fix for weird jumpiness in wp admin menu*/
 function fix_admin_head() {
 	echo "<script type='text/javascript'>jQuery(window).load(function(){jQuery('#adminmenuwrap').hide().show(0);});</script>";
-  echo "<style>#start-pt-pb-tour{display:none !important;}";
+  echo "<style>#start-pt-pb-tour{display:none !important;}</style>";
 }
 add_action( 'admin_head', 'fix_admin_head' );
 
