@@ -67,25 +67,55 @@ function drstk_get_drs_items() {
     }
 }
 
+//function build_drs_url() {
+//    // Builds the DRS API URL based on selected filters
+//    $col_pid = drstk_get_pid();
+//    $url = "";
+//
+//    $filters = array(
+//        'spatialfilter' => 'geo',
+//        'avfilter' => 'av',
+//        'timefilter' => 'date',
+//    );
+//
+//    // Iterates through all the parameters of POST Request
+//    foreach ($filters as $filter => $value) {
+//        if (isset($_POST['params'][$filter])) {
+//            $url = drstk_api_url("drs", $col_pid, "search", $value, "per_page=20");
+//        }
+//    }
+//
+//    return empty($url) ? drstk_api_url("drs", $col_pid, "search", null, "per_page=20") : $url;
+//}
+
 function build_drs_url() {
     // Builds the DRS API URL based on selected filters
-    $col_pid = drstk_get_pid();
-    $url = "";
+    $base_url = drstk_api_url("drs", drstk_get_pid(), "search");
+    $default_params = ['per_page' => '20'];
+    $url_params = array_merge($default_params, process_drs_filters($_POST['params']));
 
-    $filters = array(
-        'spatialfilter' => 'geo',
-        'avfilter' => 'av',
-        'timefilter' => 'date',
-    );
+    return $base_url . '?' . http_build_query($url_params);
+}
 
-    // Iterates through all the parameters of POST Request
-    foreach ($filters as $filter => $value) {
-        if (isset($_POST['params'][$filter])) {
-            $url = drstk_api_url("drs", $col_pid, "search", $value, "per_page=20");
+function process_drs_filters($params) {
+    $api_params = [];
+    foreach ($params as $filter => $value) {
+        switch ($filter) {
+            // Define cases as needed,
+            case 'spatialfilter':
+                $api_params['geo'] = $value;
+                break;
+            case 'avfilter':
+                $api_params['av'] = $value;
+                break;
+            case 'timefilter':
+                $api_params['date'] = $value;
+                break;
+            default:
+                $api_params[$filter] = $value;
         }
     }
-
-    return empty($url) ? drstk_api_url("drs", $col_pid, "search", null, "per_page=20") : $url;
+    return $api_params;
 }
 
 function handle_response($response) {
@@ -115,25 +145,54 @@ function drstk_get_dpla_items() {
     }
 }
 
+//function build_dpla_url() {
+//    // Builds the DPLA API URL based on selected filters
+//    $url = isset($_POST['params']['pid'])
+//        ? drstk_api_url("dpla", $_POST['params']['pid'], "items", NULL, "page_size=20")
+//        : drstk_api_url("dpla", "", "items", NULL, "page_size=20");
+//
+//    $filters = array(
+//        'q' => 'q',
+//        'spatialfilter' => 'sourceResource.spatial=**',
+//        'timefilter' => 'sourceResource.date.displayDate=*',
+//    );
+//
+//    foreach ($filters as $filter => $value) {
+//        if (isset($_POST['params'][$filter])) {
+//            $url .= '&' . $value . '=' . urlencode(sanitize_text_field($_POST['params'][$filter]));
+//        }
+//    }
+//
+//    return $url . "&facets=sourceResource.contributor,sourceResource.date.begin,sourceResource.date.end,sourceResource.subject.name,sourceResource.type";
+//}
+
 function build_dpla_url() {
     // Builds the DPLA API URL based on selected filters
-    $url = isset($_POST['params']['pid'])
-        ? drstk_api_url("dpla", $_POST['params']['pid'], "items", NULL, "page_size=20")
-        : drstk_api_url("dpla", "", "items", NULL, "page_size=20");
+    $base_url = drstk_api_url("dpla", $_POST['params']['pid'] ?? "", "items", NULL, "page_size=20");
+    $url_params = process_dpla_filters($_POST['params']);
 
-    $filters = array(
-        'q' => 'q',
-        'spatialfilter' => 'sourceResource.spatial=**',
-        'timefilter' => 'sourceResource.date.displayDate=*',
-    );
+    // Append additional facets if needed
+    $url_params['facets'] = 'sourceResource.contributor,sourceResource.date.begin,sourceResource.date.end,sourceResource.subject.name,sourceResource.type';
 
-    foreach ($filters as $filter => $value) {
-        if (isset($_POST['params'][$filter])) {
-            $url .= '&' . $value . '=' . urlencode(sanitize_text_field($_POST['params'][$filter]));
+    return $base_url . '&' . http_build_query($url_params);
+}
+
+function process_dpla_filters($params) {
+    $api_params = [];
+    foreach ($params as $filter => $value) {
+        // Convert internal filter names to API parameter names
+        switch ($filter) {
+            // to be adjusted based on API requirements
+            case 'q':
+            case 'spatialfilter':
+            case 'timefilter':
+                $api_params[$filter] = $value;
+                break;
+            default :
+                $api_params[$filter] = $value;
         }
     }
-
-    return $url . "&facets=sourceResource.contributor,sourceResource.date.begin,sourceResource.date.end,sourceResource.subject.name,sourceResource.type";
+    return $api_params;
 }
 
 function drstk_get_custom_meta(){
