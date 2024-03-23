@@ -17,6 +17,29 @@ function drstk_enqueue_page_scripts( $hook ) {
         // Include modal template and enqueue necessary scripts when editing or creating a post/page
         include DRS_PLUGIN_PATH . 'templates/modal.php';
         drstk_enqueue_scripts();
+
+        $item_admin_nonce = wp_create_nonce( 'item_admin_nonce' );
+
+        wp_localize_script( 'drstk_admin_js', 'item_admin_obj', array(
+            'ajax_url' => admin_url( 'admin-ajax.php' ),
+            'item_admin_nonce'    => $item_admin_nonce,
+            'pid' => '',
+            'errors' => json_encode($errors),
+        ) );
+
+        $drs_ajax_nonce = wp_create_nonce( 'drs_ajax_nonce');
+        wp_localize_script( 'drstk_admin_js', 'drs_ajax_obj', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'drs_ajax_nonce' => $drs_ajax_nonce,
+        ));
+
+        $dpla_ajax_nonce = wp_create_nonce( 'dpla_ajax_nonce');
+        wp_localize_script( 'drstk_admin_js', 'dpla_ajax_obj', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'dpla_ajax_nonce' => $dpla_ajax_nonce,
+        ));
+    } else {
+        return;
     }
  }
 
