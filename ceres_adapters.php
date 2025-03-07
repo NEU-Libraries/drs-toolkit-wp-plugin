@@ -10,8 +10,9 @@
  * 
  */
 
-use Ceres\Extractor\Drs1ToTextMedia;
+use Ceres\Extractor\Drs1ItemToTextMedia;
 use Ceres\Renderer\TextMedia;
+use Ceres\Renderer\OralHistory;
 use Ceres\ViewPackage\ViewPackage;
 
 /* LOAD CERES */
@@ -139,6 +140,7 @@ add_shortcode('ceres_vp', 'ceres_vp_handler');
 add_shortcode('ceres_renderer', 'ceres_renderer_handler');
 add_shortcode('ceres_chinatown_qid', 'ceres_chinatown_qid_handler');
 add_shortcode('ceres_text_media', 'ceres_text_media_handler');
+add_shortcode('ceres_oral_history', 'ceres_oral_history_handler');
 // add_shortcode('ceres_test', 'ceres_test_handler');
 
 /* DEFINE THE HANDLERS USED BY THE SHORTCODES */
@@ -163,7 +165,7 @@ function ceres_text_media_handler($atts) {
 	// temporary for dev and demo purposes
 	$drsResponse = file_get_contents('https://repository.library.northeastern.edu/api/v1/files/' . $pid);
 //	$drsResponse = file_get_contents('https://repository.library.northeastern.edu/api/v1/files/neu:4f17kp21x');
-	$textMediaExtractor = new Drs1ToTextMedia;
+	$textMediaExtractor = new Drs1ItemToTextMedia;
 
 	$textMediaExtractor->setSourceData($drsResponse);
 	$textMediaExtractor->extract();
@@ -173,6 +175,43 @@ function ceres_text_media_handler($atts) {
 	$textMediaRenderer->setRenderArrayFromArray($renderArray);
 
 	return $textMediaRenderer->render();
+	//return 'ok';
+
+}
+
+
+function ceres_oral_history_handler($atts) {
+
+	if (isset($atts['pid'])) {
+		$pid = $atts['pid'];
+	} else {
+		return 'No PID set. Check the shortcode.';
+	}
+
+	$atts = shortcode_atts(
+		['pid'],
+		$atts,
+		'ceres_oral_history'
+	);
+	// the DRS pid for the text/media pair
+
+	
+
+	// temporary for dev and demo purposes
+	$pid = 'neu:rx918694k';
+	$drsResponse = file_get_contents('https://repository.library.northeastern.edu/api/v1/files/' . $pid);
+	
+	$extractor = new Drs1ItemToTextMedia;
+	$extractor->setSourceData($drsResponse);
+	$extractor->extract();
+	$renderArray = $extractor->getRenderArray();
+	// print_r($renderArray);
+	// die();
+	
+	$renderer = new OralHistory;
+	$renderer->setRenderArrayFromArray($renderArray);
+	echo $renderer->renderFullHtml();
+	
 	//return 'ok';
 
 }
