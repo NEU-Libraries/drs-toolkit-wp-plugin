@@ -54,10 +54,12 @@ jQuery(document).ready(function($) {
 
 		var finalDictionary = {};
 
-		if(eventsList[0].media.url == ''){
-			eventsList = [];
-		}
-
+		//if(eventsList[0].media.url == ''){
+			//eventsList = [];
+		//}
+    if (!eventsList.length || !eventsList[0].media || !eventsList[0].media.url) {
+        eventsList = [];
+    }
 		var customTimelineClass = '.custom-timeline';
 
 		var customDate = {};

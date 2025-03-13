@@ -12,6 +12,7 @@
 	font-family: sans-serif;
 	font-size: 14px;
 }
+
 .backbone_modal .backbone_modal-close {
 	position: absolute;
 	text-decoration: none;
@@ -245,6 +246,12 @@
 }
 .tablenav .tablenav-pages {
 	clear: both;
+}
+.tablenav .tablenav-pages a{
+	border:1px solid;
+    padding: 5px 10px;
+    border-radius: 50px;
+    margin: 0 1px;
 }
 .dpla-facets a, .drs-facets a {
 	text-decoration: none;

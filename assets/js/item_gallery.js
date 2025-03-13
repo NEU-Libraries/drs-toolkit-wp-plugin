@@ -1,5 +1,7 @@
 jQuery(document).ready(function($) {
-	$('.carousel').carousel();
+	$('.carousel').carousel({
+		interval: false
+	});
   var cHeight = 0;
   $('.carousel').on('slide.bs.carousel', function(e) {
     var $nextImage = $(e.relatedTarget).find('img');
@@ -86,6 +88,8 @@ jQuery(document).ready(function($) {
       var wp_page = $(this).attr('href').split("/");
 			pid = wp_page[wp_page.length -3];
       wp_page = wp_page[wp_page.length -1];
+			console.log(pid);
+			console.log(wp_page);
 			$(".related_content .panel-body").html("Loading...<br/><span class='fa fa-spinner fa-spin'></span>");
 			$.ajax({
   			type: 'GET',

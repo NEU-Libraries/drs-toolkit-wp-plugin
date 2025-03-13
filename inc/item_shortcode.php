@@ -13,7 +13,7 @@ function drstk_item( $atts ){
       ) {
           return $cache;
   }
-      
+
   $repo = drstk_get_repo_from_pid($atts['id']);
   if ($repo != "drs"){$pid = explode(":",$atts['id']); $pid = $pid[1];} else {$pid = $atts['id'];}
   if (isset($atts['image-size'])){
@@ -41,7 +41,10 @@ function drstk_item( $atts ){
     $data->mods = new StdClass;
     $data->mods->Title = $data->title_info_title_tesim;
     $abs = "Abstract/Description";
-    $data->mods->$abs = $data->abstract_tesim;
+
+    if (isset($data->abstract_tesim)){
+          $data->mods->$abs = $data->abstract_tesim;
+    }
     if (isset($data->creator_tesim)){
       $data->mods->Creator = $data->creator_tesim;
     }
@@ -79,19 +82,21 @@ function drstk_item( $atts ){
        if (isset($meta['sizes']['large'])){
          $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
        } else {
-         $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+         $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
        }
       }
       if ($num == 5){
        if (isset($meta['sizes']['large'])){
          $thumbnail = $thumb_base."/".$meta['sizes']['large']['file'];
        } else {
-         $thumbnail = drstk_home_url()."/wp-content/uploads/".$meta['file'];
+         $thumbnail = drstk_home_url().$img.$meta['file'];
        }
       }
-    } else {
-      $thumbnail = null;
-    }
+
+	  else{
+         $thumbnail = drstk_home_url().$img.$meta['file'];
+      }
+		    }
     $master = $post->guid;
     $data->mods = new StdClass;
     $data->mods->title = array($post->post_title);
@@ -159,7 +164,7 @@ function drstk_item( $atts ){
       $html .= '<div data-configid="'.$issu_id.'" style="width:100%; height:500px;" class="issuuembed"></div><script type="text/javascript" src="//e.issuu.com/embed.js" async="true"></script>';
       $html .= "<a href='".drstk_home_url()."item/".$atts['id']."'>View Item Details</a>";
     } else {
-      $html .= "<a href='".drstk_home_url()."item/".$atts['id']."'><img class='drs-item-img' id='".$atts['id']."-img' src='".$thumbnail."'";
+      $html .= "<a href='".drstk_home_url()."item/".$atts['id']."'><img class='drs-item-img' id='".$atts['id']."-imges' src='".$thumbnail."'";
 
       if (isset($atts['align'])){
         $html .= " data-align='".$atts['align']."'";

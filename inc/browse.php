@@ -6,7 +6,6 @@ function browse_ajax_handler() {
   $errors = drstk_get_errors();
   check_ajax_referer( 'browse_drs' );
   $collection = drstk_get_pid();
-
   if ($collection == '' || $collection == NULL) {
       $data = array('error'=>$errors['search']['missing_collection']);
       $data = json_encode($data);
@@ -53,28 +52,47 @@ function browse_ajax_handler() {
 add_action('wp_ajax_wp_search', 'ajax_wp_search');
 add_action('wp_ajax_nopriv_wp_search', 'ajax_wp_search');
 
-function ajax_wp_search(){
-  global $wp_query, $paged, $post;
-  $related_content_title = get_option('drstk_search_related_content_title');
-  $query_string = isset($_GET['query']) ? $_GET['query'] : "";
-  $paged = $_GET['page'];
-  if (isset($_GET['query']) && $query_string != ''){
-    $query_args = array( 's' => $query_string, 'post_type'=>array('post', 'page'), 'posts_per_page'=>3, 'paged'=>$paged, 'post_status'=>'publish');
-    $wp_query = new WP_Query( $query_args );
-    $rel_query = relevanssi_do_query($wp_query);
-    if (count($rel_query) > 0){
-      foreach($rel_query as $r_post){
-        $post = $r_post;
-        $the_post = $post;
-        get_template_part( 'content', 'excerpt' );
-      }
-      echo the_posts_pagination( array( 'mid_size'  => 2 ) );
+function ajax_wp_search() {
+    global $post;
+
+    // Fetch and sanitize inputs
+    $query_string = isset($_GET['query']) ? sanitize_text_field($_GET['query']) : "";
+    $paged = isset($_GET['page']) ? intval($_GET['page']) : 1;
+
+    // Get related content title from settings
+    $related_content_title = get_option('drstk_search_related_content_title', 'Related Content');
+
+    // Validate search query
+    if (!empty($query_string)) {
+        // Define query arguments
+        $query_args = array(
+            's' => $query_string,
+            'post_type' => array('post', 'page'), // Extendable
+            'posts_per_page' => 3,
+            'paged' => $paged,
+            'post_status' => 'publish',
+        );
+
+        // Execute the query
+        $wp_query = new WP_Query($query_args);
+
+        if ($wp_query->have_posts()) {
+            // Loop through posts and display excerpts
+            while ($wp_query->have_posts()) {
+                $wp_query->the_post();
+                get_template_part('content', 'excerpt');
+            }
+
+            // Display pagination if applicable
+            echo the_posts_pagination(array('mid_size' => 2));
+        } else {
+            echo "No " . strtolower($related_content_title) . " was found.";
+        }
     } else {
-      echo "No ".strtolower($related_content_title)." was found";
+        echo "Please enter a search term to retrieve " . strtolower($related_content_title) . ".";
     }
-  } else {
-    echo "Please enter a search term to retrieve ".strtolower($related_content_title);
-  }
-  wp_reset_postdata();
-  die();
+
+    // Reset post data and end execution
+    wp_reset_postdata();
+    wp_die(); // Properly terminate for AJAX requests
 }
