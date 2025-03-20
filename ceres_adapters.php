@@ -85,7 +85,8 @@ function ceres_asset_adapters() {
 	
 	
 	
-	//text-media
+	//text-media / oral-history
+	wp_register_style('ceres-oral-history', plugins_url('/libraries/Ceres/assets/css/oral-history.css', __FILE__));
 	wp_register_style('ceres-text-media', plugins_url('/libraries/Ceres/assets/css/text-media.css', __FILE__));
 	wp_register_script('ceres-text-media', plugins_url('/libraries/Ceres/assets/js/jquery-3.7.1.min.js', __FILE__));
 	wp_register_script('ceres-jwplayer', 'https://cdn.jwplayer.com/libraries/dTFl0VEe.js');
@@ -113,13 +114,6 @@ function ceres_asset_adapters() {
 	//wp_enqueue_script('ceres_leaflet_');
 
 
-
-	//text-media
-	wp_enqueue_script('ceres-text-media');
-	wp_enqueue_script('ceres-jwplayer');
-	wp_enqueue_script('ceres-jwplayer-init');
-
-
 	//enqueue styles
 
 	//leaflet
@@ -127,8 +121,13 @@ function ceres_asset_adapters() {
 	wp_enqueue_style('ceres_leaflet_brc-project');
 	wp_enqueue_style('ceres_leaflet_markercluster');
 	wp_enqueue_style('ceres_leaflet_markercluster_default');
-	wp_enqueue_style('ceres-text-media');
+
 	
+	//text-media / oral-history
+	wp_enqueue_script('ceres-text-media');
+	wp_enqueue_script('ceres-oral-history');
+	wp_enqueue_script('ceres-jwplayer');
+	wp_enqueue_script('ceres-jwplayer-init');
 
 }
 
