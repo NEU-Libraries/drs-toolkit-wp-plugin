@@ -72,6 +72,12 @@ function ceres_asset_adapters() {
 	wp_register_script('ceres_leaflet_brc_storymaps', plugins_url('/libraries/Ceres/assets/js/leaflet/brc/leaflet-brc-project-storymap.js', __FILE__));
 
 
+	// oral history/text-media/tabbed-content
+	wp_register_script('ceres-text-media', plugins_url('/libraries/Ceres/assets/js/jquery-3.7.1.min.js', __FILE__));
+	wp_register_script('ceres-jwplayer', 'https://cdn.jwplayer.com/libraries/dTFl0VEe.js');
+	wp_register_script('ceres-jwplayer-init', plugins_url('libraries/Ceres/assets/js/jwplayer-init.js', __FILE__));
+	wp_register_script('ceres-tabbed-content', plugins_url('libraries/Ceres/assets/js/tabbed-content.js', __FILE__));
+
 
 	//register styles
 	//datatables
@@ -88,9 +94,6 @@ function ceres_asset_adapters() {
 	//text-media / oral-history
 	wp_register_style('ceres-oral-history', plugins_url('/libraries/Ceres/assets/css/oral-history.css', __FILE__));
 	wp_register_style('ceres-text-media', plugins_url('/libraries/Ceres/assets/css/text-media.css', __FILE__));
-	wp_register_script('ceres-text-media', plugins_url('/libraries/Ceres/assets/js/jquery-3.7.1.min.js', __FILE__));
-	wp_register_script('ceres-jwplayer', 'https://cdn.jwplayer.com/libraries/dTFl0VEe.js');
-	wp_register_script('ceres-jwplayer-init', plugins_url('libraries/Ceres/assets/js/jwplayer-init.js', __FILE__));
 
 	//enqueue scripts
 	//@todo  make enqueueing conditional upon the need
@@ -114,6 +117,13 @@ function ceres_asset_adapters() {
 	//wp_enqueue_script('ceres_leaflet_');
 
 
+
+	wp_enqueue_script('ceres-text-media');
+	wp_enqueue_script('ceres-oral-history');
+	wp_enqueue_script('ceres-tabbed-content');
+	wp_enqueue_script('ceres-jwplayer');
+	wp_enqueue_script('ceres-jwplayer-init');
+
 	//enqueue styles
 
 	//leaflet
@@ -124,10 +134,9 @@ function ceres_asset_adapters() {
 
 	
 	//text-media / oral-history
-	wp_enqueue_script('ceres-text-media');
-	wp_enqueue_script('ceres-oral-history');
-	wp_enqueue_script('ceres-jwplayer');
-	wp_enqueue_script('ceres-jwplayer-init');
+
+	wp_enqueue_style('ceres-text-media');
+	wp_enqueue_style('ceres-oral-history');
 
 }
 
@@ -170,7 +179,7 @@ function ceres_text_media_handler($atts) {
 	$textMediaExtractor->extract();
 	$renderArray = $textMediaExtractor->getRenderArray();
 
-	$textMediaRenderer = new TextMedia;
+	$textMediaRenderer = new OralHistory;
 	$textMediaRenderer->setRenderArrayFromArray($renderArray);
 
 	return $textMediaRenderer->render();
@@ -197,7 +206,7 @@ function ceres_oral_history_handler($atts) {
 	
 
 	// temporary for dev and demo purposes
-	$pid = 'neu:rx918694k';
+	//$pid = 'neu:rx918694k';
 	$drsResponse = file_get_contents('https://repository.library.northeastern.edu/api/v1/files/' . $pid);
 	
 	$extractor = new Drs1ItemToTextMedia;
@@ -209,7 +218,7 @@ function ceres_oral_history_handler($atts) {
 	
 	$renderer = new OralHistory;
 	$renderer->setRenderArrayFromArray($renderArray);
-	echo $renderer->renderFullHtml();
+	echo $renderer->render();
 	
 	//return 'ok';
 
