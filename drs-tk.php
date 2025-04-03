@@ -65,6 +65,16 @@ $TEMPLATE_THEME = array(
  $all_assoc_meta_options = array("full_title_ssi","creator_tesim","abstract_tesim");
 
 
+
+function mce_plugin($plugin_array){
+  $plugin_array['drstkshortcodes'] = DRS_PLUGIN_URL.'/assets/js/mce-button.js';
+  return $plugin_array;
+}
+
+function add_tinymce_plugin(){
+  add_filter("mce_external_plugins", 'mce_plugin');
+}
+
  /**
   * Rewrite rules for the plugin.
   */
@@ -495,14 +505,6 @@ function drstk_drs_auth(){
   }
 }
 
-function add_tinymce_plugin(){
-  add_filter("mce_external_plugins", 'mce_plugin');
-}
-
-function mce_plugin($plugin_array){
-  $plugin_array['drstkshortcodes'] = DRS_PLUGIN_URL.'/assets/js/mce-button.js';
-  return $plugin_array;
-}
 
 /*helper functions for getting default values and cleaning up stored options*/
 function drstk_get_pid(){
