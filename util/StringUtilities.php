@@ -13,8 +13,6 @@ function titleize($string){
     return $string;
 }
 
-  
-
 /**
  * Wraps home_url() to include the drstk_home_url after the home_url.
  *
