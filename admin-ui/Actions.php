@@ -303,7 +303,11 @@ function drstk_register_niec_settings(): void {
 }
 
 function drs_admin_add_page() {
-    $hook = add_options_page('Settings for CERES: Exhibit Toolkit Plugin', 'CERES: Exhibit Toolkit', 'manage_options', 'drstk_admin_menu', 'drstk_display_settings');
+    $hook = add_options_page('Settings for CERES: Exhibit Toolkit Plugin',
+        'CERES: Exhibit Toolkit', 
+        'manage_options', 
+        'drstk_admin_menu', 
+        'drstk_display_settings');
     add_action('load-'.$hook,'drstk_plugin_settings_save');
 }
 

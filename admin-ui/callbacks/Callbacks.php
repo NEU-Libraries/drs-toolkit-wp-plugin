@@ -10,23 +10,15 @@ namespace Drstk\AdminUI;
 
 // @todo unfuck this
 //this creates the form for the drstk settings page
-function drstk_display_settings(){
-  ?>
-    <div class="wrap">
-    <h1>CERES Settings</h1>
-    <form method="post" action="options.php" name="options">
-        <?php
-            settings_fields("drstk_options");
-            do_settings_sections("drstk_options");
-            submit_button();
-        ?>
-    </form>
-	</div>
-   <?php
+function drstk_display_settings() {
+    $html = "div class='wrap'>" . 
+          "<h1>CERES Settings</h1>" . 
+          "<form method='post' action='options.php name='options'>";
+    settings_fields("drstk_options");
+    do_settings_sections("drstk_options");
+    submit_button();
+    $html = "</form></div>";
 }
-
-
-
 
 /*callback functions for display fields on settings page*/
 function drstk_collection_callback() {
