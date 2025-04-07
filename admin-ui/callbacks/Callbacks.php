@@ -1,5 +1,7 @@
 <?php
 
+namespace Drstk\AdminUI\Callbacks;
+
 
 /*
     @todo This needs to get sorted into different files/class

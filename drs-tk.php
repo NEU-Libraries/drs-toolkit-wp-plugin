@@ -1,4 +1,7 @@
 <?php
+
+namespace Drstk;
+
 /**
  * Plugin Name: CERES: Exhibit Toolkit Plugin
  * Plugin URI:
