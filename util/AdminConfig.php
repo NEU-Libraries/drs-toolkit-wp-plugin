@@ -1,9 +1,9 @@
 <?php
 
-namespace Drstk\Util\AdminConfig;
+namespace Drstk\Util;
 
 
-add_action('init', 'create_post_type');
+
 function create_post_type() {
   if (get_option('drstk_item_extensions') == "on"){
     register_post_type( 'drstk_item_extension',

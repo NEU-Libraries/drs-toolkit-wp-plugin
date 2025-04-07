@@ -1,5 +1,7 @@
 <?php
 
+namespace Drstk\Util;
+
 function drstk_get_assoc_meta_options(){
     $meta_options = get_option('drstk_assoc_file_metadata');
     if ($meta_options == NULL){

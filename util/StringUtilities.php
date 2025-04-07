@@ -1,6 +1,6 @@
 <?php
 
-
+namespace Drstk\Util;
 
 
 /*API URL Builder helper method*/

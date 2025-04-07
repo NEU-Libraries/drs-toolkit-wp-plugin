@@ -1,5 +1,7 @@
 <?php
 
+namespace Drstk\AdminUI;
+
 /*fix for weird jumpiness in wp admin menu*/
 function fix_admin_head() {
 	echo "<script type='text/javascript'>jQuery(window).load(function(){jQuery('#adminmenuwrap').hide().show(0);});</script>";

@@ -1,5 +1,6 @@
 <?php
 
+namespace Drstk\Util;
 
 function drstk_get_errors(){
     $errors = array(

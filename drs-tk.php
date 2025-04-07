@@ -33,8 +33,6 @@ require_once( plugin_dir_path( __FILE__ ) . 'config.php' );
 // require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Jwplayer_Renderer.php' );
 
 
-
-
 define( 'ALLOW_UNFILTERED_UPLOADS', true ); //this will allow files without extensions - aka from fedora
 define('DRS_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
 define('DRS_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -206,7 +204,7 @@ add_action('wp', 'drstk_add_hypothesis');
 add_action('init', 'drstk_add_podcast_feed');
 add_action('init', 'drstk_rewrite_rule');
 add_action( 'init', 'remove_bstw_widget_text_filters' );
-
+add_action('init', 'create_post_type');
 
 /* FILTERS */
 
