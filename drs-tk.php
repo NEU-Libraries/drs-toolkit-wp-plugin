@@ -22,6 +22,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'inc/map_shortcode.php');
 require_once( plugin_dir_path( __FILE__ ) . 'inc/timeline_shortcode.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/metabox.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'config.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'ceres_adapters.php' );
 
 
 /* Moving toward a Ceres namespace for podcasting */
@@ -130,10 +131,7 @@ function add_tinymce_plugin(){
      flush_rewrite_rules();
  }
 
-//This function creates the settings page for entering the pid
-add_action('admin_menu', 'drs_admin_add_page');
-add_action( 'admin_init', 'register_drs_settings' );
-add_action( 'admin_init', 'add_tinymce_plugin');
+
 
 /*DRS API Auth Enabled helper method */
 
@@ -206,6 +204,9 @@ add_action('init', 'drstk_rewrite_rule');
 add_action( 'init', 'remove_bstw_widget_text_filters' );
 add_action('init', 'create_post_type');
 add_action('wp_feed_options', 'drstk_turn_off_feed_caching');
+add_action('admin_menu', 'drs_admin_add_page');
+add_action( 'admin_init', 'register_drs_settings' );
+add_action( 'admin_init', 'add_tinymce_plugin');
 
 /* FILTERS */
 
@@ -214,17 +215,6 @@ add_filter("attachment_fields_to_edit", "drstk_image_attachment_fields_to_edit",
 add_filter("attachment_fields_to_save", "drstk_image_attachment_fields_to_save", 10, 2);
 add_filter('query_vars', 'drstk_add_query_var');
 add_filter('wp_feed_cache_transient_lifetime', 'debug_change_feed_cache_transient_lifetime', 200000);
-
-
-
-
-
-
-/* Dev on Podcast site options */
 add_filter( 'template_include', 'drstk_podcast_page_template', 100 );
 
 
-/* End Dev on Podcast site */
-
-
-require_once( plugin_dir_path( __FILE__ ) . 'ceres_adapters.php' );
