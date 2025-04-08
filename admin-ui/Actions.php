@@ -3,8 +3,7 @@
 //namespace Drstk\AdminUI;
 
 
-function drstk_add_hypothesis($param)
-{
+function drstk_add_hypothesis($param) {
     global $wp_query;
     $annotations = get_option('drstk_annotations');
     if (isset($wp_query->query_vars['drstk_template_type'])) {
@@ -23,21 +22,18 @@ function drstk_add_hypothesis($param)
 
 // INIT ACTIONS
 
-function drstk_add_podcast_feed()
-{
+function drstk_add_podcast_feed() {
     add_feed('podcasts', 'drstk_render_podcast_feed');
 }
 /* This makes it so that the tinymce wysiwyg does not process shortcodes so the database saves the shortcode before it is processed - this allows the has_shortcode function to work as expected and thus enqueue javascript correctly*/
 
-function remove_bstw_widget_text_filters()
-{
+function remove_bstw_widget_text_filters() {
     if (function_exists('bstw')) {
         remove_filter('widget_text', array(bstw()->text_filters(), 'do_shortcode'), 10);
     }
 }
 
-function register_drs_settings()
-{
+function register_drs_settings() {
     add_settings_section('drstk_advanced', "Advanced", null, 'drstk_options');
 
     drstk_register_project_settings();
@@ -54,8 +50,7 @@ function register_drs_settings()
     drstk_register_mirador_settings();
 }
 
-function drstk_register_browse_settings(): void
-{
+function drstk_register_browse_settings(): void {
     add_settings_section('drstk_browse_settings', 'Browse', null, 'drstk_options');
     add_settings_field('drstk_browse_page_title', 'Browse Page Title', 'drstk_browse_page_title_callback', 'drstk_options', 'drstk_browse_settings');
     register_setting('drstk_options', 'drstk_browse_page_title');
@@ -89,8 +84,7 @@ function drstk_register_browse_settings(): void
     register_setting('drstk_options', 'drstk_collection_page_title');
 }
 
-function drstk_register_item_page_settings(): void
-{
+function drstk_register_item_page_settings(): void {
     add_settings_section('drstk_single_settings', 'Single Item Page', null, 'drstk_options');
     add_settings_field('drstk_item_page_metadata', 'Metadata to Display<br/><small>If none are selected, all metadata will display in the default order. To reorder or limit the fields which display, select the desired fields and drag and drop to reorder. To add custom fields, click the add button and type in the label.</small>', 'drstk_item_page_metadata_callback', 'drstk_options', 'drstk_single_settings');
     register_setting('drstk_options', 'drstk_item_page_metadata');
@@ -110,8 +104,7 @@ function drstk_register_item_page_settings(): void
     register_setting('drstk_options', 'drstk_item_extensions');
 }
 
-function drstk_register_search_settings(): void
-{
+function drstk_register_search_settings(): void {
     add_settings_section('drstk_search_settings', 'Search', null, 'drstk_options');
     add_settings_field('drstk_search_page_title', 'Search Page Title', 'drstk_search_page_title_callback', 'drstk_options', 'drstk_search_settings');
     register_setting('drstk_options', 'drstk_search_page_title');
@@ -127,8 +120,7 @@ function drstk_register_search_settings(): void
     register_setting('drstk_options', 'drstk_search_show_facets');
 }
 
-function drstk_register_project_settings(): void
-{
+function drstk_register_project_settings(): void {
     add_settings_section('drstk_project', "Project", null, 'drstk_options');
     add_settings_field('drstk_collection', 'Project Collection or Set URL', 'drstk_collection_callback', 'drstk_options', 'drstk_project');
     register_setting('drstk_options', 'drstk_collection');
@@ -136,8 +128,7 @@ function drstk_register_project_settings(): void
     register_setting('drstk_options', 'drstk_home_url', 'drstk_home_url_validation');
 }
 
-function drstk_register_podcast_settings(): void
-{
+function drstk_register_podcast_settings(): void {
     add_settings_field(
         'drstk_is_podcast',
         'Is this a podcast site?',
@@ -188,8 +179,7 @@ function drstk_register_podcast_settings(): void
     register_setting('drstk_options', 'drstk_podcast_image_url');
 }
 
-function drstk_register_itunes_settings(): void
-{
+function drstk_register_itunes_settings(): void {
 
     add_settings_field(
         'drstk_itunes_link',
@@ -202,8 +192,7 @@ function drstk_register_itunes_settings(): void
     register_setting('drstk_options', 'drstk_itunes_link');
 }
 
-function drstk_register_googleplay_settings()
-{
+function drstk_register_googleplay_settings() {
 
     add_settings_field(
         'drstk_googleplay_link',
@@ -216,8 +205,7 @@ function drstk_register_googleplay_settings()
     register_setting('drstk_options', 'drstk_googleplay_link');
 }
 
-function drstk_register_spotify_settings(): void
-{
+function drstk_register_spotify_settings(): void {
     add_settings_field(
         'drstk_spotify_link',
         'Link to Spotify',
@@ -229,8 +217,7 @@ function drstk_register_spotify_settings(): void
     register_setting('drstk_options', 'drstk_spotify_link');
 }
 
-function drstk_register_stitcher_settings(): void
-{
+function drstk_register_stitcher_settings(): void {
     add_settings_field(
         'drstk_stitcher_link',
         'Link to Stitcher',
@@ -242,8 +229,7 @@ function drstk_register_stitcher_settings(): void
     register_setting('drstk_options', 'drstk_stitcher_link');
 }
 
-function drstk_register_overcast_settings(): void
-{
+function drstk_register_overcast_settings(): void {
     add_settings_field(
         'drstk_overcast_link',
         'Link to Overcast',
@@ -255,8 +241,7 @@ function drstk_register_overcast_settings(): void
     register_setting('drstk_options', 'drstk_overcast_link');
 }
 
-function drstk_register_leaflet_settings(): void
-{
+function drstk_register_leaflet_settings(): void {
     add_settings_field(
         'leaflet_api_key',
         'Leaflet API Key',
@@ -276,8 +261,7 @@ function drstk_register_leaflet_settings(): void
     register_setting('drstk_options', 'leaflet_project_key');
 }
 
-function drstk_register_mirador_settings(): void
-{
+function drstk_register_mirador_settings(): void {
 
     add_settings_field(
         'drstk_assoc',
@@ -310,8 +294,7 @@ function drstk_register_mirador_settings(): void
 }
 
 
-function drstk_register_niec_settings(): void
-{
+function drstk_register_niec_settings(): void {
     add_settings_field(
         'drstk_niec',
         'Does your project include NIEC metadata?',
@@ -345,8 +328,7 @@ function drstk_register_niec_settings(): void
     }
 }
 
-function drs_admin_add_page()
-{
+function drs_admin_add_page() {
     $hook = add_options_page(
         'Settings for CERES: Exhibit Toolkit Plugin',
         'CERES: Exhibit Toolkit',
