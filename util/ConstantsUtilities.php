@@ -1,8 +1,8 @@
 <?php
 
-namespace Drstk\Util;
+//namespace Drstk\Util;
 
-function drstk_get_errors(){
+function drstk_get_errors() {
     $errors = array(
         "admin" => array(
             "api_fail" => "Sorry, DRS files and metadata are currently unavailable. Please refresh the page or try again later. If problem persists please contact dsg@neu.edu.",

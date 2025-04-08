@@ -205,6 +205,7 @@ add_action('init', 'drstk_add_podcast_feed');
 add_action('init', 'drstk_rewrite_rule');
 add_action( 'init', 'remove_bstw_widget_text_filters' );
 add_action('init', 'create_post_type');
+add_action('wp_feed_options', 'drstk_turn_off_feed_caching');
 
 /* FILTERS */
 
@@ -212,6 +213,7 @@ add_filter('template_include', 'drstk_content_template', 1, 1);
 add_filter("attachment_fields_to_edit", "drstk_image_attachment_fields_to_edit", null, 2);
 add_filter("attachment_fields_to_save", "drstk_image_attachment_fields_to_save", 10, 2);
 add_filter('query_vars', 'drstk_add_query_var');
+add_filter('wp_feed_cache_transient_lifetime', 'debug_change_feed_cache_transient_lifetime', 200000);
 
 
 
