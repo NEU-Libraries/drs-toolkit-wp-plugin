@@ -1,32 +1,36 @@
 <?php
 
-// namespace Drstk\Callback\Iiif;
+namespace Drstk\AdminUI\Callbacks;
 
+class Iiif {
 
-function drstk_mirador_callback() {
-    echo '<input type="checkbox" name="drstk_mirador" ';
-    if (get_option('drstk_mirador') == 'on') {
-        echo 'checked="checked"';
+    static function mirador(): void {
+        echo '<input type="checkbox" name="drstk_mirador" ';
+        if (get_option('drstk_mirador') == 'on') {
+            echo 'checked="checked"';
+        }
+        echo '/>Display</label>';
     }
-    echo '/>Display</label>';
-}
 
-function drstk_mirador_page_title_callback() {
-    echo '<input type="text" name="drstk_mirador_page_title" value="';
-    if (get_option('drstk_mirador_page_title') == '') {
-        echo 'Book View';
-    } else {
-        echo get_option('drstk_mirador_page_title');
+    static function miradorPageTitle(): void {
+        echo '<input type="text" name="drstk_mirador_page_title" value="';
+        if (get_option('drstk_mirador_page_title') == '') {
+            echo 'Book View';
+        } else {
+            echo get_option('drstk_mirador_page_title');
+        }
+        echo '" />';
     }
-    echo '" />';
+
+    static function miradorUrl(): void {
+        $mirador_url = get_option('drstk_mirador_url') == '' ? 'mirador' : get_option('drstk_mirador_url');
+        echo '<input name="drstk_mirador_url" type="text" value="' . $mirador_url . '"></input><br/>
+           <small>This sets the URL path for the mirador viewer<br/>
+           Currently, yours will look like: <strong>' . drstk_home_url() . 'mirador/</strong></small>';
+    
+    }
 }
 
-function drstk_mirador_url_callback() {
-    $mirador_url = get_option('drstk_mirador_url') == '' ? 'mirador' : get_option('drstk_mirador_url');
-    echo '<input name="drstk_mirador_url" type="text" value="' . $mirador_url . '"></input><br/>
-       <small>This sets the URL path for the mirador viewer<br/>
-       Currently, yours will look like: <strong>' . drstk_home_url() . 'mirador/</strong></small>';
-}
 
 
 
