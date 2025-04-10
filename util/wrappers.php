@@ -2,7 +2,7 @@
 
 use Drstk\Util\AdminConfig;
 use Drstk\Util\ConstantsUtilities;
-use Drstk\Util\StringUtilities as DrstkStringUtil;
+use Drstk\Util\StringUtilities as StringUtil;
 use Drstk\Util\WPOptionsUtilities;
 
 // AdminConfig
@@ -45,23 +45,23 @@ function drstk_facets_get_option($facet_type, $default = false) {
 // StringUtilities
 
 function drstk_api_url($source, $pid, $action, ?string $sub_action = NULL, ?array $url_arguments = NULL) {
-    return DrstkStringUtil::buildApiUrl($source, $pid, $action, $sub_action = NULL, $url_arguments = NULL);
+    return StringUtil::buildApiUrl($source, $pid, $action, $sub_action = NULL, $url_arguments = NULL);
 }
 
 function drstk_get_pid() {
-    return DrstkStringUtil::parsePid();
+    return StringUtil::parsePid();
 }
 
 function titleize($string) {
-    return DrstkStringUtil::titleize($string);
+    return StringUtil::titleize($string);
 }
 
 function drstk_home_url($path = '', $scheme = null) { 
-    return DrstkStringUtil::buildHomeUrl($path, $scheme);
+    return StringUtil::buildHomeUrl($path, $scheme);
 }
 
 function drstk_get_repo_from_pid($pid) {
-    return DrstkStringUtil::parseRepoFromPid($pid);
+    return StringUtil::parseRepoFromPid($pid);
 }
 
 // WPOptionsUtilities
