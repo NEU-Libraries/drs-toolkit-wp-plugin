@@ -1,7 +1,10 @@
 <?php
 
-// namespace Drstk\Callback\Browse;
+namespace Drstk\AdminUI\Callbacks;
 
+class Browse {
+    
+}
 
 function drstk_browse_page_title_callback() {
     echo '<input type="text" name="drstk_browse_page_title" value="';

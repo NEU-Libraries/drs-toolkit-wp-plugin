@@ -1,6 +1,6 @@
 <?php
 
-//namespace Drstk\AdminUI;
+//namespace Drstk\AdminUI
 
 //use Drstk\Util\WPOptionsUtilities;
 

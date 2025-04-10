@@ -1,6 +1,6 @@
 <?php
 
-namespace Drstk;
+//namespace Drstk;
 
 /**
  * Plugin Name: CERES: Exhibit Toolkit Plugin
@@ -46,16 +46,6 @@ function requireFilesByPath(string $pathTop) {
 // require_once( plugin_dir_path( __FILE__ ) . 'inc/metabox.php' );
 require_once(plugin_dir_path(__FILE__) . 'config.php');
 require_once(plugin_dir_path(__FILE__) . 'ceres_adapters.php');
-
-
-/* Moving toward a Ceres namespace for podcasting */
-// require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Abstract_Fetcher.php' );
-// require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Abstract_Renderer.php' );
-// require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Drs_Fetcher.php' );
-// require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Podcast_Renderer.php' );
-// require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Podcast_Rss_Renderer.php' );
-// require_once( plugin_dir_path( __FILE__ ) . 'classes/Ceres_Jwplayer_Renderer.php' );
-
 
 define('ALLOW_UNFILTERED_UPLOADS', true); //this will allow files without extensions - aka from fedora
 define('DRS_PLUGIN_PATH', plugin_dir_path(__FILE__));
