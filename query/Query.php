@@ -1,6 +1,6 @@
 <?php
 
-//namespace Drstk\Query;
+namespace Drstk\Query;
 
 class Query {
     /**
@@ -8,6 +8,8 @@ class Query {
      * Designed here to make it easy to output some message, even in the case of an error
      * For debugging, the fuller status info is passed along for inspection when needed
      *
+     * @todo update this to use file_get_contents (if possible)
+     * 
      * Typical usage:
      * $response = get_response($url);
      * $output = $response['output'];
@@ -20,7 +22,6 @@ class Query {
      * }
      * echo $output;
      */
-
     static function apiQuery(string $url): array {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
