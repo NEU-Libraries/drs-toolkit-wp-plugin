@@ -7,7 +7,6 @@ use Drstk\AdminUI\Scripts;
 // Actions
 
 
-
 function drstk_add_hypothesis() {
     Actions::addHypothesis();
 }
@@ -80,6 +79,9 @@ function drstk_register_niec_settings(): void {
     Actions::registerNiecSettings();
 }
 
+function drstk_add_podcast_feed() {
+    Actions::addPodcastFeed();
+}
 // Filters
 
 

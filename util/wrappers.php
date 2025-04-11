@@ -10,7 +10,6 @@ function create_post_type() {
     AdminConfig::createPostType();
 }
 
-
 /**
  * Basic validation and standardization of the $url_base entry;
  * should return a safe string that ends with a forward slash

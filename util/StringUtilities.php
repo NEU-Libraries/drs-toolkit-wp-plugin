@@ -104,6 +104,12 @@ class StringUtilities {
         return $string;
     }
 
+    /**
+     * Wraps home_url() to include the drstk_home_url after the home_url.
+     *
+     * If no $path is provided, will return the url with a trailing '/'
+     * which is different from how the normal home_url() would function.
+     */
     static function buildHomeUrl(string $path = '', ?string $scheme = null): string {
         $drstk_url = get_option('drstk_home_url') ? get_option('drstk_home_url') : '/';
         $url = home_url($drstk_url, $scheme);
@@ -129,35 +135,5 @@ class StringUtilities {
         }
         return $repo;
     }
-
-}
-
-/*API URL Builder helper method*/
-
-function drstk_api_url($source, $pid, $action, $sub_action = NULL, $url_arguments = NULL) {
-
-}
-
-/*helper functions for getting default values and cleaning up stored options*/
-function drstk_get_pid() {
-
-}
-
-function titleize($string) {
-}
-
-/**
- * Wraps home_url() to include the drstk_home_url after the home_url.
- *
- * If no $path is provided, will return the url with a trailing '/'
- * which is different from how the normal home_url() would function.
- */
-function drstk_home_url($path = '', $scheme = null) {
-
-}
-
-
-/*helper method for getting repo type from pid valiues*/
-function drstk_get_repo_from_pid($pid) {
 
 }

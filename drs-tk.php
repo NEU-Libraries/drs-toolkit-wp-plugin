@@ -10,40 +10,44 @@
  * Description: This plugin provides the core functionality of the CERES: Exhibit Toolkit and brings the content of a project from the DRS into Wordpress using the DRS API.
  */
 
-requireFilesByPath('inc');
-requireFilesByPath('admin-ui');
-requireFilesByPath('debug');
-requireFilesByPath('public-ui');
-requireFilesByPath('query');
-requireFilesByPath('util');
 
+// rsearch from https://stackoverflow.com/questions/17160696/php-glob-scan-in-subfolders-for-a-file
+// a pseudo-autoloader, just rolling through everything to get the file list
+function rsearch($folder, $regPattern) {
+    $folder = plugin_dir_path(__FILE__) . $folder;
+    $dir = new RecursiveDirectoryIterator($folder);
+    $ite = new RecursiveIteratorIterator($dir);
+    $files = new RegexIterator($ite, $regPattern, RegexIterator::GET_MATCH);
+    $fileList = array();
+    foreach($files as $file) {
+        $fileList = array_merge($fileList, $file);
+    }
+    return $fileList;
+}
 
-function requireFilesByPath(string $pathTop) {
-    $fullPath = plugin_dir_path(__FILE__) . "/$pathTop/*/*.php";
+$dirs = [
+    
+    'admin-ui',
+    'debug',
+    'public-ui',
+    'query',
+    'util',
+    'inc'
+];
+$allFiles = [];
 
-    $files = glob($fullPath);
-    $missingFiles = [];
-    foreach ($files as $file) {
-        try {
-            require_once($file);
-        } catch (\Exception $e) {
-            $missingFiles[] = $file;
-        }
+foreach($dirs as $dir) {
+    $fileList = rsearch($dir, '/.*\.php/');
+    $allFiles = array_merge($allFiles, $fileList);
+}
+
+foreach($allFiles as $file) {
+    try {
+        require_once($file);
+    } catch (\Exception $e) {
     }
 }
 
-
-// require_once( plugin_dir_path( __FILE__ ) . 'inc/item.php' );
-// require_once( plugin_dir_path( __FILE__ ) . 'inc/browse.php' );
-// require_once( plugin_dir_path( __FILE__ ) . 'inc/breadcrumb.php' );
-// require_once( plugin_dir_path( __FILE__ ) . 'inc/shortcodes.php' );
-// require_once( plugin_dir_path( __FILE__ ) . 'inc/video_shortcode.php' );
-// require_once( plugin_dir_path( __FILE__ ) . 'inc/item_shortcode.php' );
-// require_once( plugin_dir_path( __FILE__ ) . 'inc/tiles_shortcode.php' );
-// require_once( plugin_dir_path( __FILE__ ) . 'inc/slider_shortcode.php' );
-// require_once( plugin_dir_path( __FILE__ ) . 'inc/map_shortcode.php');
-// require_once( plugin_dir_path( __FILE__ ) . 'inc/timeline_shortcode.php' );
-// require_once( plugin_dir_path( __FILE__ ) . 'inc/metabox.php' );
 require_once(plugin_dir_path(__FILE__) . 'config.php');
 require_once(plugin_dir_path(__FILE__) . 'ceres_adapters.php');
 
