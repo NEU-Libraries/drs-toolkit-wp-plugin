@@ -32,7 +32,6 @@ class Actions {
     }
 
     static function registerDrsSettings(): void {
-        add_settings_section('drstk_advanced', "Advanced", null, 'drstk_options');
 
         drstk_register_project_settings();
         drstk_register_search_settings();
@@ -46,6 +45,7 @@ class Actions {
         drstk_register_overcast_settings();
         drstk_register_niec_settings();
         drstk_register_mirador_settings();
+        add_settings_section('drstk_advanced', "Advanced", null, 'drstk_options');
     }
 
     static function registerBrowseSettings(): void {
