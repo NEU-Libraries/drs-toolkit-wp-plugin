@@ -43,6 +43,7 @@ foreach($allFiles as $file) {
     try {
         require_once($file);
     } catch (\Exception $e) {
+        throw $e;
     }
 }
 
