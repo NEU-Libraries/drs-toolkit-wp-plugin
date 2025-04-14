@@ -129,7 +129,7 @@ class Actions {
         register_setting('drstk_options', 'drstk_home_url', 'drstk_home_url_validation');
     }
 
-    static function registerPodaseSettings(): void {
+    static function registerPodcastSettings(): void {
         add_settings_field(
             'drstk_is_podcast',
             'Is this a podcast site?',

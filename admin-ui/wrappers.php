@@ -40,7 +40,7 @@ function drstk_register_project_settings(): void {
 }
 
 function drstk_register_podcast_settings(): void {
-    Actions::registerPodaseSettings();
+    Actions::registerPodcastSettings();
 }
 
 function drstk_register_itunes_settings(): void {
