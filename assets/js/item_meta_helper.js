@@ -41,14 +41,13 @@ jQuery(document).ready(function () {
         }
     });
 
-    // @todo the need to comment out sortable() is a regression, but I can get away with it for now
-    // jQuery("#facets_sortable").sortable();
-    // jQuery("#niec_facets_sortable").sortable();
-    // jQuery("#item_metadata_sortable").sortable();
+    jQuery("#facets_sortable").sortable();
+    jQuery("#niec_facets_sortable").sortable();
+    jQuery("#item_metadata_sortable").sortable();
     jQuery(".add-item-meta").on("click", function (e) {
         e.preventDefault();
     jQuery("#item_metadata_sortable").append('<tr class="ui-sortable-handle"><td style="padding:0"><label><input type="checkbox" name="drstk_item_page_metadata[]"> <span class="dashicons dashicons-move"></span> <input type="text" /></label></td></tr>');
-    //jQuery("#item_metadata_sortable").sortable({ refresh: item_metadata_sortable });
+    jQuery("#item_metadata_sortable").sortable({ refresh: item_metadata_sortable });
     update_values();
     });
 

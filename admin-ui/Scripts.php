@@ -14,7 +14,9 @@ class Scripts {
     static function adminEnqueue(): void {
         if (get_current_screen()->base == 'settings_page_drstk_admin_menu') {
             // we are on the settings page
-            wp_enqueue_script('jquery-ui-sortable');
+
+            wp_register_script('jquery-ui', "https://code.jquery.com/ui/1.14.1/jquery-ui.js");
+            wp_enqueue_script('jquery-ui');
             $path = plugin_dir_url('drstk_item_meta_helper') . 'drs-toolkit-wp-plugin/assets/js/item_meta_helper.js';
             wp_register_script('drstk_item_meta_helper_js', $path, array('jquery'));
             wp_enqueue_script( 'drstk_item_meta_helper_js');
