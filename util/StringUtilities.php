@@ -10,7 +10,7 @@ class StringUtilities {
         string $pid, 
         string $action, 
         ?string $sub_action = NULL,
-        ?array $url_arguments = NULL
+        ?string $url_arguments = NULL
     ): string {
         $url = "";
         $dak = constant("DPLA_API_KEY");
@@ -80,6 +80,7 @@ class StringUtilities {
                 }
                 break;
         }
+
         return $url;
 
     }

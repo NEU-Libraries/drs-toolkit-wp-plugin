@@ -43,8 +43,8 @@ function drstk_facets_get_option($facet_type, $default = false) {
 
 // StringUtilities
 
-function drstk_api_url($source, $pid, $action, ?string $sub_action = NULL, ?array $url_arguments = NULL) {
-    return StringUtil::buildApiUrl($source, $pid, $action, $sub_action = NULL, $url_arguments = NULL);
+function drstk_api_url($source, $pid, $action, ?string $sub_action = NULL, ?string $url_arguments = NULL) {
+    return StringUtil::buildApiUrl($source, $pid, $action, $sub_action, $url_arguments);
 }
 
 function drstk_get_pid() {
