@@ -3,6 +3,7 @@
 use Drstk\AdminUI\Actions;
 use Drstk\AdminUI\Filters;
 use Drstk\AdminUI\Scripts;
+use Drstk\AdminUI\Callbacks\Collections;
 
 // Actions
 
@@ -21,6 +22,10 @@ function remove_bstw_widget_text_filters() {
 
 function register_drs_settings() {
     Actions::registerDrsSettings();
+}
+
+function drstk_collection_page_title_callback(){
+    Collections::collectionPageTitle();
 }
 
 function drstk_register_browse_settings(): void {
