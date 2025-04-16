@@ -6,13 +6,14 @@ use Drstk\Util\WPOptionsUtilities;
 
 class Form {
     static function displaySettings() {
-        $html = "div class='wrap'>" .
+        
+        echo "<div class='wrap'>" .
         "<h1>CERES Settings</h1>" .
-        "<form method='post' action='options.php name='options'>";
+        "<form method='post' action='options.php' name='options'>";
         settings_fields("drstk_options");
         do_settings_sections("drstk_options");
         submit_button();
-        $html = "</form></div>";
+        echo "</form></div>";
     }
 
     static function homeUrl() {

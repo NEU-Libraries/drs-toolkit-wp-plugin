@@ -146,7 +146,7 @@ function drstk_get_drs_items() {
         }
     }
 
-
+    error_log('url: ' . $url);
     $response = get_response($url);
     $jsonString = $response['output'];
     if ($response['status'] != 200) {
