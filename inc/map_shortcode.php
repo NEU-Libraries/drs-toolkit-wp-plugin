@@ -135,6 +135,15 @@ function drstk_map($atts, $params) {
                     $location = $data->subject_geographic_tesim[0];
                     $locationUrl = "https://maps.google.com/maps/api/geocode/json?address=" . urlencode($location) . '&key=' . GOOGLE_MAPS_GEOCODING_KEY;
                     $response = get_response($locationUrl);
+                        // @todo check why json is decoding layers down, which is
+                        // needed to get the real error message
+                        // below is a temporary, localized fix so it doesn't break everything
+                    $outputArray = json_decode($response['output'], true);
+                    if ($outputArray['status'] == 'REQUEST_DENIED') {
+
+                        $errorHtml = "You must use an API key to authenticate each request to Google Maps Platform APIs. For additional information, please refer to <a href='http://g.co/dev/maps-no-account'>Google Maps Info</a> or contact a site developer</a>";
+                        return $errorHtml;
+                    }
                     $locationData = json_decode($response['output']);
                     if (!isset($locationData->error)) {
                         $coordinates = $locationData->results[0]->geometry->location->lat . "," . $locationData->results[0]->geometry->location->lng;
