@@ -54,7 +54,7 @@ get_header();
             		<div id="drs-item-details"><?php echo get_item_details($data); ?></div>
 								<?php get_download_links(); ?>
             	</div>
-              <?php if ($custom_content_placement == 'bottom'): ?>
+              <?php if ($custom_content_placement == 'bottom' || empty($custom_content_placement)): ?>
   							<div class="col-sm-12 drs-item-custom">
   							  <?php echo drstk_get_custom_content_data('content');?>
   							</div>                
