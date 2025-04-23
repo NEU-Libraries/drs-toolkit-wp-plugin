@@ -58,40 +58,63 @@ define(
     'DRSTK_PODCAST_REGISTER_HTML',
     "
 <small>When you register your podcast with this service, it will tell you the URL to use here.</small>
-<br /><small>Use this feed URL to tell the service where to look for your podcasts: <br />" . get_site_url() . "?feed=podcasts</small><br/>
+<br /><small>Use this feed URL to tell the service where to look for your podcasts: <br />" .
+        get_site_url() .
+        "?feed=podcasts</small><br/>
 "
 );
 
 // Set template names here so we don't have to go into the code.
-$TEMPLATE = array(
+$TEMPLATE = [
     'browse_template' => dirname(__FILE__) . '/templates/browse.php',
     'item_template' => dirname(__FILE__) . '/templates/item.php',
     'download_template' => dirname(__FILE__) . '/templates/download.php',
     'mirador_template' => dirname(__FILE__) . '/templates/mirador.php',
-);
+];
 
-$TEMPLATE_THEME = array(
+$TEMPLATE_THEME = [
     'browse_template' => 'overrides/drstk-browse.php',
     'item_template' => 'overrides/drstk-item.php',
     'download_template' => 'overrides/drstk-download.php',
     'mirador_template' => 'overrides/drstk-mirador.php',
-);
+];
 
 register_activation_hook(__FILE__, 'drstk_install');
 register_deactivation_hook(__FILE__, 'drstk_deactivation');
-$all_meta_options = array("Title", "Alternative Title", "Creator", "Contributor", "Publisher", "Type of Resource", "Genre", "Language", "Physical Description", "Abstract/Description", "Table of contents", "Notes", "Subjects and keywords", "Related item", "Identifier", "Access condition", "Location", "uri", "Format", "Permanent URL", "Date created", "Date issued", "Copyright date", "Biographical/Historical", "Biográfica/histórica", "Issuance", "Frequency", "Digital origin", "Map data", "Use and reproduction", "Restriction on access");
-$all_assoc_meta_options = array("full_title_ssi", "creator_tesim", "abstract_tesim");
-
-
-
-function mce_plugin($plugin_array) {
-    $plugin_array['drstkshortcodes'] = DRS_PLUGIN_URL . '/assets/js/mce-button.js';
-    return $plugin_array;
-}
-
-function add_tinymce_plugin() {
-    add_filter("mce_external_plugins", 'mce_plugin');
-}
+$all_meta_options = [
+    'Title',
+    'Alternative Title',
+    'Creator',
+    'Contributor',
+    'Publisher',
+    'Type of Resource',
+    'Genre',
+    'Language',
+    'Physical Description',
+    'Abstract/Description',
+    'Table of contents',
+    'Notes',
+    'Subjects and keywords',
+    'Related item',
+    'Identifier',
+    'Access condition',
+    'Location',
+    'uri',
+    'Format',
+    'Permanent URL',
+    'Date created',
+    'Date issued',
+    'Copyright date',
+    'Biographical/Historical',
+    'Biográfica/histórica',
+    'Issuance',
+    'Frequency',
+    'Digital origin',
+    'Map data',
+    'Use and reproduction',
+    'Restriction on access',
+];
+$all_assoc_meta_options = ['full_title_ssi', 'creator_tesim', 'abstract_tesim'];
 
 /**
  * Rewrite rules for the plugin.
@@ -100,20 +123,51 @@ function add_tinymce_plugin() {
 function drstk_rewrite_rule() {
     global $post;
     $home_url = get_option('drstk_home_url');
-    add_rewrite_rule('^' . $home_url . 'browse/?$', 'index.php?post_type=drs&drstk_template_type=browse', 'top');
-    add_rewrite_rule('^' . $home_url . 'search/?$', 'index.php?post_type=drs&drstk_template_type=search', 'top');
-    add_rewrite_rule('^' . $home_url . 'item/([^/]*)/?([^/]*)*', 'index.php?post_type=drs&drstk_template_type=item&pid=$matches[1]&js=$matches[2]', 'top');
-    add_rewrite_rule('^' . $home_url . 'download/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=download&pid=$matches[1]', 'top');
-    add_rewrite_rule('^' . $home_url . 'collections/?$', 'index.php?post_type=drs&drstk_template_type=collections', 'top');
-    add_rewrite_rule('^' . $home_url . 'collection/([^/]*)/?', 'index.php?post_type=drs&drstk_template_type=collection&pid=$matches[1]', 'top');
-    $mirador_url = get_option('drstk_mirador_url') == '' ? 'mirador' : get_option('drstk_mirador_url');
-    add_rewrite_rule('^' . $home_url . $mirador_url . '/?$', 'index.php?post_type=drs&drstk_template_type=mirador', 'top');
-    if (get_option('drstk_item_extensions') == "on") {
-        $args = array(
+    add_rewrite_rule(
+        '^' . $home_url . 'browse/?$',
+        'index.php?post_type=drs&drstk_template_type=browse',
+        'top'
+    );
+    add_rewrite_rule(
+        '^' . $home_url . 'search/?$',
+        'index.php?post_type=drs&drstk_template_type=search',
+        'top'
+    );
+    add_rewrite_rule(
+        '^' . $home_url . 'item/([^/]*)/?([^/]*)*',
+        'index.php?post_type=drs&drstk_template_type=item&pid=$matches[1]&js=$matches[2]',
+        'top'
+    );
+    add_rewrite_rule(
+        '^' . $home_url . 'download/([^/]*)/?',
+        'index.php?post_type=drs&drstk_template_type=download&pid=$matches[1]',
+        'top'
+    );
+    add_rewrite_rule(
+        '^' . $home_url . 'collections/?$',
+        'index.php?post_type=drs&drstk_template_type=collections',
+        'top'
+    );
+    add_rewrite_rule(
+        '^' . $home_url . 'collection/([^/]*)/?',
+        'index.php?post_type=drs&drstk_template_type=collection&pid=$matches[1]',
+        'top'
+    );
+    $mirador_url =
+        get_option('drstk_mirador_url') == ''
+            ? 'mirador'
+            : get_option('drstk_mirador_url');
+    add_rewrite_rule(
+        '^' . $home_url . $mirador_url . '/?$',
+        'index.php?post_type=drs&drstk_template_type=mirador',
+        'top'
+    );
+    if (get_option('drstk_item_extensions') == 'on') {
+        $args = [
             'post_type' => 'drstk_item_extension',
             'posts_per_page' => 1,
             'post_status' => 'publish',
-        );
+        ];
         $meta_query = new WP_Query($args);
         if ($meta_query->have_posts()) {
             while ($meta_query->have_posts()) {
@@ -122,7 +176,12 @@ function drstk_rewrite_rule() {
                 $item_url = get_post_meta($post_id, 'item-url', true);
                 $item_id = get_post_meta($post_id, 'item-id', true);
                 if (isset($item_url) && isset($item_id)) {
-                    add_rewrite_rule("^$home_url$item_url/?$", 'index.php?post_type=drs&drstk_template_type=item&pid=' . $item_id, 'top');
+                    add_rewrite_rule(
+                        "^$home_url$item_url/?$",
+                        'index.php?post_type=drs&drstk_template_type=item&pid=' .
+                            $item_id,
+                        'top'
+                    );
                 }
             }
         }

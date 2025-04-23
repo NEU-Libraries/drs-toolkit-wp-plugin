@@ -1,0 +1,15 @@
+{
+  "name": "drs-tk",
+  "version": "1.0.0",
+  "description": "<!--- [![Build Status](https://travis-ci.org/NEU-Libraries/drs-toolkit-wp-plugin.svg?branch=develop)](https://travis-ci.org/NEU-Libraries/drs-toolkit-wp-plugin)",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
