@@ -224,6 +224,313 @@ add_action('admin_init', 'add_tinymce_plugin');
 /* FILTERS */
 
 add_filter('template_include', 'drstk_content_template', 1, 1);
+function drstk_content_template( $template ) {
+    global $wp_query;
+    global $TEMPLATE;
+    global $TEMPLATE_THEME;
+
+    if ( isset($wp_query->query_vars['drstk_template_type']) ) {
+
+        $template_type = $wp_query->query_vars['drstk_template_type'];
+
+        if ($template_type == 'browse' || $template_type == 'search' || $template_type == 'collections' || $template_type == 'collection') {
+            global $sub_collection_pid;
+            $sub_collection_pid = get_query_var( 'pid' );
+            add_action('wp_enqueue_scripts', 'drstk_browse_script');
+            if ($template_type == 'collection') {
+              add_action('wp_enqueue_scripts', 'drstk_breadcrumb_script');
+            }
+
+            // look for theme template first, load plugin template as fallback
+            $theme_template = locate_template( array( $TEMPLATE_THEME['browse_template'] ) );
+            return ($theme_template ? $theme_template : $TEMPLATE['browse_template']);
+        } elseif ($template_type == 'item') {
+            global $item_pid;
+            $item_pid = get_query_var('pid');
+            add_action('wp_enqueue_scripts', 'drstk_item_script');
+
+            // look for theme template first, load plugin template as fallback
+            $theme_template = locate_template( array( $TEMPLATE_THEME['item_template'] ) );
+            return ($theme_template ? $theme_template : $TEMPLATE['item_template']);
+        } elseif ($template_type == 'download') {
+          global $item_pid;
+          $item_pid = get_query_var('pid');
+
+          // look for theme template first, load plugin template as fallback
+          $theme_template = locate_template( array( $TEMPLATE_THEME['download_template'] ) );
+          return ($theme_template ? $theme_template : $TEMPLATE['download_template']);
+        } elseif ($template_type == 'mirador') {
+          add_action('wp_enqueue_scripts', 'drstk_mirador_script');
+
+          // look for theme template first, load plugin template as fallback
+          $theme_template = locate_template( array( $TEMPLATE_THEME['mirador_template'] ) );
+          return ($theme_template ? $theme_template : $TEMPLATE['mirador_template']);
+        }
+
+    } else {
+        return $template;
+    }
+} // end drstk_content_template
+
+/**
+ * Load scripts for the browse/search page
+ *
+ */
+function drstk_browse_script() {
+    global $wp_query;
+    global $sub_collection_pid;
+    $errors = drstk_get_errors();
+    //this enqueues the JS file
+    wp_register_script( 'drstk_browse',
+        plugins_url( '/assets/js/browse.js', __FILE__ ),
+        array( 'jquery' )
+    );
+    wp_enqueue_script('drstk_browse');
+    $search_options = get_option('drstk_search_metadata');
+    $browse_options = get_option('drstk_browse_metadata');
+    $default_sort = get_option('drstk_default_sort');
+    $default_browse_per_page = get_option('drstk_default_browse_per_page');
+    $default_search_per_page = get_option('drstk_default_search_per_page');
+    $default_facet_sort = get_option('drstk_facet_sort_order');
+    $related_content_title = get_option('drstk_search_related_content_title');
+    //this creates a unique nonce to pass back and forth from js/php to protect
+    $browse_nonce = wp_create_nonce( 'browse_drs' );
+    $facets = drstk_get_facets_to_display();
+    $facets_to_display = array();
+    foreach($facets as $facet){
+      $facets_to_display[$facet] = drstk_get_facet_name($facet);
+    }
+    $niec_facets = get_option('drstk_niec_metadata');
+    $niec_facets_to_display = array();
+    if (is_array($niec_facets)){
+      foreach($niec_facets as $facet){
+        $niec_facets_to_display[$facet] = drstk_get_facet_name($facet, true);
+      }
+    }
+    //this allows an ajax call from browse.js
+    $browse_obj = array(
+      'ajax_url' => admin_url('admin-ajax.php'),
+      'nonce'    => $browse_nonce,
+      'template' => $wp_query->query_vars['drstk_template_type'],
+      'home_url' => drstk_home_url(),
+      'sub_collection_pid' => $sub_collection_pid,
+      'search_options' => json_encode($search_options),
+      'related_content_title' => $related_content_title,
+      'browse_options' => json_encode($browse_options),
+      'errors' => json_encode($errors),
+      'facets_to_display' => $facets_to_display,
+      'default_sort' => $default_sort,
+      'default_facet_sort' => $default_facet_sort,
+      'default_browse_per_page' => $default_browse_per_page,
+      'default_search_per_page' => $default_search_per_page,
+      'search_show_facets' => get_option('drstk_search_show_facets'),
+      'browse_show_facets' => get_option('drstk_browse_show_facets'),
+    );
+    if (get_option('drstk_niec') == 'on' && count($niec_facets_to_display) > 0){
+      $browse_obj['niec_facets_to_display'] = $niec_facets_to_display;
+    }
+
+    wp_localize_script( 'drstk_browse', 'browse_obj', $browse_obj );
+}
+
+
+/**
+ * Load scripts for the doc/page views
+ */
+function drstk_item_script() {
+    global $wp_query;
+    global $item_pid;
+    
+    $errors = drstk_get_errors();
+    $item_nonce = wp_create_nonce( 'item_drs' );
+
+    //this enqueues the JS file
+    wp_register_script('drstk_cdn_jwplayer', 'https://content.jwplatform.com/libraries/dTFl0VEe.js');
+    wp_enqueue_script('drstk_cdn_jwplayer');
+    wp_register_script('drstk_elevatezoom',plugins_url('/assets/js/elevatezoom/jquery.elevateZoom-3.0.8.min.js', __FILE__), array());
+    wp_enqueue_script('drstk_elevatezoom');
+    wp_register_script('drstk_item_gallery', plugins_url('/assets/js/item_gallery.js', __FILE__));
+    wp_enqueue_script('drstk_item_gallery');
+
+    //this allows an ajax call from browse.js
+    $item_obj = array(
+      'ajax_url' => admin_url('admin-ajax.php'),
+      'nonce'    => $item_nonce,
+      'template' => $wp_query->query_vars['drstk_template_type'],
+      'home_url' => drstk_home_url(),
+    );
+
+    wp_localize_script( 'drstk_item_gallery', 'item_obj', $item_obj );
+}
+
+function drstk_breadcrumb_script(){
+  global $wp_query;
+  global $sub_collection_pid;
+  global $item_pid;
+
+  wp_register_script( 'drstk_breadcrumb',
+      plugins_url( '/assets/js/breadcrumb.js', __FILE__ ),
+      array( 'jquery' )
+  );
+  wp_enqueue_script('drstk_breadcrumb');
+  $breadcrumb_nonce = wp_create_nonce( 'breadcrumb_drs' );
+
+  wp_localize_script( 'drstk_breadcrumb', 'breadcrumb_obj', array(
+     'ajax_url' => admin_url( 'admin-ajax.php' ),
+     'nonce'    => $breadcrumb_nonce,
+     'template' => $wp_query->query_vars['drstk_template_type'],
+     'item_pid' => $item_pid,
+     'sub_collection_pid' => $sub_collection_pid,
+     'collection_pid' => drstk_get_pid(),
+     'home_url' => drstk_home_url(),
+  ) );
+}
+
+function drstk_mirador_script() {
+    global $wp_query;
+    // this appears unused, but at least it isn't the global it used to be
+    $errors = drstk_get_errors();
+    
+    //this enqueues the JS file
+    wp_register_script('drstk_mirador', plugins_url('/assets/mirador/mirador.js', __FILE__));
+    wp_enqueue_script('drstk_mirador');
+    wp_register_script('drstk_mirador_manifest',plugins_url('/assets/mirador/mirador_manifest.js', __FILE__), array());
+    wp_enqueue_script('drstk_mirador_manifest');
+    wp_register_style('drstk_mirador_style', plugins_url('/assets/mirador/css/mirador-combined.min.css', __FILE__), array());
+    wp_enqueue_style('drstk_mirador_style');
+}
+
+/*fix for weird jumpiness in wp admin menu*/
+function fix_admin_head() {
+	echo "<script type='text/javascript'>jQuery(window).load(function(){jQuery('#adminmenuwrap').hide().show(0);});</script>";
+  echo "<style>#start-pt-pb-tour{display:none !important;}";
+}
+add_action( 'admin_head', 'fix_admin_head' );
+
+
+/**
+* Basic curl response mechanism.
+* Designed here to make it easy to output some message, even in the case of an error
+* For debugging, the fuller status info is passed along for inspection when needed
+* 
+* Typical usage:
+* $response = get_response($url);
+* $output = $response['output'];
+* echo $output;
+* 
+* Fancier:
+* $response = get_response($url);
+* if ($response['status'] == 404) {
+*   $output = 'No soup for you!';
+* }
+* echo $output;
+*/
+function get_response($url) {
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+  curl_setopt($ch, CURLOPT_FAILONERROR, false);
+  $raw_response = curl_exec($ch);
+  // @TODO:  when we're up to PHP > 5.5, CURLINFO_HTTP_CODE should be CURLINFO_RESPONSE_CODE
+  $response_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+//$response_status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+  
+  //fallback for PHP < 5.5
+  // @TODO remove this once our servers are upgraded, so we can keep using modern(ish) PHP practices
+  if (! $response_status) {
+    $response_status_array = curl_getinfo($ch);
+    $response_status = $response_status_array['http_code'];
+  }
+  
+  switch ($response_status) {
+    case 200:
+      $output = $raw_response;
+      $status_message = 'OK';
+      break;
+    case 404:
+      $output = 'The resource was not found.';
+      $status_message = 'Not Found';
+      break;
+    case 302:
+      // check if there's json in it anyway
+      $json = json_decode($raw_response);
+      if (is_object($json)) {
+        $output = $raw_response;
+      } else {
+        $output = 'An unknown error occured -- ' . $response_status;
+      }
+      $status_message = 'The resource has moved or is no longer available';
+      break;
+    default:
+      $output = 'An unknown error occured.' . $response_status;
+      $status_message = 'An unkown error occured. Please try again';
+      break;
+      
+  }
+  $response = array(
+    'status' => $response_status,
+    'status_message' => $status_message,
+    'output' => $output,
+  );
+  curl_close($ch);
+  return $response;
+}
+
+function titleize($string){
+  $string = str_replace("_tesim","",$string);
+  $string = str_replace("_sim","",$string);
+  $string = str_replace("_ssim","",$string);
+  $string = str_replace("_ssi","",$string);
+  $string = str_replace("full_","",$string);
+  $string = str_replace("drs_","",$string);
+  $string = str_replace("niec_","",$string);
+  $string = str_replace("_"," ",$string);
+  $string = ucfirst($string);
+  return $string;
+}
+
+/**
+ * Wraps home_url() to include the drstk_home_url after the home_url.
+ *
+ * If no $path is provided, will return the url with a trailing '/'
+ * which is different from how the normal home_url() would function.
+ */
+function drstk_home_url($path = '', $scheme = null) {
+  $drstk_url = get_option('drstk_home_url') ? get_option('drstk_home_url') : '/';
+  $url = home_url($drstk_url, $scheme);
+  if ($path) {
+    $url .= ltrim( $path, '/' );
+  } else {
+    $url = rtrim($url, '/') . '/';
+  }
+
+  return $url;
+}
+
+/* This makes it so that the tinymce wysiwyg does not process shortcodes so the database saves the shortcode before it is processed - this allows the has_shortcode function to work as expected and thus enqueue javascript correctly*/
+add_action( 'init', 'remove_bstw_widget_text_filters' );
+function remove_bstw_widget_text_filters() {
+    if ( function_exists( 'bstw' ) ) {
+        remove_filter( 'widget_text', array( bstw()->text_filters(), 'do_shortcode' ), 10 );
+    }
+}
+
+function drstk_image_attachment_fields_to_edit($form_fields, $post) {
+    $form_fields["timeline_date"] = array(
+        "label" => __("Timeline Date"),
+        "input" => "text", // this is default if "input" is omitted
+        "value" => get_post_meta($post->ID, "_timeline_date", true),
+        "helps" => "Must be YYYY/MM/DD format"
+    );
+    $form_fields["map_coords"] = array(
+        "label" => __("Map Coordinates"),
+        "input" => "text", // this is default if "input" is omitted
+        "value" => get_post_meta($post->ID, "_map_coords", true),
+        "helps" => "Must be in Lat, Long or City name, State Initials format"
+    );
+    return $form_fields;
+}
 add_filter("attachment_fields_to_edit", "drstk_image_attachment_fields_to_edit", null, 2);
 add_filter("attachment_fields_to_save", "drstk_image_attachment_fields_to_save", 10, 2);
 add_filter('query_vars', 'drstk_add_query_var');
