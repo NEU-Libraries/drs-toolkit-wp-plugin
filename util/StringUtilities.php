@@ -123,17 +123,23 @@ class StringUtilities {
         return $url;
     }
 
-    static function parseRepoFromPid(string $pid): string {
+    static function parseRepoFromPid(string $pid): mixed {
         $arr = explode(":", $pid);
-        if ($arr[0] == "neu") {
-            $repo = "drs";
-        } else if ($arr[0] == "wp") {
-            $repo = "wp";
-        } else if ($arr[0] == "dpla") {
-            $repo = "dpla";
-        } else {
-            $repo = NULL;
+
+        switch($arr[0]) {
+            case 'neu':
+                $repo = 'drs';
+            break;
+            case 'wp':
+                $repo = 'wp';
+            break;
+            case 'dpla':
+                $repo = 'dpla';
+            break;
+            default:
+                $repo = null;
         }
+
         return $repo;
     }
 
